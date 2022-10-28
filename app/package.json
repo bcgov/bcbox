@@ -4,10 +4,9 @@
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only ./bin/www",
+    "serve": "ts-node-dev --respawn --transpile-only ./bin/www",
     "start": "node ./bin/www",
     "build": "cd ../frontend && shx rm -rf dist && npm run build",
-    "copy-dist": "shx cp -r ../frontend/dist ./",
     "test": "jest --verbose --forceExit --detectOpenHandles"
   },
   "dependencies": {
