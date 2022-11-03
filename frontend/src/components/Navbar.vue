@@ -4,6 +4,7 @@
       <template #start>
         <ol class="list-none m-0 p-0 flex flex-row align-items-center font-semibold">
           <li class="mr-2"><router-link :to="{ name: 'home' }">Home</router-link></li>
+          <li class="mr-2"><router-link :to="{ name: 'myBuckets' }">My Buckets</router-link></li>
           <li class="mr-2"><router-link :to="{ name: 'addBucket' }">Add Bucket</router-link></li>
         </ol>
       </template>

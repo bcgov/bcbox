@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import { useAuthStore } from '@/store/authStore';

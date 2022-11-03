@@ -5,9 +5,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]
     },
-    "types": ["jest"]
+    "types": ["vitest/globals"]
   },
 
   "references": [

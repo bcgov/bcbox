@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import Login from '../Login.vue';
+</script>
+
 <template>
   <header>
     <nav id="header-branding">
@@ -17,10 +21,6 @@
     </nav>
   </header>
 </template>
-
-<script setup lang="ts">
-import Login from '../Login.vue';
-</script>
 
 <style lang="scss" scoped>
 #header-branding {

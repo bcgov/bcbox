@@ -10,6 +10,12 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue'),
     },
     {
+      path: '/myBuckets',
+      name: 'myBuckets',
+      component: () => import('../views/MyBucketsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/addBucket',
       name: 'addBucket',
       component: () => import('../views/AddBucketView.vue'),
