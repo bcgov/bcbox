@@ -86,3 +86,12 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+# local env files
+local.*
+local-*.*
+.env.local
+.env.*.local
+
+# temp office files
+~$*
