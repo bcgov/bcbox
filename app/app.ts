@@ -1,8 +1,11 @@
 const express = require('express');
+const compression = require('compression');
 const config = require('config');
 const path = require('path');
 
 const app = express();
+app.use(compression());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
   res.send('Vue 3 Scaffold');
@@ -10,6 +13,22 @@ app.get('/', (req, res) => {
 
 app.get('/api/hello', (req, res) => {
   res.send('Hello world!');
+});
+
+// Frontend configuration endpoint
+app.get('/config', (_req, res, next) => {
+  try {
+    // throw new Error('debugging error');
+    var delayInMilliseconds = 1000;
+
+    // TODO obviously lose this
+    setTimeout(function () {
+      const frontend = config.get('frontend');
+      res.status(200).json(frontend);
+    }, delayInMilliseconds);
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Host the static frontend assets

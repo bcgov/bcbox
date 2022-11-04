@@ -13,13 +13,13 @@ const router = createRouter({
       path: '/myBuckets',
       name: 'myBuckets',
       component: () => import('../views/MyBucketsView.vue'),
-      meta: { requiresAuth: true },
+      // meta: { requiresAuth: true }, Remove temporarily for parallel dev
     },
     {
       path: '/addBucket',
       name: 'addBucket',
       component: () => import('../views/AddBucketView.vue'),
-      meta: { requiresAuth: true },
+      // meta: { requiresAuth: true }, Remove temporarily for parallel dev
     },
     {
       path: '/logout',

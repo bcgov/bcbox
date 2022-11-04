@@ -4,7 +4,5 @@ const authStore = useAuthStore();
 </script>
 
 <template>
-  <main>
-    <p v-if="!authStore.isLoggedIn">Please login to continue.</p>
-  </main>
+  <h2>Home screen</h2>
 </template>
