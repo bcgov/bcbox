@@ -22,6 +22,12 @@ const router = createRouter({
       // meta: { requiresAuth: true }, Remove temporarily for parallel dev
     },
     {
+      path: '/developer',
+      name: 'developer',
+      component: () => import('../views/DeveloperView.vue'),
+      // meta: { requiresAuth: true }, Remove temporarily for parallel dev
+    },
+    {
       path: '/logout',
       name: 'logout',
       redirect: (to) => {

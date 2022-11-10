@@ -1,17 +1,15 @@
 <template>
-  <div>
-    Debugging: config <br />
-    {{ config }}
-  </div>
 </template>
 
 <script setup lang="ts">
 // State
+import { useAuthStore } from '@/store/authStore';
 import { useConfigStore } from '@/store/configStore';
-import { storeToRefs } from 'pinia';
 const configStore = useConfigStore();
-const { config } = storeToRefs(useConfigStore());
+const authStore = useAuthStore();
 
 // Get the config on setup of the main app view
 await configStore.load();
+// Set up keycloak
+await authStore.init();
 </script>

@@ -3,7 +3,12 @@
     "apiPath": "api/v1",
     "basePath": "/frontend",
     "keycloak": {
-      "serverUrl": "https://dev.oidc.gov.bc.ca/auth"
+      "clientId": "coms-showcase-frontend-local-3966",
+      "realm": "standard",
+      "serverUrl": "https://dev.loginproxy.gov.bc.ca/auth"
+    },
+    "coms": {
+      "apiPath": "https://coms-dev-master.apps.silver.devops.gov.bc.ca/api/v1"
     }
   },
   "server": {
@@ -12,7 +17,7 @@
     "staticFiles": "../frontend/dist",
     "bodyLimit": "30mb",
     "keycloak": {
-      "serverUrl": "https://dev.oidc.gov.bc.ca/auth"
+      "serverUrl": "https://dev.loginproxy.gov.bc.ca/auth"
     },
     "logLevel": "http",
     "port": "8080"

@@ -1,8 +1,11 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
+import { userService } from '@/services';
 
 export const useUserStore = defineStore('user', () => {
   const buckets = ref([] as Object[]);
+  const idps = ref([] as Object[]);
+  const loading = ref(false);
 
   function addBucket(bucket: Object) {
     buckets.value.push(bucket);
@@ -15,5 +18,42 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  return { buckets, addBucket, removeBucket };
+  // TODO DELETE
+  async function sleep(msec: number) {
+    return new Promise((resolve) => setTimeout(resolve, msec));
+  }
+
+  async function listIdps() {
+    try {
+      loading.value = true;
+      // TODO DELETE
+      await sleep(1000);
+      const res = await userService.listIdps();
+      idps.value = res.data;
+    } catch (error) {
+      console.error(`listIdps error: ${error}`);
+      // So that a caller can action it
+      throw error;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  // Will 404. TODO DELETE
+  async function testBad() {
+    try {
+      loading.value = true;
+      // TODO DELETE
+      await sleep(1000);
+      await userService.testBad();
+    } catch (error) {
+      console.error(`bad error: ${error}`);
+      // So that a caller can action it
+      throw error;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  return { buckets, idps, loading, addBucket, removeBucket, listIdps, testBad };
 });
