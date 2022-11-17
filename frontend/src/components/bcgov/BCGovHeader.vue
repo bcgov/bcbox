@@ -12,7 +12,7 @@ import Login from '../Login.vue';
           </a>
         </div>
         <div class="col">
-          <div id="title-branding" class="justify-content-left">Vue 3 Scaffold</div>
+          <div id="title-branding" class="justify-content-left"><h1>BCBox</h1></div>
         </div>
         <div class="col-fixed">
           <Login />
@@ -34,5 +34,8 @@ import Login from '../Login.vue';
 #title-branding {
   padding-left: 10px;
   font-size: 20px;
+  > h1 {
+    font-weight: 600;
+  }
 }
 </style>

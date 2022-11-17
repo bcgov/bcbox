@@ -17,6 +17,6 @@ const logout = async () => {
 </script>
 
 <template>
-  <Button v-if="!getToken" primary @click="login" :loading="!ready">Login</Button>
-  <Button v-else primary @click="logout">Logout</Button>
+  <Button v-if="!getToken" primary @click="login" :loading="!ready">Log in</Button>
+  <Button v-else primary @click="logout">Log out</Button>
 </template>
