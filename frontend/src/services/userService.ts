@@ -1,4 +1,4 @@
-import { appAxios } from './interceptors';
+import { comsAxios } from './interceptors';
 const PATH = 'user';
 
 export default {
@@ -8,7 +8,7 @@ export default {
    * @returns {Promise} An axios response
    */
   searchForUsers(params: Object) {
-    return appAxios().get(`${PATH}`, params);
+    return comsAxios().get(`${PATH}`, params);
   },
 
   /**
@@ -17,7 +17,7 @@ export default {
    * @returns {Promise} An axios response
    */
   listIdps() {
-    return appAxios().get(`${PATH}/idpList`);
+    return comsAxios().get(`${PATH}/idpList`);
   },
 
   /**
@@ -26,6 +26,6 @@ export default {
    * @returns {Promise} An axios response
    */
   testBad() {
-    return appAxios().get(`${PATH}/sdfsdfsd`);
+    return comsAxios().get(`${PATH}/sdfsdfsd`);
   },
 };

@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useObjectStore } from '@/store/objectStore';
 const { objectList } = storeToRefs(useObjectStore());
@@ -13,7 +13,9 @@ const { objectList } = storeToRefs(useObjectStore());
 const objectStore = useObjectStore();
 
 // Get the user's list of objects
-await objectStore.listObjects();
+onMounted(() => {
+  objectStore.listObjects();
+});
 </script>
 
 <style scoped></style>

@@ -3,20 +3,8 @@ import { defineStore } from 'pinia';
 import { userService } from '@/services';
 
 export const useUserStore = defineStore('user', () => {
-  const buckets = ref([] as Object[]);
   const idps = ref([] as Object[]);
   const loading = ref(false);
-
-  function addBucket(bucket: Object) {
-    buckets.value.push(bucket);
-  }
-
-  function removeBucket(bucket: Object) {
-    const index = buckets.value.indexOf(bucket);
-    if (index > -1) {
-      buckets.value.splice(index, 1);
-    }
-  }
 
   async function listIdps() {
     try {
@@ -46,5 +34,5 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  return { buckets, idps, loading, addBucket, removeBucket, listIdps, testBad };
+  return { idps, loading, listIdps, testBad };
 });

@@ -3,7 +3,7 @@ import { createTestingPinia } from '@pinia/testing';
 import BCGovHeader from '@/components/bcgov/BCGovHeader.vue';
 
 describe('BCGovHeader.vue', () => {
-  it('renders', async () => {
+  it('renders', () => {
     const wrapper = mount(BCGovHeader, {
       global: {
         plugins: [createTestingPinia()],

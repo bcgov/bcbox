@@ -5,12 +5,12 @@ const authStore = useAuthStore();
 const configStore = useConfigStore();
 
 /**
- * @function appAxios
- * Returns an Axios instance
+ * @function comsAxios
+ * Returns an Axios instance for the COMS API
  * @param {integer} [timeout=10000] Number of milliseconds before timing out the request
  * @returns {object} An axios instance
  */
-export function appAxios(timeout = 10000) {
+export function comsAxios(timeout = 10000) {
   const axiosOptions = {
     timeout: timeout,
     baseURL: configStore.config.coms.apiPath,

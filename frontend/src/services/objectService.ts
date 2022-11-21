@@ -1,4 +1,4 @@
-import { appAxios } from './interceptors';
+import { comsAxios } from './interceptors';
 const PATH = '/object';
 
 export default {
@@ -14,7 +14,7 @@ export default {
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
     let fd = new FormData();
     fd.append('file', object);
-    return appAxios().post(PATH, fd, config);
+    return comsAxios().post(PATH, fd, config);
   },
 
   /**
@@ -23,7 +23,7 @@ export default {
    * @returns {Promise} An axios response
    */
   deleteObject(objectId: string) {
-    return appAxios().delete(`${PATH}/${objectId}`);
+    return comsAxios().delete(`${PATH}/${objectId}`);
   },
 
   /**
@@ -34,7 +34,7 @@ export default {
    */
   getObject(objectId: string, versionId?: string, download?: boolean) {
     if (download) {
-      appAxios()
+      comsAxios()
         .get(`${PATH}/${objectId}`, {
           responseType: 'blob',
           params: {
@@ -52,7 +52,7 @@ export default {
         });
     } else {
       // Get just the link to the unlocked object store entity and open it
-      appAxios()
+      comsAxios()
         .get(`${PATH}/${objectId}`, {
           params: {
             versionId: versionId,
@@ -72,10 +72,10 @@ export default {
    * @returns {Promise} An axios response
    */
   listObjects(params: any = {}) {
-    debugger;
     // remove objId array if its first element is undefined
     if (params.objId && params.objId[0] === undefined) delete params.objId;
-    return appAxios().get(PATH, { params: params });
+    console.log(params);
+    return comsAxios().get(PATH, { params: params });
   },
 
   /**
@@ -85,7 +85,7 @@ export default {
    * @returns {Promise} An axios response
    */
   readObject(objectId: string) {
-    return appAxios().head(`${PATH}/${objectId}`);
+    return comsAxios().head(`${PATH}/${objectId}`);
   },
 
   /**
@@ -96,7 +96,7 @@ export default {
    * @returns {Promise} An axios response
    */
   togglePublic(objectId: string, isPublic: boolean) {
-    return appAxios().patch(`${PATH}/${objectId}/public`, null, {
+    return comsAxios().patch(`${PATH}/${objectId}/public`, null, {
       params: {
         public: isPublic,
       },
@@ -112,7 +112,7 @@ export default {
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
     let fd = new FormData();
     fd.append('file', object);
-    return appAxios().post(`${PATH}/${objectId}`, fd, config);
+    return comsAxios().post(`${PATH}/${objectId}`, fd, config);
   },
   // -----------------------------------------------------/object
 };

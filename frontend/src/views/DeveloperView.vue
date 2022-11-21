@@ -20,6 +20,8 @@
     {{ config }}
 
     <h3>Token</h3>
+    {{ getToken }}
+
     <h3>Parsed Token</h3>
     {{ getTokenParsed }}
   </div>
@@ -29,7 +31,7 @@
 // PrimeVue
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
-import { useToast } from "primevue/usetoast";
+import { useToast } from 'primevue/usetoast';
 // State
 import { useAuthStore } from '@/store/authStore';
 import { useConfigStore } from '@/store/configStore';

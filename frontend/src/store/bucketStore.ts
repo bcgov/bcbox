@@ -1,19 +1,26 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore } from 'pinia';
 import { bucketService } from '@/services';
+import type { Bucket } from '@/interfaces';
 
 export const useBucketStore = defineStore('bucket', () => {
   // state
-  const buckets = ref([] as Object[]);
+  const loading = ref(false);
+  const buckets = ref([] as Bucket[]);
 
   // actions
   async function load() {
-    const response = await bucketService.searchForBuckets();
-    buckets.value = response.data;
+    try {
+      loading.value = true;
+      const response = await bucketService.searchForBuckets();
+      buckets.value = response.data;
+    } finally {
+      loading.value = false;
+    }
   }
 
-  async function getBucketInfo(bucketId: any) {
-    let bucket = buckets.value.find((x: any) => x.bucketId === bucketId);
+  function getBucketInfo(bucketId: string) {
+    let bucket = buckets.value.find((x) => x.bucketId === bucketId);
     if (isProxy(bucket)) {
       bucket = toRaw(bucket);
     }
@@ -23,5 +30,5 @@ export const useBucketStore = defineStore('bucket', () => {
     return bucket;
   }
 
-  return { load, getBucketInfo, buckets };
+  return { loading, load, getBucketInfo, buckets };
 });

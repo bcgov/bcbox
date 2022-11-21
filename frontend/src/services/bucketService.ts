@@ -1,4 +1,4 @@
-import { appAxios } from './interceptors';
+import { comsAxios } from './interceptors';
 const PATH = 'bucket';
 
 export default {
@@ -8,6 +8,6 @@ export default {
    * @returns {Promise} An axios response
    */
   searchForBuckets() {
-    return appAxios().get(`${PATH}`);
+    return comsAxios().get(`${PATH}`);
   },
 };

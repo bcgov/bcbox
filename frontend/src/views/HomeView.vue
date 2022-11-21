@@ -1,28 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
+import { ref, onMounted } from 'vue';
+import { useToast } from 'primevue/usetoast';
 import MyBucketsTable from '../components/MyBucketsTable.vue';
 import MyBucketsSidebar from '../components/MyBucketsSidebar.vue';
-
 import { useBucketStore } from '@/store/bucketStore';
 
 const bucketStore = useBucketStore();
-const { buckets } = storeToRefs(useBucketStore());
+const toast = useToast();
 
 const displayInfo: any = ref(null);
 
 const loadBuckets = async () => {
-  bucketStore.load();
+  try {
+    await bucketStore.load();
+  } catch (error: any) {
+    toast.add({ severity: 'error', summary: 'Unable to load buckets.', detail: error, life: 5000 });
+  }
 };
 
 const showInfo = async (bucketId: any) => {
   displayInfo.value = await bucketStore.getBucketInfo(bucketId);
 };
 
-const closeInfo = async () => {
+const closeInfo = () => {
   displayInfo.value = null;
 };
+
+onMounted(() => {
+  loadBuckets();
+});
 </script>
 
 <template>
@@ -36,12 +42,6 @@ const closeInfo = async () => {
     </div>
     <div v-if="displayInfo" class="flex-shrink-0 ml-3" style="max-width: 33%; min-width: 33%">
       <MyBucketsSidebar :displayInfo="displayInfo" @close-info="closeInfo" />
-    </div>
-  </div>
-  <!-- TODO: For DEV purposes. Remove and load in buckets automatically eventually -->
-  <div v-if="!buckets.length">
-    <div class="flex justify-content-center">
-      <Button class="p-button-sm" @click="loadBuckets">Load buckets</Button>
     </div>
   </div>
 </template>

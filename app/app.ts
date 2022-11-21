@@ -8,11 +8,7 @@ app.use(compression());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-  res.send('Vue 3 Scaffold');
-});
-
-app.get('/api/hello', (req, res) => {
-  res.send('Hello world!');
+  res.send('BCBox');
 });
 
 // Frontend configuration endpoint

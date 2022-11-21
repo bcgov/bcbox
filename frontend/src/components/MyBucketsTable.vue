@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -7,7 +6,7 @@ import Button from 'primevue/button';
 
 import { useBucketStore } from '@/store/bucketStore';
 
-const { buckets } = storeToRefs(useBucketStore());
+const { loading, buckets } = storeToRefs(useBucketStore());
 
 const emit = defineEmits(['show-info']);
 
@@ -18,6 +17,7 @@ const showInfo = async (id: number) => {
 
 <template>
   <DataTable
+    :loading="loading"
     :value="buckets"
     dataKey="bucketId"
     class="p-datatable-sm"
@@ -30,11 +30,10 @@ const showInfo = async (id: number) => {
     :rowsPerPageOptions="[10, 20, 50]"
   >
     <template #empty>
-      <div class="flex justify-content-center">
+      <div v-if="!loading" class="flex justify-content-center">
         <h3>There are no buckets associated with your account.</h3>
       </div>
     </template>
-    <template #loading> Loading bucket data. Please wait.</template>
     <Column headerStyle="width: 1%">
       <template #body>
         <font-awesome-icon icon="fa-solid fa-box-open" />
