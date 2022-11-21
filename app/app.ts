@@ -18,14 +18,8 @@ app.get('/api/hello', (req, res) => {
 // Frontend configuration endpoint
 app.get('/config', (_req, res, next) => {
   try {
-    // throw new Error('debugging error');
-    var delayInMilliseconds = 1000;
-
-    // TODO obviously lose this
-    setTimeout(function () {
-      const frontend = config.get('frontend');
-      res.status(200).json(frontend);
-    }, delayInMilliseconds);
+    const frontend = config.get('frontend');
+    res.status(200).json(frontend);
   } catch (err) {
     next(err);
   }

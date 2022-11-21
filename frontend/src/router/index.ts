@@ -16,6 +16,12 @@ const router = createRouter({
       // meta: { requiresAuth: true }, Remove temporarily for parallel dev
     },
     {
+      path: '/myObjects',
+      name: 'myObjects',
+      component: () => import('../views/MyObjectsView.vue'),
+      // meta: { requiresAuth: true }, Remove temporarily for parallel dev
+    },
+    {
       path: '/addBucket',
       name: 'addBucket',
       component: () => import('../views/AddBucketView.vue'),

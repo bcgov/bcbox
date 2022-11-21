@@ -35,7 +35,6 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function init() {
-    debugger;
     let initOptions = {
       url: configStore.config.keycloak.serverUrl,
       realm: configStore.config.keycloak.realm,

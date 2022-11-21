@@ -6,6 +6,7 @@
           <li class="mr-2"><router-link :to="{ name: 'home' }">Home</router-link></li>
           <li class="mr-2"><router-link :to="{ name: 'myBuckets' }">My Buckets</router-link></li>
           <li class="mr-2"><router-link :to="{ name: 'addBucket' }">Add Bucket</router-link></li>
+          <li class="mr-2"><router-link :to="{ name: 'myObjects' }">My Objects</router-link></li>
           <li class="mr-2"><router-link :to="{ name: 'developer' }">Developer</router-link></li>
         </ol>
       </template>

@@ -18,16 +18,9 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // TODO DELETE
-  async function sleep(msec: number) {
-    return new Promise((resolve) => setTimeout(resolve, msec));
-  }
-
   async function listIdps() {
     try {
       loading.value = true;
-      // TODO DELETE
-      await sleep(1000);
       const res = await userService.listIdps();
       idps.value = res.data;
     } catch (error) {
@@ -43,8 +36,6 @@ export const useUserStore = defineStore('user', () => {
   async function testBad() {
     try {
       loading.value = true;
-      // TODO DELETE
-      await sleep(1000);
       await userService.testBad();
     } catch (error) {
       console.error(`bad error: ${error}`);
