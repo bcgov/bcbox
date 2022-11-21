@@ -1,3 +1,10 @@
+<script setup lang="ts">
+import Toolbar from 'primevue/toolbar';
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
+const { getAuthenticated } = storeToRefs(useAuthStore());
+</script>
+
 <template>
   <div v-if="getAuthenticated">
     <Toolbar>
@@ -11,13 +18,6 @@
     </Toolbar>
   </div>
 </template>
-
-<script setup lang="ts">
-import Toolbar from 'primevue/toolbar';
-import { storeToRefs } from 'pinia';
-import { useAuthStore } from '@/store/authStore';
-const { getAuthenticated } = storeToRefs(useAuthStore());
-</script>
 
 <style lang="scss" scoped>
 .p-toolbar {

@@ -19,6 +19,9 @@ module.exports = {
   },
   plugins: [],
   rules: {
+    'vue/component-tags-order': ['error', {
+      order: [ 'script', 'template', 'style' ]
+    }],
     'prettier/prettier': [
       'error',
       {

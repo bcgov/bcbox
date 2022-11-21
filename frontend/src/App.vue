@@ -1,21 +1,3 @@
-<template>
-  <Toast />
-  <Suspense>
-    <AppLayout>
-      <template #nav><Navbar /></template>
-      <template #main> <RouterView /> <InitApp /></template>
-    </AppLayout>
-
-    <!-- Loading -->
-    <template #fallback>
-      <AppLayout>
-        <template #nav />
-        <template #main><ProgressBar mode="indeterminate" style="height: 0.5em" /></template>
-      </AppLayout>
-    </template>
-  </Suspense>
-</template>
-
 <script setup lang="ts">
 // Vue/PrimeVue
 import { onErrorCaptured } from 'vue';
@@ -34,3 +16,21 @@ onErrorCaptured((e: Error) => {
   toast.add({ severity: 'error', summary: 'Error initializing app', detail: e.message, life: 3000 });
 });
 </script>
+
+<template>
+  <Toast />
+  <Suspense>
+    <AppLayout>
+      <template #nav><Navbar /></template>
+      <template #main> <RouterView /> <InitApp /></template>
+    </AppLayout>
+
+    <!-- Loading -->
+    <template #fallback>
+      <AppLayout>
+        <template #nav />
+        <template #main><ProgressBar mode="indeterminate" style="height: 0.5em" /></template>
+      </AppLayout>
+    </template>
+  </Suspense>
+</template>

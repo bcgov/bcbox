@@ -1,32 +1,3 @@
-<template>
-  <h2>Developer</h2>
-  <div>
-    <h3>Temp for testing API call to COMS</h3>
-    <Button label="Call COMS" @click="getIdps" :loading="loading" />
-    <div v-if="loading">
-      <ProgressSpinner />
-    </div>
-    <div v-else>
-      <span v-if="idps.length">{{ idps }}</span>
-    </div>
-
-    <h3>Bad call</h3>
-    <Button label="Fail in calling COMS - 404" @click="testBad" :loading="loading" />
-    <div v-if="loading">
-      <ProgressSpinner />
-    </div>
-
-    <h3>Config</h3>
-    {{ config }}
-
-    <h3>Token</h3>
-    {{ getToken }}
-
-    <h3>Parsed Token</h3>
-    {{ getTokenParsed }}
-  </div>
-</template>
-
 <script setup lang="ts">
 // PrimeVue
 import Button from 'primevue/button';
@@ -60,6 +31,35 @@ const testBad = async () => {
   }
 };
 </script>
+
+<template>
+  <h2>Developer</h2>
+  <div>
+    <h3>Temp for testing API call to COMS</h3>
+    <Button label="Call COMS" @click="getIdps" :loading="loading" />
+    <div v-if="loading">
+      <ProgressSpinner />
+    </div>
+    <div v-else>
+      <span v-if="idps.length">{{ idps }}</span>
+    </div>
+
+    <h3>Bad call</h3>
+    <Button label="Fail in calling COMS - 404" @click="testBad" :loading="loading" />
+    <div v-if="loading">
+      <ProgressSpinner />
+    </div>
+
+    <h3>Config</h3>
+    {{ config }}
+
+    <h3>Token</h3>
+    {{ getToken }}
+
+    <h3>Parsed Token</h3>
+    {{ getTokenParsed }}
+  </div>
+</template>
 
 <style lang="scss" scoped>
 h3 {

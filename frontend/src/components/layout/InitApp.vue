@@ -1,6 +1,3 @@
-<template>
-</template>
-
 <script setup lang="ts">
 // State
 import { useAuthStore } from '@/store/authStore';
@@ -13,3 +10,5 @@ await configStore.load();
 // Set up keycloak
 await authStore.init();
 </script>
+
+<template></template>

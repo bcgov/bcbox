@@ -1,9 +1,3 @@
-<template>
-  <div>List of Objects:</div>
-
-  {{ objectList }}
-</template>
-
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -17,5 +11,11 @@ onMounted(() => {
   objectStore.listObjects();
 });
 </script>
+
+<template>
+  <div>List of Objects:</div>
+
+  {{ objectList }}
+</template>
 
 <style scoped></style>

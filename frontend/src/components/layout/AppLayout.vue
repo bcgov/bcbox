@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import BCGovHeader from '@/components/bcgov/BCGovHeader.vue';
+import Footer from '@/components/layout/Footer.vue';
+</script>
+
 <template>
   <div class="layout-app">
     <!-- Header/Nav -->
@@ -17,11 +22,6 @@
     </footer>
   </div>
 </template>
-
-<script setup lang="ts">
-import BCGovHeader from '@/components/bcgov/BCGovHeader.vue';
-import Footer from '@/components/layout/Footer.vue';
-</script>
 
 <style scoped lang="scss">
 .layout-app {
