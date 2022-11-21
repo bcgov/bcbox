@@ -10,28 +10,22 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue'),
     },
     {
-      path: '/myBuckets',
-      name: 'myBuckets',
-      component: () => import('../views/MyBucketsView.vue'),
-      // meta: { requiresAuth: true }, Remove temporarily for parallel dev
-    },
-    {
-      path: '/myObjects',
+      path: '/myObjects/:bucketId',
       name: 'myObjects',
       component: () => import('../views/MyObjectsView.vue'),
-      // meta: { requiresAuth: true }, Remove temporarily for parallel dev
+      meta: { requiresAuth: true },
     },
     {
       path: '/addBucket',
       name: 'addBucket',
       component: () => import('../views/AddBucketView.vue'),
-      // meta: { requiresAuth: true }, Remove temporarily for parallel dev
+      meta: { requiresAuth: true },
     },
     {
       path: '/developer',
       name: 'developer',
       component: () => import('../views/DeveloperView.vue'),
-      // meta: { requiresAuth: true }, Remove temporarily for parallel dev
+      meta: { requiresAuth: true },
     },
     {
       path: '/logout',
@@ -46,12 +40,15 @@ const router = createRouter({
 router.beforeEach((to, from) => {
   const authStore = useAuthStore();
 
-  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
-    return {
-      path: '/',
-      // save the location we were at to come back later
-      query: { redirect: to.fullPath },
-    };
+  console.log(authStore.getAuthenticated);
+  if (!authStore.getAuthenticated) {
+    if (to.meta.requiresAuth) {
+      return {
+        path: '/',
+        // save the location we were at to come back later
+        query: { redirect: to.fullPath },
+      };
+    }
   }
 });
 

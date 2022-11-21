@@ -17,7 +17,6 @@ export const useAuthStore = defineStore('auth', () => {
   const getLoginUrl = computed(() => (ready.value ? $keycloak.value.createLoginUrl() : ''));
   const getToken = computed(() => (ready.value ? $keycloak.value.token : ''));
   const getTokenParsed = computed((): Object | undefined => (ready.value ? $keycloak.value.tokenParsed : {}));
-  const isLoggedIn = ref(false);
 
   // Actions
   function login() {
@@ -48,7 +47,8 @@ export const useAuthStore = defineStore('auth', () => {
       ready.value = true;
     };
 
-    kc.init({ onLoad: 'check-sso', pkceMethod: 'S256' })
+    await kc
+      .init({ onLoad: 'check-sso', pkceMethod: 'S256' })
       .then(() => {
         // Set the state field to the inited keycloak instance
         $keycloak.value = kc;
@@ -74,5 +74,5 @@ export const useAuthStore = defineStore('auth', () => {
       });
   }
 
-  return { isLoggedIn, login, logout, init, $keycloak, getLoginUrl, ready, getToken, getAuthenticated, getTokenParsed };
+  return { login, logout, init, $keycloak, getLoginUrl, ready, getToken, getAuthenticated, getTokenParsed };
 });

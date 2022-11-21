@@ -5,7 +5,7 @@ import Button from 'primevue/button';
 import { useAuthStore } from '@/store/authStore';
 
 const authStore = useAuthStore();
-const { isLoggedIn, ready, getToken } = storeToRefs(useAuthStore());
+const { ready, getToken } = storeToRefs(useAuthStore());
 
 const login = () => {
   authStore.login();

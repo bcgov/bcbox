@@ -42,10 +42,10 @@ const showInfo = async (id: number) => {
     <Column field="name" header="Bucket Name" bodyClass="truncate">
       <template #body="{ data }">
         <div v-if="data.bucketName.length > 150" v-tooltip.bottom="{ value: data.bucketName }">
-          <router-link :to="{ name: 'home' }"> {{ data.bucketName }}</router-link>
+          <router-link :to="{ name: 'myObjects', params: { bucketId: data.bucketId } }"> {{ data.bucketName }}</router-link>
         </div>
         <div v-else>
-          <router-link :to="{ name: 'home' }"> {{ data.bucketName }}</router-link>
+          <router-link :to="{ name: 'myObjects', params: { bucketId: data.bucketId } }"> {{ data.bucketName }}</router-link>
         </div>
       </template>
     </Column>
