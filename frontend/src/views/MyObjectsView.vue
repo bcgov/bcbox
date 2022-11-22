@@ -4,7 +4,7 @@ import ObjectList from '@/components/object/ObjectList.vue';
 
 <template>
   <h1>Objects List</h1>
-  <h3>UI To Come Here</h3>
+  <h3 class="mb-4">UI To Come Here</h3>
 
   <ObjectList />
 </template>

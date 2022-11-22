@@ -1,25 +1,29 @@
 <script setup lang="ts">
+// Vue
 import { storeToRefs } from 'pinia';
+// PrimeVue
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
+// State
+import { useObjectStore } from '@/store/objectStore';
+// Other
+import { formatDateLong } from '@/utils/formatters';
 
-import { useBucketStore } from '@/store/bucketStore';
+const { loading, objectList } = storeToRefs(useObjectStore());
 
-const { loading, buckets } = storeToRefs(useBucketStore());
+// const emit = defineEmits(['show-info']);
 
-const emit = defineEmits(['show-info']);
-
-const showInfo = async (id: number) => {
-  emit('show-info', id);
-};
+// const showInfo = async (id: number) => {
+//   emit('show-info', id);
+// };
 </script>
 
 <template>
   <DataTable
     :loading="loading"
-    :value="buckets"
-    dataKey="bucketId"
+    :value="objectList"
+    dataKey="id"
     class="p-datatable-sm"
     stripedRows
     responsiveLayout="scroll"
@@ -31,30 +35,19 @@ const showInfo = async (id: number) => {
   >
     <template #empty>
       <div v-if="!loading" class="flex justify-content-center">
-        <h3>There are no buckets associated with your account.</h3>
+        <h3>There are no objects associated with your account in this bucket.</h3>
       </div>
     </template>
-    <Column headerStyle="width: 1%">
-      <template #body>
-        <font-awesome-icon icon="fa-solid fa-box-open" />
+    <Column field="path" header="Path" />
+    <Column field="public" header="Public" />
+    <Column field="createdAt" header="Created">
+      <template #body="{ data }">
+        {{ formatDateLong(data.createdAt) }}
       </template>
     </Column>
-    <Column field="name" header="Bucket Name" bodyClass="truncate">
+    <Column field="updatedAt" header="Updated">
       <template #body="{ data }">
-        <div v-if="data.bucketName.length > 150" v-tooltip.bottom="{ value: data.bucketName }">
-          <router-link :to="{ name: 'myObjects', params: { bucketId: data.bucketId } }"> {{ data.bucketName }}</router-link>
-        </div>
-        <div v-else>
-          <router-link :to="{ name: 'myObjects', params: { bucketId: data.bucketId } }"> {{ data.bucketName }}</router-link>
-        </div>
-      </template>
-    </Column>
-    <Column header="Actions" headerStyle="width: 12%" headerClass="header-right" bodyClass="content-right">
-      <template #body="{ data }">
-        <Button class="p-button-lg p-button-rounded p-button-text"><font-awesome-icon icon="fa-solid fa-gear" /></Button>
-        <Button class="p-button-lg p-button-rounded p-button-text" @click="showInfo(data.bucketId)">
-          <font-awesome-icon icon="fa-solid fa-circle-info" />
-        </Button>
+        {{ formatDateLong(data.updatedAt) }}
       </template>
     </Column>
   </DataTable>

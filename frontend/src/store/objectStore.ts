@@ -4,10 +4,26 @@ import { objectService } from '@/services';
 
 export const useObjectStore = defineStore('objectStore', () => {
   // state
+  const loading = ref(false);
   const objectList = ref([] as Object[]);
   const selectedObject = ref({});
 
   // actions
+  async function createObject(object: any, bucketId?: string) {
+    try {
+      loading.value = true;
+      const response = await objectService.createObject(object);
+      if (response) {
+        await listObjects();
+      }
+    } catch (error) {
+      console.error(`Error uploading: ${error}`);
+      throw error;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function listObjects() {
     const response = await objectService.listObjects();
     objectList.value = response.data;
@@ -22,5 +38,5 @@ export const useObjectStore = defineStore('objectStore', () => {
     selectedObject.value = response.data;
   }
 
-  return { objectList, selectedObject, listObjects, getObject };
+  return { loading, objectList, selectedObject, createObject, listObjects, getObject };
 });

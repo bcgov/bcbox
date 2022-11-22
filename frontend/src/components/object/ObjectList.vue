@@ -1,10 +1,18 @@
 <script setup lang="ts">
+// Vue
 import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+// State
 import { storeToRefs } from 'pinia';
 import { useObjectStore } from '@/store/objectStore';
-const { objectList } = storeToRefs(useObjectStore());
+// Components
+import UploadObjectButton from './UploadObjectButton.vue';
+import ObjectTable from './ObjectTable.vue';
 
+const { objectList } = storeToRefs(useObjectStore());
 const objectStore = useObjectStore();
+
+const route = useRoute();
 
 // Get the user's list of objects
 onMounted(() => {
@@ -13,9 +21,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>List of Objects:</div>
+  <UploadObjectButton :bucketId="route.params.bucketId as string" class="mt-4" />
 
-  {{ objectList }}
+  <div class="mt-4">List of Objects:</div>
+
+  <ObjectTable />
+  <pre>{{ JSON.stringify(objectList, undefined, 2) }}</pre>
 </template>
 
 <style scoped></style>
