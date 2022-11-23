@@ -2,6 +2,8 @@
 // Vue
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+// PrimeVue
+import { useToast } from 'primevue/usetoast';
 // State
 import { storeToRefs } from 'pinia';
 import { useObjectStore } from '@/store/objectStore';
@@ -13,10 +15,19 @@ const { objectList } = storeToRefs(useObjectStore());
 const objectStore = useObjectStore();
 
 const route = useRoute();
+const toast = useToast();
+
+const listObjects = async () => {
+  try {
+    await objectStore.listObjects({ bucketId: route.params.bucketId});
+  } catch (error: any) {
+    toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
+  }
+};
 
 // Get the user's list of objects
 onMounted(() => {
-  objectStore.listObjects();
+  listObjects();
 });
 </script>
 
@@ -26,7 +37,7 @@ onMounted(() => {
   <div class="mt-4">List of Objects:</div>
 
   <ObjectTable />
-  <pre>{{ JSON.stringify(objectList, undefined, 2) }}</pre>
+  <!-- <pre>{{ JSON.stringify(objectList, undefined, 2) }}</pre> -->
 </template>
 
 <style scoped></style>

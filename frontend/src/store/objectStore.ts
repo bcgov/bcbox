@@ -12,7 +12,7 @@ export const useObjectStore = defineStore('objectStore', () => {
   async function createObject(object: any, bucketId?: string) {
     try {
       loading.value = true;
-      const response = await objectService.createObject(object);
+      const response = await objectService.createObject(object, bucketId);
       if (response) {
         await listObjects();
       }
@@ -24,8 +24,9 @@ export const useObjectStore = defineStore('objectStore', () => {
     }
   }
 
-  async function listObjects() {
-    const response = await objectService.listObjects();
+  async function listObjects(params = {}) {
+    objectList.value = [];
+    const response = await objectService.listObjects(params);
     objectList.value = response.data;
   }
 
