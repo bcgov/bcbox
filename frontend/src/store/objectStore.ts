@@ -14,7 +14,7 @@ export const useObjectStore = defineStore('objectStore', () => {
       loading.value = true;
       const response = await objectService.createObject(object, bucketId);
       if (response) {
-        await listObjects();
+        await listObjects({ bucketId: bucketId });
       }
     } catch (error) {
       console.error(`Error uploading: ${error}`);
