@@ -10,8 +10,11 @@ export default {
    * Post an object
    * @returns {Promise} An axios response
    */
-  createObject(object: any) {
-    const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+  createObject(object: any, bucketId?: string) {
+    const config = {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      params: { bucketId: bucketId },
+    };
     let fd = new FormData();
     fd.append('file', object);
     return comsAxios().post(PATH, fd, config);
