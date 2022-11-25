@@ -10,14 +10,6 @@ const toast = useToast();
 
 const displayInfo: any = ref(null);
 
-const loadBuckets = async () => {
-  try {
-    await bucketStore.load();
-  } catch (error: any) {
-    toast.add({ severity: 'error', summary: 'Unable to load buckets.', detail: error, life: 5000 });
-  }
-};
-
 const showInfo = async (bucketId: any) => {
   displayInfo.value = await bucketStore.getBucketInfo(bucketId);
 };
@@ -26,8 +18,12 @@ const closeInfo = () => {
   displayInfo.value = null;
 };
 
-onMounted(() => {
-  loadBuckets();
+onMounted(async () => {
+  try {
+    await bucketStore.load();
+  } catch (error: any) {
+    toast.add({ severity: 'error', summary: 'Unable to load buckets.', detail: error, life: 5000 });
+  }
 });
 </script>
 

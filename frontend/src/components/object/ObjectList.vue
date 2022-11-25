@@ -19,7 +19,7 @@ const toast = useToast();
 
 const listObjects = async () => {
   try {
-    await objectStore.listObjects({ bucketId: route.params.bucketId});
+    await objectStore.listObjects({ bucketId: route.params.bucketId });
   } catch (error: any) {
     toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
   }

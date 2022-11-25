@@ -77,7 +77,6 @@ export default {
   listObjects(params: any = {}) {
     // remove objId array if its first element is undefined
     if (params.objId && params.objId[0] === undefined) delete params.objId;
-    console.log(params);
     return comsAxios().get(PATH, { params: params });
   },
 

@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
-
+import { RouteNames } from '@/utils/constants';
 import { useBucketStore } from '@/store/bucketStore';
 
 const { loading, buckets } = storeToRefs(useBucketStore());
@@ -42,10 +42,10 @@ const showInfo = async (id: number) => {
     <Column field="name" header="Bucket Name" bodyClass="truncate">
       <template #body="{ data }">
         <div v-if="data.bucketName.length > 150" v-tooltip.bottom="{ value: data.bucketName }">
-          <router-link :to="{ name: 'myObjects', params: { bucketId: data.bucketId } }"> {{ data.bucketName }}</router-link>
+          <router-link :to="{ name: RouteNames.ListObjects, query: { bucketId: data.bucketId } }"> {{ data.bucketName }}</router-link>
         </div>
         <div v-else>
-          <router-link :to="{ name: 'myObjects', params: { bucketId: data.bucketId } }"> {{ data.bucketName }}</router-link>
+          <router-link :to="{ name: RouteNames.ListObjects, query: { bucketId: data.bucketId } }"> {{ data.bucketName }}</router-link>
         </div>
       </template>
     </Column>
