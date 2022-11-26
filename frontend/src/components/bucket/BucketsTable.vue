@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
+
 import Button from 'primevue/button';
-import { RouteNames } from '@/utils/constants';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+
 import { useBucketStore } from '@/store/bucketStore';
+import { RouteNames } from '@/utils/constants';
 
 const { loading, buckets } = storeToRefs(useBucketStore());
 

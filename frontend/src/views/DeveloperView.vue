@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 // PrimeVue
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
@@ -7,7 +8,7 @@ import { useToast } from 'primevue/usetoast';
 import { useAuthStore } from '@/store/authStore';
 import { useConfigStore } from '@/store/configStore';
 import { useUserStore } from '@/store/userStore';
-import { storeToRefs } from 'pinia';
+
 const { config } = storeToRefs(useConfigStore());
 const { getToken, getTokenParsed } = storeToRefs(useAuthStore());
 const userStore = useUserStore();

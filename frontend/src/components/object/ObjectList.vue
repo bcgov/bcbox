@@ -8,8 +8,8 @@ import { useToast } from 'primevue/usetoast';
 import { storeToRefs } from 'pinia';
 import { useObjectStore } from '@/store/objectStore';
 // Components
-import UploadObjectButton from './UploadObjectButton.vue';
 import ObjectTable from './ObjectTable.vue';
+import UploadObjectButton from './UploadObjectButton.vue';
 
 const { objectList } = storeToRefs(useObjectStore());
 const objectStore = useObjectStore();

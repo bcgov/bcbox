@@ -1,14 +1,15 @@
 <script setup lang="ts">
-// Vue/PrimeVue
+// Vue
 import { onErrorCaptured } from 'vue';
 import { RouterView } from 'vue-router';
+// PrimeVue
 import ProgressBar from 'primevue/progressbar';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 // Components
 import AppLayout from '@/components/layout/AppLayout.vue';
-import Navbar from '@/components/layout/Navbar.vue';
 import InitApp from '@/components/layout/InitApp.vue';
+import Navbar from '@/components/layout/Navbar.vue';
 
 const toast = useToast();
 // Suspense error captured

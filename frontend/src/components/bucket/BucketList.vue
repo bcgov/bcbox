@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useToast } from 'primevue/usetoast';
 import BucketsTable from './BucketsTable.vue';
 import BucketsSidebar from './BucketsSidebar.vue';
 import { useBucketStore } from '@/store/bucketStore';
+import { useToast } from '@/composables/useToast';
 
 const bucketStore = useBucketStore();
-const toast = useToast();
 
 const displayInfo: any = ref(null);
 
@@ -18,12 +17,8 @@ const closeInfo = () => {
   displayInfo.value = null;
 };
 
-onMounted(async () => {
-  try {
-    await bucketStore.load();
-  } catch (error: any) {
-    toast.add({ severity: 'error', summary: 'Unable to load buckets.', detail: error, life: 5000 });
-  }
+onMounted(() => {
+  useToast(bucketStore.load, { summary: 'Unable to load buckets.' });
 });
 </script>
 
