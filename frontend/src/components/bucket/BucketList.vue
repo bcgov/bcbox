@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue';
 import BucketsTable from './BucketsTable.vue';
 import BucketsSidebar from './BucketsSidebar.vue';
 import { useBucketStore } from '@/store/bucketStore';
-import { useToast } from '@/composables/useToast';
+import { useToaster } from '@/composables/useToaster';
 
 const bucketStore = useBucketStore();
 
@@ -18,7 +18,7 @@ const closeInfo = () => {
 };
 
 onMounted(() => {
-  useToast(bucketStore.load, { summary: 'Unable to load buckets.' });
+  useToaster(bucketStore.load, { summary: 'Unable to load buckets.' });
 });
 </script>
 

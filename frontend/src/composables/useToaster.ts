@@ -1,7 +1,7 @@
-import { useToast as usePrimeVueToast } from 'primevue/usetoast';
+import { useToast } from 'primevue/usetoast';
 
-export async function useToast(callback: Function, options: any = {}) {
-  const toast = usePrimeVueToast();
+export async function useToaster(callback: Function, options: any = {}) {
+  const toast = useToast();
   try {
     await callback();
   } catch (error: any) {
