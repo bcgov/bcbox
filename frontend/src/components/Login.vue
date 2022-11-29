@@ -4,16 +4,8 @@ import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import { useAuthStore } from '@/store/authStore';
 
-const authStore = useAuthStore();
+const { login, logout } = useAuthStore();
 const { ready, getKeycloak } = storeToRefs(useAuthStore());
-
-const login = () => {
-  authStore.login();
-};
-
-const logout = () => {
-  authStore.logout();
-};
 </script>
 
 <template>
