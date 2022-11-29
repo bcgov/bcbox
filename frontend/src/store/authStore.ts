@@ -51,7 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     // After a refresh token fetch success
     kc.onAuthRefreshSuccess = function () {
-      console.log($keycloak.value.token);
+      // console.log($keycloak.value.token);
     };
 
     await kc
@@ -65,7 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
         // Refresh token if it's valid for less then 70 seconds
         setInterval(() => {
           $keycloak.value;
-          kc.updateToken(290) // If the token expires within 70 seconds from now get a refreshed
+          kc.updateToken(70) // If the token expires within 70 seconds from now get a refreshed
             .then((refreshed: Boolean) => {
               if (refreshed) {
                 console.log('Token refreshed ' + refreshed);
