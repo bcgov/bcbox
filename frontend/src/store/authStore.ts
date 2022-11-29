@@ -84,5 +84,5 @@ export const useAuthStore = defineStore('auth', () => {
       });
   }
 
-  return { login, logout, init, getKeycloak, getLoginUrl, ready, getToken, getAuthenticated, getTokenParsed };
+  return { login, logout, init, getKeycloak, ready };
 });
