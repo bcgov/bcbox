@@ -1,46 +1,74 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
+import { RouteNames } from '@/utils/constants';
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: RouteNames.Home,
       component: () => import('../views/HomeView.vue'),
     },
     {
-      path: '/myObjects/:bucketId',
-      name: 'myObjects',
-      component: () => import('../views/MyObjectsView.vue'),
-      meta: { requiresAuth: true },
+      path: '/create',
+      children: [
+        {
+          path: 'bucket',
+          name: RouteNames.CreateBucket,
+          component: () => import('../views/CreateBucketView.vue'),
+          meta: { requiresAuth: true },
+        },
+      ],
     },
-    {
-      path: '/addBucket',
-      name: 'addBucket',
-      component: () => import('../views/AddBucketView.vue'),
-      meta: { requiresAuth: true },
-    },
+    // {
+    //   path: '/detail',
+    //   children: [{}],
+    // },
     {
       path: '/developer',
-      name: 'developer',
+      name: RouteNames.Developer,
       component: () => import('../views/DeveloperView.vue'),
       meta: { requiresAuth: true },
     },
     {
+      path: '/list',
+      children: [
+        {
+          path: 'buckets',
+          name: RouteNames.ListBuckets,
+          component: () => import('../views/ListBucketsView.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'objects',
+          name: RouteNames.ListObjects,
+          component: () => import('../views/ListObjectsView.vue'),
+          meta: { requiresAuth: true },
+        },
+      ],
+    },
+    {
       path: '/logout',
-      name: 'logout',
+      name: RouteNames.Logout,
       redirect: (to) => {
         return { path: '/' };
       },
     },
+    // {
+    //   path: '/permission',
+    //   children: [{}],
+    // },
+    // {
+    //   path: '/update',
+    //   children: [{}],
+    // },
   ],
 });
 
 router.beforeEach((to, from) => {
   const authStore = useAuthStore();
 
-  console.log(authStore.getAuthenticated);
   if (!authStore.getAuthenticated) {
     if (to.meta.requiresAuth) {
       return {

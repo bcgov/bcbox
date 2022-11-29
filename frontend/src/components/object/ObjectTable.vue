@@ -2,9 +2,10 @@
 // Vue
 import { storeToRefs } from 'pinia';
 // PrimeVue
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
 import Button from 'primevue/button';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+
 // State
 import { useObjectStore } from '@/store/objectStore';
 // Other

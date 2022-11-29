@@ -8,8 +8,8 @@ import { useToast } from 'primevue/usetoast';
 import { storeToRefs } from 'pinia';
 import { useObjectStore } from '@/store/objectStore';
 // Components
-import UploadObjectButton from './UploadObjectButton.vue';
 import ObjectTable from './ObjectTable.vue';
+import UploadObjectButton from './UploadObjectButton.vue';
 
 const { objectList } = storeToRefs(useObjectStore());
 const objectStore = useObjectStore();
@@ -19,7 +19,7 @@ const toast = useToast();
 
 const listObjects = async () => {
   try {
-    await objectStore.listObjects({ bucketId: route.params.bucketId});
+    await objectStore.listObjects({ bucketId: route.params.bucketId });
   } catch (error: any) {
     toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
   }

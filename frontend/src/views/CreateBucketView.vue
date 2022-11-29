@@ -11,7 +11,6 @@ const userStore = useUserStore();
 const success = ref(false);
 
 function onSubmit(values: any, { resetForm }) {
-  console.log(values);
   success.value = true;
   resetForm();
   userStore.addBucket({
