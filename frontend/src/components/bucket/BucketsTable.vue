@@ -1,14 +1,18 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
-
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import Dialog from 'primevue/dialog';
+import BucketPermission from './BucketPermission.vue';
 
 import { useBucketStore } from '@/store/bucketStore';
 import { RouteNames } from '@/utils/constants';
 
 const { loading, buckets } = storeToRefs(useBucketStore());
+
+const permissionsVisible = ref(true);
 
 const emit = defineEmits(['show-info']);
 
@@ -60,9 +64,27 @@ const showInfo = async (id: number) => {
       </template>
     </Column>
   </DataTable>
+
+  <Dialog v-model:visible="permissionsVisible" :draggable="false">
+    <template #header>
+      <div class="flex align-items-start">
+        <font-awesome-icon icon="fa-solid fa-gear" style="font-size: 2rem" />
+        <div>
+          <h1>Bucket Permissions</h1>
+          <h3>bucketname</h3>
+        </div>
+      </div>
+    </template>
+
+    <BucketPermission />
+  </Dialog>
 </template>
 
 <style lang="scss" scoped>
+// :deep(.p-dialog-header) {
+//   align-items: flex-start;
+// }
+
 :deep(.p-datatable-thead > tr > th) {
   background-color: transparent;
 }
