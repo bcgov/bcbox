@@ -5,18 +5,18 @@ import Button from 'primevue/button';
 import { useAuthStore } from '@/store/authStore';
 
 const authStore = useAuthStore();
-const { ready, getToken } = storeToRefs(useAuthStore());
+const { ready, getKeycloak } = storeToRefs(useAuthStore());
 
 const login = () => {
   authStore.login();
 };
 
-const logout = async () => {
-  const response = await authStore.logout();
+const logout = () => {
+  authStore.logout();
 };
 </script>
 
 <template>
-  <Button v-if="!getToken" primary @click="login" :loading="!ready">Log in</Button>
+  <Button v-if="!getKeycloak.token" primary @click="login" :loading="!ready">Log in</Button>
   <Button v-else primary @click="logout">Log out</Button>
 </template>

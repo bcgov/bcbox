@@ -10,7 +10,7 @@ import { useConfigStore } from '@/store/configStore';
 import { useUserStore } from '@/store/userStore';
 
 const { config } = storeToRefs(useConfigStore());
-const { getToken, getTokenParsed } = storeToRefs(useAuthStore());
+const { getKeycloak } = storeToRefs(useAuthStore());
 const userStore = useUserStore();
 const { loading, idps } = storeToRefs(useUserStore());
 
@@ -55,10 +55,10 @@ const testBad = async () => {
     {{ config }}
 
     <h3>Token</h3>
-    {{ getToken }}
+    {{ getKeycloak.token }}
 
     <h3>Parsed Token</h3>
-    {{ getTokenParsed }}
+    {{ getKeycloak.tokenParsed }}
   </div>
 </template>
 

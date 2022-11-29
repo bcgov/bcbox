@@ -13,6 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
   const ready = ref(false);
 
   // Getters
+  const getKeycloak = computed(() => $keycloak.value);
   const getAuthenticated = computed((): boolean => (ready.value ? !!$keycloak.value.authenticated : false));
   const getLoginUrl = computed(() => (ready.value ? $keycloak.value.createLoginUrl() : ''));
   const getToken = computed(() => (ready.value ? $keycloak.value.token : ''));
@@ -43,8 +44,14 @@ export const useAuthStore = defineStore('auth', () => {
 
     let kc: Keycloak = new Keycloak(initOptions);
 
+    // Once KC is set up and connected flag it as 'ready'
     kc.onReady = function (authenticated) {
       ready.value = true;
+    };
+
+    // After a refresh token fetch success
+    kc.onAuthRefreshSuccess = function () {
+      console.log($keycloak.value.token);
     };
 
     await kc
@@ -53,26 +60,30 @@ export const useAuthStore = defineStore('auth', () => {
         // Set the state field to the inited keycloak instance
         $keycloak.value = kc;
 
-        //Token Refresh
+        // Token Refresh
+        // Check token validity every 10s and, if necessary, update the token.
+        // Refresh token if it's valid for less then 70 seconds
         setInterval(() => {
-          $keycloak.value
-            .updateToken(70)
+          $keycloak.value;
+          kc.updateToken(290) // If the token expires within 70 seconds from now get a refreshed
             .then((refreshed: Boolean) => {
               if (refreshed) {
-                console.log('Token refreshed' + refreshed);
+                console.log('Token refreshed ' + refreshed);
               } else {
-                console.warn('Token not refreshed');
+                // Don't need to log this unless debugging
+                // It's for when the token doesn't need to refresh because not expired enough
+                // console.log('Token not refreshed');
               }
             })
             .catch(() => {
               console.error('Failed to refresh token');
             });
-        }, 6000);
+        }, 10000); // Check every 10s
       })
       .catch((err) => {
         console.error(`Authenticated Failed ${JSON.stringify(err)}`);
       });
   }
 
-  return { login, logout, init, $keycloak, getLoginUrl, ready, getToken, getAuthenticated, getTokenParsed };
+  return { login, logout, init, getKeycloak, getLoginUrl, ready, getToken, getAuthenticated, getTokenParsed };
 });
