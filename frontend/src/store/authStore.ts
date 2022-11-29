@@ -14,10 +14,10 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Getters
   const getKeycloak = computed(() => $keycloak.value);
-  const getAuthenticated = computed((): boolean => (ready.value ? !!$keycloak.value.authenticated : false));
-  const getLoginUrl = computed(() => (ready.value ? $keycloak.value.createLoginUrl() : ''));
-  const getToken = computed(() => (ready.value ? $keycloak.value.token : ''));
-  const getTokenParsed = computed((): Object | undefined => (ready.value ? $keycloak.value.tokenParsed : {}));
+  // const getAuthenticated = computed((): boolean => (ready.value ? !!$keycloak.value.authenticated : false));
+  // const getLoginUrl = computed(() => (ready.value ? $keycloak.value.createLoginUrl() : ''));
+  // const getToken = computed(() => (ready.value ? $keycloak.value.token : ''));
+  // const getTokenParsed = computed((): Object | undefined => (ready.value ? $keycloak.value.tokenParsed : {}));
 
   // Actions
   function login() {
@@ -64,7 +64,6 @@ export const useAuthStore = defineStore('auth', () => {
         // Check token validity every 10s and, if necessary, update the token.
         // Refresh token if it's valid for less then 70 seconds
         setInterval(() => {
-          $keycloak.value;
           kc.updateToken(70) // If the token expires within 70 seconds from now get a refreshed
             .then((refreshed: Boolean) => {
               if (refreshed) {
