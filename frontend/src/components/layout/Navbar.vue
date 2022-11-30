@@ -7,10 +7,11 @@ import { useAuthStore } from '@/store/authStore';
 import { RouteNames } from '@/utils/constants';
 
 const { getAuthenticated } = storeToRefs(useAuthStore());
+const { getKeycloak } = storeToRefs(useAuthStore());
 </script>
 
 <template>
-  <div v-if="getAuthenticated">
+  <div v-if="getKeycloak.authenticated">
     <Toolbar>
       <template #start>
         <ol class="list-none m-0 p-0 flex flex-row align-items-center font-semibold">

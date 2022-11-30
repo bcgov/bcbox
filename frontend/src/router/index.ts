@@ -69,7 +69,7 @@ const router = createRouter({
 router.beforeEach((to, from) => {
   const authStore = useAuthStore();
 
-  if (!authStore.getAuthenticated) {
+  if (!authStore.getKeycloak.authenticated) {
     if (to.meta.requiresAuth) {
       return {
         path: '/',

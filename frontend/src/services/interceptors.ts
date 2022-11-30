@@ -20,8 +20,8 @@ export function comsAxios(timeout = 10000) {
 
   instance.interceptors.request.use(
     (cfg: any) => {
-      if (authStore.ready && authStore.getAuthenticated) {
-        cfg.headers.Authorization = `Bearer ${authStore.getToken}`;
+      if (authStore.ready && authStore.getKeycloak.authenticated) {
+        cfg.headers.Authorization = `Bearer ${authStore.getKeycloak.token}`;
       }
       return Promise.resolve(cfg);
     },
