@@ -67,16 +67,25 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-  const authStore = useAuthStore();
+  if (to.meta.requiresAuth) {
+    const authStore = useAuthStore();
 
-  if (!authStore.getKeycloak.authenticated) {
-    if (to.meta.requiresAuth) {
-      return {
-        path: '/',
-        // save the location we were at to come back later
-        query: { redirect: to.fullPath },
-      };
-    }
+    const unsubscribe = authStore.$onAction(({ name, after, onError }) => {
+      if (name === 'init') {
+        after(() => {
+          // console.log('auth guard - keycloak is ready.');
+          if (!authStore.getKeycloak.authenticated) {
+            authStore.login();
+            unsubscribe();
+          }
+        });
+        onError((err) => {
+          console.error(`Error in route gaurd waiting for Keycloak ${err}`);
+          unsubscribe();
+          throw new Error(`Failed to initialize Kecloak: ${(err as Error).message}`);
+        });
+      }
+    });
   }
 });
 
