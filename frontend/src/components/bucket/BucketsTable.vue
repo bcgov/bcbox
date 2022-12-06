@@ -12,12 +12,20 @@ import { RouteNames } from '@/utils/constants';
 
 const { loading, buckets } = storeToRefs(useBucketStore());
 
-const permissionsVisible = ref(true);
+const permissionsVisible = ref(false);
+const permissionsBucketId = ref('');
+const permissionBucketName = ref('');
 
 const emit = defineEmits(['show-info']);
 
 const showInfo = async (id: number) => {
   emit('show-info', id);
+};
+
+const showPermissions = async (bucketId: string, bucketName: string) => {
+  permissionsVisible.value = true;
+  permissionsBucketId.value = bucketId;
+  permissionBucketName.value = bucketName;
 };
 </script>
 
@@ -57,7 +65,9 @@ const showInfo = async (id: number) => {
     </Column>
     <Column header="Actions" headerStyle="width: 12%" headerClass="header-right" bodyClass="content-right">
       <template #body="{ data }">
-        <Button class="p-button-lg p-button-rounded p-button-text"><font-awesome-icon icon="fa-solid fa-gear" /></Button>
+        <Button class="p-button-lg p-button-rounded p-button-text" @click="showPermissions(data.bucketId, data.bucketName)">
+          <font-awesome-icon icon="fa-solid fa-gear" />
+        </Button>
         <Button class="p-button-lg p-button-rounded p-button-text" @click="showInfo(data.bucketId)">
           <font-awesome-icon icon="fa-solid fa-circle-info" />
         </Button>
@@ -67,23 +77,28 @@ const showInfo = async (id: number) => {
 
   <Dialog v-model:visible="permissionsVisible" :draggable="false">
     <template #header>
-      <div class="flex align-items-start">
-        <font-awesome-icon icon="fa-solid fa-gear" style="font-size: 2rem" />
+      <div class="flex">
+        <font-awesome-icon icon="fa-solid fa-gear" class="pr-2" style="font-size: 2rem" />
         <div>
           <h1>Bucket Permissions</h1>
-          <h3>bucketname</h3>
+          <h3>{{ permissionBucketName }}</h3>
         </div>
       </div>
     </template>
 
-    <BucketPermission />
+    <BucketPermission :bucketId="permissionsBucketId" />
   </Dialog>
 </template>
 
 <style lang="scss" scoped>
-// :deep(.p-dialog-header) {
-//   align-items: flex-start;
-// }
+h1 {
+  font-weight: bold;
+}
+
+// TODO: Figure out why selector isn't doing anything
+:deep(.p-dialog-header) {
+  align-items: flex-start;
+}
 
 :deep(.p-datatable-thead > tr > th) {
   background-color: transparent;
