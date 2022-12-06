@@ -3,6 +3,7 @@
 import { onErrorCaptured } from 'vue';
 import { RouterView } from 'vue-router';
 // PrimeVue
+import ConfirmDialog from 'primevue/confirmdialog';
 import ProgressBar from 'primevue/progressbar';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
@@ -20,6 +21,7 @@ onErrorCaptured((e: Error) => {
 
 <template>
   <Toast />
+  <ConfirmDialog></ConfirmDialog>
   <Suspense>
     <AppLayout>
       <template #nav><Navbar /></template>
@@ -35,3 +37,9 @@ onErrorCaptured((e: Error) => {
     </template>
   </Suspense>
 </template>
+
+<style lang="scss" scoped>
+:deep(.p-dialog .p-dialog-footer) {
+  margin: 2rem;
+}
+</style>
