@@ -37,9 +37,3 @@ onErrorCaptured((e: Error) => {
     </template>
   </Suspense>
 </template>
-
-<style lang="scss" scoped>
-:deep(.p-dialog .p-dialog-footer) {
-  margin: 2rem;
-}
-</style>

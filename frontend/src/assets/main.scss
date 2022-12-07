@@ -1,0 +1,21 @@
+@import './base.css';
+@import './primevue.scss';
+
+#app {
+  margin: 0 auto;
+  font-weight: normal;
+}
+
+.truncate {
+  max-width: 1px;
+  white-space: nowrap;
+
+  > div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.content-right {
+  text-align: right !important;
+}

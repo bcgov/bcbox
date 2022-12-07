@@ -14,10 +14,11 @@ import { formatDateLong } from '@/utils/formatters';
 
 defineProps({
   displayInfo: Object,
-  //confirmDelete: Function,
+  confirmDelete: {
+    type: Function,
+    required: true,
+  },
 });
-
-const confirm = useConfirm();
 
 const { loading, objectList } = storeToRefs(useObjectStore());
 
@@ -27,21 +28,6 @@ const emit = defineEmits(['show-info']);
 
 const showInfo = async (id: string) => {
   emit('show-info', id);
-};
-
-const confirmDelete = () => {
-  confirm.require({
-    message: 'Please confirm that you want to delete the selected file(s)?',
-    header: 'Delete items',
-    acceptLabel: 'Confirm',
-    rejectLabel: 'Cancel',
-    accept: () => {
-      // TODO: Delete items
-    },
-    reject: () => {
-      // Intentionally left empty
-    },
-  });
 };
 </script>
 
@@ -91,7 +77,7 @@ const confirmDelete = () => {
         {{ formatDateLong(data.updatedAt) }}
       </template>
     </Column>
-    <Column header="Actions" headerStyle="width: 15%" headerClass="header-right" bodyClass="content-right">
+    <Column header="Actions" headerStyle="width: 15%" headerClass="header-right" bodyClass="content-right actions-buttons">
       <template #body="{ data }">
         <Button class="p-button-lg p-button-text">
           <font-awesome-icon icon="fa-solid fa-download" />
@@ -102,47 +88,10 @@ const confirmDelete = () => {
         <Button class="p-button-lg p-button-rounded p-button-text" @click="showInfo(data.id)">
           <font-awesome-icon icon="fa-solid fa-circle-info" />
         </Button>
-        <Button class="p-button-lg p-button-text" style="color: red" @click="confirmDelete">
+        <Button class="p-button-lg p-button-text p-button-danger" @click="() => confirmDelete()">
           <font-awesome-icon icon="fa-solid fa-trash" />
         </Button>
       </template>
     </Column>
   </DataTable>
 </template>
-
-<style lang="scss" scoped>
-:deep(.p-datatable-thead > tr > th) {
-  background-color: transparent;
-}
-
-:deep(.p-column-title) {
-  font-weight: bold;
-}
-
-:deep(.p-paginator) {
-  justify-content: right;
-}
-
-:deep(.header-right .p-column-header-content) {
-  justify-content: right;
-}
-
-:deep(.content-right) {
-  text-align: right !important;
-}
-
-:deep(.p-button.p-button-lg) {
-  padding: 0;
-  margin-left: 1rem;
-}
-
-:deep(.truncate) {
-  max-width: 1px;
-  white-space: nowrap;
-
-  > div {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-</style>
