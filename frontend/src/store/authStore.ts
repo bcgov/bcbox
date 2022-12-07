@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import type { Ref } from 'vue';
 import { defineStore } from 'pinia';
-import Keycloak from 'keycloak-js';
+import Keycloak, { type KeycloakLoginOptions } from 'keycloak-js';
 import { useConfigStore } from './configStore';
 import { KEYCLOAK } from '@/utils/constants';
 
@@ -22,8 +22,8 @@ export const useAuthStore = defineStore('auth', () => {
   // const getTokenParsed = computed((): Object | undefined => (ready.value ? _keycloak.value.tokenParsed : {}));
 
   // Actions
-  function login() {
-    window.location.replace(_keycloak.value.createLoginUrl());
+  function login(options?: KeycloakLoginOptions) {
+    window.location.replace(_keycloak.value.createLoginUrl(options));
   }
 
   function logout() {
