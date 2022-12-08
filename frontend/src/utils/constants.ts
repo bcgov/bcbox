@@ -3,6 +3,14 @@ export const KEYCLOAK = Object.freeze({
   REFRESH_TIME_MS: 10000,
 });
 
+export const Permissions = Object.freeze({
+  CREATE: 'CREATE',
+  READ: 'READ',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  MANAGE: 'MANAGE',
+});
+
 export const RouteNames = Object.freeze({
   Home: 'home',
   CreateBucket: 'createBucket',

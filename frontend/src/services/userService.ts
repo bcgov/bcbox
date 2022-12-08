@@ -8,7 +8,7 @@ export default {
    * @returns {Promise} An axios response
    */
   searchForUsers(params: Object) {
-    return comsAxios().get(`${PATH}`, params);
+    return comsAxios().get(`${PATH}`, { params });
   },
 
   /**

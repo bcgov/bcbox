@@ -1,12 +1,14 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore } from 'pinia';
-import { bucketService } from '@/services';
-import type { Bucket } from '@/interfaces';
+import type { Bucket, UserPermission } from '@/interfaces';
+import { bucketService, userService } from '@/services';
+import { Permissions } from '@/utils/constants';
 
 export const useBucketStore = defineStore('bucket', () => {
   // state
   const loading = ref(false);
   const buckets = ref([] as Bucket[]);
+  const permissions = ref([] as UserPermission[]);
 
   // actions
   async function load() {
@@ -30,5 +32,75 @@ export const useBucketStore = defineStore('bucket', () => {
     return bucket;
   }
 
-  return { loading, load, getBucketInfo, buckets };
+  async function getBucketPermissions(bucketId: string) {
+    try {
+      loading.value = true;
+
+      const searchPerms = (await bucketService.searchForPermissions({ bucketId })).data;
+
+      // TODO: Feed a comma separated list instead of searching individual users once COMS accepts that
+      const uniqueIds = [...new Set(searchPerms.map((x: any) => x.userId))]; //.join(',');
+      const uniqueUsers: any = [];
+
+      await Promise.all(
+        uniqueIds.map(async (x: any) => {
+          const userResponse = await userService.searchForUsers({ userId: x });
+          uniqueUsers.push(userResponse.data[0]);
+        })
+      );
+
+      const userPermissions: UserPermission[] = [];
+      uniqueUsers.forEach((user: any) => {
+        userPermissions.push({
+          userId: user.userId,
+          fullName: user.fullName,
+          create: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.CREATE),
+          read: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.READ),
+          update: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.UPDATE),
+          delete: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.DELETE),
+          manage: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.MANAGE),
+        });
+      });
+
+      permissions.value = userPermissions;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function addBucketPermission(bucketId: string, userId: string, permCode: string) {
+    try {
+      loading.value = true;
+
+      await bucketService.addPermissions(bucketId, [{ userId, permCode }]);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function deleteBucketPermission(bucketId: string, userId: string, permCode: string) {
+    try {
+      loading.value = true;
+
+      await bucketService.deletePermission(bucketId, { userId, permCode });
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function removeBucketUser(bucketId: string, userId: string) {
+    try {
+      loading.value = true;
+
+      for (const [, value] of Object.entries(Permissions)) {
+        await bucketService.deletePermission(bucketId, { userId, permCode: value });
+      }
+
+      await getBucketPermissions(bucketId);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  return { loading, load, getBucketInfo, getBucketPermissions, addBucketPermission, deleteBucketPermission, removeBucketUser, buckets, permissions };
 });
