@@ -45,11 +45,5 @@ const onFileChanged = async (e: any) => {
 </script>
 
 <template>
-  <div>
-    Upload an Object <small>(to bucket {{ props.bucketId }})</small>
-  </div>
-  <Button color="primary" :loading="isSelecting" @click="handleFileImport">
-    <!-- Create a hidden File Input that is trigged on upload btn -->
-    <input ref="uploader" class="d-none" type="file" @change="onFileChanged" />
-  </Button>
+  <Button class="mr-2"> <font-awesome-icon icon="fa-solid fa-upload" class="mr-1" /> Upload </Button>
 </template>

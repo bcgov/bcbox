@@ -1,0 +1,27 @@
+.header-right .p-column-header-content {
+  justify-content: right;
+}
+
+.p-dialog-footer {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.p-datatable {
+  .p-datatable-thead > tr > th {
+    background-color: transparent !important;
+  }
+
+  .p-column-title {
+    font-weight: bold;
+  }
+
+  .p-paginator {
+    justify-content: right;
+  }
+
+  .actions-buttons .p-button.p-button-lg {
+    padding: 0;
+    margin-left: 1rem;
+  }
+}

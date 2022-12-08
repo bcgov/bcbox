@@ -1,14 +1,26 @@
-import { ref } from 'vue';
+import { ref, isProxy, toRaw } from 'vue';
 import { defineStore } from 'pinia';
+import type { COMSObject } from '@/interfaces';
 import { objectService } from '@/services';
 
 export const useObjectStore = defineStore('objectStore', () => {
   // state
   const loading = ref(false);
-  const objectList = ref([] as Object[]);
+  const objectList = ref([] as COMSObject[]);
   const selectedObject = ref({});
 
   // actions
+  function getObjectInfo(objectId: string) {
+    let object = objectList.value.find((x) => x.id === objectId);
+    if (isProxy(object)) {
+      object = toRaw(object);
+    }
+
+    // TODO: Get unique list of users with management positions on the bucket
+
+    return object;
+  }
+
   async function createObject(object: any, bucketId?: string) {
     try {
       loading.value = true;
@@ -39,5 +51,5 @@ export const useObjectStore = defineStore('objectStore', () => {
     selectedObject.value = response.data;
   }
 
-  return { loading, objectList, selectedObject, createObject, listObjects, getObject };
+  return { loading, objectList, selectedObject, getObjectInfo, createObject, listObjects, getObject };
 });

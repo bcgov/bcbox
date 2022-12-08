@@ -25,6 +25,13 @@ export default defineConfig({
       '/config': proxyObject,
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import '@/assets/variables.scss';`,
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'happy-dom',

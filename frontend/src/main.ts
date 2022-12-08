@@ -4,7 +4,7 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router';
 
-import './assets/main.css';
+import './assets/main.scss';
 
 // PrimeVue
 import PrimeVue from 'primevue/config';
@@ -14,6 +14,7 @@ import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import ToastService from 'primevue/toastservice';
 import Tooltip from 'primevue/tooltip';
+import ConfirmationService from 'primevue/confirmationservice';
 
 // FontAwesome
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -27,6 +28,7 @@ app.use(PrimeVue);
 app.use(createPinia());
 app.use(router);
 app.use(ToastService);
+app.use(ConfirmationService);
 app.component('font-awesome-icon', FontAwesomeIcon);
 app.directive('tooltip', Tooltip);
 
