@@ -77,7 +77,7 @@ const showInfo = async (id: string) => {
         {{ formatDateLong(data.updatedAt) }}
       </template>
     </Column>
-    <Column header="Actions" headerStyle="width: 15%" headerClass="header-right" bodyClass="content-right actions-buttons">
+    <Column header="Actions" headerStyle="width: 200px" headerClass="header-right" bodyClass="content-right actions-buttons">
       <template #body="{ data }">
         <Button class="p-button-lg p-button-text">
           <font-awesome-icon icon="fa-solid fa-download" />

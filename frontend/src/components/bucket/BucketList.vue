@@ -17,7 +17,9 @@ const closeInfo = () => {
   displayInfo.value = null;
 };
 
-await useToaster(bucketStore.load, { summary: 'Unable to load buckets.' });
+onMounted(() => {
+  useToaster(bucketStore.load, { summary: 'Unable to load buckets.' });
+});
 </script>
 
 <template>
