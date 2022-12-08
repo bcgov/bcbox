@@ -1,7 +1,7 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore } from 'pinia';
-import { bucketService, userService } from '@/services';
 import type { Bucket, UserPermission } from '@/interfaces';
+import { bucketService, userService } from '@/services';
 import { Permissions } from '@/utils/constants';
 
 export const useBucketStore = defineStore('bucket', () => {
@@ -54,11 +54,11 @@ export const useBucketStore = defineStore('bucket', () => {
         userPermissions.push({
           userId: user.userId,
           fullName: user.fullName,
-          create: searchPerms.find((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.CREATE) !== undefined,
-          read: searchPerms.find((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.READ) !== undefined,
-          update: searchPerms.find((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.UPDATE) !== undefined,
-          delete: searchPerms.find((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.DELETE) !== undefined,
-          manage: searchPerms.find((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.MANAGE) !== undefined,
+          create: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.CREATE),
+          read: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.READ),
+          update: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.UPDATE),
+          delete: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.DELETE),
+          manage: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.MANAGE),
         });
       });
 

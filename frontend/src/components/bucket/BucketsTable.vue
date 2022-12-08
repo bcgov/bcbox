@@ -63,7 +63,7 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
         </div>
       </template>
     </Column>
-    <Column header="Actions" headerStyle="width: 12%" headerClass="header-right" bodyClass="content-right">
+    <Column header="Actions" headerStyle="width: 100px" headerClass="header-right" bodyClass="content-right">
       <template #body="{ data }">
         <Button class="p-button-lg p-button-rounded p-button-text" @click="showPermissions(data.bucketId, data.bucketName)">
           <font-awesome-icon icon="fa-solid fa-gear" />
@@ -75,7 +75,7 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
     </Column>
   </DataTable>
 
-  <Dialog v-model:visible="permissionsVisible" :draggable="false">
+  <Dialog v-model:visible="permissionsVisible" :draggable="false" :modal="true">
     <template #header>
       <div class="flex">
         <font-awesome-icon icon="fa-solid fa-gear" class="pr-2" style="font-size: 2rem" />
