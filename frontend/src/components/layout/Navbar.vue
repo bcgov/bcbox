@@ -6,7 +6,6 @@ import Toolbar from 'primevue/toolbar';
 import { useAuthStore } from '@/store/authStore';
 import { RouteNames } from '@/utils/constants';
 
-const { getAuthenticated } = storeToRefs(useAuthStore());
 const { getKeycloak } = storeToRefs(useAuthStore());
 </script>
 

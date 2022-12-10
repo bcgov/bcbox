@@ -8,6 +8,7 @@ export const useObjectStore = defineStore('objectStore', () => {
   const loading = ref(false);
   const objectList = ref([] as COMSObject[]);
   const selectedObject = ref({});
+  const mutiSelectedObjectIds = ref([] as Array<string>);
 
   // actions
   function getObjectInfo(objectId: string) {
@@ -51,5 +52,5 @@ export const useObjectStore = defineStore('objectStore', () => {
     selectedObject.value = response.data;
   }
 
-  return { loading, objectList, selectedObject, getObjectInfo, createObject, listObjects, getObject };
+  return { loading, objectList, selectedObject, mutiSelectedObjectIds, getObjectInfo, createObject, listObjects, getObject };
 });

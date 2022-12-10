@@ -1,19 +1,22 @@
 <script setup lang="ts">
+// Types
+import { ButtonMode } from '@/interfaces/common/enums';
+
 // Vue
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 // PrimeVue
 import Button from 'primevue/button';
-import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 // State
 import { useObjectStore } from '@/store/objectStore';
 // Components
+import DeleteObjectButton from './DeleteObjectButton.vue';
+import DownloadObjectButton from './DownloadObjectButton.vue';
 import ObjectSidebar from './ObjectSidebar.vue';
 import ObjectTable from './ObjectTable.vue';
 import UploadObjectButton from './UploadObjectButton.vue';
 
-const confirm = useConfirm();
 const objectStore = useObjectStore();
 const route = useRoute();
 const toast = useToast();
@@ -36,21 +39,6 @@ const listObjects = async () => {
   }
 };
 
-const confirmDelete = () => {
-  confirm.require({
-    message: 'Please confirm that you want to delete the selected file(s)?',
-    header: 'Delete items',
-    acceptLabel: 'Confirm',
-    rejectLabel: 'Cancel',
-    accept: () => {
-      // TODO: Delete items
-    },
-    reject: () => {
-      // Intentionally left empty
-    },
-  });
-};
-
 // Get the user's list of objects
 onMounted(() => {
   listObjects();
@@ -60,15 +48,13 @@ onMounted(() => {
 <template>
   <div>
     <UploadObjectButton :bucketId="route.params.bucketId as string" />
-    <Button class="p-button-outlined mr-2"> <font-awesome-icon icon="fa-solid fa-download" class="mr-1" /> Download </Button>
-    <Button class="p-button-outlined p-button-danger mr-2" @click="confirmDelete()">
-      <font-awesome-icon icon="fa-solid fa-trash" class="mr-1" /> Delete
-    </Button>
+    <DownloadObjectButton class="mr-2" :mode="ButtonMode.BUTTON" :ids="['1']" />
+    <DeleteObjectButton :mode="ButtonMode.BUTTON" :ids="['1']" />
   </div>
 
   <div class="flex mt-4">
     <div class="flex-grow-1">
-      <ObjectTable @show-info="showInfo" :displayInfo="displayInfo" :confirmDelete="confirmDelete" />
+      <ObjectTable @show-info="showInfo" :displayInfo="displayInfo" />
     </div>
     <div v-if="displayInfo" class="flex-shrink-0 ml-3" style="max-width: 33%; min-width: 33%">
       <ObjectSidebar :displayInfo="displayInfo" @close-info="closeInfo" />
