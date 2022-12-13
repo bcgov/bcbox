@@ -79,14 +79,14 @@ const showInfo = async (id: string) => {
     </Column>
     <Column header="Actions" headerStyle="width: 200px" headerClass="header-right" bodyClass="content-right actions-buttons">
       <template #body="{ data }">
-        <DownloadObjectButton :mode="ButtonMode.ICON" :ids="['1']" />
+        <DownloadObjectButton :mode="ButtonMode.ICON" :ids="[data.id]" />
         <Button class="p-button-lg p-button-rounded p-button-text">
           <font-awesome-icon icon="fa-solid fa-gear" />
         </Button>
         <Button class="p-button-lg p-button-rounded p-button-text" @click="showInfo(data.id)">
           <font-awesome-icon icon="fa-solid fa-circle-info" />
         </Button>
-        <DeleteObjectButton :mode="ButtonMode.ICON" :ids="['1']" />
+        <DeleteObjectButton :mode="ButtonMode.ICON" :ids="[data.id]" />
       </template>
     </Column>
   </DataTable>

@@ -23,9 +23,12 @@ const props = defineProps({
   },
 });
 
-// Download the object
+// Download the object(s)
 const download = () => {
-  alert(`Not Implemented Yet (IDs ${props.ids})`);
+  // For now we are looping the supplied IDs (if multiple selected) until there is a batching feature
+  props.ids.forEach((i) => {
+    objectStore.getObject(i, undefined, true);
+  });
 };
 </script>
 

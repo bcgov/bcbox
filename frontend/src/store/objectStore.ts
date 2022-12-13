@@ -43,8 +43,8 @@ export const useObjectStore = defineStore('objectStore', () => {
     objectList.value = response.data;
   }
 
-  async function getObject(objectId: string) {
-    await objectService.getObject(objectId);
+  async function getObject(objectId: string, versionId?: string, download?: boolean) {
+    await objectService.getObject(objectId, versionId);
   }
 
   async function readObject(objectId: string) {
