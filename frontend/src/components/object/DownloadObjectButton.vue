@@ -49,5 +49,5 @@ const download = () => {
   <Button v-if="mode === ButtonMode.ICON" class="p-button-lg p-button-text" @click="download()">
     <font-awesome-icon icon="fa-solid fa-download" />
   </Button>
-  <Button v-else class="p-button-outlined" @click="download()"> <font-awesome-icon icon="fa-solid fa-download" class="mr-1" /> Download </Button>
+  <Button v-else class="p-button-outlined mr-2" @click="download()"> <font-awesome-icon icon="fa-solid fa-download" class="mr-1" /> Download </Button>
 </template>

@@ -53,7 +53,7 @@ const confirmDelete = () => {
   <Button v-if="mode === ButtonMode.ICON" class="p-button-lg p-button-text p-button-danger" @click="confirmDelete()">
     <font-awesome-icon icon="fa-solid fa-trash" />
   </Button>
-  <Button v-else class="p-button-outlined p-button-danger mr-2" @click="confirmDelete()">
+  <Button v-else class="p-button-outlined p-button-danger" @click="confirmDelete()">
     <font-awesome-icon icon="fa-solid fa-trash" class="mr-1" /> Delete
   </Button>
 </template>
