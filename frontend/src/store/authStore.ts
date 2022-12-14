@@ -37,14 +37,14 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function init() {
-    let initOptions = {
+    const initOptions = {
       url: configStore.config.keycloak.serverUrl,
       realm: configStore.config.keycloak.realm,
       clientId: configStore.config.keycloak.clientId,
       onLoad: 'check-sso',
     };
 
-    let kc: Keycloak = new Keycloak(initOptions);
+    const kc: Keycloak = new Keycloak(initOptions);
 
     // Once KC is set up and connected flag it as 'ready'
     kc.onReady = function (authenticated) {

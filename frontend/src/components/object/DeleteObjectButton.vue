@@ -1,12 +1,13 @@
 <script setup lang="ts">
 // Types
 import { ButtonMode } from '@/interfaces/common/enums';
-import type { PropType } from 'vue';
+import { ref, type PropType } from 'vue';
 
 // PrimeVue / Fonts
 import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import Dialog from 'primevue/dialog';
 
 const confirm = useConfirm();
 
@@ -23,6 +24,7 @@ const props = defineProps({
 });
 
 // Deletion
+const displayNoFileDlg = ref(false);
 const confirmDelete = () => {
   confirm.require({
     message: `Please confirm that you want to delete the selected ${props.ids.length > 1 ? 'files' : 'file'}`,
@@ -41,6 +43,13 @@ const confirmDelete = () => {
 </script>
 
 <template>
+  <Dialog header="No File Selected" v-model:visible="displayNoFileDlg">
+    <p>Please select at least one file from the list to delete.</p>
+    <template #footer>
+      <Button label="Ok" @click="displayNoFileDlg = false" autofocus />
+    </template>
+  </Dialog>
+
   <Button v-if="mode === ButtonMode.ICON" class="p-button-lg p-button-text p-button-danger" @click="confirmDelete()">
     <font-awesome-icon icon="fa-solid fa-trash" />
   </Button>

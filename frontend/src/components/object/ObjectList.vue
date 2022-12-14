@@ -3,12 +3,12 @@
 import { ButtonMode } from '@/interfaces/common/enums';
 
 // Vue
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 // PrimeVue
-import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
 // State
+import { storeToRefs } from 'pinia';
 import { useObjectStore } from '@/store/objectStore';
 // Components
 import DeleteObjectButton from './DeleteObjectButton.vue';
@@ -18,9 +18,11 @@ import ObjectTable from './ObjectTable.vue';
 import UploadObjectButton from './UploadObjectButton.vue';
 
 const objectStore = useObjectStore();
+const { mutiSelectedObjects } = storeToRefs(objectStore);
 const route = useRoute();
 const toast = useToast();
 
+// Info
 const displayInfo: any = ref(null);
 
 const showInfo = async (objId: any) => {
@@ -31,6 +33,12 @@ const closeInfo = () => {
   displayInfo.value = null;
 };
 
+// Download
+const mutiSelectedObjectIds = computed(() => {
+  return mutiSelectedObjects.value.map((o) => o.id);
+});
+
+// Objects List
 const listObjects = async () => {
   try {
     await objectStore.listObjects({ bucketId: route.params.bucketId });
@@ -48,8 +56,8 @@ onMounted(() => {
 <template>
   <div>
     <UploadObjectButton :bucketId="route.params.bucketId as string" />
-    <DownloadObjectButton class="mr-2" :mode="ButtonMode.BUTTON" :ids="['1']" />
-    <DeleteObjectButton :mode="ButtonMode.BUTTON" :ids="['1']" />
+    <DownloadObjectButton :mode="ButtonMode.BUTTON" :ids="mutiSelectedObjectIds" />
+    <DeleteObjectButton class="ml-2" :mode="ButtonMode.BUTTON" :ids="mutiSelectedObjectIds" />
   </div>
 
   <div class="flex mt-4">

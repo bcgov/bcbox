@@ -34,7 +34,7 @@ const handleFileImport = () => {
   );
 
   // Trigger click on the FileInput
-  uploader.click();
+  uploader.value.click();
 };
 
 const onFileChanged = async (e: any) => {

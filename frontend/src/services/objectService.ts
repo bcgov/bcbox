@@ -15,7 +15,7 @@ export default {
       headers: { 'Content-Type': 'multipart/form-data' },
       params: { bucketId: bucketId },
     };
-    let fd = new FormData();
+    const fd = new FormData();
     fd.append('file', object);
     return comsAxios().post(PATH, fd, config);
   },
@@ -93,7 +93,7 @@ export default {
    */
   updateObject(objectId: string, object: any) {
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-    let fd = new FormData();
+    const fd = new FormData();
     fd.append('file', object);
     return comsAxios().post(`${PATH}/${objectId}`, fd, config);
   },
