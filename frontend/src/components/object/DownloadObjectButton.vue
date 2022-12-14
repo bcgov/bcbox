@@ -39,7 +39,7 @@ const download = () => {
 </script>
 
 <template>
-  <Dialog header="No File Selected" v-model:visible="displayNoFileDlg">
+  <Dialog header="No File Selected" v-model:visible="displayNoFileDlg" :modal="true">
     <p>Please select at least one file from the list to download.</p>
     <template #footer>
       <Button label="Ok" @click="displayNoFileDlg = false" autofocus />

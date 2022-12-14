@@ -26,24 +26,28 @@ const props = defineProps({
 // Deletion
 const displayNoFileDlg = ref(false);
 const confirmDelete = () => {
-  confirm.require({
-    message: `Please confirm that you want to delete the selected ${props.ids.length > 1 ? 'files' : 'file'}`,
-    header: `Delete ${props.ids.length > 1 ? 'items' : 'item'}`,
-    acceptLabel: 'Confirm',
-    rejectLabel: 'Cancel',
-    accept: () => {
-      // TODO: Delete items
-      alert(`Not Implemented Yet (IDs ${props.ids})`);
-    },
-    reject: () => {
-      // Intentionally left empty
-    },
-  });
+  if (props.ids.length) {
+    confirm.require({
+      message: `Please confirm that you want to delete the selected ${props.ids.length > 1 ? 'files' : 'file'}`,
+      header: `Delete ${props.ids.length > 1 ? 'items' : 'item'}`,
+      acceptLabel: 'Confirm',
+      rejectLabel: 'Cancel',
+      accept: () => {
+        // TODO: Delete items
+        alert(`Not Implemented Yet (IDs ${props.ids})`);
+      },
+      reject: () => {
+        // Intentionally left empty
+      },
+    });
+  } else {
+    displayNoFileDlg.value = true;
+  }
 };
 </script>
 
 <template>
-  <Dialog header="No File Selected" v-model:visible="displayNoFileDlg">
+  <Dialog header="No File Selected" v-model:visible="displayNoFileDlg" :modal="true">
     <p>Please select at least one file from the list to delete.</p>
     <template #footer>
       <Button label="Ok" @click="displayNoFileDlg = false" autofocus />
