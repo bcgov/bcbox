@@ -15,7 +15,7 @@ export default {
       headers: { 'Content-Type': 'multipart/form-data' },
       params: { bucketId: bucketId },
     };
-    let fd = new FormData();
+    const fd = new FormData();
     fd.append('file', object);
     return comsAxios().post(PATH, fd, config);
   },
@@ -35,38 +35,19 @@ export default {
    * @param objectId The id for the object to get
    * @param versionId An optional versionId
    */
-  getObject(objectId: string, versionId?: string, download?: boolean) {
-    if (download) {
-      comsAxios()
-        .get(`${PATH}/${objectId}`, {
-          responseType: 'blob',
-          params: {
-            versionId: versionId,
-            download: 'proxy',
-          },
-        })
-        .then((response: any) => {
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', response.headers['x-amz-meta-name']);
-          document.body.appendChild(link);
-          link.click();
-        });
-    } else {
-      // Get just the link to the unlocked object store entity and open it
-      comsAxios()
-        .get(`${PATH}/${objectId}`, {
-          params: {
-            versionId: versionId,
-            download: 'url',
-          },
-        })
-        .then((response) => {
-          const url = response.data;
-          window.open(url, '_blank');
-        });
-    }
+  getObject(objectId: string, versionId?: string) {
+    // Running in 'url' download mode only, could add options for other modes if needed
+    comsAxios()
+      .get(`${PATH}/${objectId}`, {
+        params: {
+          versionId: versionId,
+          download: 'url',
+        },
+      })
+      .then((response) => {
+        const url = response.data;
+        window.open(url, '_blank');
+      });
   },
 
   /**
@@ -112,7 +93,7 @@ export default {
    */
   updateObject(objectId: string, object: any) {
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-    let fd = new FormData();
+    const fd = new FormData();
     fd.append('file', object);
     return comsAxios().post(`${PATH}/${objectId}`, fd, config);
   },

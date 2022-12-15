@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// Types
+import { ButtonMode } from '@/interfaces/common/enums';
+
 // Vue
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -6,23 +9,18 @@ import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import { useConfirm } from 'primevue/useconfirm';
 // State
 import { useObjectStore } from '@/store/objectStore';
 // Other
 import { formatDateLong } from '@/utils/formatters';
+import DeleteObjectButton from './DeleteObjectButton.vue';
+import DownloadObjectButton from './DownloadObjectButton.vue';
 
 defineProps({
   displayInfo: Object,
-  confirmDelete: {
-    type: Function,
-    required: true,
-  },
 });
 
-const { loading, objectList } = storeToRefs(useObjectStore());
-
-const selectedObjects = ref();
+const { loading, multiSelectedObjects, objectList } = storeToRefs(useObjectStore());
 
 const emit = defineEmits(['show-info']);
 
@@ -44,7 +42,7 @@ const showInfo = async (id: string) => {
     paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
     currentPageReportTemplate="{first}-{last} of {totalRecords}"
     :rowsPerPageOptions="[10, 20, 50]"
-    v-model:selection="selectedObjects"
+    v-model:selection="multiSelectedObjects"
   >
     <template #empty>
       <div v-if="!loading" class="flex justify-content-center">
@@ -79,18 +77,14 @@ const showInfo = async (id: string) => {
     </Column>
     <Column header="Actions" headerStyle="width: 200px" headerClass="header-right" bodyClass="content-right actions-buttons">
       <template #body="{ data }">
-        <Button class="p-button-lg p-button-text">
-          <font-awesome-icon icon="fa-solid fa-download" />
-        </Button>
+        <DownloadObjectButton :mode="ButtonMode.ICON" :ids="[data.id]" />
         <Button class="p-button-lg p-button-rounded p-button-text">
           <font-awesome-icon icon="fa-solid fa-gear" />
         </Button>
         <Button class="p-button-lg p-button-rounded p-button-text" @click="showInfo(data.id)">
           <font-awesome-icon icon="fa-solid fa-circle-info" />
         </Button>
-        <Button class="p-button-lg p-button-text p-button-danger" @click="() => confirmDelete()">
-          <font-awesome-icon icon="fa-solid fa-trash" />
-        </Button>
+        <DeleteObjectButton :mode="ButtonMode.ICON" :ids="[data.id]" />
       </template>
     </Column>
   </DataTable>
