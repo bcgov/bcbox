@@ -18,7 +18,7 @@ import ObjectTable from './ObjectTable.vue';
 import UploadObjectButton from './UploadObjectButton.vue';
 
 const objectStore = useObjectStore();
-const { mutiSelectedObjects } = storeToRefs(objectStore);
+const { multiSelectedObjects } = storeToRefs(objectStore);
 const route = useRoute();
 const toast = useToast();
 
@@ -34,8 +34,8 @@ const closeInfo = () => {
 };
 
 // Download
-const mutiSelectedObjectIds = computed(() => {
-  return mutiSelectedObjects.value.map((o) => o.id);
+const multiSelectedObjectIds = computed(() => {
+  return multiSelectedObjects.value.map((o) => o.id);
 });
 
 // Objects List
@@ -56,8 +56,8 @@ onMounted(() => {
 <template>
   <div>
     <UploadObjectButton :bucketId="route.params.bucketId as string" />
-    <DownloadObjectButton :mode="ButtonMode.BUTTON" :ids="mutiSelectedObjectIds" />
-    <DeleteObjectButton class="ml-2" :mode="ButtonMode.BUTTON" :ids="mutiSelectedObjectIds" />
+    <DownloadObjectButton :mode="ButtonMode.BUTTON" :ids="multiSelectedObjectIds" />
+    <DeleteObjectButton class="ml-2" :mode="ButtonMode.BUTTON" :ids="multiSelectedObjectIds" />
   </div>
 
   <div class="flex mt-4">

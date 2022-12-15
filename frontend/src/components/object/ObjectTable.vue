@@ -20,7 +20,7 @@ defineProps({
   displayInfo: Object,
 });
 
-const { loading, mutiSelectedObjects, objectList } = storeToRefs(useObjectStore());
+const { loading, multiSelectedObjects, objectList } = storeToRefs(useObjectStore());
 
 const emit = defineEmits(['show-info']);
 
@@ -42,7 +42,7 @@ const showInfo = async (id: string) => {
     paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
     currentPageReportTemplate="{first}-{last} of {totalRecords}"
     :rowsPerPageOptions="[10, 20, 50]"
-    v-model:selection="mutiSelectedObjects"
+    v-model:selection="multiSelectedObjects"
   >
     <template #empty>
       <div v-if="!loading" class="flex justify-content-center">

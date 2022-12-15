@@ -8,7 +8,7 @@ export const useObjectStore = defineStore('objectStore', () => {
   const loading = ref(false);
   const objectList = ref([] as COMSObject[]);
   const selectedObject = ref({});
-  const mutiSelectedObjects = ref([] as COMSObject[]); // all selected table row items
+  const multiSelectedObjects = ref([] as COMSObject[]); // all selected table row items
 
   // actions
   function getObjectInfo(objectId: string) {
@@ -43,7 +43,7 @@ export const useObjectStore = defineStore('objectStore', () => {
     objectList.value = response.data;
   }
 
-  async function getObject(objectId: string, versionId?: string, download?: boolean) {
+  async function getObject(objectId: string, versionId?: string) {
     await objectService.getObject(objectId, versionId);
   }
 
@@ -52,5 +52,5 @@ export const useObjectStore = defineStore('objectStore', () => {
     selectedObject.value = response.data;
   }
 
-  return { loading, objectList, selectedObject, mutiSelectedObjects, getObjectInfo, createObject, listObjects, getObject };
+  return { loading, objectList, selectedObject, multiSelectedObjects, getObjectInfo, createObject, listObjects, getObject };
 });

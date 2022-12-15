@@ -24,7 +24,7 @@ const props = defineProps({
 });
 
 // Deletion
-const displayNoFileDlg = ref(false);
+const displayNoFileDialog = ref(false);
 const confirmDelete = () => {
   if (props.ids.length) {
     confirm.require({
@@ -41,16 +41,16 @@ const confirmDelete = () => {
       },
     });
   } else {
-    displayNoFileDlg.value = true;
+    displayNoFileDialog.value = true;
   }
 };
 </script>
 
 <template>
-  <Dialog header="No File Selected" v-model:visible="displayNoFileDlg" :modal="true">
+  <Dialog header="No File Selected" v-model:visible="displayNoFileDialog" :modal="true">
     <p>Please select at least one file from the list to delete.</p>
     <template #footer>
-      <Button label="Ok" @click="displayNoFileDlg = false" autofocus />
+      <Button label="Ok" @click="displayNoFileDialog = false" autofocus />
     </template>
   </Dialog>
 
