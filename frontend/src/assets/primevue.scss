@@ -20,8 +20,14 @@
     justify-content: right;
   }
 
-  .actions-buttons .p-button.p-button-lg {
+  .action-buttons .p-button.p-button-lg {
     padding: 0;
     margin-left: 1rem;
   }
+}
+
+.p-fileupload-buttonbar button:nth-child(n + 2) {
+  background-color: transparent;
+  color: #2196f3;
+  border: 1px solid;
 }

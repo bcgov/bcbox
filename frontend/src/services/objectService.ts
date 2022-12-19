@@ -30,6 +30,17 @@ export default {
   },
 
   /**
+   * @function listObjects
+   * List and search for all objects
+   * @returns {Promise} An axios response
+   */
+  getMetadata(headers: any = {}, params: any = {}) {
+    // remove objId array if its first element is undefined
+    if (params.objId && params.objId[0] === undefined) delete params.objId;
+    return comsAxios().get(`${PATH}/metadata`, { headers: headers, params: params });
+  },
+
+  /**
    * @function getObject
    * Get an object
    * @param objectId The id for the object to get

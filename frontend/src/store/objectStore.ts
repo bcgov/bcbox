@@ -26,9 +26,6 @@ export const useObjectStore = defineStore('objectStore', () => {
     try {
       loading.value = true;
       const response = await objectService.createObject(object, bucketId);
-      if (response) {
-        await listObjects({ bucketId: bucketId });
-      }
     } catch (error) {
       console.error(`Error uploading: ${error}`);
       throw error;
@@ -39,8 +36,20 @@ export const useObjectStore = defineStore('objectStore', () => {
 
   async function listObjects(params = {}) {
     objectList.value = [];
-    const response = await objectService.listObjects(params);
-    objectList.value = response.data;
+    const objects = (await objectService.listObjects(params)).data;
+
+    await Promise.all(
+      objects.map(async (obj: any) => {
+        const metadataResponse = await objectService.getMetadata(null, { objId: obj.id });
+        // TODO: Tags
+
+        // Populate object
+        obj.metadata = metadataResponse.data[0];
+        obj.name = obj.metadata.metadata.find((x: any) => x.key === 'name')?.value;
+      })
+    );
+
+    objectList.value = objects;
   }
 
   async function getObject(objectId: string, versionId?: string) {

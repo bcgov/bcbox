@@ -1,11 +1,12 @@
 <script setup lang="ts">
 // Types
 import { ButtonMode } from '@/interfaces/common/enums';
-
 // Vue
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 // PrimeVue
+import Button from 'primevue/button';
+import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 // State
 import { storeToRefs } from 'pinia';
@@ -15,15 +16,16 @@ import DeleteObjectButton from './DeleteObjectButton.vue';
 import DownloadObjectButton from './DownloadObjectButton.vue';
 import ObjectSidebar from './ObjectSidebar.vue';
 import ObjectTable from './ObjectTable.vue';
-import UploadObjectButton from './UploadObjectButton.vue';
+import ObjectUpload from './ObjectUpload.vue';
 
+const confirm = useConfirm();
 const objectStore = useObjectStore();
 const { multiSelectedObjects } = storeToRefs(objectStore);
 const route = useRoute();
 const toast = useToast();
 
-// Info
 const displayInfo: any = ref(null);
+const displayUpload = ref(false);
 
 const showInfo = async (objId: any) => {
   displayInfo.value = await objectStore.getObjectInfo(objId);
@@ -33,19 +35,26 @@ const closeInfo = () => {
   displayInfo.value = null;
 };
 
-// Download
-const multiSelectedObjectIds = computed(() => {
-  return multiSelectedObjects.value.map((o) => o.id);
-});
+const showUpload = () => {
+  displayUpload.value = true;
+};
 
-// Objects List
+const closeUpload = () => {
+  displayUpload.value = false;
+};
+
 const listObjects = async () => {
   try {
-    await objectStore.listObjects({ bucketId: route.params.bucketId });
+    await objectStore.listObjects({ bucketId: route.query.bucketId });
   } catch (error: any) {
     toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
   }
 };
+
+// Download
+const multiSelectedObjectIds = computed(() => {
+  return multiSelectedObjects.value.map((o) => o.id);
+});
 
 // Get the user's list of objects
 onMounted(() => {
@@ -55,7 +64,10 @@ onMounted(() => {
 
 <template>
   <div>
-    <UploadObjectButton :bucketId="route.params.bucketId as string" />
+    <div v-if="displayUpload" class="mb-4">
+      <ObjectUpload :closeCallback="closeUpload" />
+    </div>
+    <Button class="mr-2" @click="showUpload" :disabled="displayUpload"> <font-awesome-icon icon="fa-solid fa-upload" class="mr-1" /> Upload </Button>
     <DownloadObjectButton :mode="ButtonMode.BUTTON" :ids="multiSelectedObjectIds" />
     <DeleteObjectButton class="ml-2" :mode="ButtonMode.BUTTON" :ids="multiSelectedObjectIds" />
   </div>

@@ -36,3 +36,22 @@ export function toKebabCase(str: string | null) {
   const strs = str && str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g);
   return strs ? strs.join('-').toLocaleLowerCase() : '';
 }
+
+/**
+ * @function formatSize
+ * Converts a number, in bytes, to a formatted string
+ * @param {String} bytes A number representing a file size
+ * @returns {number} A converted string representation of `bytes`
+ */
+export function formatSize(bytes: number) {
+  if (bytes === 0) {
+    return '0 B';
+  }
+
+  const k = 1000,
+    dm = 3,
+    sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+    i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
