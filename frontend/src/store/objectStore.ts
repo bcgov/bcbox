@@ -74,10 +74,10 @@ export const useObjectStore = defineStore('objectStore', () => {
     await objectService.getObject(objectId, versionId);
   }
 
-  async function readObject(objectId: string) {
-    const response = await objectService.readObject(objectId);
-    selectedObject.value = response.data;
-  }
+  // async function readObject(objectId: string) {
+  //   const response = await objectService.readObject(objectId);
+  //   selectedObject.value = response.data;
+  // }
 
   return { loading, multiSelectedObjects, objectList, selectedObject, createObject, deleteObjectList, getObjectInfo, getObject, listObjects };
 });

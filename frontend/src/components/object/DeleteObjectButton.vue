@@ -3,16 +3,18 @@
 import { ButtonMode } from '@/interfaces/common/enums';
 import { ref, type PropType } from 'vue';
 
-// PrimeVue / Fonts
+// PrimeVue / Fonts / etc
 import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Dialog from 'primevue/dialog';
+import { useToast } from 'primevue/usetoast';
 // State
 import { useObjectStore } from '@/store/objectStore';
 const objectStore = useObjectStore();
 
 const confirm = useConfirm();
+const toast = useToast();
 
 // Props
 const props = defineProps({
@@ -28,15 +30,19 @@ const props = defineProps({
 
 // Deletion
 const displayNoFileDialog = ref(false);
-const confirmDelete = () => {
+const confirmDelete = async () => {
   if (props.ids.length) {
     confirm.require({
       message: `Please confirm that you want to delete ${props.ids.length > 1 ? `the selected ${props.ids.length} files` : 'this file'}`,
       header: `Delete ${props.ids.length > 1 ? 'items' : 'item'}`,
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
-      accept: () => {
-        objectStore.deleteObjectList(props.ids);
+      accept: async () => {
+        try {
+          await objectStore.deleteObjectList(props.ids);
+        } catch (error) {
+          toast.add({ severity: 'error', summary: 'Error deleting one or more files', detail: error, life: 3000 });
+        }
       },
       reject: () => {
         // Intentionally left empty
