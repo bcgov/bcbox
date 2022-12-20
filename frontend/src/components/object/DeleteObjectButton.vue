@@ -8,6 +8,9 @@ import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Dialog from 'primevue/dialog';
+// State
+import { useObjectStore } from '@/store/objectStore';
+const objectStore = useObjectStore();
 
 const confirm = useConfirm();
 
@@ -28,13 +31,12 @@ const displayNoFileDialog = ref(false);
 const confirmDelete = () => {
   if (props.ids.length) {
     confirm.require({
-      message: `Please confirm that you want to delete the selected ${props.ids.length > 1 ? 'files' : 'file'}`,
+      message: `Please confirm that you want to delete ${props.ids.length > 1 ? `the selected ${props.ids.length} files` : 'this file'}`,
       header: `Delete ${props.ids.length > 1 ? 'items' : 'item'}`,
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
       accept: () => {
-        // TODO: Delete items
-        alert(`Not Implemented Yet (IDs ${props.ids})`);
+        objectStore.deleteObjectList(props.ids);
       },
       reject: () => {
         // Intentionally left empty
