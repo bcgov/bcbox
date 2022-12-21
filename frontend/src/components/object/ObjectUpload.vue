@@ -29,8 +29,6 @@ const failedFiles = ref([] as File[]);
 
 const onSelectedFiles = (event: any) => {
   files.value = event.files;
-  console.log('Selected files...');
-  console.log(files.value);
 };
 
 const onUpload = async (event: any) => {

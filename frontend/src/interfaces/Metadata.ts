@@ -1,5 +1,5 @@
 export interface Metadata {
-  createddAt: string;
+  createdAt: string;
   createdBy: string;
   deleteMarker: boolean;
   id: string;

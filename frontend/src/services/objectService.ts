@@ -30,8 +30,8 @@ export default {
   },
 
   /**
-   * @function listObjects
-   * List and search for all objects
+   * @function getMetadata
+   * Get an objects metadata
    * @returns {Promise} An axios response
    */
   getMetadata(headers: any = {}, params: any = {}) {
