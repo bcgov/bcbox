@@ -63,7 +63,7 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
         </div>
       </template>
     </Column>
-    <Column header="Actions" headerStyle="width: 200px" headerClass="header-right" bodyClass="content-right">
+    <Column header="Actions" headerStyle="width: 200px" headerClass="header-right" bodyClass="content-right action-buttons">
       <template #body="{ data }">
         <Button class="p-button-lg p-button-rounded p-button-text" @click="showPermissions(data.bucketId, data.bucketName)">
           <font-awesome-icon icon="fa-solid fa-gear" />

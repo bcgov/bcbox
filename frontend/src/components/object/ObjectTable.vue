@@ -50,9 +50,9 @@ const showInfo = async (id: string) => {
       </div>
     </template>
     <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-    <Column field="path" header="Name" headerStyle="width: 25%" bodyClass="truncate">
+    <Column field="name" :sortable="true" header="Name" headerStyle="width: 25%" bodyClass="truncate">
       <template #body="{ data }">
-        <div v-if="data.name?.length > 150" v-tooltip.bottom="{ value: data.name }">
+        <div v-if="data.name?.length > 25" v-tooltip.bottom="{ value: data.name }">
           {{ data.name }}
         </div>
         <div v-else>
@@ -62,7 +62,7 @@ const showInfo = async (id: string) => {
     </Column>
     <Column field="id" header="Object ID" bodyClass="truncate">
       <template #body="{ data }">
-        <div v-if="data.id?.length > 150" v-tooltip.bottom="{ value: data.id }">
+        <div v-if="data.id?.length > 15" v-tooltip.bottom="{ value: data.id }">
           {{ data.id }}
         </div>
         <div v-else>
@@ -75,7 +75,7 @@ const showInfo = async (id: string) => {
         {{ formatDateLong(data.updatedAt) }}
       </template>
     </Column>
-    <Column header="Actions" headerStyle="width: 200px" headerClass="header-right" bodyClass="content-right actions-buttons">
+    <Column header="Actions" headerStyle="width: 200px" headerClass="header-right" bodyClass="content-right action-buttons">
       <template #body="{ data }">
         <DownloadObjectButton :mode="ButtonMode.ICON" :ids="[data.id]" />
         <Button class="p-button-lg p-button-rounded p-button-text">
