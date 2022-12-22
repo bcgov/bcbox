@@ -1,5 +1,5 @@
-const express = require('express');
-const Problem = require('api-problem');
+import express from 'express';
+import Problem from 'api-problem';
 
 /**
  * @class helper
@@ -13,7 +13,7 @@ const helper = {
    * @param {object} router An express router object to mount
    * @returns {object} A simple express server object with `router` mounted to `basePath`
    */
-  expressHelper: (basePath, router) => {
+  expressHelper: (basePath: string, router: object): object => {
     const app = express();
 
     app.use(express.json());
@@ -23,7 +23,7 @@ const helper = {
     app.use(basePath, router);
 
     // Handle 500
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     app.use((err, _req, res, _next) => {
       if (err instanceof Problem) {
         err.send(res);
@@ -43,4 +43,4 @@ const helper = {
   }
 };
 
-module.exports = helper;
+export default helper;

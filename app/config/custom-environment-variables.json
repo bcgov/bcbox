@@ -2,6 +2,9 @@
   "frontend": {
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "FRONTEND_BASEPATH",
+    "coms": {
+      "apiPath": "FRONTEND_COMS_APIPATH"
+    },
     "keycloak": {
       "clientId": "FRONTEND_KC_CLIENTID",
       "realm": "FRONTEND_KC_REALM",
