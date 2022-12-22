@@ -6,8 +6,7 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 import BucketPermission from './BucketPermission.vue';
-
-import { useBucketStore } from '@/store/bucketStore';
+import { useBucketStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 const { loading, buckets } = storeToRefs(useBucketStore());

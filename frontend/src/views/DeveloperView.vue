@@ -5,9 +5,7 @@ import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import { useToast } from 'primevue/usetoast';
 // State
-import { useAuthStore } from '@/store/authStore';
-import { useConfigStore } from '@/store/configStore';
-import { useUserStore } from '@/store/userStore';
+import { useAuthStore, useConfigStore, useUserStore } from '@/store';
 
 const { config } = storeToRefs(useConfigStore());
 const { getKeycloak } = storeToRefs(useAuthStore());

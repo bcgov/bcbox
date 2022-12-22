@@ -8,7 +8,7 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 // State
-import { useObjectStore } from '@/store/objectStore';
+import { useObjectStore } from '@/store';
 
 const objectStore = useObjectStore();
 

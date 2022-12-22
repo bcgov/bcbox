@@ -7,7 +7,7 @@ import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 // State
-import { useObjectStore } from '@/store/objectStore';
+import { useObjectStore } from '@/store';
 // Component
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
 

@@ -4,8 +4,7 @@ import { defineStore, storeToRefs } from 'pinia';
 import type { Bucket, UserPermission } from '@/interfaces';
 import { bucketService, userService } from '@/services';
 import { Permissions } from '@/utils/constants';
-import { useAuthStore } from '@/store/authStore';
-import { useUserStore } from '@/store/userStore';
+import { useAuthStore, useUserStore } from '@/store';
 
 export const useBucketStore = defineStore('bucket', () => {
   const userStore = useUserStore();

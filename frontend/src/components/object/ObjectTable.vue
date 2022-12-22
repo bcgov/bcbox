@@ -9,7 +9,7 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 // State
-import { useObjectStore } from '@/store/objectStore';
+import { useObjectStore } from '@/store';
 // Other
 import { formatDateLong } from '@/utils/formatters';
 import DeleteObjectButton from './DeleteObjectButton.vue';

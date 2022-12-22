@@ -4,7 +4,7 @@ import { ref } from 'vue';
 // PrimeVue
 import Button from 'primevue/button';
 // State
-import { useObjectStore } from '@/store/objectStore';
+import { useObjectStore } from '@/store';
 
 const objectStore = useObjectStore();
 

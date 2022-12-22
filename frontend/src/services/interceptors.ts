@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { useAuthStore } from '@/store/authStore';
-import { useConfigStore } from '@/store/configStore';
+import { useAuthStore, useConfigStore } from '@/store';
 const authStore = useAuthStore();
 const configStore = useConfigStore();
 
