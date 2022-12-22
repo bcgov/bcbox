@@ -3,7 +3,7 @@
 import Badge from 'primevue/badge';
 import Button from 'primevue/button';
 // Utils
-import { formatSize } from '@/utils/formatters';
+import { filesize } from 'filesize';
 
 defineProps({
   files: {
@@ -32,7 +32,7 @@ defineProps({
       <div>
         <span>{{ file.name }}</span>
         <div>
-          <span class="pr-2">{{ formatSize(file.size) }}</span>
+          <span class="pr-2">{{ filesize(file.size) }}</span>
           <Badge :value="badgeProps.value" :severity="badgeProps.severity" />
         </div>
       </div>

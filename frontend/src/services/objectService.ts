@@ -31,7 +31,7 @@ export default {
 
   /**
    * @function getMetadata
-   * Get an objects metadata
+   * Get an object's metadata
    * @returns {Promise} An axios response
    */
   getMetadata(headers: any = {}, params: any = {}) {

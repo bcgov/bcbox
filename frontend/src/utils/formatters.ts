@@ -1,5 +1,4 @@
 import { format, parseJSON } from 'date-fns';
-import { filesize } from 'filesize';
 
 function _dateFnsFormat(value: string, formatter: string) {
   const formatted = '';
@@ -36,14 +35,4 @@ export function formatDateLong(value: string) {
 export function toKebabCase(str: string | null) {
   const strs = str && str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g);
   return strs ? strs.join('-').toLocaleLowerCase() : '';
-}
-
-/**
- * @function formatSize
- * Converts a number, in bytes, to a formatted string
- * @param {String} bytes A number representing a file size
- * @returns {number} A converted string representation of `bytes`
- */
-export function formatSize(bytes: number) {
-  return filesize(bytes);
 }
