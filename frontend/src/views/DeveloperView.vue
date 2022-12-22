@@ -23,14 +23,6 @@ const getIdps = async () => {
     toast.add({ severity: 'error', summary: 'Error calling list IDPs endpoint example', detail: error, life: 3000 });
   }
 };
-
-const testBad = async () => {
-  try {
-    await userStore.testBad();
-  } catch (error) {
-    toast.add({ severity: 'error', summary: 'Intentional error calling COMS', detail: error, life: 3000 });
-  }
-};
 </script>
 
 <template>
@@ -47,16 +39,6 @@ const testBad = async () => {
     </div>
     <div v-else>
       <span v-if="idps.length">{{ idps }}</span>
-    </div>
-
-    <h3>Bad call</h3>
-    <Button
-      label="Fail in calling COMS - 404"
-      :loading="loading"
-      @click="testBad"
-    />
-    <div v-if="loading">
-      <ProgressSpinner />
     </div>
 
     <h3>Config</h3>

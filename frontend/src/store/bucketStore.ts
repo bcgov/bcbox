@@ -1,10 +1,17 @@
 import { ref, isProxy, toRaw } from 'vue';
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
+
 import type { Bucket, UserPermission } from '@/interfaces';
 import { bucketService, userService } from '@/services';
 import { Permissions } from '@/utils/constants';
+import { useAuthStore } from '@/store/authStore';
+import { useUserStore } from '@/store/userStore';
 
 export const useBucketStore = defineStore('bucket', () => {
+  const userStore = useUserStore();
+  const { getKeycloak } = storeToRefs(useAuthStore());
+  const { userSearch } = storeToRefs(userStore);
+
   // state
   const loading = ref(false);
   const buckets = ref([] as Bucket[]);
@@ -14,8 +21,19 @@ export const useBucketStore = defineStore('bucket', () => {
   async function load() {
     try {
       loading.value = true;
-      const response = await bucketService.searchForBuckets();
-      buckets.value = response.data;
+
+      const identityId = getKeycloak.value.tokenParsed?.idir_user_guid;
+      if (identityId) {
+        await userStore.searchUsers({ identityId: identityId });
+
+        if (userSearch.value.length) {
+          const userId = userSearch.value[0].userId;
+          const permResponse = (await bucketService.searchForPermissions({ userId, objectPerms: true })).data;
+          const uniqueIds = [...new Set(permResponse.map((x: any) => x.bucketId))];
+          const response = await bucketService.searchForBuckets({ bucketId: uniqueIds });
+          buckets.value = response.data;
+        }
+      }
     } finally {
       loading.value = false;
     }

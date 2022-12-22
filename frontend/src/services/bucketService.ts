@@ -8,8 +8,8 @@ export default {
    * Returns a list of buckets
    * @returns {Promise} An axios response
    */
-  searchForBuckets() {
-    return comsAxios().get(`${BUCKET_PATH}`);
+  searchForBuckets(params: Object) {
+    return comsAxios().get(`${BUCKET_PATH}`, { params });
   },
 
   searchForPermissions(params: Object) {

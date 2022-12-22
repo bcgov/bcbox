@@ -1,14 +1,25 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
+import type { User } from '@/interfaces';
 import { userService } from '@/services';
 
 export const useUserStore = defineStore('user', () => {
+  const userSearch = ref([] as User[]);
   const idps = ref([] as Object[]);
   const loading = ref(false);
 
-  // TODO: Implement stub function
-  function addBucket(values: { bucketId: string, accessKeyId: string, bucketName: string, bucket: string }) {
-    return values;
+  async function searchUsers(params: Object) {
+    try {
+      loading.value = true;
+      const userResponse = await userService.searchForUsers(params);
+      userSearch.value = userResponse.data;
+    } catch (error) {
+      console.error(`searchUsers error: ${error}`);
+      // So that a caller can action it
+      throw error;
+    } finally {
+      loading.value = false;
+    }
   }
 
   async function listIdps() {
@@ -17,7 +28,7 @@ export const useUserStore = defineStore('user', () => {
       const res = await userService.listIdps();
       idps.value = res.data;
     } catch (error) {
-      console.error(`listIdps error: ${error}`); // eslint-disable-line no-console
+      console.error(`listIdps error: ${error}`);
       // So that a caller can action it
       throw error;
     } finally {
@@ -25,19 +36,5 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // TODO: Will 404. TODO DELETE
-  async function testBad() {
-    try {
-      loading.value = true;
-      await userService.testBad();
-    } catch (error) {
-      console.error(`bad error: ${error}`); // eslint-disable-line no-console
-      // So that a caller can action it
-      throw error;
-    } finally {
-      loading.value = false;
-    }
-  }
-
-  return { addBucket, idps, loading, listIdps, testBad };
+  return { userSearch, idps, loading, searchUsers, listIdps };
 });
