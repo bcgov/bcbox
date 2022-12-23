@@ -1,20 +1,20 @@
-const config = require('config');
+import config from 'config';
 // const jwt = require('jsonwebtoken');
-const { parse } = require('path');
-const Transport = require('winston-transport');
-const { createLogger, format, transports } = require('winston');
-const { logger } = require('express-winston');
+import { parse } from 'path';
+import Transport from 'winston-transport';
+import { createLogger, format, transports } from 'winston';
+import { logger } from 'express-winston';
 
 /**
  * Class representing a winston transport writing to null
  * @extends Transport
  */
-class NullTransport extends Transport {
+export class NullTransport extends Transport {
   /**
    * Constructor
    * @param {object} opts Winston Transport options
    */
-  constructor(opts) {
+  constructor(opts: object) {
     super(opts);
   }
 
@@ -23,7 +23,7 @@ class NullTransport extends Transport {
    * @param {object} _info Object to log
    * @param {function} callback Callback function
    */
-  log(_info, callback) {
+  log(_info: object, callback: () => void) {
     callback();
   }
 }
@@ -45,7 +45,7 @@ const log = createLogger({
 if (process.env.NODE_ENV !== 'test') {
   log.add(new transports.Console({ handleExceptions: true }));
 } else {
-  log.add(new NullTransport());
+  log.add(new NullTransport({}));
 }
 
 if (config.has('server.logFile')) {
@@ -60,7 +60,7 @@ if (config.has('server.logFile')) {
  * @param {string} [filename] Optional module filename path to annotate logs with
  * @returns {object} A child logger with appropriate metadata if `filename` is defined. Otherwise returns a standard logger.
  */
-const getLogger = (filename) => {
+export const getLogger = (filename: string | undefined): object => {
   return filename ? log.child({ component: parse(filename).name }) : log;
 };
 
@@ -68,10 +68,11 @@ const getLogger = (filename) => {
  * Returns an express-winston middleware function for http logging
  * @returns {function} An express-winston middleware function
  */
-const httpLogger = logger({
+export const httpLogger = logger({
   colorize: false,
   // Parses express information to insert into log output
-  dynamicMeta: (req, res) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dynamicMeta: (req, res: any) => {
     // const token = jwt.decode((req.get('authorization') || '').slice(7));
     return {
       // azp: token && token.azp || undefined,
@@ -93,10 +94,8 @@ const httpLogger = logger({
   requestWhitelist: [], // Suppress default value output
   responseWhitelist: [], // Suppress default value output
   // Skip logging kube-probe requests
-  skip: (req) => req.get('user-agent') && req.get('user-agent').includes('kube-probe'),
+  skip: (req) => !!req.get('user-agent')?.includes('kube-probe'),
   winstonInstance: log,
 });
 
-module.exports = getLogger;
-module.exports.httpLogger = httpLogger;
-module.exports.NullTransport = NullTransport;
+export default getLogger;

@@ -1,7 +1,7 @@
-const express = require('express');
-const compression = require('compression');
-const config = require('config');
-const path = require('path');
+import express from 'express';
+import compression from 'compression';
+import config from 'config';
+import path from 'path';
 
 const app = express();
 app.use(compression());
@@ -28,4 +28,4 @@ app.use('/favicon.ico', (_req, res) => {
 });
 app.use(staticFilesPath, express.static(path.join(__dirname, 'dist')));
 
-module.exports = app;
+export default app;

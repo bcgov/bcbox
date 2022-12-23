@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
 /** Module dependencies */
-const config = require('config');
-const http = require('http');
+import config from 'config';
+import http from 'http';
 
-const app = require('../app.ts');
-const log = require('../src/components/log')(module.filename);
+import app from '../app';
+import getLogger from '../src/components/log';
+const log = getLogger(module.filename);
 
 /** Normalize a port into a number, string, or false. */
-const normalizePort = val => {
+const normalizePort = (val: string) => {
   const port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -25,7 +26,7 @@ const normalizePort = val => {
 };
 
 /** Event listener for HTTP server "error" event. */
-const onError = error => {
+const onError = (error: { syscall: string; code: string; }) => {
   if (error.syscall !== 'listen') {
     throw error;
   }
