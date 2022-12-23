@@ -17,7 +17,7 @@ app.get('/config', async (_req, res, next) => {
     res.status(200).json({
       ...config.get('frontend'),
       idpList: await readIdpList()
-   });
+    });
   } catch (err) {
     next(err);
   }
