@@ -1,6 +1,6 @@
 {
-  "name": "app",
-  "version": "0.0.0",
+  "name": "bcbox-frontend",
+  "version": "0.1.0",
   "scripts": {
     "serve": "vite",
     "build": "run-p type-check build-only",
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@pinia/testing": "^0.0.14",
-    "@rushstack/eslint-patch": "^1.1.4",
+    "@rushstack/eslint-patch": "^1.2.0",
     "@testing-library/vue": "^6.6.1",
     "@types/node": "^16.11.68",
     "@vitejs/plugin-vue": "^3.1.2",
@@ -43,7 +43,6 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-vue": "^9.3.0",
     "happy-dom": "^7.6.6",
-    "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
     "sass": "^1.55.0",
     "typescript": "~4.7.4",

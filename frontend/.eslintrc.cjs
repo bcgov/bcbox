@@ -5,28 +5,32 @@ module.exports = {
   root: true,
   env: {
     browser: true,
-    es2021: true,
-    node: true,
+    es2020: true
   },
-  extends: ['plugin:vue/vue3-essential', 'eslint:recommended', '@vue/eslint-config-typescript', '@vue/eslint-config-prettier'],
+  extends: [
+    '@vue/eslint-config-typescript',
+    'eslint:recommended',
+    'plugin:vue/vue3-essential'
+  ],
   parserOptions: {
-    ecmaVersion: 'latest',
+    ecmaVersion: 11,
   },
   plugins: [],
   rules: {
+    'eol-last': ['error', 'always'],
+    indent: ['error', 2, {
+      'SwitchCase': 1
+    }],
+    'linebreak-style': ['error', 'unix'],
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+    quotes: ['error', 'single'],
+    semi: ['error', 'always'],
     'vue/component-tags-order': [
       'error',
       {
         order: ['script', 'template', 'style'],
       },
-    ],
-    'prettier/prettier': [
-      'error',
-      {
-        singleQuote: true,
-        endOfLine: 'auto',
-        printWidth: 150,
-      },
-    ],
+    ]
   },
 };
