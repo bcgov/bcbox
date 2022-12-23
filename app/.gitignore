@@ -40,3 +40,6 @@ yarn-error.log*
 
 # temp office files
 ~$*
+
+# contains idp configuration - overrides default
+idplist-override.json
