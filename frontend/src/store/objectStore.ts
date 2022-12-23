@@ -34,6 +34,24 @@ export const useObjectStore = defineStore('objectStore', () => {
     }
   }
 
+  async function deleteObjectList(objectIds: Array<string>) {
+    try {
+      loading.value = true;
+      await Promise.all(
+        objectIds.map(async (id) => {
+          await objectService.deleteObject(id);
+        })
+      );
+    } catch (error) {
+      console.error(`Error deleting ${objectIds}: ${error}`);
+      throw error;
+    } finally {
+      // refresh the table after
+      listObjects();
+      loading.value = false;
+    }
+  }
+
   async function listObjects(params = {}) {
     objectList.value = [];
     const objects = (await objectService.listObjects(params)).data;
@@ -56,10 +74,10 @@ export const useObjectStore = defineStore('objectStore', () => {
     await objectService.getObject(objectId, versionId);
   }
 
-  async function readObject(objectId: string) {
-    const response = await objectService.readObject(objectId);
-    selectedObject.value = response.data;
-  }
+  // async function readObject(objectId: string) {
+  //   const response = await objectService.readObject(objectId);
+  //   selectedObject.value = response.data;
+  // }
 
-  return { loading, objectList, selectedObject, multiSelectedObjects, getObjectInfo, createObject, listObjects, getObject };
+  return { loading, multiSelectedObjects, objectList, selectedObject, createObject, deleteObjectList, getObjectInfo, getObject, listObjects };
 });
