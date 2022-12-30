@@ -39,7 +39,7 @@ export default defineConfig({
     exclude: [...configDefaults.exclude, 'packages/template/*'],
     coverage: {
       provider: 'istanbul', // 'istanbul' or 'c8'
-      reporter: ['text', 'json', 'html', 'lcov'],
+      reporter: ['text', 'json', 'html', 'clover', 'lcov'],
     },
   },
 });

@@ -1,3 +1,11 @@
 {
-  "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"]
+  "recommendations": [
+    "davidanson.vscode-markdownlint",
+    "dbaeumer.vscode-eslint",
+    "editorconfig.editorconfig",
+    "redhat.vscode-yaml",
+    "ryanluker.vscode-coverage-gutters",
+    "vue.volar",
+    "vue.vscode-typescript-vue-plugin",
+  ]
 }

@@ -47,12 +47,12 @@ export const useAuthStore = defineStore('auth', () => {
     const kc: Keycloak = new Keycloak(initOptions);
 
     // Once KC is set up and connected flag it as 'ready'
-    kc.onReady = function (authenticated) {
+    kc.onReady = () => {
       ready.value = true;
     };
 
     // After a refresh token fetch success
-    kc.onAuthRefreshSuccess = function () {
+    kc.onAuthRefreshSuccess = () => {
       // console.log(_keycloak.value.token);
     };
 
@@ -69,7 +69,7 @@ export const useAuthStore = defineStore('auth', () => {
           kc.updateToken(KEYCLOAK.MIN_VALID_TIME_SEC) // If the token expires within 70 seconds from now get a refreshed
             .then((refreshed: Boolean) => {
               if (refreshed) {
-                console.log('Token refreshed ' + refreshed);
+                console.log('Token refreshed ' + refreshed); // eslint-disable-line no-console
               } else {
                 // Don't need to log this unless debugging
                 // It's for when the token doesn't need to refresh because not expired enough
@@ -77,12 +77,12 @@ export const useAuthStore = defineStore('auth', () => {
               }
             })
             .catch(() => {
-              console.error('Failed to refresh token');
+              console.error('Failed to refresh token'); // eslint-disable-line no-console
             });
         }, KEYCLOAK.REFRESH_TIME_MS); // Check every 10s
       })
       .catch((err) => {
-        console.error(`Authenticated Failed ${JSON.stringify(err)}`);
+        console.error(`Authenticated Failed ${JSON.stringify(err)}`); // eslint-disable-line no-console
       });
   }
 

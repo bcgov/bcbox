@@ -32,8 +32,9 @@ const props = defineProps({
 const displayNoFileDialog = ref(false);
 const confirmDelete = () => {
   if (props.ids.length) {
+    const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} files` : 'this file';
     confirm.require({
-      message: `Please confirm that you want to delete ${props.ids.length > 1 ? `the selected ${props.ids.length} files` : 'this file'}`,
+      message: `Please confirm that you want to delete ${msgContext}`,
       header: `Delete ${props.ids.length > 1 ? 'items' : 'item'}`,
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',

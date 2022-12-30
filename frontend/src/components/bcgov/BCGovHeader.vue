@@ -8,7 +8,12 @@ import Login from '../Login.vue';
       <div class="grid align-items-center justify-content-center">
         <div class="col-fixed">
           <a href="https://www2.gov.bc.ca">
-            <img src="@/assets/images/bc_logo.svg" width="181" height="44" alt="B.C. Government Logo" />
+            <img
+              src="@/assets/images/bc_logo.svg"
+              width="181"
+              height="44"
+              alt="B.C. Government Logo"
+            />
           </a>
         </div>
         <div class="col">

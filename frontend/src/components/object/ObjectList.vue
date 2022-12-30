@@ -6,7 +6,6 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 // PrimeVue
 import Button from 'primevue/button';
-import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 // State
 import { storeToRefs } from 'pinia';
@@ -18,7 +17,6 @@ import ObjectSidebar from './ObjectSidebar.vue';
 import ObjectTable from './ObjectTable.vue';
 import ObjectUpload from './ObjectUpload.vue';
 
-const confirm = useConfirm();
 const objectStore = useObjectStore();
 const { multiSelectedObjects } = storeToRefs(objectStore);
 const route = useRoute();
@@ -64,10 +62,10 @@ onMounted(() => {
 
 <template>
   <div>
-    <div v-if="displayUpload" class="mb-4">
-      <ObjectUpload :closeCallback="closeUpload" />
-    </div>
-    <Button class="mr-2" @click="showUpload" :disabled="displayUpload"> <font-awesome-icon icon="fa-solid fa-upload" class="mr-1" /> Upload </Button>
+    <ObjectUpload v-if="displayUpload" class="mb-4" :closeCallback="closeUpload" />
+    <Button class="mr-2" @click="showUpload" :disabled="displayUpload">
+      <font-awesome-icon icon="fa-solid fa-upload" class="mr-1" /> Upload
+    </Button>
     <DownloadObjectButton :mode="ButtonMode.BUTTON" :ids="multiSelectedObjectIds" />
     <DeleteObjectButton class="ml-2" :mode="ButtonMode.BUTTON" :ids="multiSelectedObjectIds" />
   </div>
@@ -82,4 +80,6 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+</style>
