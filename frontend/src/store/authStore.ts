@@ -3,7 +3,7 @@ import type { Ref } from 'vue';
 import { defineStore } from 'pinia';
 import Keycloak, { type KeycloakLoginOptions } from 'keycloak-js';
 import { useConfigStore } from './configStore';
-import { KEYCLOAK } from '@/utils/constants';
+import { KEYCLOAK, IDENTITY_PROVIDERS } from '@/utils/constants';
 
 export const useAuthStore = defineStore('auth', () => {
   const configStore = useConfigStore();
@@ -16,10 +16,19 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Getters
   const getKeycloak = computed(() => _keycloak.value);
-  // const getAuthenticated = computed((): boolean => (ready.value ? !!_keycloak.value.authenticated : false));
-  // const getLoginUrl = computed(() => (ready.value ? _keycloak.value.createLoginUrl() : ''));
-  // const getToken = computed(() => (ready.value ? _keycloak.value.token : ''));
-  // const getTokenParsed = computed((): Object | undefined => (ready.value ? _keycloak.value.tokenParsed : {}));
+  const getIdentityProvider = computed(() => _keycloak.value.tokenParsed?.identity_provider);
+  
+  function getIdentityId() {
+    if (getIdentityProvider.value === IDENTITY_PROVIDERS.IDIR) {
+      return _keycloak.value.tokenParsed?.idir_user_guid;
+    }
+    // TODO: Confirm BCEID is correct
+    if (getIdentityProvider.value === IDENTITY_PROVIDERS.BCEID_BASIC) {
+      return _keycloak.value.tokenParsed?.bceid_user_guid;
+    }
+
+    return undefined;
+  }
 
   // Actions
   function login(options?: KeycloakLoginOptions) {
@@ -86,5 +95,5 @@ export const useAuthStore = defineStore('auth', () => {
       });
   }
 
-  return { login, logout, init, getKeycloak, ready };
+  return { login, logout, init, getKeycloak, getIdentityProvider, getIdentityId, ready };
 });

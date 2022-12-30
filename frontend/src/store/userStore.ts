@@ -11,8 +11,7 @@ export const useUserStore = defineStore('user', () => {
   async function searchUsers(params: Object) {
     try {
       loading.value = true;
-      const userResponse = await userService.searchForUsers(params);
-      userSearch.value = userResponse.data;
+      userSearch.value = (await userService.searchForUsers(params)).data;
     } catch (error) {
       console.error(`searchUsers error: ${error}`);
       // So that a caller can action it
@@ -25,8 +24,7 @@ export const useUserStore = defineStore('user', () => {
   async function listIdps() {
     try {
       loading.value = true;
-      const res = await userService.listIdps();
-      idps.value = res.data;
+      idps.value = (await userService.listIdps()).data;
     } catch (error) {
       console.error(`listIdps error: ${error}`);
       // So that a caller can action it

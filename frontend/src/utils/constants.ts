@@ -3,6 +3,11 @@ export const KEYCLOAK = Object.freeze({
   REFRESH_TIME_MS: 10000,
 });
 
+export const IDENTITY_PROVIDERS = Object.freeze({
+  IDIR: 'idir',
+  BCEID_BASIC: 'bceid_basic',
+});
+
 export const Permissions = Object.freeze({
   CREATE: 'CREATE',
   READ: 'READ',
