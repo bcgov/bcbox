@@ -5,7 +5,8 @@ module.exports = {
   root: true,
   env: {
     browser: true,
-    es2020: true
+    es2020: true,
+    jest: true,
   },
   extends: [
     '@vue/eslint-config-typescript',
@@ -22,6 +23,7 @@ module.exports = {
       'SwitchCase': 1
     }],
     'linebreak-style': ['error', 'unix'],
+    'max-len': ['warn', { 'code': 120, 'comments': 120, 'ignoreUrls': true }],
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     quotes: ['error', 'single'],
@@ -31,6 +33,15 @@ module.exports = {
       {
         order: ['script', 'template', 'style'],
       },
-    ]
+    ],
+    'vue/html-self-closing': [
+      'error',
+      {
+        'html': {
+          'void': 'any'
+        }
+      }
+    ],
+    'vue/multi-word-component-names': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
   },
 };
