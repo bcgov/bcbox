@@ -4,12 +4,10 @@ import { defineStore, storeToRefs } from 'pinia';
 import type { Bucket, UserPermission } from '@/interfaces';
 import { bucketService, userService } from '@/services';
 import { Permissions } from '@/utils/constants';
-import { useAuthStore, useUserStore } from '@/store';
+import { useUserStore } from '@/store';
 
 export const useBucketStore = defineStore('bucket', () => {
-  const { getIdentityId } = useAuthStore();
-  const userStore = useUserStore();
-  const { userSearch } = storeToRefs(userStore);
+  const { userId } = storeToRefs(useUserStore());
 
   // state
   const loading = ref(false);
@@ -21,16 +19,11 @@ export const useBucketStore = defineStore('bucket', () => {
     try {
       loading.value = true;
 
-      if (getIdentityId()) {
-        await userStore.searchUsers({ identityId: getIdentityId() });
-
-        if (userSearch.value.length) {
-          const userId = userSearch.value[0].userId;
-          const permResponse = (await bucketService.searchForPermissions({ userId, objectPerms: true })).data;
-          const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
-          const response = await bucketService.searchForBuckets({ bucketId: uniqueIds });
-          buckets.value = response.data;
-        }
+      if( userId.value ) {
+        const permResponse = (await bucketService.searchForPermissions({ userId: userId.value, objectPerms: true })).data;
+        const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
+        const response = await bucketService.searchForBuckets({ bucketId: uniqueIds });
+        buckets.value = response.data;
       }
     } finally {
       loading.value = false;
