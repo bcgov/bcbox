@@ -30,10 +30,18 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
 </script>
 
 <template>
-  <DataTable :loading="loading" :value="buckets" dataKey="bucketId" class="p-datatable-sm" stripedRows
-    responsiveLayout="scroll" :paginator="true" :rows="10"
+  <DataTable
+    :loading="loading"
+    :value="buckets"
+    dataKey="bucketId"
+    class="p-datatable-sm"
+    stripedRows
+    responsiveLayout="scroll"
+    :paginator="true" :rows="10"
     paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-    currentPageReportTemplate="{first}-{last} of {totalRecords}" :rowsPerPageOptions="[10, 20, 50]">
+    currentPageReportTemplate="{first}-{last} of {totalRecords}"
+    :rowsPerPageOptions="[10, 20, 50]"
+  >
     <template #empty>
       <div v-if="!loading" class="flex justify-content-center">
         <h3>There are no buckets associated with your account.</h3>

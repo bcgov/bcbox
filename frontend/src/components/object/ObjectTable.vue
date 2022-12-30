@@ -29,11 +29,20 @@ const showInfo = async (id: string) => {
 </script>
 
 <template>
-  <DataTable :loading="loading" :value="objectList" dataKey="id" class="p-datatable-sm" stripedRows
-    responsiveLayout="scroll" :paginator="true" :rows="10"
+  <DataTable
+    :loading="loading"
+    :value="objectList"
+    dataKey="id"
+    class="p-datatable-sm"
+    stripedRows
+    responsiveLayout="scroll"
+    :paginator="true"
+    :rows="10"
     paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-    currentPageReportTemplate="{first}-{last} of {totalRecords}" :rowsPerPageOptions="[10, 20, 50]"
-    v-model:selection="multiSelectedObjects">
+    currentPageReportTemplate="{first}-{last} of {totalRecords}"
+    :rowsPerPageOptions="[10, 20, 50]"
+    v-model:selection="multiSelectedObjects"
+  >
     <template #empty>
       <div v-if="!loading" class="flex justify-content-center">
         <h3>There are no objects associated with your account in this bucket.</h3>

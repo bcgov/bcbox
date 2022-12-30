@@ -65,6 +65,7 @@ jobs:
         with:
           comment_mode: update
           comment_footer: false
+          comment_context: Coverage Report (Application)
           coverage_path: app/coverage/clover.xml
           github_token: ${{ secrets.GITHUB_TOKEN }}
           threshold_alert: 50
@@ -74,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: app
+        working-directory: frontend
     outputs:
       HAS_CC_SECRETS: ${{ steps.check-secrets.outputs.HAS_CC_SECRETS }}
     timeout-minutes: 10
@@ -128,6 +129,7 @@ jobs:
         with:
           comment_mode: update
           comment_footer: false
+          comment_context: Coverage Report (Frontend)
           coverage_path: frontend/coverage/clover.xml
           github_token: ${{ secrets.GITHUB_TOKEN }}
           threshold_alert: 50
