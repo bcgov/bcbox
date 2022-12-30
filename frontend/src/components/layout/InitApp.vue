@@ -11,4 +11,6 @@ await configStore.load();
 await authStore.init();
 </script>
 
-<template></template>
+<template>
+  <div/>
+</template>

@@ -3,7 +3,6 @@
 import { ButtonMode } from '@/interfaces/common/enums';
 
 // Vue
-import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 // PrimeVue
 import Button from 'primevue/button';
@@ -30,26 +29,17 @@ const showInfo = async (id: string) => {
 </script>
 
 <template>
-  <DataTable
-    :loading="loading"
-    :value="objectList"
-    dataKey="id"
-    class="p-datatable-sm"
-    stripedRows
-    responsiveLayout="scroll"
-    :paginator="true"
-    :rows="10"
+  <DataTable :loading="loading" :value="objectList" dataKey="id" class="p-datatable-sm" stripedRows
+    responsiveLayout="scroll" :paginator="true" :rows="10"
     paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-    currentPageReportTemplate="{first}-{last} of {totalRecords}"
-    :rowsPerPageOptions="[10, 20, 50]"
-    v-model:selection="multiSelectedObjects"
-  >
+    currentPageReportTemplate="{first}-{last} of {totalRecords}" :rowsPerPageOptions="[10, 20, 50]"
+    v-model:selection="multiSelectedObjects">
     <template #empty>
       <div v-if="!loading" class="flex justify-content-center">
         <h3>There are no objects associated with your account in this bucket.</h3>
       </div>
     </template>
-    <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
+    <Column selectionMode="multiple" headerStyle="width: 3rem" />
     <Column field="name" :sortable="true" header="Name" headerStyle="width: 25%" bodyClass="truncate">
       <template #body="{ data }">
         <div v-if="data.name?.length > 25" v-tooltip.bottom="{ value: data.name }">
@@ -75,7 +65,8 @@ const showInfo = async (id: string) => {
         {{ formatDateLong(data.updatedAt) }}
       </template>
     </Column>
-    <Column header="Actions" headerStyle="width: 200px" headerClass="header-right" bodyClass="content-right action-buttons">
+    <Column header="Actions" headerStyle="width: 200px" headerClass="header-right"
+      bodyClass="content-right action-buttons">
       <template #body="{ data }">
         <DownloadObjectButton :mode="ButtonMode.ICON" :ids="[data.id]" />
         <Button class="p-button-lg p-button-rounded p-button-text">

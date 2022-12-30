@@ -15,13 +15,17 @@ import Navbar from '@/components/layout/Navbar.vue';
 const toast = useToast();
 // Suspense error captured
 onErrorCaptured((e: Error) => {
-  toast.add({ severity: 'error', summary: 'Error initializing app', detail: e.message, life: 3000 });
+  toast.add({
+    severity: 'error',
+    summary: 'Error initializing app',
+    detail: e.message, life: 3000
+  });
 });
 </script>
 
 <template>
   <Toast />
-  <ConfirmDialog></ConfirmDialog>
+  <ConfirmDialog/>
   <Suspense>
     <AppLayout>
       <template #nav><Navbar /></template>

@@ -102,5 +102,15 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  return { loading, load, getBucketInfo, getBucketPermissions, addBucketPermission, deleteBucketPermission, removeBucketUser, buckets, permissions };
+  return {
+    loading,
+    load,
+    getBucketInfo,
+    getBucketPermissions,
+    addBucketPermission,
+    deleteBucketPermission,
+    removeBucketUser,
+    buckets,
+    permissions
+  };
 });

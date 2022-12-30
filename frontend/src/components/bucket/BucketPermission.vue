@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
@@ -33,7 +33,9 @@ const removeBucketUser = (userId: string) => {
 </script>
 
 <template>
-  <Button class="mt-1 mb-4"> <font-awesome-icon icon="fa-solid fa-user-plus" class="mr-1" /> Add user </Button>
+  <Button class="mt-1 mb-4">
+    <font-awesome-icon icon="fa-solid fa-user-plus" class="mr-1" /> Add user
+  </Button>
 
   <DataTable
     :loading="loading"
@@ -106,7 +108,11 @@ const removeBucketUser = (userId: string) => {
     </Column>
     <Column header="Remove">
       <template #body="{ data }">
-        <Button class="p-button-lg p-button-text" style="color: red" @click="removeBucketUser(data.userId)">
+        <Button
+          class="p-button-lg p-button-text"
+          style="color: red"
+          @click="removeBucketUser(data.userId)"
+        >
           <font-awesome-icon icon="fa-solid fa-user-xmark" />
         </Button>
       </template>

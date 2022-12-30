@@ -11,7 +11,7 @@ describe('TextInput.vue', () => {
       },
     });
 
-    const input = wrapper.find(`input[name="test"]`);
+    const input = wrapper.find('input[name="test"]');
     expect(input).toBeTruthy();
   });
 
@@ -25,7 +25,7 @@ describe('TextInput.vue', () => {
       },
     });
 
-    await wrapper.find(`input[name="test"]`).setValue('');
+    await wrapper.find('input[name="test"]').setValue('');
     await wrapper.find('input[name="test"]').trigger('blur');
     await flushPromises();
     expect(wrapper.find('span').isVisible()).toBe(true);

@@ -10,17 +10,17 @@ const router = createRouter({
       name: RouteNames.Home,
       component: () => import('../views/HomeView.vue'),
     },
-    {
-      path: '/create',
-      children: [
-        {
-          path: 'bucket',
-          name: RouteNames.CreateBucket,
-          component: () => import('../views/CreateBucketView.vue'),
-          meta: { requiresAuth: true },
-        },
-      ],
-    },
+    // {
+    //   path: '/create',
+    //   children: [
+    //     {
+    //       path: 'bucket',
+    //       name: RouteNames.CreateBucket,
+    //       component: () => import('../views/CreateBucketView.vue'),
+    //       meta: { requiresAuth: true },
+    //     },
+    //   ],
+    // },
     // {
     //   path: '/detail',
     //   children: [{}],
@@ -51,7 +51,7 @@ const router = createRouter({
     {
       path: '/logout',
       name: RouteNames.Logout,
-      redirect: (to) => {
+      redirect: () => {
         return { path: '/' };
       },
     },
@@ -66,7 +66,7 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
   if (to.meta.requiresAuth) {
     const authStore = useAuthStore();
 
@@ -80,7 +80,7 @@ router.beforeEach((to, from) => {
           }
         });
         onError((err) => {
-          console.error(`Error in route gaurd waiting for Keycloak ${err}`);
+          console.error(`Error in route gaurd waiting for Keycloak ${err}`); // eslint-disable-line no-console
           unsubscribe();
           throw new Error(`Failed to initialize Kecloak: ${(err as Error).message}`);
         });

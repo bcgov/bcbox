@@ -7,7 +7,7 @@ import { filesize } from 'filesize';
 
 defineProps({
   files: {
-    type: Array<File>,
+    type: Array<any>, // TODO: Change any to more specific type
     required: true,
   },
   badgeProps: {
@@ -28,7 +28,12 @@ defineProps({
       :key="file.name + file.type + file.size"
       class="card flex border-1 border-round surface-border align-items-center p-2 gap-3 mb-1 text-sm"
     >
-      <img v-if="file.type.startsWith('image')" role="presentation" :alt="file.name" :src="file.objectURL" width="50" />
+      <img
+        v-if="file.type.startsWith('image')"
+        role="presentation"
+        :alt="file.name"
+        :src="file.objectURL" width="50"
+      />
       <div>
         <span>{{ file.name }}</span>
         <div>
@@ -37,7 +42,10 @@ defineProps({
         </div>
       </div>
       <div class="ml-auto">
-        <Button class="p-button-lg p-button-rounded p-button-text" @click="removeCallback(index)">
+        <Button
+          class="p-button-lg p-button-rounded p-button-text"
+          @click="removeCallback(index)"
+        >
           <font-awesome-icon icon="fa-solid fa-xmark" />
         </Button>
       </div>

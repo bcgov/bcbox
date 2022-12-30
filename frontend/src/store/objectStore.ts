@@ -25,9 +25,9 @@ export const useObjectStore = defineStore('objectStore', () => {
   async function createObject(object: any, bucketId?: string) {
     try {
       loading.value = true;
-      const response = await objectService.createObject(object, bucketId);
+      await objectService.createObject(object, bucketId);
     } catch (error) {
-      console.error(`Error uploading: ${error}`);
+      console.error(`Error uploading: ${error}`); // eslint-disable-line no-console
       throw error;
     } finally {
       loading.value = false;
@@ -43,7 +43,7 @@ export const useObjectStore = defineStore('objectStore', () => {
         })
       );
     } catch (error) {
-      console.error(`Error deleting ${objectIds}: ${error}`);
+      console.error(`Error deleting ${objectIds}: ${error}`); // eslint-disable-line no-console
       throw error;
     } finally {
       // refresh the table after
@@ -79,5 +79,15 @@ export const useObjectStore = defineStore('objectStore', () => {
   //   selectedObject.value = response.data;
   // }
 
-  return { loading, multiSelectedObjects, objectList, selectedObject, createObject, deleteObjectList, getObjectInfo, getObject, listObjects };
+  return {
+    loading,
+    multiSelectedObjects,
+    objectList,
+    selectedObject,
+    createObject,
+    deleteObjectList,
+    getObjectInfo,
+    getObject,
+    listObjects
+  };
 });

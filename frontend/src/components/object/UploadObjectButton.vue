@@ -21,7 +21,7 @@ const selectedFile = ref<any>(null);
 const uploader = ref<any>(null);
 
 // Methods
-const handleFileImport = () => {
+const handleFileImport = () => { // eslint-disable-line no-unused-vars, @typescript-eslint/no-unused-vars
   isSelecting.value = true;
 
   // After obtaining the focus when closing the FilePicker, return the button state to normal
@@ -37,7 +37,7 @@ const handleFileImport = () => {
   uploader.value.click();
 };
 
-const onFileChanged = async (e: any) => {
+const onFileChanged = async (e: any) => { // eslint-disable-line no-unused-vars, @typescript-eslint/no-unused-vars
   selectedFile.value = e.target.files[0];
   await objectStore.createObject(selectedFile.value, props.bucketId);
   selectedFile.value = null;

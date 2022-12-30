@@ -30,19 +30,10 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
 </script>
 
 <template>
-  <DataTable
-    :loading="loading"
-    :value="buckets"
-    dataKey="bucketId"
-    class="p-datatable-sm"
-    stripedRows
-    responsiveLayout="scroll"
-    :paginator="true"
-    :rows="10"
+  <DataTable :loading="loading" :value="buckets" dataKey="bucketId" class="p-datatable-sm" stripedRows
+    responsiveLayout="scroll" :paginator="true" :rows="10"
     paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-    currentPageReportTemplate="{first}-{last} of {totalRecords}"
-    :rowsPerPageOptions="[10, 20, 50]"
-  >
+    currentPageReportTemplate="{first}-{last} of {totalRecords}" :rowsPerPageOptions="[10, 20, 50]">
     <template #empty>
       <div v-if="!loading" class="flex justify-content-center">
         <h3>There are no buckets associated with your account.</h3>
@@ -56,16 +47,22 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
     <Column field="name" header="Bucket Name" bodyClass="truncate">
       <template #body="{ data }">
         <div v-if="data.bucketName.length > 150" v-tooltip.bottom="{ value: data.bucketName }">
-          <router-link :to="{ name: RouteNames.ListObjects, query: { bucketId: data.bucketId } }"> {{ data.bucketName }}</router-link>
+          <router-link :to="{ name: RouteNames.ListObjects, query: { bucketId: data.bucketId } }">
+            {{ data.bucketName }}
+          </router-link>
         </div>
         <div v-else>
-          <router-link :to="{ name: RouteNames.ListObjects, query: { bucketId: data.bucketId } }"> {{ data.bucketName }}</router-link>
+          <router-link :to="{ name: RouteNames.ListObjects, query: { bucketId: data.bucketId } }">
+            {{ data.bucketName }}
+          </router-link>
         </div>
       </template>
     </Column>
-    <Column header="Actions" headerStyle="width: 200px" headerClass="header-right" bodyClass="content-right action-buttons">
+    <Column header="Actions" headerStyle="width: 200px" headerClass="header-right"
+      bodyClass="content-right action-buttons">
       <template #body="{ data }">
-        <Button class="p-button-lg p-button-rounded p-button-text" @click="showPermissions(data.bucketId, data.bucketName)">
+        <Button class="p-button-lg p-button-rounded p-button-text"
+          @click="showPermissions(data.bucketId, data.bucketName)">
           <font-awesome-icon icon="fa-solid fa-gear" />
         </Button>
         <Button class="p-button-lg p-button-rounded p-button-text" @click="showInfo(data.bucketId)">

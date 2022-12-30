@@ -58,7 +58,8 @@ if (config.has('server.logFile')) {
 /**
  * Returns a Winston Logger or Child Winston Logger
  * @param {string} [filename] Optional module filename path to annotate logs with
- * @returns {object} A child logger with appropriate metadata if `filename` is defined. Otherwise returns a standard logger.
+ * @returns {object} A child logger with appropriate metadata if `filename` is defined.
+ * Otherwise returns a standard logger.
  */
 export const getLogger = (filename: string | undefined): object => {
   return filename ? log.child({ component: parse(filename).name }) : log;
