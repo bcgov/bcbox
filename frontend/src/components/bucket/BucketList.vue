@@ -31,8 +31,15 @@ onMounted(() => {
     <div class="flex-grow-1">
       <BucketsTable @show-info="showInfo" />
     </div>
-    <div v-if="displayInfo" class="flex-shrink-0 ml-3" style="max-width: 33%; min-width: 33%">
-      <BucketsSidebar :displayInfo="displayInfo" @close-info="closeInfo" />
+    <div
+      v-if="displayInfo"
+      class="flex-shrink-0 ml-3"
+      style="max-width: 33%; min-width: 33%"
+    >
+      <BucketsSidebar
+        :display-info="displayInfo"
+        @close-info="closeInfo"
+      />
     </div>
   </div>
 </template>

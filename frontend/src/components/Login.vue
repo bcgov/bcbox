@@ -8,6 +8,19 @@ const { ready, getKeycloak } = storeToRefs(useAuthStore());
 </script>
 
 <template>
-  <Button v-if="!getKeycloak.token" primary @click="() => login" :loading="!ready">Log in</Button>
-  <Button v-else primary @click="logout">Log out</Button>
+  <Button
+    v-if="!getKeycloak.token"
+    primary
+    :loading="!ready"
+    @click="() => login"
+  >
+    Log in
+  </Button>
+  <Button
+    v-else
+    primary
+    @click="logout"
+  >
+    Log out
+  </Button>
 </template>

@@ -29,7 +29,7 @@ app.use(createPinia());
 app.use(router);
 app.use(ToastService);
 app.use(ConfirmationService);
-app.component('font-awesome-icon', FontAwesomeIcon);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
 app.directive('tooltip', Tooltip);
 
 app.mount('#app');

@@ -62,20 +62,48 @@ onMounted(() => {
 
 <template>
   <div>
-    <ObjectUpload v-if="displayUpload" class="mb-4" :closeCallback="closeUpload" />
-    <Button class="mr-2" @click="showUpload" :disabled="displayUpload">
-      <font-awesome-icon icon="fa-solid fa-upload" class="mr-1" /> Upload
+    <ObjectUpload
+      v-if="displayUpload"
+      class="mb-4"
+      :close-callback="closeUpload"
+    />
+    <Button
+      class="mr-2"
+      :disabled="displayUpload"
+      @click="showUpload"
+    >
+      <font-awesome-icon
+        icon="fa-solid fa-upload"
+        class="mr-1"
+      /> Upload
     </Button>
-    <DownloadObjectButton :mode="ButtonMode.BUTTON" :ids="multiSelectedObjectIds" />
-    <DeleteObjectButton class="ml-2" :mode="ButtonMode.BUTTON" :ids="multiSelectedObjectIds" />
+    <DownloadObjectButton
+      :mode="ButtonMode.BUTTON"
+      :ids="multiSelectedObjectIds"
+    />
+    <DeleteObjectButton
+      class="ml-2"
+      :mode="ButtonMode.BUTTON"
+      :ids="multiSelectedObjectIds"
+    />
   </div>
 
   <div class="flex mt-4">
     <div class="flex-grow-1">
-      <ObjectTable @show-info="showInfo" :displayInfo="displayInfo" />
+      <ObjectTable
+        :display-info="displayInfo"
+        @show-info="showInfo"
+      />
     </div>
-    <div v-if="displayInfo" class="flex-shrink-0 ml-3" style="max-width: 33%; min-width: 33%">
-      <ObjectSidebar :displayInfo="displayInfo" @close-info="closeInfo" />
+    <div
+      v-if="displayInfo"
+      class="flex-shrink-0 ml-3"
+      style="max-width: 33%; min-width: 33%"
+    >
+      <ObjectSidebar
+        :display-info="displayInfo"
+        @close-info="closeInfo"
+      />
     </div>
   </div>
 </template>

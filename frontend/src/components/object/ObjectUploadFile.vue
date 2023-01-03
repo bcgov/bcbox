@@ -32,13 +32,17 @@ defineProps({
         v-if="file.type.startsWith('image')"
         role="presentation"
         :alt="file.name"
-        :src="file.objectURL" width="50"
+        :src="file.objectURL"
+        width="50"
       />
       <div>
         <span>{{ file.name }}</span>
         <div>
           <span class="pr-2">{{ filesize(file.size) }}</span>
-          <Badge :value="badgeProps.value" :severity="badgeProps.severity" />
+          <Badge
+            :value="badgeProps.value"
+            :severity="badgeProps.severity"
+          />
         </div>
       </div>
       <div class="ml-auto">

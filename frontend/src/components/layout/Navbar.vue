@@ -14,9 +14,21 @@ const { getKeycloak } = storeToRefs(useAuthStore());
     <Toolbar>
       <template #start>
         <ol class="list-none m-0 p-0 flex flex-row align-items-center font-semibold">
-          <li class="mr-2"><router-link :to="{ name: RouteNames.Home }">Home</router-link></li>
-          <li class="mr-2"><router-link :to="{ name: RouteNames.ListBuckets }">My Buckets</router-link></li>
-          <li class="mr-2"><router-link :to="{ name: RouteNames.Developer }">Developer</router-link></li>
+          <li class="mr-2">
+            <router-link :to="{ name: RouteNames.Home }">
+              Home
+            </router-link>
+          </li>
+          <li class="mr-2">
+            <router-link :to="{ name: RouteNames.ListBuckets }">
+              My Buckets
+            </router-link>
+          </li>
+          <li class="mr-2">
+            <router-link :to="{ name: RouteNames.Developer }">
+              Developer
+            </router-link>
+          </li>
         </ol>
       </template>
     </Toolbar>

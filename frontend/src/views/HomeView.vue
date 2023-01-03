@@ -7,7 +7,9 @@ const { getKeycloak } = storeToRefs(useAuthStore());
 
 <template>
   <div>
-    <h3 v-if="!getKeycloak.authenticated">Please login to continue.</h3>
+    <h3 v-if="!getKeycloak.authenticated">
+      Please login to continue.
+    </h3>
   </div>
 </template>
 

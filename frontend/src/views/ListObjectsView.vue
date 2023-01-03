@@ -3,7 +3,9 @@ import ObjectList from '@/components/object/ObjectList.vue';
 </script>
 
 <template>
-  <h1 class="mb-3">Files</h1>
+  <h1 class="mb-3">
+    Files
+  </h1>
   <ObjectList />
 </template>
 

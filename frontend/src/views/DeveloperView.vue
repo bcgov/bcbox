@@ -37,7 +37,11 @@ const testBad = async () => {
   <h2>Developer</h2>
   <div>
     <h3>Temp for testing API call to COMS</h3>
-    <Button label="Call COMS" @click="getIdps" :loading="loading" />
+    <Button
+      label="Call COMS"
+      :loading="loading"
+      @click="getIdps"
+    />
     <div v-if="loading">
       <ProgressSpinner />
     </div>
@@ -46,7 +50,11 @@ const testBad = async () => {
     </div>
 
     <h3>Bad call</h3>
-    <Button label="Fail in calling COMS - 404" @click="testBad" :loading="loading" />
+    <Button
+      label="Fail in calling COMS - 404"
+      :loading="loading"
+      @click="testBad"
+    />
     <div v-if="loading">
       <ProgressSpinner />
     </div>
