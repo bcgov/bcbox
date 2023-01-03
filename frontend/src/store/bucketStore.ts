@@ -19,8 +19,11 @@ export const useBucketStore = defineStore('bucket', () => {
     try {
       loading.value = true;
 
-      if( userId.value ) {
-        const permResponse = (await bucketService.searchForPermissions({ userId: userId.value, objectPerms: true })).data;
+      if (userId.value) {
+        const permResponse = (await bucketService.searchForPermissions({
+          userId: userId.value,
+          objectPerms: true
+        })).data;
         const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
         const response = await bucketService.searchForBuckets({ bucketId: uniqueIds });
         buckets.value = response.data;

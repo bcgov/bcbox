@@ -37,7 +37,7 @@ export const useUserStore = defineStore('user', () => {
       loading.value = true;
       idps.value = (await userService.listIdps()).data;
     } catch (error) {
-      console.error(`listIdps error: ${error}`);
+      console.error(`listIdps error: ${error}`); // eslint-disable-line no-console
       // So that a caller can action it
       throw error;
     } finally {
@@ -50,7 +50,7 @@ export const useUserStore = defineStore('user', () => {
       loading.value = true;
       userSearch.value = (await userService.searchForUsers(params)).data;
     } catch (error) {
-      console.error(`searchUsers error: ${error}`);
+      console.error(`searchUsers error: ${error}`); // eslint-disable-line no-console
       // So that a caller can action it
       throw error;
     } finally {

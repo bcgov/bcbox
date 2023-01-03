@@ -16,7 +16,10 @@ import DeleteObjectButton from './DeleteObjectButton.vue';
 import DownloadObjectButton from './DownloadObjectButton.vue';
 
 defineProps({
-  displayInfo: Object,
+  displayInfo: {
+    type: Object,
+    default: undefined
+  }
 });
 
 const { loading, multiSelectedObjects, objectList } = storeToRefs(useObjectStore());
@@ -30,8 +33,8 @@ const showInfo = async (id: string) => {
 
 <template>
   <DataTable
-    :loading="loading"
     v-model:selection="multiSelectedObjects"
+    :loading="loading"
     :value="objectList"
     data-key="id"
     class="p-datatable-sm"
