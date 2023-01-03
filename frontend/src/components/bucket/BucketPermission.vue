@@ -34,73 +34,94 @@ const removeBucketUser = (userId: string) => {
 
 <template>
   <Button class="mt-1 mb-4">
-    <font-awesome-icon icon="fa-solid fa-user-plus" class="mr-1" /> Add user
+    <font-awesome-icon
+      icon="fa-solid fa-user-plus"
+      class="mr-1"
+    /> Add user
   </Button>
 
   <DataTable
     :loading="loading"
     :value="permissions"
-    dataKey="bucketId"
+    data-key="bucketId"
     class="p-datatable-sm"
-    stripedRows
-    responsiveLayout="scroll"
+    striped-rows
+    responsive-layout="scroll"
     :paginator="true"
     :rows="10"
-    paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-    currentPageReportTemplate="{first}-{last} of {totalRecords}"
-    :rowsPerPageOptions="[10, 20, 50]"
+    paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
+    current-page-report-template="{first}-{last} of {totalRecords}"
+    :rows-per-page-options="[10, 20, 50]"
   >
     <template #empty>
       <div class="flex justify-content-center">
         <h3>There are no users associated with this bucket.</h3>
       </div>
     </template>
-    <Column field="fullName" header="Name" />
-    <Column header="Upload" bodyClass="content-center">
+    <Column
+      field="fullName"
+      header="Name"
+    />
+    <Column
+      header="Upload"
+      body-class="content-center"
+    >
       <template #body="{ data }">
         <Checkbox
-          inputId="create"
           v-model="data.create"
+          input-id="create"
           :binary="true"
           @input="(value) => updateBucketPermission(value, data.userId, Permissions.CREATE)"
         />
       </template>
     </Column>
-    <Column header="Read" bodyClass="content-center">
+    <Column
+      header="Read"
+      body-class="content-center"
+    >
       <template #body="{ data }">
         <Checkbox
-          inputId="read"
           v-model="data.read"
+          input-id="read"
           :binary="true"
           @input="(value) => updateBucketPermission(value, data.userId, Permissions.READ)"
         />
       </template>
     </Column>
-    <Column header="Update" bodyClass="content-center">
+    <Column
+      header="Update"
+      body-class="content-center"
+    >
       <template #body="{ data }">
         <Checkbox
-          inputId="update"
           v-model="data.update"
+          input-id="update"
           :binary="true"
           @input="(value) => updateBucketPermission(value, data.userId, Permissions.UPDATE)"
         />
       </template>
     </Column>
-    <Column header="Delete" bodyClass="content-center">
+    <Column
+      header="Delete"
+      body-class="content-center"
+    >
       <template #body="{ data }">
         <Checkbox
-          inputId="delete"
           v-model="data.delete"
+          input-id="delete"
           :binary="true"
           @input="(value) => updateBucketPermission(value, data.userId, Permissions.DELETE)"
         />
       </template>
     </Column>
-    <Column header="Manage" bodyClass="content-center">
+    <Column
+      header="Manage"
+      body-class="content-center"
+    >
       <template #body="{ data }">
         <Checkbox
-          inputId="manage"
           v-model="data.manage"
+          input-id="manage"
           :binary="true"
           @input="(value) => updateBucketPermission(value, data.userId, Permissions.MANAGE)"
         />

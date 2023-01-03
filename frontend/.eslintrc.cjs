@@ -11,7 +11,7 @@ module.exports = {
   extends: [
     '@vue/eslint-config-typescript',
     'eslint:recommended',
-    'plugin:vue/vue3-essential'
+    'plugin:vue/vue3-recommended',
   ],
   parserOptions: {
     ecmaVersion: 11,

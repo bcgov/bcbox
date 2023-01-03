@@ -15,11 +15,17 @@ const closeInfo = async () => {
 <template>
   <div class="flex justify-content-start">
     <div class="flex col align-items-center pl-0">
-      <font-awesome-icon icon="fa-solid fa-circle-info" style="font-size: 2rem" />
+      <font-awesome-icon
+        icon="fa-solid fa-circle-info"
+        style="font-size: 2rem"
+      />
       <h1>Bucket details</h1>
     </div>
     <div class="col-fixed align-items-center">
-      <Button class="p-button-lg p-button-rounded p-button-text black" @click="closeInfo">
+      <Button
+        class="p-button-lg p-button-rounded p-button-text black"
+        @click="closeInfo"
+      >
         <font-awesome-icon icon="fa-solid fa-xmark" />
       </Button>
     </div>
@@ -29,17 +35,29 @@ const closeInfo = async () => {
       <div class="col-12">
         <h2>Properties</h2>
       </div>
-      <div class="col-3">Bucket Name:</div>
-      <div class="col-9">{{ displayInfo?.bucketName }}</div>
-      <div class="col-3">Bucket ID:</div>
-      <div class="col-9">{{ displayInfo?.bucketId }}</div>
+      <div class="col-3">
+        Bucket Name:
+      </div>
+      <div class="col-9">
+        {{ displayInfo?.bucketName }}
+      </div>
+      <div class="col-3">
+        Bucket ID:
+      </div>
+      <div class="col-9">
+        {{ displayInfo?.bucketId }}
+      </div>
     </div>
     <div class="grid">
       <div class="col-12">
         <h2>Access</h2>
       </div>
-      <div class="col-3">Managed by:</div>
-      <div class="col-9">{{ displayInfo?.managedBy }}</div>
+      <div class="col-3">
+        Managed by:
+      </div>
+      <div class="col-9">
+        {{ displayInfo?.managedBy }}
+      </div>
     </div>
   </div>
 </template>

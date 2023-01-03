@@ -31,27 +31,42 @@ const showInfo = async (id: string) => {
 <template>
   <DataTable
     :loading="loading"
+    v-model:selection="multiSelectedObjects"
     :value="objectList"
-    dataKey="id"
+    data-key="id"
     class="p-datatable-sm"
-    stripedRows
-    responsiveLayout="scroll"
+    striped-rows
+    responsive-layout="scroll"
     :paginator="true"
     :rows="10"
-    paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-    currentPageReportTemplate="{first}-{last} of {totalRecords}"
-    :rowsPerPageOptions="[10, 20, 50]"
-    v-model:selection="multiSelectedObjects"
+    paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
+    current-page-report-template="{first}-{last} of {totalRecords}"
+    :rows-per-page-options="[10, 20, 50]"
   >
     <template #empty>
-      <div v-if="!loading" class="flex justify-content-center">
+      <div
+        v-if="!loading"
+        class="flex justify-content-center"
+      >
         <h3>There are no objects associated with your account in this bucket.</h3>
       </div>
     </template>
-    <Column selectionMode="multiple" headerStyle="width: 3rem" />
-    <Column field="name" :sortable="true" header="Name" headerStyle="width: 25%" bodyClass="truncate">
+    <Column
+      selection-mode="multiple"
+      header-style="width: 3rem"
+    />
+    <Column
+      field="name"
+      :sortable="true"
+      header="Name"
+      header-style="width: 25%"
+      body-class="truncate"
+    >
       <template #body="{ data }">
-        <div v-if="data.name?.length > 25" v-tooltip.bottom="{ value: data.name }">
+        <div
+          v-if="data.name?.length > 25"
+          v-tooltip.bottom="{ value: data.name }"
+        >
           {{ data.name }}
         </div>
         <div v-else>
@@ -59,9 +74,16 @@ const showInfo = async (id: string) => {
         </div>
       </template>
     </Column>
-    <Column field="id" header="Object ID" bodyClass="truncate">
+    <Column
+      field="id"
+      header="Object ID"
+      body-class="truncate"
+    >
       <template #body="{ data }">
-        <div v-if="data.id?.length > 15" v-tooltip.bottom="{ value: data.id }">
+        <div
+          v-if="data.id?.length > 15"
+          v-tooltip.bottom="{ value: data.id }"
+        >
           {{ data.id }}
         </div>
         <div v-else>
@@ -69,22 +91,38 @@ const showInfo = async (id: string) => {
         </div>
       </template>
     </Column>
-    <Column header="Updated date" :hidden="displayInfo ? true : false">
+    <Column
+      header="Updated date"
+      :hidden="displayInfo ? true : false"
+    >
       <template #body="{ data }">
         {{ formatDateLong(data.updatedAt) }}
       </template>
     </Column>
-    <Column header="Actions" headerStyle="width: 200px" headerClass="header-right"
-      bodyClass="content-right action-buttons">
+    <Column
+      header="Actions"
+      header-style="width: 200px"
+      header-class="header-right"
+      body-class="content-right action-buttons"
+    >
       <template #body="{ data }">
-        <DownloadObjectButton :mode="ButtonMode.ICON" :ids="[data.id]" />
+        <DownloadObjectButton
+          :mode="ButtonMode.ICON"
+          :ids="[data.id]"
+        />
         <Button class="p-button-lg p-button-rounded p-button-text">
           <font-awesome-icon icon="fa-solid fa-gear" />
         </Button>
-        <Button class="p-button-lg p-button-rounded p-button-text" @click="showInfo(data.id)">
+        <Button
+          class="p-button-lg p-button-rounded p-button-text"
+          @click="showInfo(data.id)"
+        >
           <font-awesome-icon icon="fa-solid fa-circle-info" />
         </Button>
-        <DeleteObjectButton :mode="ButtonMode.ICON" :ids="[data.id]" />
+        <DeleteObjectButton
+          :mode="ButtonMode.ICON"
+          :ids="[data.id]"
+        />
       </template>
     </Column>
   </DataTable>

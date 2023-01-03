@@ -12,5 +12,5 @@ await authStore.init();
 </script>
 
 <template>
-  <div/>
+  <div />
 </template>

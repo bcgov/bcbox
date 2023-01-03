@@ -45,5 +45,10 @@ const onFileChanged = async (e: any) => { // eslint-disable-line no-unused-vars,
 </script>
 
 <template>
-  <Button class="mr-2"> <font-awesome-icon icon="fa-solid fa-upload" class="mr-1" /> Upload </Button>
+  <Button class="mr-2">
+    <font-awesome-icon
+      icon="fa-solid fa-upload"
+      class="mr-1"
+    /> Upload
+  </Button>
 </template>

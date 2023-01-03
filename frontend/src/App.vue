@@ -25,18 +25,27 @@ onErrorCaptured((e: Error) => {
 
 <template>
   <Toast />
-  <ConfirmDialog/>
+  <ConfirmDialog />
   <Suspense>
     <AppLayout>
-      <template #nav><Navbar /></template>
-      <template #main> <RouterView /> <InitApp /></template>
+      <template #nav>
+        <Navbar />
+      </template>
+      <template #main>
+        <RouterView /> <InitApp />
+      </template>
     </AppLayout>
 
     <!-- Loading -->
     <template #fallback>
       <AppLayout>
         <template #nav />
-        <template #main><ProgressBar mode="indeterminate" style="height: 0.5em" /></template>
+        <template #main>
+          <ProgressBar
+            mode="indeterminate"
+            style="height: 0.5em"
+          />
+        </template>
       </AppLayout>
     </template>
   </Suspense>

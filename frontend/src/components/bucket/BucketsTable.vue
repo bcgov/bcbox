@@ -33,28 +33,39 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
   <DataTable
     :loading="loading"
     :value="buckets"
-    dataKey="bucketId"
+    data-key="bucketId"
     class="p-datatable-sm"
-    stripedRows
-    responsiveLayout="scroll"
-    :paginator="true" :rows="10"
-    paginatorTemplate="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-    currentPageReportTemplate="{first}-{last} of {totalRecords}"
-    :rowsPerPageOptions="[10, 20, 50]"
+    striped-rows
+    responsive-layout="scroll"
+    :paginator="true"
+    :rows="10"
+    paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
+    current-page-report-template="{first}-{last} of {totalRecords}"
+    :rows-per-page-options="[10, 20, 50]"
   >
     <template #empty>
-      <div v-if="!loading" class="flex justify-content-center">
+      <div
+        v-if="!loading"
+        class="flex justify-content-center"
+      >
         <h3>There are no buckets associated with your account.</h3>
       </div>
     </template>
-    <Column headerStyle="width: 1%">
+    <Column header-style="width: 1%">
       <template #body>
         <font-awesome-icon icon="fa-solid fa-box-open" />
       </template>
     </Column>
-    <Column field="name" header="Bucket Name" bodyClass="truncate">
+    <Column
+      field="name"
+      header="Bucket Name"
+      body-class="truncate"
+    >
       <template #body="{ data }">
-        <div v-if="data.bucketName.length > 150" v-tooltip.bottom="{ value: data.bucketName }">
+        <div
+          v-if="data.bucketName.length > 150"
+          v-tooltip.bottom="{ value: data.bucketName }"
+        >
           <router-link :to="{ name: RouteNames.ListObjects, query: { bucketId: data.bucketId } }">
             {{ data.bucketName }}
           </router-link>
@@ -66,24 +77,41 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
         </div>
       </template>
     </Column>
-    <Column header="Actions" headerStyle="width: 200px" headerClass="header-right"
-      bodyClass="content-right action-buttons">
+    <Column
+      header="Actions"
+      header-style="width: 200px"
+      header-class="header-right"
+      body-class="content-right action-buttons"
+    >
       <template #body="{ data }">
-        <Button class="p-button-lg p-button-rounded p-button-text"
-          @click="showPermissions(data.bucketId, data.bucketName)">
+        <Button
+          class="p-button-lg p-button-rounded p-button-text"
+          @click="showPermissions(data.bucketId, data.bucketName)"
+        >
           <font-awesome-icon icon="fa-solid fa-gear" />
         </Button>
-        <Button class="p-button-lg p-button-rounded p-button-text" @click="showInfo(data.bucketId)">
+        <Button
+          class="p-button-lg p-button-rounded p-button-text"
+          @click="showInfo(data.bucketId)"
+        >
           <font-awesome-icon icon="fa-solid fa-circle-info" />
         </Button>
       </template>
     </Column>
   </DataTable>
 
-  <Dialog v-model:visible="permissionsVisible" :draggable="false" :modal="true">
+  <Dialog
+    v-model:visible="permissionsVisible"
+    :draggable="false"
+    :modal="true"
+  >
     <template #header>
       <div class="flex">
-        <font-awesome-icon icon="fa-solid fa-gear" class="pr-2" style="font-size: 2rem" />
+        <font-awesome-icon
+          icon="fa-solid fa-gear"
+          class="pr-2"
+          style="font-size: 2rem"
+        />
         <div>
           <h1>Bucket Permissions</h1>
           <h3>{{ permissionBucketName }}</h3>
@@ -91,6 +119,6 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
       </div>
     </template>
 
-    <BucketPermission :bucketId="permissionsBucketId" />
+    <BucketPermission :bucket-id="permissionsBucketId" />
   </Dialog>
 </template>

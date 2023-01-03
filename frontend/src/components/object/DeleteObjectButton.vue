@@ -56,17 +56,36 @@ const confirmDelete = () => {
 </script>
 
 <template>
-  <Dialog header="No File Selected" v-model:visible="displayNoFileDialog" :modal="true">
+  <Dialog
+    v-model:visible="displayNoFileDialog"
+    header="No File Selected"
+    :modal="true"
+  >
     <p>Please select at least one file from the list to delete.</p>
     <template #footer>
-      <Button label="Ok" @click="displayNoFileDialog = false" autofocus />
+      <Button
+        label="Ok"
+        autofocus
+        @click="displayNoFileDialog = false"
+      />
     </template>
   </Dialog>
 
-  <Button v-if="mode === ButtonMode.ICON" class="p-button-lg p-button-text p-button-danger" @click="confirmDelete()">
+  <Button
+    v-if="mode === ButtonMode.ICON"
+    class="p-button-lg p-button-text p-button-danger"
+    @click="confirmDelete()"
+  >
     <font-awesome-icon icon="fa-solid fa-trash" />
   </Button>
-  <Button v-else class="p-button-outlined p-button-danger" @click="confirmDelete()">
-    <font-awesome-icon icon="fa-solid fa-trash" class="mr-1" /> Delete
+  <Button
+    v-else
+    class="p-button-outlined p-button-danger"
+    @click="confirmDelete()"
+  >
+    <font-awesome-icon
+      icon="fa-solid fa-trash"
+      class="mr-1"
+    /> Delete
   </Button>
 </template>

@@ -39,17 +39,36 @@ const download = () => {
 </script>
 
 <template>
-  <Dialog header="No File Selected" v-model:visible="displayNoFileDlg" :modal="true">
+  <Dialog
+    v-model:visible="displayNoFileDlg"
+    header="No File Selected"
+    :modal="true"
+  >
     <p>Please select at least one file from the list to download.</p>
     <template #footer>
-      <Button label="Ok" @click="displayNoFileDlg = false" autofocus />
+      <Button
+        label="Ok"
+        autofocus
+        @click="displayNoFileDlg = false"
+      />
     </template>
   </Dialog>
 
-  <Button v-if="mode === ButtonMode.ICON" class="p-button-lg p-button-text" @click="download()">
+  <Button
+    v-if="mode === ButtonMode.ICON"
+    class="p-button-lg p-button-text"
+    @click="download()"
+  >
     <font-awesome-icon icon="fa-solid fa-download" />
   </Button>
-  <Button v-else class="p-button-outlined mr-2" @click="download()">
-    <font-awesome-icon icon="fa-solid fa-download" class="mr-1" /> Download
+  <Button
+    v-else
+    class="p-button-outlined mr-2"
+    @click="download()"
+  >
+    <font-awesome-icon
+      icon="fa-solid fa-download"
+      class="mr-1"
+    /> Download
   </Button>
 </template>

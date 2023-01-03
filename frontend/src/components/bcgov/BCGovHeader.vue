@@ -17,7 +17,12 @@ import Login from '../Login.vue';
           </a>
         </div>
         <div class="col">
-          <div id="title-branding" class="justify-content-left"><h1>BCBox</h1></div>
+          <div
+            id="title-branding"
+            class="justify-content-left"
+          >
+            <h1>BCBox</h1>
+          </div>
         </div>
         <div class="col-fixed">
           <Login />

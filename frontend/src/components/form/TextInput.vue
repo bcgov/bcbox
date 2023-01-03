@@ -16,9 +16,17 @@ import { Field, ErrorMessage } from 'vee-validate';
 
 <template>
   <div class="field">
-    <Field v-slot="{ field }" :name="name" :type="type" :rules="rules">
+    <Field
+      v-slot="{ field }"
+      :name="name"
+      :type="type"
+      :rules="rules"
+    >
       <label :for="name">{{ label }}</label>
-      <InputText v-bind="field" :type="type" />
+      <InputText
+        v-bind="field"
+        :type="type"
+      />
     </Field>
     <ErrorMessage :name="name" />
   </div>

@@ -22,6 +22,7 @@
       "realm": "SERVER_KC_REALM",
       "serverUrl": "SERVER_KC_SERVERURL"
     },
+    "staticFiles": "SERVER_STATICFILES",
     "logFile": "SERVER_LOGFILE",
     "logLevel": "SERVER_LOGLEVEL",
     "port": "SERVER_PORT"
