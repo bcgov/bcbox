@@ -17,7 +17,7 @@ export const useAuthStore = defineStore('auth', () => {
   // Getters
   const getKeycloak = computed(() => _keycloak.value);
   const getIdentityProvider = computed(() => _keycloak.value.tokenParsed?.identity_provider);
-  
+
   function getIdentityId() {
     if (getIdentityProvider.value === IDENTITY_PROVIDERS.IDIR) {
       return _keycloak.value.tokenParsed?.idir_user_guid;
