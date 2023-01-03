@@ -1,0 +1,14 @@
+[
+  {
+    "elevatedRights": true,
+    "idp": "idir",
+    "identityKey": "idir_user_guid",
+    "searchable": true
+  },
+  {
+    "elevatedRights": false,
+    "idp": "bceid_basic",
+    "identityKey": "bceid_user_guid",
+    "searchable": false
+  }
+]
