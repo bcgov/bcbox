@@ -31,7 +31,7 @@ app.use('/favicon.ico', (_req, res) => {
 app.use(staticFilesPath, express.static(path.join(__dirname, 'dist')));
 
 async function readIdpList(): Promise<string> {
-  const idplistDefaultPath = './config/idplist-default.json';
+  const idplistDefaultPath = './config/idplist-local.json';
   const idplistOverridePath = './config/idplist-override.json';
   return (await import(idplistOverridePath).catch(async e => {
     return await import(idplistDefaultPath);
