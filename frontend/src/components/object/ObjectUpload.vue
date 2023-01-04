@@ -38,16 +38,18 @@ const onUpload = async (event: any) => {
     uploadedFiles.value = [];
     failedFiles.value = [];
 
-    // Attempt to create objects one by one
-    for (let file of event.files) {
-      try {
-        await objectStore.createObject(file, bucketId);
-        uploadedFiles.value.push(file);
-      } catch (error) {
-        failedFiles.value.push(file);
-        toast.add({ severity: 'error', summary: 'Error', detail: `Failed to upload file ${file.name}`, life: 3000 });
-      }
-    }
+    // Send all files to COMS for upload
+    await Promise.allSettled(
+      event.files.map( async (file: File) => {
+        try {
+          await objectStore.createObject(file, bucketId);
+          uploadedFiles.value.push(file);
+        } catch (error) {
+          toast.add({ severity: 'error', summary: 'Error', detail: `Failed to upload file ${file.name}`, life: 3000 });
+          failedFiles.value.push(file);
+        }
+      })
+    );
 
     // Clear selected files at the end of upload process
     files.value = [];
