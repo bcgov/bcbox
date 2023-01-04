@@ -17,6 +17,8 @@
     "pretest": "npm run lint",
     "posttest": "ts-node ./lcov-fix.ts",
     "purge": "rimraf node_modules",
+    "rebuild": "npm run clean && npm run build",
+    "reinstall": "npm run purge && npm install",
     "serve": "vite",
     "test": "vitest run --coverage",
     "typecheck": "vue-tsc --noEmit"
