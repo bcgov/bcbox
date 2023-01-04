@@ -1,8 +1,6 @@
 <script setup lang="ts">
 // State
-import { useAuthStore } from '@/store/authStore';
-import { useConfigStore } from '@/store/configStore';
-import { useUserStore } from '@/store/userStore';
+import { useAuthStore, useConfigStore, useUserStore } from '@/store';
 
 const configStore = useConfigStore();
 const authStore = useAuthStore();

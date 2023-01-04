@@ -43,7 +43,7 @@ const onUpload = async (event: any) => {
       event.files.map( async (file: File) => {
         try {
           await objectStore.createObject(file, bucketId);
-          uploadedFiles.value.push(file);
+          successfulFiles.value.push(file);
         } catch (error) {
           toast.add({ severity: 'error', summary: 'Error', detail: `Failed to upload file ${file.name}`, life: 3000 });
           failedFiles.value.push(file);

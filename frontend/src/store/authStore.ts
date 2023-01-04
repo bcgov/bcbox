@@ -3,7 +3,9 @@ import type { Ref } from 'vue';
 import { defineStore } from 'pinia';
 import Keycloak, { type KeycloakLoginOptions } from 'keycloak-js';
 import { useConfigStore } from './configStore';
-import { KEYCLOAK, IDENTITY_PROVIDERS } from '@/utils/constants';
+import type { IdentityProvider } from '@/interfaces/IdentityProvider';
+import { KEYCLOAK } from '@/utils/constants';
+
 
 export const useAuthStore = defineStore('auth', () => {
   const configStore = useConfigStore();
@@ -19,15 +21,10 @@ export const useAuthStore = defineStore('auth', () => {
   const getIdentityProvider = computed(() => _keycloak.value.tokenParsed?.identity_provider);
 
   function getIdentityId() {
-    if (getIdentityProvider.value === IDENTITY_PROVIDERS.IDIR) {
-      return _keycloak.value.tokenParsed?.idir_user_guid;
-    }
-    // TODO: Confirm BCEID is correct
-    if (getIdentityProvider.value === IDENTITY_PROVIDERS.BCEID_BASIC) {
-      return _keycloak.value.tokenParsed?.bceid_user_guid;
-    }
-
-    return undefined;
+    return configStore.config.idpList
+      .map((provider: IdentityProvider) => _keycloak.value?.tokenParsed ?
+        _keycloak.value?.tokenParsed[provider.identityKey] : undefined)
+      .filter((item?: String) => item)[0];
   }
 
   // Actions

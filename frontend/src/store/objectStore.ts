@@ -62,7 +62,7 @@ export const useObjectStore = defineStore('objectStore', () => {
         // TODO: Tags
 
         // Populate object
-        if (metadataResponse.data.length && metadataResponse.data[0]) {
+        if (metadataResponse.data[0]) {
           obj.metadata = metadataResponse.data[0];
           obj.name = obj.metadata.metadata.find((x: any) => x.key === 'name')?.value;
         }
