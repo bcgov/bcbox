@@ -1,10 +1,14 @@
 import { ref, isProxy, toRaw } from 'vue';
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
+
 import type { Bucket, UserPermission } from '@/interfaces';
 import { bucketService, userService } from '@/services';
 import { Permissions } from '@/utils/constants';
+import { useUserStore } from '@/store';
 
 export const useBucketStore = defineStore('bucket', () => {
+  const { userId } = storeToRefs(useUserStore());
+
   // state
   const loading = ref(false);
   const buckets = ref([] as Bucket[]);
@@ -14,8 +18,16 @@ export const useBucketStore = defineStore('bucket', () => {
   async function load() {
     try {
       loading.value = true;
-      const response = await bucketService.searchForBuckets();
-      buckets.value = response.data;
+
+      if (userId.value) {
+        const permResponse = (await bucketService.searchForPermissions({
+          userId: userId.value,
+          objectPerms: true
+        })).data;
+        const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
+        const response = await bucketService.searchForBuckets({ bucketId: uniqueIds });
+        buckets.value = response.data;
+      }
     } finally {
       loading.value = false;
     }

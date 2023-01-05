@@ -19,13 +19,4 @@ export default {
   listIdps() {
     return comsAxios().get(`${PATH}/idpList`);
   },
-
-  /**
-   * @function testBad
-   * Fetch identity providers
-   * @returns {Promise} An axios response
-   */
-  testBad() {
-    return comsAxios().get(`${PATH}/sdfsdfsd`);
-  },
 };

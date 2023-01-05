@@ -9,7 +9,7 @@ import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
 // State
 import { storeToRefs } from 'pinia';
-import { useObjectStore } from '@/store/objectStore';
+import { useObjectStore } from '@/store';
 // Components
 import DeleteObjectButton from './DeleteObjectButton.vue';
 import DownloadObjectButton from './DownloadObjectButton.vue';

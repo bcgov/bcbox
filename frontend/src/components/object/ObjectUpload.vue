@@ -7,7 +7,7 @@ import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 // State
-import { useObjectStore } from '@/store/objectStore';
+import { useObjectStore } from '@/store';
 // Component
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
 
@@ -22,12 +22,12 @@ const objectStore = useObjectStore();
 const route = useRoute();
 const toast = useToast();
 
-const files = ref([] as File[]);
-const uploadedFiles = ref([] as File[]);
+const pendingFiles = ref([] as File[]);
+const successfulFiles = ref([] as File[]);
 const failedFiles = ref([] as File[]);
 
 const onSelectedFiles = (event: any) => {
-  files.value = event.files;
+  pendingFiles.value = event.files;
 };
 
 const onUpload = async (event: any) => {
@@ -35,7 +35,7 @@ const onUpload = async (event: any) => {
 
   if (bucketId) {
     // Reset file arrays before upload
-    uploadedFiles.value = [];
+    successfulFiles.value = [];
     failedFiles.value = [];
 
     // Send all files to COMS for upload
@@ -43,7 +43,7 @@ const onUpload = async (event: any) => {
       event.files.map( async (file: File) => {
         try {
           await objectStore.createObject(file, bucketId);
-          uploadedFiles.value.push(file);
+          successfulFiles.value.push(file);
         } catch (error) {
           toast.add({ severity: 'error', summary: 'Error', detail: `Failed to upload file ${file.name}`, life: 3000 });
           failedFiles.value.push(file);
@@ -52,7 +52,7 @@ const onUpload = async (event: any) => {
     );
 
     // Clear selected files at the end of upload process
-    files.value = [];
+    pendingFiles.value = [];
 
     // Update object list
     await objectStore.listObjects({ bucketId: bucketId });
@@ -62,7 +62,7 @@ const onUpload = async (event: any) => {
 };
 
 const onRemoveUploadedFile = async (index: number) => {
-  uploadedFiles.value.splice(index, 1);
+  successfulFiles.value.splice(index, 1);
 };
 
 const onRemoveFailedFile = async (index: number) => {
@@ -123,7 +123,7 @@ const onRemoveFailedFile = async (index: number) => {
         </p>
       </div>
       <ObjectUploadFile
-        :files="uploadedFiles"
+        :files="successfulFiles"
         :badge-props="{ value: 'Complete', severity: 'success' }"
         :remove-callback="onRemoveUploadedFile"
       />
@@ -135,12 +135,12 @@ const onRemoveFailedFile = async (index: number) => {
     </template>
     <template #content="{ files, uploadedFiles, removeFileCallback, removeUploadedFileCallback }">
       <ObjectUploadFile
-        :files="files"
+        :files="files || pendingFiles"
         :badge-props="{ value: 'Pending', severity: 'warning' }"
         :remove-callback="removeFileCallback"
       />
       <ObjectUploadFile
-        :files="uploadedFiles"
+        :files="uploadedFiles || successfulFiles"
         :badge-props="{ value: 'Complete', severity: 'success' }"
         :remove-callback="removeUploadedFileCallback"
       />

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from '@/store';
 
 const { getKeycloak } = storeToRefs(useAuthStore());
 </script>

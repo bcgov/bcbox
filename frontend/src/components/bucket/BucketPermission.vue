@@ -5,7 +5,7 @@ import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import { useBucketStore } from '@/store/bucketStore';
+import { useBucketStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 const props = defineProps<{

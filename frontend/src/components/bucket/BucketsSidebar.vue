@@ -2,7 +2,10 @@
 import Button from 'primevue/button';
 
 defineProps({
-  displayInfo: Object,
+  displayInfo: {
+    type: Object,
+    default: undefined
+  }
 });
 
 const emit = defineEmits(['close-info']);

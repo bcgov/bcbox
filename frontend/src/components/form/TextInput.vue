@@ -3,7 +3,7 @@ export default {
   props: {
     name: { type: String, required: true },
     type: { type: String, default: 'text' },
-    rules: { type: null },
+    rules: { type: null, default: null },
     label: { type: String, default: '' },
   },
 };

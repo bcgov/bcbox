@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import BucketsTable from './BucketsTable.vue';
 import BucketsSidebar from './BucketsSidebar.vue';
-import { useBucketStore } from '@/store/bucketStore';
+import { useBucketStore } from '@/store';
 import { useToaster } from '@/composables/useToaster';
 
 const bucketStore = useBucketStore();
