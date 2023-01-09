@@ -4,10 +4,11 @@ import { defineStore, storeToRefs } from 'pinia';
 import type { Bucket, UserPermission } from '@/interfaces';
 import { bucketService, userService } from '@/services';
 import { Permissions } from '@/utils/constants';
-import { useUserStore } from '@/store';
+import { useConfigStore, useUserStore } from '@/store';
 
 export const useBucketStore = defineStore('bucket', () => {
   const { userId } = storeToRefs(useUserStore());
+  const { config } = storeToRefs(useConfigStore());
 
   // state
   const loading = ref(false);
@@ -50,31 +51,39 @@ export const useBucketStore = defineStore('bucket', () => {
 
       const searchPerms = (await bucketService.searchForPermissions({ bucketId })).data;
 
-      // TODO: Feed a comma separated list instead of searching individual users once COMS accepts that
-      const uniqueIds = [...new Set(searchPerms.map((x: any) => x.userId))]; //.join(',');
-      const uniqueUsers: any = [];
+      if (searchPerms[0]) {
+        const perms = searchPerms[0].permissions;
 
-      await Promise.all(
-        uniqueIds.map(async (x: any) => {
-          const userResponse = await userService.searchForUsers({ userId: x });
-          uniqueUsers.push(userResponse.data[0]);
-        })
-      );
+        // TODO: Feed a comma separated list instead of searching individual users once COMS accepts that
+        // const uniqueIds = [...new Set(perms.map((x: any) => x.userId))].join(',');
+        // const uniqueUsers = await userService.searchForUsers({ userId: uniqueIds });
 
-      const userPermissions: UserPermission[] = [];
-      uniqueUsers.forEach((user: any) => {
-        userPermissions.push({
-          userId: user.userId,
-          fullName: user.fullName,
-          create: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.CREATE),
-          read: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.READ),
-          update: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.UPDATE),
-          delete: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.DELETE),
-          manage: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.MANAGE),
+        const uniqueIds = [...new Set(perms.map((x: any) => x.userId))];
+        const uniqueUsers: any = [];
+
+        await Promise.all(
+          uniqueIds.map(async (x: any) => {
+            const userResponse = await userService.searchForUsers({ userId: x });
+            uniqueUsers.push(userResponse.data[0]);
+          })
+        );
+
+        const userPermissions: UserPermission[] = [];
+        uniqueUsers.forEach((user: any) => {
+          userPermissions.push({
+            userId: user.userId,
+            elevatedRights: config.value.idpList.find((idp: any) => idp.idp === user.idp)?.elevatedRights ?? false,
+            fullName: user.fullName,
+            create: perms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.CREATE),
+            read: perms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.READ),
+            update: perms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.UPDATE),
+            delete: perms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.DELETE),
+            manage: perms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.MANAGE),
+          });
         });
-      });
 
-      permissions.value = userPermissions;
+        permissions.value = userPermissions;
+      }
     } finally {
       loading.value = false;
     }

@@ -2,29 +2,33 @@ import { ref } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 import type { User } from '@/interfaces';
 import { userService } from '@/services';
-import { useAuthStore } from '@/store';
+import { useAuthStore, useConfigStore } from '@/store';
 
 export const useUserStore = defineStore('user', () => {
   const { getIdentityId } = useAuthStore();
   const { getKeycloak } = storeToRefs(useAuthStore());
+  const { config } = storeToRefs(useConfigStore());
 
   const userSearch = ref([] as User[]);
   const idps = ref([] as Object[]);
   const loading = ref(false);
   const userId = ref('');
+  const elevatedRights = ref(false);
 
   async function init() {
-    await getUserId();
+    await getUser();
   }
 
-  // Hydrates the logged in users ID from the COMS database
-  async function getUserId() {
+  // Hydrates the logged in users info from the COMS database
+  async function getUser() {
     if (!userId.value && getKeycloak.value.authenticated) {
       if (getIdentityId()) {
         await searchUsers({ identityId: getIdentityId() });
 
         if (userSearch.value.length) {
           userId.value = userSearch.value[0].userId;
+          elevatedRights.value = config.value.idpList.find((idp: any) =>
+            idp.idp === userSearch.value[0].idp)?.elevatedRights ?? false;
         }
       }
     }
@@ -58,5 +62,5 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  return { idps, loading, userId, userSearch, init, listIdps, searchUsers };
+  return { idps, loading, userId, elevatedRights, userSearch, init, listIdps, searchUsers };
 });
