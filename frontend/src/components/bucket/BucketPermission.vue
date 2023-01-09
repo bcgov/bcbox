@@ -33,112 +33,115 @@ const removeBucketUser = (userId: string) => {
 </script>
 
 <template>
-  <Button class="mt-1 mb-4">
-    <font-awesome-icon
-      icon="fa-solid fa-user-plus"
-      class="mr-1"
-    /> Add user
-  </Button>
+  <div>
+    <Button class="mt-1 mb-4">
+      <font-awesome-icon
+        icon="fa-solid fa-user-plus"
+        class="mr-1"
+      /> Add user
+    </Button>
 
-  <DataTable
-    :loading="loading"
-    :value="permissions"
-    data-key="bucketId"
-    class="p-datatable-sm"
-    striped-rows
-    responsive-layout="scroll"
-    :paginator="true"
-    :rows="10"
-    paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-    current-page-report-template="{first}-{last} of {totalRecords}"
-    :rows-per-page-options="[10, 20, 50]"
-  >
-    <template #empty>
-      <div class="flex justify-content-center">
-        <h3>There are no users associated with this bucket.</h3>
-      </div>
-    </template>
-    <Column
-      field="fullName"
-      header="Name"
-    />
-    <Column
-      header="Upload"
-      body-class="content-center"
+    <DataTable
+      :loading="loading"
+      :value="permissions"
+      data-key="bucketId"
+      class="p-datatable-sm"
+      striped-rows
+      responsive-layout="scroll"
+      :paginator="true"
+      :rows="10"
+      paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
+      current-page-report-template="{first}-{last} of {totalRecords}"
+      :rows-per-page-options="[10, 20, 50]"
     >
-      <template #body="{ data }">
-        <Checkbox
-          v-model="data.create"
-          input-id="create"
-          :binary="true"
-          @input="(value) => updateBucketPermission(value, data.userId, Permissions.CREATE)"
-        />
+      <template #empty>
+        <div class="flex justify-content-center">
+          <h3>There are no users associated with this bucket.</h3>
+        </div>
       </template>
-    </Column>
-    <Column
-      header="Read"
-      body-class="content-center"
-    >
-      <template #body="{ data }">
-        <Checkbox
-          v-model="data.read"
-          input-id="read"
-          :binary="true"
-          @input="(value) => updateBucketPermission(value, data.userId, Permissions.READ)"
-        />
-      </template>
-    </Column>
-    <Column
-      header="Update"
-      body-class="content-center"
-    >
-      <template #body="{ data }">
-        <Checkbox
-          v-model="data.update"
-          input-id="update"
-          :binary="true"
-          @input="(value) => updateBucketPermission(value, data.userId, Permissions.UPDATE)"
-        />
-      </template>
-    </Column>
-    <Column
-      header="Delete"
-      body-class="content-center"
-    >
-      <template #body="{ data }">
-        <Checkbox
-          v-model="data.delete"
-          input-id="delete"
-          :binary="true"
-          @input="(value) => updateBucketPermission(value, data.userId, Permissions.DELETE)"
-        />
-      </template>
-    </Column>
-    <Column
-      header="Manage"
-      body-class="content-center"
-    >
-      <template #body="{ data }">
-        <Checkbox
-          v-model="data.manage"
-          input-id="manage"
-          :binary="true"
-          @input="(value) => updateBucketPermission(value, data.userId, Permissions.MANAGE)"
-        />
-      </template>
-    </Column>
-    <Column header="Remove">
-      <template #body="{ data }">
-        <Button
-          class="p-button-lg p-button-text"
-          style="color: red"
-          @click="removeBucketUser(data.userId)"
-        >
-          <font-awesome-icon icon="fa-solid fa-user-xmark" />
-        </Button>
-      </template>
-    </Column>
-  </DataTable>
+      <Column
+        field="fullName"
+        header="Name"
+      />
+      <Column
+        header="Upload"
+        body-class="content-center"
+      >
+        <template #body="{ data }">
+          <Checkbox
+            v-model="data.create"
+            input-id="create"
+            :binary="true"
+            @input="(value) => updateBucketPermission(value, data.userId, Permissions.CREATE)"
+          />
+        </template>
+      </Column>
+      <Column
+        header="Read"
+        body-class="content-center"
+      >
+        <template #body="{ data }">
+          <Checkbox
+            v-model="data.read"
+            input-id="read"
+            :binary="true"
+            @input="(value) => updateBucketPermission(value, data.userId, Permissions.READ)"
+          />
+        </template>
+      </Column>
+      <Column
+        header="Update"
+        body-class="content-center"
+      >
+        <template #body="{ data }">
+          <Checkbox
+            v-model="data.update"
+            input-id="update"
+            :binary="true"
+            @input="(value) => updateBucketPermission(value, data.userId, Permissions.UPDATE)"
+          />
+        </template>
+      </Column>
+      <Column
+        header="Delete"
+        body-class="content-center"
+      >
+        <template #body="{ data }">
+          <Checkbox
+            v-model="data.delete"
+            input-id="delete"
+            :binary="true"
+            @input="(value) => updateBucketPermission(value, data.userId, Permissions.DELETE)"
+          />
+        </template>
+      </Column>
+      <Column
+        header="Manage"
+        body-class="content-center"
+      >
+        <template #body="{ data }">
+          <Checkbox
+            v-model="data.manage"
+            input-id="manage"
+            :binary="true"
+            :disabled="!data.elevatedRights"
+            @input="(value) => updateBucketPermission(value, data.userId, Permissions.MANAGE)"
+          />
+        </template>
+      </Column>
+      <Column header="Remove">
+        <template #body="{ data }">
+          <Button
+            class="p-button-lg p-button-text"
+            style="color: red"
+            @click="removeBucketUser(data.userId)"
+          >
+            <font-awesome-icon icon="fa-solid fa-user-xmark" />
+          </Button>
+        </template>
+      </Column>
+    </DataTable>
+  </div>
 </template>
 
 <style lang="scss" scoped>
