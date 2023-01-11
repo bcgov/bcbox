@@ -2,6 +2,7 @@ export interface User {
   active: boolean;
   createdAt: string;
   createdBy: string; // guid
+  elevatedRights: boolean;
   email: string;
   firstName: string;
   fullName: string;

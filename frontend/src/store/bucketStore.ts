@@ -1,28 +1,28 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 
-import type { Bucket, UserPermission } from '@/interfaces';
+import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
 import { bucketService, userService } from '@/services';
 import { Permissions } from '@/utils/constants';
 import { useConfigStore, useUserStore } from '@/store';
 
 export const useBucketStore = defineStore('bucket', () => {
-  const { userId } = storeToRefs(useUserStore());
+  const { currentUser } = storeToRefs(useUserStore());
   const { config } = storeToRefs(useConfigStore());
 
   // state
   const loading = ref(false);
   const buckets = ref([] as Bucket[]);
-  const permissions = ref([] as UserPermission[]);
+  const permissions = ref([] as UserPermissions[]);
 
   // actions
   async function load() {
     try {
       loading.value = true;
 
-      if (userId.value) {
+      if (currentUser.value) {
         const permResponse = (await bucketService.searchForPermissions({
-          userId: userId.value,
+          userId: currentUser.value.userId,
           objectPerms: true
         })).data;
         const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
@@ -58,8 +58,8 @@ export const useBucketStore = defineStore('bucket', () => {
         // const uniqueIds = [...new Set(perms.map((x: any) => x.userId))].join(',');
         // const uniqueUsers = await userService.searchForUsers({ userId: uniqueIds });
 
-        const uniqueIds = [...new Set(perms.map((x: any) => x.userId))];
-        const uniqueUsers: any = [];
+        const uniqueIds = [...new Set(perms.map((x: Permission) => x.userId))];
+        const uniqueUsers: User[] = [];
 
         await Promise.all(
           uniqueIds.map(async (x: any) => {
@@ -68,17 +68,21 @@ export const useBucketStore = defineStore('bucket', () => {
           })
         );
 
-        const userPermissions: UserPermission[] = [];
-        uniqueUsers.forEach((user: any) => {
+        const hasPermission = (userId: string, permission: string) => {
+          return perms.some((perm: any) => perm.userId === userId && perm.permCode === permission);
+        };
+
+        const userPermissions: UserPermissions[] = [];
+        uniqueUsers.forEach((user: User) => {
           userPermissions.push({
             userId: user.userId,
-            elevatedRights: config.value.idpList.find((idp: any) => idp.idp === user.idp)?.elevatedRights ?? false,
+            elevatedRights: config.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp)?.elevatedRights,
             fullName: user.fullName,
-            create: perms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.CREATE),
-            read: perms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.READ),
-            update: perms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.UPDATE),
-            delete: perms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.DELETE),
-            manage: perms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.MANAGE),
+            create: hasPermission(user.userId, Permissions.CREATE),
+            read: hasPermission(user.userId, Permissions.READ),
+            update: hasPermission(user.userId, Permissions.UPDATE),
+            delete: hasPermission(user.userId, Permissions.DELETE),
+            manage: hasPermission(user.userId, Permissions.MANAGE),
           });
         });
 

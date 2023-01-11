@@ -1,4 +1,4 @@
-export interface UserPermission {
+export interface UserPermissions {
   userId: string;
   elevatedRights: boolean;
   fullName: string;

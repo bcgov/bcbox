@@ -10,7 +10,7 @@ import { useBucketStore, useUserStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 const { loading, buckets } = storeToRefs(useBucketStore());
-const { elevatedRights } = storeToRefs(useUserStore());
+const { currentUser } = storeToRefs(useUserStore());
 
 const permissionsVisible = ref(false);
 const permissionsBucketId = ref('');
@@ -86,7 +86,7 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
       >
         <template #body="{ data }">
           <Button
-            v-if="elevatedRights"
+            v-if="currentUser?.elevatedRights"
             class="p-button-lg p-button-rounded p-button-text"
             @click="showPermissions(data.bucketId, data.bucketName)"
           >
