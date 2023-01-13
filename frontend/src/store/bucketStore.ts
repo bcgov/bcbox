@@ -1,27 +1,28 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 
-import type { Bucket, UserPermission } from '@/interfaces';
+import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
 import { bucketService, userService } from '@/services';
 import { Permissions } from '@/utils/constants';
-import { useUserStore } from '@/store';
+import { useConfigStore, useUserStore } from '@/store';
 
 export const useBucketStore = defineStore('bucket', () => {
-  const { userId } = storeToRefs(useUserStore());
+  const { currentUser } = storeToRefs(useUserStore());
+  const { config } = storeToRefs(useConfigStore());
 
   // state
   const loading = ref(false);
   const buckets = ref([] as Bucket[]);
-  const permissions = ref([] as UserPermission[]);
+  const permissions = ref([] as UserPermissions[]);
 
   // actions
   async function load() {
     try {
       loading.value = true;
 
-      if (userId.value) {
+      if (currentUser.value) {
         const permResponse = (await bucketService.searchForPermissions({
-          userId: userId.value,
+          userId: currentUser.value.userId,
           objectPerms: true
         })).data;
         const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
@@ -50,31 +51,43 @@ export const useBucketStore = defineStore('bucket', () => {
 
       const searchPerms = (await bucketService.searchForPermissions({ bucketId })).data;
 
-      // TODO: Feed a comma separated list instead of searching individual users once COMS accepts that
-      const uniqueIds = [...new Set(searchPerms.map((x: any) => x.userId))]; //.join(',');
-      const uniqueUsers: any = [];
+      if (searchPerms[0]) {
+        const perms = searchPerms[0].permissions;
 
-      await Promise.all(
-        uniqueIds.map(async (x: any) => {
-          const userResponse = await userService.searchForUsers({ userId: x });
-          uniqueUsers.push(userResponse.data[0]);
-        })
-      );
+        // TODO: Feed a comma separated list instead of searching individual users once COMS accepts that
+        // const uniqueIds = [...new Set(perms.map((x: any) => x.userId))].join(',');
+        // const uniqueUsers = await userService.searchForUsers({ userId: uniqueIds });
 
-      const userPermissions: UserPermission[] = [];
-      uniqueUsers.forEach((user: any) => {
-        userPermissions.push({
-          userId: user.userId,
-          fullName: user.fullName,
-          create: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.CREATE),
-          read: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.READ),
-          update: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.UPDATE),
-          delete: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.DELETE),
-          manage: searchPerms.some((perm: any) => perm.userId === user.userId && perm.permCode === Permissions.MANAGE),
+        const uniqueIds = [...new Set(perms.map((x: Permission) => x.userId))];
+        const uniqueUsers: User[] = [];
+
+        await Promise.all(
+          uniqueIds.map(async (x: any) => {
+            const userResponse = await userService.searchForUsers({ userId: x });
+            uniqueUsers.push(userResponse.data[0]);
+          })
+        );
+
+        const hasPermission = (userId: string, permission: string) => {
+          return perms.some((perm: any) => perm.userId === userId && perm.permCode === permission);
+        };
+
+        const userPermissions: UserPermissions[] = [];
+        uniqueUsers.forEach((user: User) => {
+          userPermissions.push({
+            userId: user.userId,
+            elevatedRights: config.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp)?.elevatedRights,
+            fullName: user.fullName,
+            create: hasPermission(user.userId, Permissions.CREATE),
+            read: hasPermission(user.userId, Permissions.READ),
+            update: hasPermission(user.userId, Permissions.UPDATE),
+            delete: hasPermission(user.userId, Permissions.DELETE),
+            manage: hasPermission(user.userId, Permissions.MANAGE),
+          });
         });
-      });
 
-      permissions.value = userPermissions;
+        permissions.value = userPermissions;
+      }
     } finally {
       loading.value = false;
     }

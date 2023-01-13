@@ -5,10 +5,11 @@ export default {
   /**
    * @function searchForUsers
    * Returns a list of users based on the provided filtering parameters
+   * @param {Object} params Object containing the data to filter against
    * @returns {Promise} An axios response
    */
   searchForUsers(params: Object) {
-    return comsAxios().get(`${PATH}`, { params });
+    return comsAxios().get(`${PATH}`, { params: params });
   },
 
   /**
