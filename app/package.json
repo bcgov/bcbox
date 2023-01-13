@@ -11,6 +11,8 @@
     "debug": "nodemon --inspect ./bin/www",
     "lint": "eslint . **/www* --no-fix --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "lint:fix": "eslint . **/www* --fix --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
+    "prebuild": "npm run lint",
+    "prelint": "npm run typecheck",
     "pretest": "npm run lint",
     "posttest": "ts-node ./lcov-fix.ts",
     "purge": "rimraf node_modules",
@@ -18,7 +20,8 @@
     "reinstall": "npm run purge && npm install",
     "serve": "ts-node-dev --respawn --transpile-only ./bin/www",
     "start": "ts-node --transpile-only ./bin/www",
-    "test": "jest --verbose --forceExit --detectOpenHandles"
+    "test": "jest --verbose --forceExit --detectOpenHandles",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "api-problem": "^9.0.1",

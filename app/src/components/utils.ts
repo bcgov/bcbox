@@ -21,13 +21,13 @@ export function getGitRevision(): string {
       return dir;
     })();
 
-    const head = readFileSync(join(__dirname, `${gitDir}/HEAD`))
+    const head = readFileSync(join(__dirname, `${gitDir}/HEAD`), 'utf8')
       .toString().trim();
     return (head.indexOf(':') === -1)
       ? head
-      : readFileSync(join(__dirname, `${gitDir}/${head.substring(5)}`))
+      : readFileSync(join(__dirname, `${gitDir}/${head.substring(5)}`), 'utf8')
         .toString().trim();
-  } catch (err: unknown) {
+  } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
     log.warn(err.message, { function: 'getGitRevision' });
     return '';
   }
@@ -46,9 +46,9 @@ export function readIdpList(): object[] {
   let idpList = [];
 
   if (existsSync(join(__dirname, configDir, overrideFile))) {
-    idpList = JSON.parse(readFileSync(join(__dirname, configDir, overrideFile)));
+    idpList = JSON.parse(readFileSync(join(__dirname, configDir, overrideFile), 'utf8'));
   } else if (existsSync(join(__dirname, configDir, defaultFile))) {
-    idpList = JSON.parse(readFileSync(join(__dirname, configDir, defaultFile)));
+    idpList = JSON.parse(readFileSync(join(__dirname, configDir, defaultFile), 'utf8'));
   }
 
   return idpList;

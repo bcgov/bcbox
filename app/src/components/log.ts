@@ -1,9 +1,11 @@
 import config from 'config';
+import { logger } from 'express-winston';
 // const jwt = require('jsonwebtoken');
 import { parse } from 'path';
+import { createLogger, format, transports } from 'winston';
 import Transport from 'winston-transport';
-import { createLogger, format, Logger, transports } from 'winston';
-import { logger } from 'express-winston';
+
+import type { Logger } from 'winston';
 
 /**
  * Class representing a winston transport writing to null
