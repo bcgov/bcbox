@@ -35,12 +35,12 @@ RUN npm ci && npm run build
 #
 FROM registry.access.redhat.com/ubi9/nodejs-18-minimal:1-18.1669631881
 
-ENV APP_PORT=8000 \
-    NO_UPDATE_NOTIFIER=true \
-    SERVER_STATICFILES=dist
+ENV APP_PORT=8080 \
+    NO_UPDATE_NOTIFIER=true
 
 COPY --from=application /tmp/src/app ${HOME}
 COPY --from=frontend /tmp/src/frontend/dist ${HOME}/dist
+COPY .git ${HOME}/.git
 WORKDIR ${HOME}
 
 EXPOSE ${APP_PORT}
