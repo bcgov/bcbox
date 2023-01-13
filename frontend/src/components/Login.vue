@@ -12,7 +12,7 @@ const { ready, getKeycloak } = storeToRefs(useAuthStore());
     v-if="!getKeycloak.token"
     primary
     :loading="!ready"
-    @click="() => login()"
+    @click="login()"
   >
     Log in
   </Button>
