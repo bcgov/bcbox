@@ -1,12 +1,32 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
+import Dropdown from 'primevue/dropdown';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import { useBucketStore } from '@/store';
+import { useBucketStore, useUserStore } from '@/store';
+import type { User } from '@/interfaces';
 import { Permissions } from '@/utils/constants';
+
+const showAddUser: any = ref(true);
+const addBucketPermissionUser = () => {
+  permissions.value.push(
+    {
+      userId: selectedUser.value.userId,
+      elevatedRights: true,
+      fullName: selectedUser.value.fullName,
+      create: false,
+      read: false,
+      update: false,
+      delete: false,
+      manage: false
+    }
+  );
+  resetSearchUsers();
+};
 
 const props = defineProps<{
   bucketId: string;
@@ -15,8 +35,25 @@ const props = defineProps<{
 const bucketStore = useBucketStore();
 const { loading, permissions } = storeToRefs(useBucketStore());
 
+const userStore = useUserStore();
+const { userSearch } = storeToRefs(useUserStore());
+const selectedUser = ref();
+
+const onInputSearchUsers = async (event: any) => {
+  if(event.target.value.length > 0) {
+    await userStore.searchUsers({ firstName: event.target.value });
+  } else if(event.target.value.length < 1) {
+    resetSearchUsers();
+  }
+};
+const resetSearchUsers = () => {
+  userSearch.value = ([] as User[]);
+  selectedUser.value = null;
+};
+
 onMounted(() => {
   bucketStore.getBucketPermissions(props.bucketId);
+  resetSearchUsers();
 });
 
 const updateBucketPermission = (value: any, userId: string, permCode: string) => {
@@ -30,16 +67,46 @@ const updateBucketPermission = (value: any, userId: string, permCode: string) =>
 const removeBucketUser = (userId: string) => {
   bucketStore.removeBucketUser(props.bucketId, userId);
 };
+
 </script>
 
 <template>
   <div>
-    <Button class="mt-1 mb-4">
+    <Button
+      v-if="showAddUser"
+      class="mt-1 mb-4"
+      @click="showAddUser = false"
+    >
       <font-awesome-icon
         icon="fa-solid fa-user-plus"
         class="mr-1"
       /> Add user
     </Button>
+    <div
+      v-if="!showAddUser"
+    >
+      <Dropdown
+        v-model="selectedUser"
+        :options="userSearch"
+        option-label="fullName"
+        :editable="true"
+        placeholder="enter name"
+        class="mt-1 mb-4 ml-7"
+        @input="onInputSearchUsers"
+      />
+      <Button
+        label="Add"
+        class="mt-1 mb-4 ml-3"
+        icon="pi pi-check"
+        @click="addBucketPermissionUser"
+      />
+      <Button
+        label="Cancel"
+        class="p-button-text mt-1 mb-4 ml-3"
+        icon="pi pi-times"
+        @click="resetSearchUsers()"
+      />
+    </div>
 
     <DataTable
       :loading="loading"
