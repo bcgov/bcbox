@@ -1,5 +1,8 @@
 import express from 'express';
+// @ts-expect-error api-problem lacks a defined interface; code still works fine
 import Problem from 'api-problem';
+
+import type { Express, Request, Response } from 'express';
 
 /**
  * @class helper
@@ -13,7 +16,7 @@ const helper = {
    * @param {object} router An express router object to mount
    * @returns {object} A simple express server object with `router` mounted to `basePath`
    */
-  expressHelper: (basePath: string, router: object): object => {
+  expressHelper: (basePath: string, router: Express): object => {
     const app = express();
 
     app.use(express.json());
@@ -23,8 +26,8 @@ const helper = {
     app.use(basePath, router);
 
     // Handle 500
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    app.use((err, _req, res, _next) => {
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+    app.use((err: Problem, _req: Request, res: Response, _next: () => void): void => {
       if (err instanceof Problem) {
         err.send(res);
       } else {

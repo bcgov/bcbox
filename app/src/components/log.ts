@@ -1,9 +1,11 @@
 import config from 'config';
+import { logger } from 'express-winston';
 // const jwt = require('jsonwebtoken');
 import { parse } from 'path';
-import Transport from 'winston-transport';
 import { createLogger, format, transports } from 'winston';
-import { logger } from 'express-winston';
+import Transport from 'winston-transport';
+
+import type { Logger } from 'winston';
 
 /**
  * Class representing a winston transport writing to null
@@ -61,7 +63,7 @@ if (config.has('server.logFile')) {
  * @returns {object} A child logger with appropriate metadata if `filename` is defined.
  * Otherwise returns a standard logger.
  */
-export const getLogger = (filename: string | undefined): object => {
+export const getLogger = (filename: string | undefined): Logger => {
   return filename ? log.child({ component: parse(filename).name }) : log;
 };
 

@@ -2,12 +2,12 @@
 // Without this export line you'll see the below error, something to do with global variable clashing in TS
 //  Cannot redeclare block-scoped variable 'config'.ts(2451)
 import config from 'config';
+import type { Logger } from 'winston';
 
 import getLogger, { httpLogger } from '../../../src/components/log';
 
 describe('getLogger', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const assertLogger = (log: any): void => {
+  const assertLogger = (log: Logger): void => {
     expect(log).toBeTruthy();
     expect(typeof log).toBe('object');
     expect(typeof log.pipe).toBe('function');

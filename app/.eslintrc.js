@@ -31,7 +31,7 @@ module.exports = {
       'SwitchCase': 1
     }],
     'linebreak-style': ['error', 'unix'],
-    'max-len': ['warn', { 'code': 80, 'comments': 120, 'ignoreUrls': true }],
+    'max-len': ['warn', { 'code': 100, 'comments': 120, 'ignoreUrls': true }],
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     quotes: ['error', 'single'],
