@@ -1,3 +1,4 @@
 export { default as bucketService } from './bucketService';
-export { default as userService } from './userService';
 export { default as objectService } from './objectService';
+export { default as permissionService } from './permissionService';
+export { default as userService } from './userService';

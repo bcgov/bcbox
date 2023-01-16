@@ -1,7 +1,7 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 import type { COMSObject, Metadata } from '@/interfaces';
-import { objectService } from '@/services';
+import { objectService, permissionService } from '@/services';
 import { useUserStore } from '@/store';
 
 export const useObjectStore = defineStore('objectStore', () => {
@@ -65,7 +65,7 @@ export const useObjectStore = defineStore('objectStore', () => {
       // Checks for a users object permissions within the bucket
       // Obtains a unique set of object IDs, searches for the objects and their associated metadata
       if (currentUser.value) {
-        const permResponse = (await objectService.searchForPermissions({
+        const permResponse = (await permissionService.objectSearchPermissions({
           userId: currentUser.value.userId,
           bucketId: params.bucketId ?? undefined
         })).data;

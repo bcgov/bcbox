@@ -1,6 +1,5 @@
 import { comsAxios } from './interceptors';
 const PATH = '/object';
-const OBJECT_PERMISSION_PATH = 'permission/object';
 
 export default {
   // ------------------------------------------------------------
@@ -81,16 +80,6 @@ export default {
    */
   readObject(objectId: string) {
     return comsAxios().head(`${PATH}/${objectId}`);
-  },
-
-  /**
-   * @function searchForPermissions
-   * Returns a list of permissions for the object
-   * @param {Object} params Optional object containing the data to filter against
-   * @returns {Promise} An axios response
-   */
-  searchForPermissions(params?: Object) {
-    return comsAxios().get(`${OBJECT_PERMISSION_PATH}`, { params: params });
   },
 
   /**
