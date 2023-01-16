@@ -1,15 +1,10 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
-import type { COMSObject, Metadata } from '@/interfaces';
-import { objectService, permissionService } from '@/services';
+import { objectService, permissionService, userService } from '@/services';
 import { useUserStore } from '@/store';
-import { defineStore } from 'pinia';
 import { Permissions } from '@/utils/constants';
-import { objectService } from '@/services';
-import { userService } from '@/services';
 
-import type { User, UserPermissions } from '@/interfaces';
-import type { COMSObject } from '@/interfaces';
+import type { COMSObject, Metadata, User, UserPermissions } from '@/interfaces';
 
 export const useObjectStore = defineStore('objectStore', () => {
   const { currentUser } = storeToRefs(useUserStore());
@@ -122,7 +117,6 @@ export const useObjectStore = defineStore('objectStore', () => {
         await objectService.searchForPermissions(objectId)
       ).data;
 
-      debugger;
       if (searchPerms[0]) {
         const perms = searchPerms[0].permissions;
 
