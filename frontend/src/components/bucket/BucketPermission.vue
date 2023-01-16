@@ -11,50 +11,71 @@ import { useBucketStore, useUserStore } from '@/store';
 import type { User } from '@/interfaces';
 import { Permissions } from '@/utils/constants';
 
-const showAddUser: any = ref(true);
-const addBucketPermissionUser = () => {
-  permissions.value.push(
-    {
-      userId: selectedUser.value.userId,
-      elevatedRights: true,
-      fullName: selectedUser.value.fullName,
-      create: false,
-      read: false,
-      update: false,
-      delete: false,
-      manage: false
-    }
-  );
-  resetSearchUsers();
-};
-
+// props
 const props = defineProps<{
   bucketId: string;
 }>();
 
+// stores
 const bucketStore = useBucketStore();
 const { loading, permissions } = storeToRefs(useBucketStore());
 
 const userStore = useUserStore();
 const { userSearch } = storeToRefs(useUserStore());
-const selectedUser = ref();
 
-const onInputSearchUsers = async (event: any) => {
-  if(event.target.value.length > 0) {
-    await userStore.searchUsers({ firstName: event.target.value });
-  } else if(event.target.value.length < 1) {
-    resetSearchUsers();
+// mounted
+onMounted(() => {
+  bucketStore.getBucketPermissions(props.bucketId);
+  resetBucketPermissionUsers();
+});
+
+//variables and methods
+const isShowAddUserBtn: any = ref(true);
+const isAddBPUBtnDisabled: any = ref(true);
+
+const selectedUser = ref();
+const onAddBucketPermissionUser = () => {
+  if(selectedUser.value !== null &&
+      !permissions.value.some(e => e.fullName === selectedUser.value.fullName)) {
+    permissions.value.push(
+      {
+        userId: selectedUser.value.userId,
+        elevatedRights: true,
+        fullName: selectedUser.value.fullName,
+        create: false,
+        read: false,
+        update: false,
+        delete: false,
+        manage: false
+      }
+    );
+    resetBucketPermissionUsers();
   }
 };
-const resetSearchUsers = () => {
+const onCancelBPU = () => {
+  isShowAddUserBtn.value = true;
+  isAddBPUBtnDisabled.value = true;
+  resetBucketPermissionUsers();
+};
+const onDropdownInput = async (event: any) => {
+  var inputValue = event.target.value;
+  if(inputValue.length > 0) {
+    await userStore.searchUsers({ search: event.target.value }); //TO DO: look at the bug with 'ma', 'sa'...
+  }
+  if(inputValue.length < 1) {
+    resetBucketPermissionUsers();
+  }
+  if (selectedUser.value !== null && selectedUser.value.fullName == undefined) {
+    isAddBPUBtnDisabled.value = true;
+  }
+};
+const onDropdownChange = () => {
+  isAddBPUBtnDisabled.value = selectedUser.value === null;
+};
+const resetBucketPermissionUsers = () => {
   userSearch.value = ([] as User[]);
   selectedUser.value = null;
 };
-
-onMounted(() => {
-  bucketStore.getBucketPermissions(props.bucketId);
-  resetSearchUsers();
-});
 
 const updateBucketPermission = (value: any, userId: string, permCode: string) => {
   if (value) {
@@ -73,9 +94,9 @@ const removeBucketUser = (userId: string) => {
 <template>
   <div>
     <Button
-      v-if="showAddUser"
+      v-if="isShowAddUserBtn"
       class="mt-1 mb-4"
-      @click="showAddUser = false"
+      @click="isShowAddUserBtn = false"
     >
       <font-awesome-icon
         icon="fa-solid fa-user-plus"
@@ -83,28 +104,30 @@ const removeBucketUser = (userId: string) => {
       /> Add user
     </Button>
     <div
-      v-if="!showAddUser"
+      v-if="!isShowAddUserBtn"
     >
       <Dropdown
         v-model="selectedUser"
         :options="userSearch"
         option-label="fullName"
         :editable="true"
-        placeholder="enter name"
-        class="mt-1 mb-4 ml-7"
-        @input="onInputSearchUsers"
+        placeholder="enter full name"
+        class="mt-1 mb-4"
+        @input="onDropdownInput"
+        @change="onDropdownChange"
       />
       <Button
         label="Add"
         class="mt-1 mb-4 ml-3"
         icon="pi pi-check"
-        @click="addBucketPermissionUser"
+        :disabled="isAddBPUBtnDisabled"
+        @click="onAddBucketPermissionUser"
       />
       <Button
         label="Cancel"
         class="p-button-text mt-1 mb-4 ml-3"
         icon="pi pi-times"
-        @click="resetSearchUsers()"
+        @click="onCancelBPU"
       />
     </div>
 
@@ -250,4 +273,9 @@ const removeBucketUser = (userId: string) => {
     text-overflow: ellipsis;
   }
 }
+
+.p-dropdown {
+  width: 60%;
+}
+
 </style>
