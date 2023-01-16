@@ -35,7 +35,7 @@ const onInput = async (event: any) => {
   showUserExistError.value = ifUserExist();
   var inputValue = event.target.value;
   if(inputValue.length > 0) {
-    await userStore.searchUsers({ search: event.target.value });
+    await userStore.searchUsers({ search: inputValue });
   }
   if(inputValue.length < 1) {
     reset();
