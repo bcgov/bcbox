@@ -1,9 +1,12 @@
 import { ref, isProxy, toRaw } from 'vue';
-import { defineStore } from 'pinia';
-import type { COMSObject } from '@/interfaces';
-import { objectService } from '@/services';
+import { defineStore, storeToRefs } from 'pinia';
+import type { COMSObject, Metadata } from '@/interfaces';
+import { objectService, permissionService } from '@/services';
+import { useUserStore } from '@/store';
 
 export const useObjectStore = defineStore('objectStore', () => {
+  const { currentUser } = storeToRefs(useUserStore());
+
   // state
   const loading = ref(false);
   const objectList = ref([] as COMSObject[]);
@@ -46,30 +49,49 @@ export const useObjectStore = defineStore('objectStore', () => {
       console.error(`Error deleting ${objectIds}: ${error}`); // eslint-disable-line no-console
       throw error;
     } finally {
-      // refresh the table after
-      listObjects();
       loading.value = false;
+
+      // Refresh the table after
+      listObjects();
     }
   }
 
-  async function listObjects(params = {}) {
-    objectList.value = [];
-    const objects = (await objectService.listObjects(params)).data;
+  async function listObjects(params: any = {}) {
+    try {
+      loading.value = true;
 
-    await Promise.all(
-      objects.map(async (obj: any) => {
-        const metadataResponse = await objectService.getMetadata(null, { objId: obj.id });
-        // TODO: Tags
+      objectList.value = [];
 
-        // Populate object
-        if (metadataResponse.data[0]) {
-          obj.metadata = metadataResponse.data[0];
-          obj.name = obj.metadata.metadata.find((x: any) => x.key === 'name')?.value;
-        }
-      })
-    );
+      // Checks for a users object permissions within the bucket
+      // Obtains a unique set of object IDs, searches for the objects and their associated metadata
+      if (currentUser.value) {
+        const permResponse = (await permissionService.objectSearchPermissions({
+          userId: currentUser.value.userId,
+          bucketId: params.bucketId ?? undefined
+        })).data;
 
-    objectList.value = objects;
+        const uniqueIds = [...new Set(permResponse.map((x: { objectId: string }) => x.objectId))];
+        const objects = (await objectService.listObjects({ objId: uniqueIds, ...params })).data;
+        const metadataResponse = (await objectService.getMetadata(null, { objId: uniqueIds })).data;
+
+        objects.map(async (obj: any) => {
+          const metadata = metadataResponse.find((x: Metadata) => x.objectId === obj.id);
+          // TODO: Tags
+
+          if (metadata) {
+            obj.metadata = metadata;
+            obj.name = metadata.metadata.find((x: { key: string }) => x.key === 'name')?.value;
+          }
+        });
+
+        objectList.value = objects;
+      }
+    } catch (error) {
+      console.error(`Error obtaining object list: ${error}`); // eslint-disable-line no-console
+      throw error;
+    } finally {
+      loading.value = false;
+    }
   }
 
   async function getObject(objectId: string, versionId?: string) {

@@ -2,7 +2,7 @@ import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 
 import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
-import { bucketService, userService } from '@/services';
+import { bucketService, permissionService, userService } from '@/services';
 import { Permissions } from '@/utils/constants';
 import { useConfigStore, useUserStore } from '@/store';
 
@@ -21,7 +21,7 @@ export const useBucketStore = defineStore('bucket', () => {
       loading.value = true;
 
       if (currentUser.value) {
-        const permResponse = (await bucketService.searchForPermissions({
+        const permResponse = (await permissionService.bucketSearchPermissions({
           userId: currentUser.value.userId,
           objectPerms: true
         })).data;
@@ -49,7 +49,7 @@ export const useBucketStore = defineStore('bucket', () => {
     try {
       loading.value = true;
 
-      const searchPerms = (await bucketService.searchForPermissions({ bucketId })).data;
+      const searchPerms = (await permissionService.bucketSearchPermissions({ bucketId })).data;
 
       if (searchPerms[0]) {
         const perms = searchPerms[0].permissions;
@@ -97,7 +97,7 @@ export const useBucketStore = defineStore('bucket', () => {
     try {
       loading.value = true;
 
-      await bucketService.addPermissions(bucketId, [{ userId, permCode }]);
+      await permissionService.bucketAddPermissions(bucketId, [{ userId, permCode }]);
     } finally {
       loading.value = false;
     }
@@ -107,7 +107,7 @@ export const useBucketStore = defineStore('bucket', () => {
     try {
       loading.value = true;
 
-      await bucketService.deletePermission(bucketId, { userId, permCode });
+      await permissionService.bucketDeletePermission(bucketId, { userId, permCode });
     } finally {
       loading.value = false;
     }
@@ -118,7 +118,7 @@ export const useBucketStore = defineStore('bucket', () => {
       loading.value = true;
 
       for (const [, value] of Object.entries(Permissions)) {
-        await bucketService.deletePermission(bucketId, { userId, permCode: value });
+        await permissionService.bucketDeletePermission(bucketId, { userId, permCode: value });
       }
 
       await getBucketPermissions(bucketId);
