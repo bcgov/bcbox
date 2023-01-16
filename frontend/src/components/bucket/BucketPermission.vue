@@ -1,93 +1,24 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
-import Dropdown from 'primevue/dropdown';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
-import { useBucketStore, useUserStore } from '@/store';
-import type { User } from '@/interfaces';
+import { useBucketStore } from '@/store';
 import { Permissions } from '@/utils/constants';
+import BucketPermissionUser from './BucketPermissionUser.vue';
 
-// props
 const props = defineProps<{
   bucketId: string;
 }>();
 
-// stores
 const bucketStore = useBucketStore();
 const { loading, permissions } = storeToRefs(useBucketStore());
 
-const userStore = useUserStore();
-const { userSearch } = storeToRefs(useUserStore());
-
-// mounted
 onMounted(() => {
   bucketStore.getBucketPermissions(props.bucketId);
-  resetBucketPermissionUsers();
 });
-
-//variables and methods
-const isShowAddUserBtn: any = ref(true);
-const isAddBPUBtnDisabled: any = ref(true);
-const showUserExistError: any = ref(false);
-
-const selectedUser = ref();
-const onAddBucketPermissionUser = () => {
-  if(selectedUser.value !== null && !ifUserExist()) {
-    permissions.value.push(
-      {
-        userId: selectedUser.value.userId,
-        elevatedRights: true,
-        fullName: selectedUser.value.fullName,
-        create: false,
-        read: false,
-        update: false,
-        delete: false,
-        manage: false
-      }
-    );
-    resetBucketPermissionUsers();
-  }
-};
-const onCancelBPU = () => {
-  isShowAddUserBtn.value = true;
-  isAddBPUBtnDisabled.value = true;
-  resetBucketPermissionUsers();
-};
-const onDropdownInput = async (event: any) => {
-  checkIfUserExistShowError();
-  var inputValue = event.target.value;
-  if(inputValue.length > 0) {
-    await userStore.searchUsers({ search: event.target.value }); //TO DO: look at the bug with 'ma', 'sa'...
-  }
-  if(inputValue.length < 1) {
-    resetBucketPermissionUsers();
-  }
-  if (selectedUser.value !== null && selectedUser.value.fullName == undefined) {
-    isAddBPUBtnDisabled.value = true;
-  }
-};
-const onDropdownChange = () => {
-  checkIfUserExistShowError();
-  isAddBPUBtnDisabled.value = selectedUser.value === null || ifUserExist();
-};
-const resetBucketPermissionUsers = () => {
-  userSearch.value = ([] as User[]);
-  selectedUser.value = null;
-};
-const checkIfUserExistShowError = () => {
-  if(ifUserExist()) {
-    showUserExistError.value = true;
-  } else {
-    showUserExistError.value = false;
-  }
-};
-const ifUserExist = () => {
-  return permissions.value.some(e => e.fullName === selectedUser.value.fullName);
-};
 
 const updateBucketPermission = (value: any, userId: string, permCode: string) => {
   if (value) {
@@ -101,48 +32,30 @@ const removeBucketUser = (userId: string) => {
   bucketStore.removeBucketUser(props.bucketId, userId);
 };
 
+const displayBucketPermissionUser : any = ref(false);
+
+const cancelBucketPermissionUser = () => {
+  displayBucketPermissionUser.value = false;
+};
 </script>
 
 <template>
   <div>
     <Button
-      v-if="isShowAddUserBtn"
+      v-if="!displayBucketPermissionUser"
       class="mt-1 mb-4"
-      @click="isShowAddUserBtn = false"
+      @click="displayBucketPermissionUser = true"
     >
       <font-awesome-icon
         icon="fa-solid fa-user-plus"
         class="mr-1"
       /> Add user
     </Button>
-    <div
-      v-if="!isShowAddUserBtn"
-    >
-      <Dropdown
-        v-model="selectedUser"
-        :options="userSearch"
-        option-label="fullName"
-        :editable="true"
-        placeholder="enter full name"
-        class="mt-1 mb-4"
-        :class="showUserExistError ? 'p-invalid' : ''"
-        @input="onDropdownInput"
-        @change="onDropdownChange"
-      />
-      <Button
-        label="Add"
-        class="mt-1 mb-4 ml-3"
-        icon="pi pi-check"
-        :disabled="isAddBPUBtnDisabled"
-        @click="onAddBucketPermissionUser"
-      />
-      <Button
-        label="Cancel"
-        class="p-button-text mt-1 mb-4 ml-3"
-        icon="pi pi-times"
-        @click="onCancelBPU"
-      />
-    </div>
+
+    <BucketPermissionUser
+      v-if="displayBucketPermissionUser"
+      @cancel-bucket-permission-user="cancelBucketPermissionUser"
+    />
 
     <DataTable
       :loading="loading"
@@ -286,9 +199,4 @@ const removeBucketUser = (userId: string) => {
     text-overflow: ellipsis;
   }
 }
-
-.p-dropdown {
-  width: 60%;
-}
-
 </style>
