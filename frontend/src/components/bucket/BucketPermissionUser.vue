@@ -23,7 +23,8 @@ const selectedUser = ref();
 const emit = defineEmits(['cancel-bucket-permission-user']);
 
 const cancelBucketPermissionUser = async () => {
-  cancel();
+  isAddDisabled.value = true;
+  reset();
   emit('cancel-bucket-permission-user');
 };
 
@@ -66,11 +67,6 @@ const onAdd = () => {
     );
     reset();
   }
-};
-
-const cancel = () => {
-  isAddDisabled.value = true;
-  reset();
 };
 
 const reset = () => {
