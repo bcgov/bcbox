@@ -1,20 +1,22 @@
 <script setup lang="ts">
 // Types
-import { ButtonMode } from "@/interfaces/common/enums";
+import { ButtonMode } from '@/interfaces/common/enums';
 
 // Vue
-import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
 // PrimeVue
-import Button from "primevue/button";
-import Column from "primevue/column";
-import DataTable from "primevue/datatable";
+import Button from 'primevue/button';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+import Dialog from 'primevue/dialog';
 // State
-import { useObjectStore } from "@/store";
+import { useObjectStore } from '@/store';
 // Other
-import { formatDateLong } from "@/utils/formatters";
-import DeleteObjectButton from "./DeleteObjectButton.vue";
-import DownloadObjectButton from "./DownloadObjectButton.vue";
+import { formatDateLong } from '@/utils/formatters';
+import DeleteObjectButton from './DeleteObjectButton.vue';
+import DownloadObjectButton from './DownloadObjectButton.vue';
+import ObjectPermission from './ObjectPermission.vue';
 
 defineProps({
   displayInfo: {
@@ -28,17 +30,19 @@ const { loading, multiSelectedObjects, objectList } = storeToRefs(
 );
 
 const permissionsVisible = ref(false);
+const permissionsObjectId = ref('');
+const permissionsObjectName = ref('');
 
-const emit = defineEmits(["show-info"]);
+const emit = defineEmits(['show-info']);
 
 const showInfo = async (id: string) => {
-  emit("show-info", id);
+  emit('show-info', id);
 };
 
-const showPermissions = async (bucketId: string, bucketName: string) => {
+const showPermissions = async (objectId: string, objectName: string) => {
   permissionsVisible.value = true;
-  permissionsBucketId.value = bucketId;
-  permissionBucketName.value = bucketName;
+  permissionsObjectId.value = objectId;
+  permissionsObjectName.value = objectName;
 };
 </script>
 
@@ -59,13 +63,19 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
       :rows-per-page-options="[10, 20, 50]"
     >
       <template #empty>
-        <div v-if="!loading" class="flex justify-content-center">
+        <div
+          v-if="!loading"
+          class="flex justify-content-center"
+        >
           <h3>
             There are no objects associated with your account in this bucket.
           </h3>
         </div>
       </template>
-      <Column selection-mode="multiple" header-style="width: 3rem" />
+      <Column
+        selection-mode="multiple"
+        header-style="width: 3rem"
+      />
       <Column
         field="name"
         :sortable="true"
@@ -85,7 +95,11 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
           </div>
         </template>
       </Column>
-      <Column field="id" header="Object ID" body-class="truncate">
+      <Column
+        field="id"
+        header="Object ID"
+        body-class="truncate"
+      >
         <template #body="{ data }">
           <div
             v-if="data.id?.length > 15"
@@ -98,7 +112,10 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
           </div>
         </template>
       </Column>
-      <Column header="Updated date" :hidden="displayInfo ? true : false">
+      <Column
+        header="Updated date"
+        :hidden="displayInfo ? true : false"
+      >
         <template #body="{ data }">
           {{ formatDateLong(data.updatedAt) }}
         </template>
@@ -110,10 +127,13 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
         body-class="content-right action-buttons"
       >
         <template #body="{ data }">
-          <DownloadObjectButton :mode="ButtonMode.ICON" :ids="[data.id]" />
+          <DownloadObjectButton
+            :mode="ButtonMode.ICON"
+            :ids="[data.id]"
+          />
           <Button
             class="p-button-lg p-button-rounded p-button-text"
-            @click="showPermissions(data.id)"
+            @click="showPermissions(data.id, data.name)"
           >
             <font-awesome-icon icon="fa-solid fa-gear" />
           </Button>
@@ -123,7 +143,10 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
-          <DeleteObjectButton :mode="ButtonMode.ICON" :ids="[data.id]" />
+          <DeleteObjectButton
+            :mode="ButtonMode.ICON"
+            :ids="[data.id]"
+          />
         </template>
       </Column>
     </DataTable>
@@ -139,17 +162,17 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
         <div class="flex">
           <font-awesome-icon
             icon="fa-solid fa-gear"
-            class="pr-2"
+            class="pr-3 pt-2"
             style="font-size: 2rem"
           />
           <div>
             <h1>Object Permissions</h1>
-            <h3>{{ permissionsId }}</h3>
+            <h3>{{ permissionsObjectName }}</h3>
           </div>
         </div>
       </template>
 
-      <BucketPermission :bucket-id="permissionsId" />
+      <ObjectPermission :object-id="permissionsObjectId" />
     </Dialog>
   </div>
 </template>

@@ -3,6 +3,13 @@ import { defineStore, storeToRefs } from 'pinia';
 import type { COMSObject, Metadata } from '@/interfaces';
 import { objectService, permissionService } from '@/services';
 import { useUserStore } from '@/store';
+import { defineStore } from 'pinia';
+import { Permissions } from '@/utils/constants';
+import { objectService } from '@/services';
+import { userService } from '@/services';
+
+import type { User, UserPermissions } from '@/interfaces';
+import type { COMSObject } from '@/interfaces';
 
 export const useObjectStore = defineStore('objectStore', () => {
   const { currentUser } = storeToRefs(useUserStore());
@@ -11,6 +18,7 @@ export const useObjectStore = defineStore('objectStore', () => {
   const loading = ref(false);
   const objectList = ref([] as COMSObject[]);
   const selectedObject = ref({});
+  const selectedObjectPermissions = ref([] as UserPermissions[]);
   const multiSelectedObjects = ref([] as COMSObject[]); // all selected table row items
 
   // actions
@@ -106,15 +114,106 @@ export const useObjectStore = defineStore('objectStore', () => {
   //   selectedObject.value = response.data;
   // }
 
+  async function getObjectPermissions(objectId: string) {
+    try {
+      loading.value = true;
+
+      const searchPerms = (
+        await objectService.searchForPermissions(objectId)
+      ).data;
+
+      debugger;
+      if (searchPerms[0]) {
+        const perms = searchPerms[0].permissions;
+
+        // Get the user records for the unique user IDs in the perms
+        const uniqueIds = [...new Set(perms.map((x: any) => x.userId))].join(',');
+        const uniqueUsers = (await userService.searchForUsers({ userId: uniqueIds })).data;
+
+        const hasPermission = (userId: string, permission: string) => {
+          return perms.some((perm: any) => perm.userId === userId && perm.permCode === permission);
+        };
+
+        const userPermissions: UserPermissions[] = [];
+        uniqueUsers.forEach((user: User) => {
+          userPermissions.push({
+            userId: user.userId,
+            fullName: user.fullName,
+            create: hasPermission(user.userId, Permissions.CREATE),
+            read: hasPermission(user.userId, Permissions.READ),
+            update: hasPermission(user.userId, Permissions.UPDATE),
+            delete: hasPermission(user.userId, Permissions.DELETE),
+            manage: hasPermission(user.userId, Permissions.MANAGE),
+          });
+        });
+
+        selectedObjectPermissions.value = userPermissions;
+      }
+    }
+    finally {
+      loading.value = false;
+    }
+  }
+
+  async function addObjectPermission(
+    bucketId: string,
+    userId: string,
+    permCode: string
+  ) {
+    try {
+      loading.value = true;
+
+      await objectService.addPermissions(bucketId, [{ userId, permCode }]);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function deleteObjectPermission(
+    bucketId: string,
+    userId: string,
+    permCode: string
+  ) {
+    try {
+      loading.value = true;
+
+      await objectService.deletePermission(bucketId, { userId, permCode });
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function removeObjectUser(bucketId: string, userId: string) {
+    try {
+      loading.value = true;
+
+      for (const [, value] of Object.entries(Permissions)) {
+        await objectService.deletePermission(bucketId, {
+          userId,
+          permCode: value,
+        });
+      }
+
+      await getObjectPermissions(bucketId);
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     loading,
     multiSelectedObjects,
     objectList,
     selectedObject,
+    selectedObjectPermissions,
     createObject,
     deleteObjectList,
     getObjectInfo,
     getObject,
-    listObjects
+    listObjects,
+    getObjectPermissions,
+    addObjectPermission,
+    deleteObjectPermission,
+    removeObjectUser,
   };
 });
