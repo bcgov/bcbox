@@ -32,11 +32,11 @@ onMounted(() => {
 //variables and methods
 const isShowAddUserBtn: any = ref(true);
 const isAddBPUBtnDisabled: any = ref(true);
+const showUserExistError: any = ref(false);
 
 const selectedUser = ref();
 const onAddBucketPermissionUser = () => {
-  if(selectedUser.value !== null &&
-      !permissions.value.some(e => e.fullName === selectedUser.value.fullName)) {
+  if(selectedUser.value !== null && !ifUserExist()) {
     permissions.value.push(
       {
         userId: selectedUser.value.userId,
@@ -58,6 +58,7 @@ const onCancelBPU = () => {
   resetBucketPermissionUsers();
 };
 const onDropdownInput = async (event: any) => {
+  checkIfUserExistShowError();
   var inputValue = event.target.value;
   if(inputValue.length > 0) {
     await userStore.searchUsers({ search: event.target.value }); //TO DO: look at the bug with 'ma', 'sa'...
@@ -70,11 +71,22 @@ const onDropdownInput = async (event: any) => {
   }
 };
 const onDropdownChange = () => {
-  isAddBPUBtnDisabled.value = selectedUser.value === null;
+  checkIfUserExistShowError();
+  isAddBPUBtnDisabled.value = selectedUser.value === null || ifUserExist();
 };
 const resetBucketPermissionUsers = () => {
   userSearch.value = ([] as User[]);
   selectedUser.value = null;
+};
+const checkIfUserExistShowError = () => {
+  if(ifUserExist()) {
+    showUserExistError.value = true;
+  } else {
+    showUserExistError.value = false;
+  }
+};
+const ifUserExist = () => {
+  return permissions.value.some(e => e.fullName === selectedUser.value.fullName);
 };
 
 const updateBucketPermission = (value: any, userId: string, permCode: string) => {
@@ -113,6 +125,7 @@ const removeBucketUser = (userId: string) => {
         :editable="true"
         placeholder="enter full name"
         class="mt-1 mb-4"
+        :class="showUserExistError ? 'p-invalid' : ''"
         @input="onDropdownInput"
         @change="onDropdownChange"
       />
