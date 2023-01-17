@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, Ref, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
+import BucketPermissionUser from './BucketPermissionUser.vue';
 import Checkbox from 'primevue/checkbox';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useBucketStore } from '@/store';
 import { Permissions } from '@/utils/constants';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps<{
   bucketId: string;
@@ -30,16 +32,31 @@ const updateBucketPermission = (value: any, userId: string, permCode: string) =>
 const removeBucketUser = (userId: string) => {
   bucketStore.removeBucketUser(props.bucketId, userId);
 };
+
+const displayBucketPermissionUser: Ref<Boolean> = ref(false);
+
+const cancelBucketPermissionUser = () => {
+  displayBucketPermissionUser.value = false;
+};
 </script>
 
 <template>
   <div>
-    <Button class="mt-1 mb-4">
+    <Button
+      v-if="!displayBucketPermissionUser"
+      class="mt-1 mb-4"
+      @click="displayBucketPermissionUser = true"
+    >
       <font-awesome-icon
         icon="fa-solid fa-user-plus"
         class="mr-1"
       /> Add user
     </Button>
+
+    <BucketPermissionUser
+      v-if="displayBucketPermissionUser"
+      @cancel-bucket-permission-user="cancelBucketPermissionUser"
+    />
 
     <DataTable
       :loading="loading"
