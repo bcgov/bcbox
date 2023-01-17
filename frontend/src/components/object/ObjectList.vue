@@ -9,6 +9,7 @@ import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
 // State
 import { storeToRefs } from 'pinia';
+import { useBucketStore } from '@/store';
 import { useObjectStore } from '@/store';
 // Components
 import DeleteObjectButton from './DeleteObjectButton.vue';
@@ -17,6 +18,7 @@ import ObjectSidebar from './ObjectSidebar.vue';
 import ObjectTable from './ObjectTable.vue';
 import ObjectUpload from './ObjectUpload.vue';
 
+const bucketStore = useBucketStore();
 const objectStore = useObjectStore();
 const { multiSelectedObjects } = storeToRefs(objectStore);
 const route = useRoute();
@@ -43,6 +45,10 @@ const closeUpload = () => {
 
 const listObjects = async () => {
   try {
+    await Promise.all([
+      bucketStore.getBucketPermissionsForUser(route.query.bucketId?.toString() || ''),
+      objectStore.listObjects({ bucketId: route.query.bucketId })
+    ]);
     await objectStore.listObjects({ bucketId: route.query.bucketId });
   } catch (error: any) {
     toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
@@ -108,6 +114,4 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

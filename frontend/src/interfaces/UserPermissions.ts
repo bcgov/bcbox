@@ -3,7 +3,7 @@ export interface UserPermissions {
   idpName: string;
   elevatedRights?: boolean;
   fullName: string;
-  create: boolean;
+  create?: boolean;
   read: boolean;
   update: boolean;
   delete: boolean;

@@ -88,6 +88,10 @@ export const useObjectStore = defineStore('objectStore', () => {
               obj.metadata = metadata;
               obj.name = metadata.metadata.find((x: { key: string }) => x.key === 'name')?.value;
             }
+
+            // Add the permissions to each object list item
+            obj.permissions = permResponse
+              .find((p: { objectId: string, permission: UserPermissions}) => p.objectId === obj.id).permissions;
           });
         }
         objectList.value = objects;
@@ -113,19 +117,17 @@ export const useObjectStore = defineStore('objectStore', () => {
     try {
       loading.value = true;
 
-      const searchPerms = (
-        await objectService.searchForPermissions(objectId)
+      const objPerms = (
+        await permissionService.objectGetPermissions(objectId)
       ).data;
 
-      if (searchPerms[0]) {
-        const perms = searchPerms[0].permissions;
-
+      if (objPerms.length) {
         // Get the user records for the unique user IDs in the perms
-        const uniqueIds = [...new Set(perms.map((x: any) => x.userId))].join(',');
+        const uniqueIds = [...new Set(objPerms.map((x: any) => x.userId))].join(',');
         const uniqueUsers = (await userService.searchForUsers({ userId: uniqueIds })).data;
 
         const hasPermission = (userId: string, permission: string) => {
-          return perms.some((perm: any) => perm.userId === userId && perm.permCode === permission);
+          return objPerms.some((perm: any) => perm.userId === userId && perm.permCode === permission);
         };
 
         const userPermissions: UserPermissions[] = [];
@@ -133,7 +135,6 @@ export const useObjectStore = defineStore('objectStore', () => {
           userPermissions.push({
             userId: user.userId,
             fullName: user.fullName,
-            create: hasPermission(user.userId, Permissions.CREATE),
             read: hasPermission(user.userId, Permissions.READ),
             update: hasPermission(user.userId, Permissions.UPDATE),
             delete: hasPermission(user.userId, Permissions.DELETE),

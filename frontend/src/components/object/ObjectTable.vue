@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Types
 import { ButtonMode } from '@/interfaces/common/enums';
+import type { Permission } from '@/interfaces';
 
 // Vue
 import { storeToRefs } from 'pinia';
@@ -11,8 +12,10 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 // State
+import { useBucketStore } from '@/store';
 import { useObjectStore } from '@/store';
 // Other
+import { Permissions } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
 import DeleteObjectButton from './DeleteObjectButton.vue';
 import DownloadObjectButton from './DownloadObjectButton.vue';
@@ -25,6 +28,7 @@ defineProps({
   },
 });
 
+const { selectedBucketPermissionsForUser } = storeToRefs(useBucketStore());
 const { loading, multiSelectedObjects, objectList } = storeToRefs(
   useObjectStore()
 );
@@ -43,6 +47,17 @@ const showPermissions = async (objectId: string, objectName: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
   permissionsObjectName.value = objectName;
+};
+
+// Permission gaurds for the buttons
+const isActionAllowed = (objectPermissions: Permission[], perm: string) => {
+  // If you have bucket manage you can do it all
+  // Or if you have the permission on the object
+  return (
+    selectedBucketPermissionsForUser.value.some(
+      (p) => p.permCode === Permissions.MANAGE
+    ) || objectPermissions.some((op) => op.permCode === perm)
+  );
 };
 </script>
 
@@ -128,10 +143,12 @@ const showPermissions = async (objectId: string, objectName: string) => {
       >
         <template #body="{ data }">
           <DownloadObjectButton
+            v-if="isActionAllowed(data.permissions, Permissions.READ)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />
           <Button
+            v-if="isActionAllowed(data.permissions, Permissions.MANAGE)"
             class="p-button-lg p-button-rounded p-button-text"
             @click="showPermissions(data.id, data.name)"
           >
@@ -144,6 +161,7 @@ const showPermissions = async (objectId: string, objectName: string) => {
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
           <DeleteObjectButton
+            v-if="isActionAllowed(data.permissions, Permissions.DELETE)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />

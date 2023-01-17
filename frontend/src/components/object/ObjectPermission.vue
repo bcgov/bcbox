@@ -40,13 +40,6 @@ const removeBucketUser = (userId: string) => {
 
 <template>
   <div>
-    <Button class="mt-1 mb-4">
-      <font-awesome-icon
-        icon="fa-solid fa-user-plus"
-        class="mr-1"
-      /> Add user
-    </Button>
-
     <DataTable
       :loading="loading"
       :value="selectedObjectPermissions"
@@ -62,26 +55,13 @@ const removeBucketUser = (userId: string) => {
     >
       <template #empty>
         <div class="flex justify-content-center">
-          <h3>There are no users associated with this bucket.</h3>
+          <h3>There are no users associated with this object.</h3>
         </div>
       </template>
       <Column
         field="fullName"
         header="Name"
       />
-      <Column
-        header="Upload"
-        body-class="content-center"
-      >
-        <template #body="{ data }">
-          <Checkbox
-            v-model="data.create"
-            input-id="create"
-            :binary="true"
-            @input="(value) => updateObjectPermission(value, data.userId, Permissions.CREATE)"
-          />
-        </template>
-      </Column>
       <Column
         header="Read"
         body-class="content-center"

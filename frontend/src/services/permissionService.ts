@@ -46,4 +46,15 @@ export default {
   objectSearchPermissions(params?: Object) {
     return comsAxios().get(`${PATH}/${OBJECT}`, { params: params });
   },
+
+  /**
+     * @function objectGetPermissions
+     * Returns a list of permissions for the object
+     * @param {string} objectId ID of the object
+     * @param {Object} params Optional object containing the data to filter against
+     * @returns {Promise} An axios response
+     */
+  objectGetPermissions(objectId: string, params?: Object) {
+    return comsAxios().get(`${PATH}/${OBJECT}/${objectId}`, { params: params });
+  },
 };
