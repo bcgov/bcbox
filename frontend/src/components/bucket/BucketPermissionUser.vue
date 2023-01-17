@@ -28,7 +28,7 @@ const cancelBucketPermissionUser = () => {
 };
 
 const ifUserExist = () => {
-  return permissions.value.some(e => e.fullName === selectedUser.value.fullName);
+  return permissions.value.some(e => e.userId === selectedUser.value.userId);
 };
 
 const onInput = async (event: any) => {
