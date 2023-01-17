@@ -137,7 +137,9 @@ jobs:
 
   test-coverage:
     name: Publish to Code Climate
-    needs: test-app
+    needs:
+      - test-app
+      - test-frontend
     if: needs.test-app.outputs.HAS_CC_SECRETS == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
