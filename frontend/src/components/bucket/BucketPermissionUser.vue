@@ -21,7 +21,7 @@ const selectedUser = ref();
 
 const emit = defineEmits(['cancel-bucket-permission-user']);
 
-const cancelBucketPermissionUser = async () => {
+const cancelBucketPermissionUser = () => {
   isAddDisabled.value = true;
   reset();
   emit('cancel-bucket-permission-user');
@@ -33,13 +33,7 @@ const ifUserExist = () => {
 
 const onInput = async (event: any) => {
   showUserExistError.value = ifUserExist();
-  var inputValue = event.target.value;
-  if(inputValue.length > 0) {
-    await userStore.searchUsers({ search: inputValue });
-  }
-  if(inputValue.length < 1) {
-    reset();
-  }
+  event.target.value.length > 0 ? await userStore.searchUsers({ search: event.target.value }) : reset();
   if (selectedUser.value !== null && selectedUser.value.fullName === undefined) {
     isAddDisabled.value = true;
   }
@@ -52,18 +46,16 @@ const onChange = () => {
 
 const onAdd = () => {
   if(selectedUser.value !== null && !ifUserExist()) {
-    permissions.value.push(
-      {
-        userId: selectedUser.value.userId,
-        elevatedRights: true,
-        fullName: selectedUser.value.fullName,
-        create: false,
-        read: false,
-        update: false,
-        delete: false,
-        manage: false
-      }
-    );
+    permissions.value.push({
+      userId: selectedUser.value.userId,
+      elevatedRights: true,
+      fullName: selectedUser.value.fullName,
+      create: false,
+      read: false,
+      update: false,
+      delete: false,
+      manage: false
+    });
     reset();
   }
 };
