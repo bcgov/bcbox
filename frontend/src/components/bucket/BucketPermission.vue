@@ -2,12 +2,12 @@
 import { onMounted, Ref, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
+import BucketPermissionUser from './BucketPermissionUser.vue';
 import Checkbox from 'primevue/checkbox';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import { useBucketStore } from '@/store';
 import { Permissions } from '@/utils/constants';
-import BucketPermissionUser from './BucketPermissionUser.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const props = defineProps<{
@@ -33,7 +33,7 @@ const removeBucketUser = (userId: string) => {
   bucketStore.removeBucketUser(props.bucketId, userId);
 };
 
-const displayBucketPermissionUser : Ref<Boolean> = ref(false);
+const displayBucketPermissionUser: Ref<Boolean> = ref(false);
 
 const cancelBucketPermissionUser = () => {
   displayBucketPermissionUser.value = false;
