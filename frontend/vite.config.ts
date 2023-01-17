@@ -13,6 +13,14 @@ const proxyObject = {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // base: './',
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: '@import \'@/assets/variables.scss\';',
+      },
+    },
+  },
   plugins: [vue(), vueJsx()],
   resolve: {
     alias: {
@@ -23,13 +31,6 @@ export default defineConfig({
     proxy: {
       '/api': proxyObject,
       '/config': proxyObject,
-    },
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: '@import \'@/assets/variables.scss\';',
-      },
     },
   },
   test: {
