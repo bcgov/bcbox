@@ -98,7 +98,7 @@ app.use((err: Problem, _req: Request, res: Response, _next: () => void): void =>
 
 // Handle 404
 app.use((req: Request, res: Response): void => {
-  if (req.originalUrl.startsWith(`${config.get('server.basePath')}/api`)) {
+  if (req.originalUrl.startsWith('/api')) {
     // Return a 404 problem if attempting to access API
     new Problem(404, 'Page Not Found', {
       detail: req.originalUrl
