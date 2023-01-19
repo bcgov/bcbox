@@ -70,7 +70,8 @@ export const useObjectStore = defineStore('objectStore', () => {
       if (currentUser.value) {
         const permResponse = (await permissionService.objectSearchPermissions({
           userId: currentUser.value.userId,
-          bucketId: params.bucketId ?? undefined
+          bucketId: params.bucketId ?? undefined,
+          bucketPerms: true
         })).data;
 
         const uniqueIds = [...new Set(permResponse.map((x: { objectId: string }) => x.objectId))];

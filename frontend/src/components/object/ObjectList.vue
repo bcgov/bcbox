@@ -49,7 +49,6 @@ const listObjects = async () => {
       bucketStore.getBucketPermissionsForUser(route.query.bucketId?.toString() || ''),
       objectStore.listObjects({ bucketId: route.query.bucketId })
     ]);
-    await objectStore.listObjects({ bucketId: route.query.bucketId });
   } catch (error: any) {
     toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
   }
