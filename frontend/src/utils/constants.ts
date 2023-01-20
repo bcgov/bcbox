@@ -11,6 +11,12 @@ export const Permissions = Object.freeze({
   MANAGE: 'MANAGE',
 });
 
+export const Regex = Object.freeze({
+  // https://emailregex.com/
+  // HTML5 - Modified to require domain of at least 2 characters
+  Email: '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]{2,})+$'
+});
+
 export const RouteNames = Object.freeze({
   Home: 'home',
   CreateBucket: 'createBucket',

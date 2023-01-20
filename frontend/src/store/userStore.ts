@@ -62,5 +62,9 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  return { idps, loading, currentUser, userSearch, init, listIdps, searchUsers };
+  function clearSearch() {
+    userSearch.value = ([] as User[]);
+  }
+
+  return { idps, loading, currentUser, userSearch, clearSearch, init, listIdps, searchUsers };
 });
