@@ -21,23 +21,23 @@ const bucketStore = useBucketStore();
 const { loading, permissions } = storeToRefs(useBucketStore());
 
 // State
-const displayBucketPermissionUser: Ref<boolean> = ref(false);
+const showSearchUsers: Ref<boolean> = ref(false);
 
 // Functions
-const updateBucketPermission = (value: any, userId: string, permCode: string) => {
-  if (value) {
-    bucketStore.addBucketPermission(props.bucketId, userId, permCode);
-  } else {
-    bucketStore.deleteBucketPermission(props.bucketId, userId, permCode);
-  }
+const cancelSearchUsers = () => {
+  showSearchUsers.value = false;
 };
 
 const removeBucketUser = (userId: string) => {
   bucketStore.removeBucketUser(props.bucketId, userId);
 };
 
-const cancelBucketPermissionAddUser = () => {
-  displayBucketPermissionUser.value = false;
+const updateBucketPermission = (value: any, userId: string, permCode: string) => {
+  if (value) {
+    bucketStore.addBucketPermission(props.bucketId, userId, permCode);
+  } else {
+    bucketStore.deleteBucketPermission(props.bucketId, userId, permCode);
+  }
 };
 
 onMounted(() => {
@@ -47,21 +47,22 @@ onMounted(() => {
 
 <template>
   <div>
-    <Button
-      v-if="!displayBucketPermissionUser"
-      class="mt-1 mb-4"
-      @click="displayBucketPermissionUser = true"
-    >
-      <font-awesome-icon
-        icon="fa-solid fa-user-plus"
-        class="mr-1"
-      /> Add user
-    </Button>
-
-    <BucketPermissionAddUser
-      v-if="displayBucketPermissionUser"
-      @cancel-bucket-permission-add-user="cancelBucketPermissionAddUser"
-    />
+    <div v-if="!showSearchUsers">
+      <Button
+        class="mt-1 mb-4"
+        @click="showSearchUsers = true"
+      >
+        <font-awesome-icon
+          icon="fa-solid fa-user-plus"
+          class="mr-1"
+        /> Add user
+      </Button>
+    </div>
+    <div v-else>
+      <BucketPermissionAddUser
+        @cancel-search-users="cancelSearchUsers"
+      />
+    </div>
 
     <DataTable
       :loading="loading"
