@@ -52,11 +52,11 @@ const showPermissions = async (objectId: string, objectName: string) => {
 // Permission gaurds for the buttons
 const isActionAllowed = (objectPermissions: Permission[], perm: string) => {
   // If you have bucket manage you can do it all
-  // Or if you have the permission on the object
+  // OR if you have the specified permission on the object
   return (
-    selectedBucketPermissionsForUser.value.some(
-      (p) => p.permCode === Permissions.MANAGE
-    ) || objectPermissions.some((op) => op.permCode === perm)
+    selectedBucketPermissionsForUser.value.some((bp) => bp.permCode === Permissions.MANAGE) 
+    || 
+    objectPermissions.some((op) => op.permCode === perm)
   );
 };
 </script>

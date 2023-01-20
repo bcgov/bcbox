@@ -110,7 +110,6 @@ const removeBucketUser = (userId: string) => {
             v-model="data.manage"
             input-id="manage"
             :binary="true"
-            :disabled="!data.elevatedRights"
             @input="(value) => updateObjectPermission(value, data.userId, Permissions.MANAGE)"
           />
         </template>
