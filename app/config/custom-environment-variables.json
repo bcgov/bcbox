@@ -1,7 +1,6 @@
 {
   "frontend": {
     "apiPath": "FRONTEND_APIPATH",
-    "basePath": "FRONTEND_BASEPATH",
     "coms": {
       "apiPath": "FRONTEND_COMS_APIPATH"
     },
@@ -13,7 +12,6 @@
   },
   "server": {
     "apiPath": "SERVER_APIPATH",
-    "basePath": "SERVER_BASEPATH",
     "bodyLimit": "SERVER_BODYLIMIT",
     "logFile": "SERVER_LOGFILE",
     "logLevel": "SERVER_LOGLEVEL",
