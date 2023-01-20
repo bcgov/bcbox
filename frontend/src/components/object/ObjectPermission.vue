@@ -22,8 +22,12 @@ const objectStore = useObjectStore();
 const { loading, selectedObjectPermissions } = storeToRefs(useObjectStore());
 
 onMounted(() => {
-  useToaster(() => objectStore.getObjectPermissions(props.objectId), { summary: 'Unable to load permissions.' });
+  fetchPermissions();
 });
+
+const fetchPermissions = () => {
+  useToaster(() => objectStore.getObjectPermissions(props.objectId), { summary: 'Unable to load permissions.' });
+};
 
 const updateObjectPermission = (value: any, userId: string, permCode: string) => {
   if (value) {
@@ -33,8 +37,9 @@ const updateObjectPermission = (value: any, userId: string, permCode: string) =>
   }
 };
 
-const removeBucketUser = (userId: string) => {
-  objectStore.removeObjectUser(props.objectId, userId);
+const removeObjectUser = async (userId: string) => {
+  await objectStore.removeObjectUser(props.objectId, userId);
+  fetchPermissions();
 };
 </script>
 
@@ -43,7 +48,7 @@ const removeBucketUser = (userId: string) => {
     <DataTable
       :loading="loading"
       :value="selectedObjectPermissions"
-      data-key="bucketId"
+      data-key="userId"
       class="p-datatable-sm"
       striped-rows
       responsive-layout="scroll"
@@ -119,7 +124,7 @@ const removeBucketUser = (userId: string) => {
           <Button
             class="p-button-lg p-button-text"
             style="color: red"
-            @click="removeBucketUser(data.userId)"
+            @click="removeObjectUser(data.userId)"
           >
             <font-awesome-icon icon="fa-solid fa-user-xmark" />
           </Button>

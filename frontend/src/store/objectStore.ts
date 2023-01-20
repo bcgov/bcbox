@@ -144,6 +144,8 @@ export const useObjectStore = defineStore('objectStore', () => {
         });
 
         selectedObjectPermissions.value = userPermissions;
+      } else {
+        selectedObjectPermissions.value = [];
       }
     }
     finally {
