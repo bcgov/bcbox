@@ -13,11 +13,12 @@ const { config } = storeToRefs(useConfigStore());
 // Functions
 const onAdd = (selectedUser: User | null) => {
   if(selectedUser !== null) {
+    const idp = config.value.idpList.find((idp: any) => idp.idp === selectedUser?.idp);
+
     permissions.value.push({
       userId: selectedUser.userId,
-      elevatedRights: config.value.idpList.find((idp: any) => {
-        return idp.idp === selectedUser?.idp;
-      })?.elevatedRights,
+      idpDescription: idp?.description,
+      elevatedRights: idp?.elevatedRights,
       fullName: selectedUser.fullName,
       create: false,
       read: false,

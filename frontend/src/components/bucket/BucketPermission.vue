@@ -87,6 +87,10 @@ onMounted(() => {
         header="Name"
       />
       <Column
+        field="idpDescription"
+        header="Provider"
+      />
+      <Column
         header="Upload"
         body-class="content-center"
       >
