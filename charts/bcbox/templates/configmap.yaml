@@ -1,0 +1,12 @@
+{{- if .Values.config.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bcbox.configname" . }}-config
+  {{- if not .Values.config.releaseScoped }}
+  annotations:
+    "helm.sh/resource-policy": keep
+  {{- end }}
+data: {{ toYaml .Values.config.configMap | nindent 2 }}
+{{- end }}

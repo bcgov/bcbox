@@ -1,0 +1,124 @@
+# Default values for bcbox.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: ghcr.io/bcgov
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ~
+
+imagePullSecrets: []
+nameOverride: ~
+fullnameOverride: ~
+
+# DeploymentConfig pre-hook failure behavior
+failurePolicy: Retry
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+autoscaling:
+  enabled: false
+
+  # Directly modify scaling behavior and frequency
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 120
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 120
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 30
+  minReplicas: 2
+  maxReplicas: 16
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  enabled: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ~
+
+networkPolicy:
+  enabled: true
+
+service:
+  type: ClusterIP
+  port: 8080
+  portName: http
+
+route:
+  enabled: true
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  host: chart-example.local
+  # path: /
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  wildcardPolicy: None
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 10m
+    memory: 128Mi
+
+config:
+  # Set to true if you want to let Helm manage and overwrite your configmaps.
+  enabled: false
+
+  # This should be set to true if and only if you require configmaps and secrets to be release
+  # scoped. In the event you want all instances in the same namespace to share a similar
+  # configuration, this should be set to false
+  releaseScoped: false
+
+  # These values will be wholesale added to the configmap as is; refer to the bcbox
+  # documentation for what each of these values mean and whether you need them defined.
+  # Ensure that all values are represented explicitly as strings, as non-string values will
+  # not translate over as expected into container environment variables.
+  # For configuration keys named `*_ENABLED`, either leave them commented/undefined, or set them
+  # to string value "true".
+  configMap:
+    FRONTEND_APIPATH: "api/v1"
+    FRONTEND_COMS_APIPATH: ~
+    FRONTEND_KC_CLIENTID: ~
+    FRONTEND_KC_REALM: ~
+    FRONTEND_KC_SERVERURL: ~
+    SERVER_APIPATH: "/api/v1"
+    SERVER_BODYLIMIT: "30mb"
+    # SERVER_STATICFILES: ~
+    # SERVER_LOGFILE: ~
+    SERVER_LOGLEVEL: "http"
+    SERVER_PORT: "8080"
