@@ -1,7 +1,15 @@
+<script setup lang="ts">
+import { storeToRefs } from 'pinia';
+
+import { useConfigStore } from '@/store';
+
+const { config } = storeToRefs(useConfigStore());
+</script>
+
 <template>
   <div class="footer-line flex justify-content-between flex-wrap">
     <div>This is a footer</div>
-    <div>build number or something</div>
+    <div>v{{ config.version }}-{{ config.gitRev.substring(0, 8) }}</div>
   </div>
 </template>
 
