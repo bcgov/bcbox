@@ -52,7 +52,10 @@ export const useUserStore = defineStore('user', () => {
   async function searchUsers(params: Object) {
     try {
       loading.value = true;
-      userSearch.value = (await userService.searchForUsers(params)).data;
+      const response = (await userService.searchForUsers(params)).data;
+
+      // Filter out any user without an IDP
+      userSearch.value = response.filter((x: User) => x.identityId !== null);
     } catch (error) {
       console.error(`searchUsers error: ${error}`); // eslint-disable-line no-console
       // So that a caller can action it
