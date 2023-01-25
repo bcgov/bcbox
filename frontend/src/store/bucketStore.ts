@@ -77,9 +77,12 @@ export const useBucketStore = defineStore('bucket', () => {
 
         const userPermissions: UserPermissions[] = [];
         uniqueUsers.forEach((user: User) => {
+          const idp = config.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
+
           userPermissions.push({
             userId: user.userId,
-            elevatedRights: config.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp)?.elevatedRights,
+            idpName: idp?.name,
+            elevatedRights: idp?.elevatedRights,
             fullName: user.fullName,
             create: hasPermission(user.userId, Permissions.CREATE),
             read: hasPermission(user.userId, Permissions.READ),

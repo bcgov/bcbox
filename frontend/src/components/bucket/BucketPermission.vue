@@ -1,25 +1,36 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref } from 'vue';
 import { storeToRefs } from 'pinia';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
-import BucketPermissionUser from './BucketPermissionUser.vue';
 import Checkbox from 'primevue/checkbox';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+
+import BucketPermissionAddUser from '@/components/bucket/BucketPermissionAddUser.vue';
 import { useBucketStore } from '@/store';
 import { Permissions } from '@/utils/constants';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+// Props
 const props = defineProps<{
   bucketId: string;
 }>();
 
+// Store
 const bucketStore = useBucketStore();
 const { loading, permissions } = storeToRefs(useBucketStore());
 
-onMounted(() => {
-  bucketStore.getBucketPermissions(props.bucketId);
-});
+// State
+const showSearchUsers: Ref<boolean> = ref(false);
+
+// Functions
+const cancelSearchUsers = () => {
+  showSearchUsers.value = false;
+};
+
+const removeBucketUser = (userId: string) => {
+  bucketStore.removeBucketUser(props.bucketId, userId);
+};
 
 const updateBucketPermission = (value: any, userId: string, permCode: string) => {
   if (value) {
@@ -29,34 +40,29 @@ const updateBucketPermission = (value: any, userId: string, permCode: string) =>
   }
 };
 
-const removeBucketUser = (userId: string) => {
-  bucketStore.removeBucketUser(props.bucketId, userId);
-};
-
-const displayBucketPermissionUser: Ref<Boolean> = ref(false);
-
-const cancelBucketPermissionUser = () => {
-  displayBucketPermissionUser.value = false;
-};
+onMounted(() => {
+  bucketStore.getBucketPermissions(props.bucketId);
+});
 </script>
 
 <template>
   <div>
-    <Button
-      v-if="!displayBucketPermissionUser"
-      class="mt-1 mb-4"
-      @click="displayBucketPermissionUser = true"
-    >
-      <font-awesome-icon
-        icon="fa-solid fa-user-plus"
-        class="mr-1"
-      /> Add user
-    </Button>
-
-    <BucketPermissionUser
-      v-if="displayBucketPermissionUser"
-      @cancel-bucket-permission-user="cancelBucketPermissionUser"
-    />
+    <div v-if="!showSearchUsers">
+      <Button
+        class="mt-1 mb-4"
+        @click="showSearchUsers = true"
+      >
+        <font-awesome-icon
+          icon="fa-solid fa-user-plus"
+          class="mr-1"
+        /> Add user
+      </Button>
+    </div>
+    <div v-else>
+      <BucketPermissionAddUser
+        @cancel-search-users="cancelSearchUsers"
+      />
+    </div>
 
     <DataTable
       :loading="loading"
@@ -79,6 +85,10 @@ const cancelBucketPermissionUser = () => {
       <Column
         field="fullName"
         header="Name"
+      />
+      <Column
+        field="idpName"
+        header="Provider"
       />
       <Column
         header="Upload"

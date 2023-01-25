@@ -17,10 +17,11 @@ charts/**/charts
 Chart.lock
 
 # local env files
-local.*
-local-*.*
+*local.*
+*local-*.*
 .env.local
 .env.*.local
+
 
 # Log files
 npm-debug.log*

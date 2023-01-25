@@ -9,7 +9,9 @@ const { config } = storeToRefs(useConfigStore());
 <template>
   <div class="footer-line flex justify-content-between flex-wrap">
     <div>This is a footer</div>
-    <div>v{{ config.version }}-{{ config.gitRev.substring(0, 8) }}</div>
+    <div v-if="config">
+      v{{ config.version }}-{{ config.gitRev.substring(0, 8) }}
+    </div>
   </div>
 </template>
 

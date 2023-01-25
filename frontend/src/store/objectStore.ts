@@ -71,19 +71,22 @@ export const useObjectStore = defineStore('objectStore', () => {
         })).data;
 
         const uniqueIds = [...new Set(permResponse.map((x: { objectId: string }) => x.objectId))];
-        const objects = (await objectService.listObjects({ objId: uniqueIds, ...params })).data;
-        const metadataResponse = (await objectService.getMetadata(null, { objId: uniqueIds })).data;
 
-        objects.map(async (obj: any) => {
-          const metadata = metadataResponse.find((x: Metadata) => x.objectId === obj.id);
-          // TODO: Tags
+        let objects = null;
+        if (uniqueIds.length) {
+          objects = (await objectService.listObjects({ objId: uniqueIds, ...params })).data;
+          const metadataResponse = (await objectService.getMetadata(null, { objId: uniqueIds })).data;
 
-          if (metadata) {
-            obj.metadata = metadata;
-            obj.name = metadata.metadata.find((x: { key: string }) => x.key === 'name')?.value;
-          }
-        });
+          objects.forEach(async (obj: any) => {
+            const metadata = metadataResponse.find((x: Metadata) => x.objectId === obj.id);
+            // TODO: Tags
 
+            if (metadata) {
+              obj.metadata = metadata;
+              obj.name = metadata.metadata.find((x: { key: string }) => x.key === 'name')?.value;
+            }
+          });
+        }
         objectList.value = objects;
       }
     } catch (error) {

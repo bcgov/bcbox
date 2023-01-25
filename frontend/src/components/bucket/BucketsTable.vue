@@ -87,10 +87,10 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
         <template #body="{ data }">
           <Button
             v-if="currentUser?.elevatedRights"
-            class="p-button-lg p-button-rounded p-button-text"
+            class="p-button-lg p-button-text"
             @click="showPermissions(data.bucketId, data.bucketName)"
           >
-            <font-awesome-icon icon="fa-solid fa-gear" />
+            <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
           <Button
             class="p-button-lg p-button-rounded p-button-text"
@@ -112,7 +112,7 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
       <template #header>
         <div class="flex">
           <font-awesome-icon
-            icon="fa-solid fa-gear"
+            icon="fa-solid fa-users"
             class="pr-2"
             style="font-size: 2rem"
           />
