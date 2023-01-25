@@ -11,22 +11,20 @@ const { permissions } = storeToRefs(useBucketStore());
 const { config } = storeToRefs(useConfigStore());
 
 // Functions
-const onAdd = (selectedUser: User | null) => {
-  if(selectedUser !== null) {
-    const idp = config.value.idpList.find((idp: any) => idp.idp === selectedUser?.idp);
+const onAdd = (selectedUser: User) => {
+  const idp = config.value.idpList.find((idp: any) => idp.idp === selectedUser?.idp);
 
-    permissions.value.push({
-      userId: selectedUser.userId,
-      idpDescription: idp?.description,
-      elevatedRights: idp?.elevatedRights,
-      fullName: selectedUser.fullName,
-      create: false,
-      read: false,
-      update: false,
-      delete: false,
-      manage: false
-    });
-  }
+  permissions.value.push({
+    userId: selectedUser.userId,
+    idpName: idp?.name,
+    elevatedRights: idp?.elevatedRights,
+    fullName: selectedUser.fullName,
+    create: false,
+    read: false,
+    update: false,
+    delete: false,
+    manage: false
+  });
 };
 </script>
 

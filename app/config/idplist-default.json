@@ -1,14 +1,18 @@
 [
   {
+    "name": "IDIR (internal)",
     "elevatedRights": true,
     "idp": "idir",
     "identityKey": "idir_user_guid",
-    "searchable": true
+    "searchable": true,
+    "searchPlaceholder": "Enter an existing IDIR user's name or email address"
   },
   {
+    "name": "BCeID Basic (external)",
     "elevatedRights": false,
-    "idp": "bceid_basic",
+    "idp": "bceidbasic",
     "identityKey": "bceid_user_guid",
-    "searchable": false
+    "searchable": false,
+    "searchPlaceholder": "Enter an existing user's BCeID email address"
   }
 ]

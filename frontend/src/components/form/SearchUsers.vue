@@ -108,14 +108,14 @@ onMounted(() => {
           :value="idp"
           @click="onReset"
         />
-        <label :for="idp.idp">{{ idp.description }}</label>
+        <label :for="idp.idp">{{ idp.name }}</label>
       </div>
     </div>
     <div v-else>
       <Dropdown
         v-model="selectedIDP"
         :options="config.idpList"
-        option-label="description"
+        option-label="name"
         class="mt-1"
         @change="onReset"
       />

@@ -81,7 +81,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
           userPermissions.push({
             userId: user.userId,
-            idpDescription: idp?.description,
+            idpName: idp?.name,
             elevatedRights: idp?.elevatedRights,
             fullName: user.fullName,
             create: hasPermission(user.userId, Permissions.CREATE),

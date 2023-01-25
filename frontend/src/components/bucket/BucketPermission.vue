@@ -87,7 +87,7 @@ onMounted(() => {
         header="Name"
       />
       <Column
-        field="idpDescription"
+        field="idpName"
         header="Provider"
       />
       <Column
