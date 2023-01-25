@@ -77,7 +77,7 @@ export const useObjectStore = defineStore('objectStore', () => {
           objects = (await objectService.listObjects({ objId: uniqueIds, ...params })).data;
           const metadataResponse = (await objectService.getMetadata(null, { objId: uniqueIds })).data;
 
-          objects.map(async (obj: any) => {
+          objects.forEach(async (obj: any) => {
             const metadata = metadataResponse.find((x: Metadata) => x.objectId === obj.id);
             // TODO: Tags
 

@@ -1,13 +1,13 @@
 [
   {
-    "name": "IDIR (internal)",
+    "name": "IDIR",
     "elevatedRights": true,
     "idp": "idir",
     "identityKey": "idir_user_guid",
     "searchable": true
   },
   {
-    "name": "BCeID Basic (external)",
+    "name": "BCeID Basic",
     "elevatedRights": false,
     "idp": "bceidbasic",
     "identityKey": "bceid_user_guid",
