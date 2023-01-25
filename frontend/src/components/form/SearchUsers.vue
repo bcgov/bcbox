@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, Ref } from 'vue';
+import { onMounted, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
@@ -20,6 +20,7 @@ const selectedIDP: Ref<IdentityProvider | null> = ref(null);
 const selectedUser: Ref<User | null> = ref(null);
 const selectedUserIsInvalid: Ref<boolean> = ref(false);
 const userSearchInput: Ref<string | undefined> = ref('');
+const userSearchPlaceholder: Ref<string | undefined> = ref('');
 
 // Emits
 const emit = defineEmits(['add-user', 'cancel-search-users']);
@@ -85,6 +86,15 @@ const onReset = () => {
   userSearchInput.value = '';
 };
 
+watch(selectedIDP, () => {
+  if( selectedIDP.value?.searchable ) {
+    userSearchPlaceholder.value = `Enter an existing ${selectedIDP.value?.name} user's name or email address`;
+  }
+  else {
+    userSearchPlaceholder.value = `Enter an existing user's ${selectedIDP.value?.name} email address`;
+  }
+});
+
 onMounted(() => {
   // Set default IDP
   selectedIDP.value = config.value.idpList[0];
@@ -115,7 +125,7 @@ onMounted(() => {
       <Dropdown
         v-model="selectedIDP"
         :options="config.idpList"
-        option-label="name"
+        :option-label="(option) => {return `${option.name} (${option.elevatedRights ? 'internal': 'external' })`}"
         class="mt-1"
         @change="onReset"
       />
@@ -126,7 +136,7 @@ onMounted(() => {
       :options="userSearch"
       :option-label="(option) => getUserDropdownLabel(option)"
       :editable="true"
-      :placeholder="selectedIDP?.searchPlaceholder"
+      :placeholder="userSearchPlaceholder"
       class="mt-1 mb-4"
       :class="selectedUserIsInvalid ? 'p-invalid' : ''"
       @input="onInput"
