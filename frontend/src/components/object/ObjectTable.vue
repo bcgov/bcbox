@@ -149,10 +149,10 @@ const isActionAllowed = (objectPermissions: Permission[], perm: string) => {
           />
           <Button
             v-if="isActionAllowed(data.permissions, Permissions.MANAGE)"
-            class="p-button-lg p-button-rounded p-button-text"
+            class="p-button-lg p-button-text"
             @click="showPermissions(data.id, data.name)"
           >
-            <font-awesome-icon icon="fa-solid fa-gear" />
+            <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
           <Button
             class="p-button-lg p-button-rounded p-button-text"
@@ -179,7 +179,7 @@ const isActionAllowed = (objectPermissions: Permission[], perm: string) => {
       <template #header>
         <div class="flex">
           <font-awesome-icon
-            icon="fa-solid fa-gear"
+            icon="fa-solid fa-users"
             class="pr-3 pt-2"
             style="font-size: 2rem"
           />
