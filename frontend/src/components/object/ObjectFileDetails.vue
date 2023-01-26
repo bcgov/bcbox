@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { RouteNames } from '@/utils/constants';
-// PrimeVue
-import Button from 'primevue/button';
-// Other
 import ObjectAccess from './ObjectAccess.vue';
 import ObjectTag from './ObjectTag.vue';
 import ObjectMetadata from './ObjectMetadata.vue';
@@ -15,11 +11,6 @@ defineProps({
   }
 });
 
-const emit = defineEmits(['close-info']);
-
-const closeInfo = async () => {
-  emit('close-info');
-};
 </script>
 
 <template>
@@ -31,36 +22,12 @@ const closeInfo = async () => {
       />
       <h1>File details</h1>
     </div>
-    <div class="col-fixed align-items-center">
-      <Button
-        class="p-button-lg p-button-rounded p-button-text black"
-        @click="closeInfo"
-      >
-        <font-awesome-icon icon="fa-solid fa-xmark" />
-      </Button>
-    </div>
   </div>
   <div class="pl-2">
     <ObjectProperties :display-info="displayInfo" />
     <ObjectAccess :display-info="displayInfo" />
     <ObjectMetadata :object-metadata="displayInfo?.metadata" />
     <ObjectTag :object-tag="displayInfo?.tag" />
-    <div class="col-9">
-      <router-link
-        v-slot="{ navigate }"
-        custom
-        :to="{ name: RouteNames.ObjectFileDetails }"
-      >
-        <Button
-          role="link"
-          label="Primary"
-          class="p-button-outlined"
-          @click="navigate"
-        >
-          View all details
-        </Button>
-      </router-link>
-    </div>
   </div>
 </template>
 

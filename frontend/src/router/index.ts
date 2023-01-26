@@ -46,6 +46,12 @@ const router = createRouter({
           component: () => import('../views/ListObjectsView.vue'),
           meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' },
         },
+        {
+          path: 'detail/object',
+          name: RouteNames.ObjectFileDetails,
+          component: () => import('../views/ObjectFileDetailsView.vue'),
+          meta: { requiresAuth: true },
+        },
       ],
     },
     {
