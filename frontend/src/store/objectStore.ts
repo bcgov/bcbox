@@ -4,7 +4,7 @@ import { objectService, permissionService, userService } from '@/services';
 import { useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
-import type { COMSObject, Metadata, User, UserPermissions } from '@/interfaces';
+import type { COMSObject, Metadata, ObjectTag, User, UserPermissions } from '@/interfaces';
 
 export const useObjectStore = defineStore('objectStore', () => {
   const { currentUser } = storeToRefs(useUserStore());
@@ -80,15 +80,17 @@ export const useObjectStore = defineStore('objectStore', () => {
         if (uniqueIds.length) {
           objects = (await objectService.listObjects({ objId: uniqueIds, ...params })).data;
           const metadataResponse = (await objectService.getMetadata(null, { objId: uniqueIds })).data;
+          const objectTaggingResponse = (await objectService.getObjectTagging()).data;
 
           objects.forEach(async (obj: any) => {
             const metadata = metadataResponse.find((x: Metadata) => x.objectId === obj.id);
-            // TODO: Tags
 
             if (metadata) {
               obj.metadata = metadata;
               obj.name = metadata.metadata.find((x: { key: string }) => x.key === 'name')?.value;
             }
+
+            obj.tag = objectTaggingResponse.find((x: ObjectTag) => x.objectId === obj.id);
 
             // Add the permissions to each object list item
             obj.permissions = permResponse

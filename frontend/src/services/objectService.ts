@@ -42,6 +42,15 @@ export default {
   },
 
   /**
+   * @function getObjectTagging
+   * Get an objects tags
+   * @returns {Promise} An axios response
+   */
+  getObjectTagging() {
+    return comsAxios().get(`${PATH}/tagging`);
+  },
+
+  /**
    * @function getObject
    * Get an object
    * @param objectId The id for the object to get

@@ -1,0 +1,39 @@
+<script setup lang="ts">
+import type { Metadata } from '@/interfaces';
+import Column from 'primevue/column';
+import DataTable from 'primevue/datatable';
+
+const props = defineProps<{
+  objectMetadata: Metadata;
+}>();
+</script>
+
+<template>
+  <div class="grid">
+    <div class="col-12">
+      <h2>Metadata</h2>
+    </div>
+    <div>
+      <DataTable
+        :value="props.objectMetadata.metadata"
+        striped-rows
+        responsive-layout="scroll"
+      >
+        <Column
+          field="key"
+          header="Key"
+        />
+        <Column
+          field="value"
+          header="Value"
+        />
+      </DataTable>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+h2 {
+  font-weight: bold;
+}
+</style>

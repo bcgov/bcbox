@@ -3,6 +3,8 @@
 import Button from 'primevue/button';
 // Other
 import { formatDateLong } from '@/utils/formatters';
+import ObjectTag from './ObjectTag.vue';
+import ObjectMetadata from './ObjectMetadata.vue';
 
 defineProps({
   displayInfo: {
@@ -95,6 +97,8 @@ const closeInfo = async () => {
         {{ displayInfo?.managedBy }}
       </div>
     </div>
+    <ObjectMetadata :object-metadata="displayInfo?.metadata" />
+    <ObjectTag :object-tag="displayInfo?.tag" />
   </div>
 </template>
 
