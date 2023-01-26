@@ -54,7 +54,7 @@ const removeObjectUser = async (userId: string) => {
       responsive-layout="scroll"
       :paginator="true"
       :rows="10"
-      paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
+      paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink"
       current-page-report-template="{first}-{last} of {totalRecords}"
       :rows-per-page-options="[10, 20, 50]"
     >

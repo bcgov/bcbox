@@ -132,15 +132,5 @@ export default {
   deletePermission(objectId: string, params: Object) {
     return comsAxios().delete(`${OBJECT_PERMISSION_PATH}/${objectId}`, { params: params });
   },
-
-  /**
-   * @function searchForPermissions
-   * Returns a list of permissions for the object
-   * @param {Object} params Optional object containing the data to filter against
-   * @returns {Promise} An axios response
-   */
-  searchForPermissions(objectId: string, params?: Object) {
-    return comsAxios().get(`${OBJECT_PERMISSION_PATH}/${objectId}`, { params: params });
-  },
   // -----------------------------------------------------/object
 };
