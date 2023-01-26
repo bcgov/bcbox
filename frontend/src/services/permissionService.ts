@@ -17,33 +17,46 @@ export default {
   },
 
   /**
- * @function bucketDeletePermission
- * Deletes the given permission from the bucket
- * @param {string} bucketId ID of the bucket to remove permissions from
- * @param {Object} params Object containing the permission to remove
- * @returns {Promise} An axios response
- */
+   * @function bucketDeletePermission
+   * Deletes the given permission from the bucket
+   * @param {string} bucketId ID of the bucket to remove permissions from
+   * @param {Object} params Object containing the permission to remove
+   * @returns {Promise} An axios response
+   */
   bucketDeletePermission(bucketId: string, params: Object) {
-    return comsAxios().delete(`${PATH}/${BUCKET}/${bucketId}`, { params: params });
+    return comsAxios().delete(`${PATH}/${BUCKET}/${bucketId}`, {
+      params: params,
+    });
   },
 
   /**
-     * @function bucketSearchPermissions
-     * Returns a list of permissions for the bucket
-     * @param {Object} params Optional object containing the data to filter against
-     * @returns {Promise} An axios response
-     */
+   * @function bucketSearchPermissions
+   * Returns a list of permissions for the bucket
+   * @param {Object} params Optional object containing the data to filter against
+   * @returns {Promise} An axios response
+   */
   bucketSearchPermissions(params?: Object) {
     return comsAxios().get(`${PATH}/${BUCKET}`, { params: params });
   },
 
   /**
-     * @function objectSearchPermissions
-     * Returns a list of permissions for the object
-     * @param {Object} params Optional object containing the data to filter against
-     * @returns {Promise} An axios response
-     */
+   * @function objectSearchPermissions
+   * Returns a list of permissions for the object
+   * @param {Object} params Optional object containing the data to filter against
+   * @returns {Promise} An axios response
+   */
   objectSearchPermissions(params?: Object) {
     return comsAxios().get(`${PATH}/${OBJECT}`, { params: params });
+  },
+
+  /**
+   * @function objectGetPermissions
+   * Returns a list of permissions for the object
+   * @param {string} objectId ID of the object
+   * @param {Object} params Optional object containing the data to filter against
+   * @returns {Promise} An axios response
+   */
+  objectGetPermissions(objectId: string, params?: Object) {
+    return comsAxios().get(`${PATH}/${OBJECT}/${objectId}`, { params: params });
   },
 };

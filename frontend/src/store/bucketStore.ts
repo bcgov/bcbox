@@ -14,6 +14,7 @@ export const useBucketStore = defineStore('bucket', () => {
   const loading = ref(false);
   const buckets = ref([] as Bucket[]);
   const permissions = ref([] as UserPermissions[]);
+  const selectedBucketPermissionsForUser = ref([] as Permission[]);
 
   // actions
   async function load() {
@@ -48,6 +49,7 @@ export const useBucketStore = defineStore('bucket', () => {
     return bucket;
   }
 
+  // Get the set of permissions for a bucket
   async function getBucketPermissions(bucketId: string) {
     try {
       loading.value = true;
@@ -99,6 +101,23 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
+  // Get a user's bucket permissions
+  async function getBucketPermissionsForUser(bucketId: string) {
+    try {
+      loading.value = true;
+  
+      if (currentUser.value) {
+        const bucketPerms = 
+          (await permissionService.bucketSearchPermissions({ bucketId, userId: currentUser.value.userId })).data;
+        if(bucketPerms && bucketPerms[0] && bucketPerms[0].permissions) {
+          selectedBucketPermissionsForUser.value =bucketPerms[0].permissions;
+        }
+      }
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function addBucketPermission(bucketId: string, userId: string, permCode: string) {
     try {
       loading.value = true;
@@ -138,10 +157,12 @@ export const useBucketStore = defineStore('bucket', () => {
     load,
     getBucketInfo,
     getBucketPermissions,
+    getBucketPermissionsForUser,
     addBucketPermission,
     deleteBucketPermission,
     removeBucketUser,
     buckets,
-    permissions
+    permissions,
+    selectedBucketPermissionsForUser
   };
 });
