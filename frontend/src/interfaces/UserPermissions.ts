@@ -1,6 +1,6 @@
 export interface UserPermissions {
   userId: string;
-  idpName: string;
+  idpName?: string;
   elevatedRights?: boolean;
   fullName: string;
   create?: boolean;
