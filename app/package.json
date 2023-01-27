@@ -9,7 +9,7 @@
     "build": "ts-node ./frontend-utils.ts",
     "clean": "rimraf coverage dist",
     "clean:all": "npm run clean && ts-node ./frontend-utils.ts clean",
-    "debug": "ts-node-dev --debug --respawn --transpile-only --rs --watch bin,config ./bin/www",
+    "debug": "ts-node-dev --debug --respawn --transpile-only --rs --watch bin,config,dist ./bin/www",
     "lint": "eslint . **/www* --no-fix --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "lint:fix": "eslint . **/www* --fix --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "prelint": "npm run typecheck",
@@ -18,7 +18,7 @@
     "purge": "rimraf node_modules",
     "rebuild": "npm run clean && npm run build",
     "reinstall": "npm run purge && npm install",
-    "serve": "ts-node-dev --respawn --transpile-only --rs --watch bin,config ./bin/www",
+    "serve": "ts-node-dev --respawn --transpile-only --rs --watch bin,config,dist ./bin/www",
     "start": "ts-node --transpile-only ./bin/www",
     "test": "jest --verbose --forceExit --detectOpenHandles",
     "typecheck": "tsc --noEmit"
