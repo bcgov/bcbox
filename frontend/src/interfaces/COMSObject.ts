@@ -14,7 +14,7 @@ export interface COMSObject {
 
   // Additional
   metadata: Metadata;
-  tags: ObjectTag;
+  tag: ObjectTag;
 
   // Filled from metadata if available for easier reference
   name: string;

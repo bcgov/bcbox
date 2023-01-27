@@ -11,11 +11,15 @@ const router = createRouter({
       component: () => import('../views/HomeView.vue'),
     },
     {
-      path: '/detail/objects/:objId',
-      name: RouteNames.ObjectFileDetails,
-      component: () => import('../views/ObjectFileDetailsView.vue'),
-      meta: { requiresAuth: true },
-      props: true
+      path: '/detail',
+      children: [
+        {
+          path: 'objects',
+          name: RouteNames.ObjectFileDetails,
+          component: () => import('../views/ObjectFileDetailsView.vue'),
+          meta: { requiresAuth: true },
+        }
+      ]
     },
     // {
     //   path: '/create',

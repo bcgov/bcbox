@@ -49,10 +49,9 @@ const closeInfo = async () => {
       <router-link
         v-slot="{ navigate }"
         custom
-        :to="{ name: RouteNames.ObjectFileDetails, params: { objId: displayInfo?.id } }"
+        :to="{ name: RouteNames.ObjectFileDetails, query: { objId: displayInfo?.id } }"
       >
         <Button
-          role="link"
           label="Primary"
           class="p-button-outlined"
           @click="navigate"

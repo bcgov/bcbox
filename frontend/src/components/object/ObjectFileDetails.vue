@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, Ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 import { useObjectStore } from '@/store';
 import ObjectAccess from './ObjectAccess.vue';
@@ -8,23 +9,17 @@ import ObjectMetadata from './ObjectMetadata.vue';
 import ObjectProperties from './ObjectProperties.vue';
 import type { COMSObject } from '@/interfaces';
 
-const props = defineProps({
-  objId: {
-    type: String,
-    default: ({} as COMSObject)
-  }
-});
-
 const toast = useToast();
+const route = useRoute();
 
 const objectStore = useObjectStore();
-const objectInfo: any = ref();
-const isInfoLoaded: any = ref(false);
+const objectInfo: Ref<COMSObject> = ref({} as COMSObject);
+const isInfoLoaded: Ref<Boolean> = ref(false);
 
-const getObjectInfo = async (objId: any) => {
+const getObjectInfo = async (objId: string) => {
   try {
-    await objectStore.listObjects({ objId: objId });
-    objectInfo.value = await objectStore.getObjectInfo(objId);
+    await objectStore.listObjects({ objId });
+    objectInfo.value = (objectStore.getObjectInfo(objId) as COMSObject);
     isInfoLoaded.value = true;
   } catch (error: any) {
     toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
@@ -32,7 +27,7 @@ const getObjectInfo = async (objId: any) => {
 };
 
 onMounted(() => {
-  getObjectInfo(props.objId);
+  getObjectInfo(route.query.objId as string);
 });
 </script>
 
@@ -65,13 +60,5 @@ h1 {
 
 h2 {
   font-weight: bold;
-}
-
-.black {
-  color: black;
-}
-
-button {
-  margin-top: 15px;
 }
 </style>
