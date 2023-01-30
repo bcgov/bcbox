@@ -41,7 +41,10 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  function getBucketInfo(bucketId: string) {
+  async function getBucketInfo(bucketId: string) {
+    if (!buckets.value.length) {
+      await load();
+    }
     let bucket = buckets.value.find((x) => x.bucketId === bucketId);
     if (isProxy(bucket)) {
       bucket = toRaw(bucket);

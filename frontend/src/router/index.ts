@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore, useNavStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 const router = createRouter({
@@ -29,7 +29,7 @@ const router = createRouter({
       path: '/developer',
       name: RouteNames.Developer,
       component: () => import('../views/DeveloperView.vue'),
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, breadcrumb: 'Developer' },
     },
     {
       path: '/list',
@@ -38,13 +38,13 @@ const router = createRouter({
           path: 'buckets',
           name: RouteNames.ListBuckets,
           component: () => import('../views/ListBucketsView.vue'),
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, breadcrumb: 'Buckets' },
         },
         {
           path: 'objects',
           name: RouteNames.ListObjects,
           component: () => import('../views/ListObjectsView.vue'),
-          meta: { requiresAuth: true },
+          meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' },
         },
       ],
     },
@@ -67,6 +67,9 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
+  const navStore = useNavStore();
+  navStore.navigate(to);
+
   if (to.meta.requiresAuth) {
     const authStore = useAuthStore();
 
