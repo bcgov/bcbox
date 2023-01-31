@@ -35,14 +35,15 @@ const { home, items } = storeToRefs(useNavStore());
       </template>
     </Toolbar>
 
-    <!-- Breadcrumb testing -->
-    <div>
+    <!-- Breadcrumb
+         Removed for now -->
+    <!-- <div>
       <Breadcrumb
         :home="home"
         :model="items"
         aria-label="breadcrumb"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 

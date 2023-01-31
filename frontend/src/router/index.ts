@@ -67,8 +67,9 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  const navStore = useNavStore();
-  navStore.navigate(to);
+  // Removed for now
+  // const navStore = useNavStore();
+  // navStore.navigate(to);
 
   if (to.meta.requiresAuth) {
     const authStore = useAuthStore();

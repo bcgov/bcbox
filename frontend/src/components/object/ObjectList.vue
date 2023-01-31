@@ -54,15 +54,14 @@ const listObjects = async () => {
   }
 };
 
-const updateBreadcrumb = async () => {
-  try {
-    const bucket = await bucketStore.getBucketInfo(route.query.bucketId as string);
-    navStore.replace('__listObjectsDynamic', bucket?.bucketName ?? 'Unknown bucket');
-  } catch (error: any) {
-    toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: error, life: 5000 });
-  }
-
-};
+// const updateBreadcrumb = async () => {
+//   try {
+//     const bucket = await bucketStore.getBucketInfo(route.query.bucketId as string);
+//     navStore.replace('__listObjectsDynamic', bucket?.bucketName ?? 'Unknown bucket');
+//   } catch (error: any) {
+//     toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: error, life: 5000 });
+//   }
+// };
 
 // Download
 const multiSelectedObjectIds = computed(() => {
@@ -71,7 +70,8 @@ const multiSelectedObjectIds = computed(() => {
 
 // Get the user's list of objects
 onMounted(() => {
-  updateBreadcrumb();
+  // Removed for now
+  // updateBreadcrumb();
   listObjects();
 
 });
