@@ -3,7 +3,7 @@ export type { COMSObject } from './COMSObject';
 export type { IdentityProvider } from './IdentityProvider';
 export type { Metadata } from './Metadata';
 export type { ObjectTag } from './ObjectTag';
-export type { Tag } from './Tag';
 export type { Permission } from './Permission';
+export type { Tag } from './Tag';
 export type { User } from './User';
 export type { UserPermissions } from './UserPermissions';

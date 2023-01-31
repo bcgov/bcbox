@@ -3,10 +3,10 @@ import { RouteNames } from '@/utils/constants';
 // PrimeVue
 import Button from 'primevue/button';
 // Other
-import ObjectAccess from './ObjectAccess.vue';
-import ObjectTag from './ObjectTag.vue';
-import ObjectMetadata from './ObjectMetadata.vue';
-import ObjectProperties from './ObjectProperties.vue';
+import ObjectAccess from '@/components/object/ObjectAccess.vue';
+import ObjectMetadata from '@/components/object/ObjectMetadata.vue';
+import ObjectProperties from '@/components/object/ObjectProperties.vue';
+import ObjectTag from '@/components/object/ObjectTag.vue';
 
 defineProps({
   displayInfo: {

@@ -46,8 +46,8 @@ export default {
    * Get an objects tags
    * @returns {Promise} An axios response
    */
-  getObjectTagging() {
-    return comsAxios().get(`${PATH}/tagging`);
+  getObjectTagging(params: any = {}) {
+    return comsAxios().get(`${PATH}/tagging`, { params: params });
   },
 
   /**
@@ -119,7 +119,7 @@ export default {
     return comsAxios().post(`${PATH}/${objectId}`, fd, config);
   },
 
-  
+
   /**
    * @function addPermissions
    * Adds the given permissions to the object

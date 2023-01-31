@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref, Ref } from 'vue';
+import { useObjectStore } from '@/store';
 import { useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import { useObjectStore } from '@/store';
-import ObjectAccess from './ObjectAccess.vue';
-import ObjectTag from './ObjectTag.vue';
-import ObjectMetadata from './ObjectMetadata.vue';
-import ObjectProperties from './ObjectProperties.vue';
+import ObjectAccess from '@/components/object/ObjectAccess.vue';
+import ObjectMetadata from '@/components/object/ObjectMetadata.vue';
+import ObjectProperties from '@/components/object/ObjectProperties.vue';
+import ObjectTag from '@/components/object/ObjectTag.vue';
 import type { COMSObject } from '@/interfaces';
 
 const toast = useToast();

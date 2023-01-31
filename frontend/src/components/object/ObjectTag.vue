@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ObjectTag } from '@/interfaces';
 import Button from 'primevue/button';
+import type { ObjectTag } from '@/interfaces';
 
 defineProps<{
   objectTag: ObjectTag;
