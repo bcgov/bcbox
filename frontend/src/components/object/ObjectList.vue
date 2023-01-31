@@ -9,7 +9,7 @@ import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
 // State
 import { storeToRefs } from 'pinia';
-import { useBucketStore, useNavStore, useObjectStore } from '@/store';
+import { useBucketStore, useObjectStore } from '@/store';
 // Components
 import DeleteObjectButton from './DeleteObjectButton.vue';
 import DownloadObjectButton from './DownloadObjectButton.vue';
@@ -18,7 +18,7 @@ import ObjectTable from './ObjectTable.vue';
 import ObjectUpload from './ObjectUpload.vue';
 
 const bucketStore = useBucketStore();
-const navStore = useNavStore();
+//const navStore = useNavStore();
 const objectStore = useObjectStore();
 const { multiSelectedObjects } = storeToRefs(objectStore);
 const route = useRoute();
@@ -73,7 +73,6 @@ onMounted(() => {
   // Removed for now
   // updateBreadcrumb();
   listObjects();
-
 });
 </script>
 
