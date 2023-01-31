@@ -4,7 +4,7 @@ import { objectService, permissionService, userService } from '@/services';
 import { useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
-import type { COMSObject, Metadata, ObjectTag, Tag, User, UserPermissions } from '@/interfaces';
+import type { COMSObject, Metadata, ObjectTag, User, UserPermissions } from '@/interfaces';
 
 export const useObjectStore = defineStore('objectStore', () => {
   const { currentUser } = storeToRefs(useUserStore());
@@ -91,7 +91,9 @@ export const useObjectStore = defineStore('objectStore', () => {
             }
 
             if(taggingResponse && taggingResponse.tagSet.length) {
-              //TO DO: sort by key
+              // taggingResponse.tagSet.sort(
+              //   (tag1: Tag, tag2: Tag) => tag1.key < tag2.key ? -1 : tag1.key > tag2.key ? 1 : 0
+              // );
               obj.tag = taggingResponse.find((x: ObjectTag) => x.objectId === obj.id);
             }
 
