@@ -7,8 +7,8 @@ import { Permissions } from '@/utils/constants';
 import { useConfigStore, useUserStore } from '@/store';
 
 export const useBucketStore = defineStore('bucket', () => {
-  const { currentUser } = storeToRefs(useUserStore());
   const { config } = storeToRefs(useConfigStore());
+  const { currentUser } = storeToRefs(useUserStore());
 
   // state
   const loading = ref(false);

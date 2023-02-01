@@ -1,12 +1,13 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 import { objectService, permissionService, userService } from '@/services';
-import { useUserStore } from '@/store';
+import { useConfigStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { COMSObject, Metadata, Tagging, Tag, User, UserPermissions } from '@/interfaces';
 
 export const useObjectStore = defineStore('objectStore', () => {
+  const { config } = storeToRefs(useConfigStore());
   const { currentUser } = storeToRefs(useUserStore());
 
   // state
@@ -103,7 +104,7 @@ export const useObjectStore = defineStore('objectStore', () => {
 
             // Add the permissions to each object list item
             obj.permissions = permResponse
-              .find((p: { objectId: string, permission: UserPermissions}) => p.objectId === obj.id).permissions;
+              .find((p: { objectId: string, permission: UserPermissions }) => p.objectId === obj.id).permissions;
           });
         }
         objectList.value = objects;
@@ -144,9 +145,12 @@ export const useObjectStore = defineStore('objectStore', () => {
 
         const userPermissions: UserPermissions[] = [];
         uniqueUsers.forEach((user: User) => {
+          const idp = config.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
+
           userPermissions.push({
             userId: user.userId,
             fullName: user.fullName,
+            idpName: idp?.name,
             read: hasPermission(user.userId, Permissions.READ),
             update: hasPermission(user.userId, Permissions.UPDATE),
             delete: hasPermission(user.userId, Permissions.DELETE),

@@ -112,6 +112,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
       v-model:visible="permissionsVisible"
       :draggable="false"
       :modal="true"
+      class="permissions-modal"
     >
       <!-- eslint-enable vue/no-v-model-argument -->
       <template #header>
