@@ -1,4 +1,4 @@
-import type { Metadata, ObjectTag } from '@/interfaces';
+import type { Metadata, Tagging } from '@/interfaces';
 
 export interface COMSObject {
   // Object columns
@@ -14,7 +14,7 @@ export interface COMSObject {
 
   // Additional
   metadata: Metadata;
-  tag: ObjectTag;
+  tag: Tagging;
 
   // Filled from metadata if available for easier reference
   name: string;
