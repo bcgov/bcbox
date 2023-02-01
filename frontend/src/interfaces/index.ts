@@ -2,7 +2,7 @@ export type { Bucket } from './Bucket';
 export type { COMSObject } from './COMSObject';
 export type { IdentityProvider } from './IdentityProvider';
 export type { Metadata } from './Metadata';
-export type { ObjectTag } from './ObjectTag';
+export type { Tagging } from './Tagging';
 export type { Permission } from './Permission';
 export type { Tag } from './Tag';
 export type { User } from './User';

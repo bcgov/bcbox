@@ -1,6 +1,6 @@
 import type { Tag } from '@/interfaces';
 
-export interface ObjectTag {
+export interface Tagging {
   objectId: string;
   tagset: Array<Tag>;
 }
