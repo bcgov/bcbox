@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, Ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useObjectStore } from '@/store';
 import { useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
@@ -12,14 +13,13 @@ import type { COMSObject } from '@/interfaces';
 const toast = useToast();
 const route = useRoute();
 
-const objectStore = useObjectStore();
 const objectInfo: Ref<COMSObject> = ref({} as COMSObject);
 const isInfoLoaded: Ref<Boolean> = ref(false);
+const { objectList } = storeToRefs(useObjectStore());
 
 const getObjectInfo = async (objId: string) => {
   try {
-    await objectStore.listObjects({ objId });
-    objectInfo.value = (objectStore.getObjectInfo(objId) as COMSObject);
+    objectInfo.value = (objectList.value.find((x: COMSObject) => x.id === objId) as COMSObject);
     isInfoLoaded.value = true;
   } catch (error: any) {
     toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });

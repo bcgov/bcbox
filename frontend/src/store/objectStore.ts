@@ -4,7 +4,7 @@ import { objectService, permissionService, userService } from '@/services';
 import { useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
-import type { COMSObject, Metadata, ObjectTag, User, UserPermissions } from '@/interfaces';
+import type { COMSObject, Metadata, ObjectTag, Tag, User, UserPermissions } from '@/interfaces';
 
 export const useObjectStore = defineStore('objectStore', () => {
   const { currentUser } = storeToRefs(useUserStore());
@@ -90,11 +90,11 @@ export const useObjectStore = defineStore('objectStore', () => {
               obj.name = metadata.metadata.find((x: { key: string }) => x.key === 'name')?.value;
             }
 
-            if(taggingResponse && taggingResponse.tagSet.length) {
-              // taggingResponse.tagSet.sort(
-              //   (tag1: Tag, tag2: Tag) => tag1.key < tag2.key ? -1 : tag1.key > tag2.key ? 1 : 0
-              // );
+            if(taggingResponse) {
               obj.tag = taggingResponse.find((x: ObjectTag) => x.objectId === obj.id);
+              obj.tag.tagset.sort(
+                (tag1: Tag, tag2: Tag) => tag1.key < tag2.key ? -1 : tag1.key > tag2.key ? 1 : 0
+              );
             }
 
             // Add the permissions to each object list item

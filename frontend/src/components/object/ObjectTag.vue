@@ -13,7 +13,7 @@ defineProps<{
       <h2>Tags</h2>
     </div>
     <div
-      v-for="tag in objectTag?.tagSet"
+      v-for="tag in objectTag?.tagset"
       :key="tag.key + tag.value"
     >
       <div class="col-3">
