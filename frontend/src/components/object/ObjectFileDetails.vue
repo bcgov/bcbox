@@ -53,3 +53,9 @@ onMounted(() => {
     <ObjectTag :object-tag="objectInfo.tag" />
   </div>
 </template>
+
+<style lang="scss" scoped>
+:deep(.grid) {
+  width: 33% !important;
+}
+</style>
