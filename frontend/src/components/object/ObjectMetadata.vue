@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Metadata } from '@/interfaces';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+import type { Metadata } from '@/interfaces';
 
 defineProps<{
   objectMetadata: Metadata;
