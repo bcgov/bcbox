@@ -38,7 +38,9 @@ onMounted(() => {
         icon="fa-solid fa-circle-info"
         style="font-size: 2rem"
       />
-      <h1>File details</h1>
+      <h1 class="pl-1 font-bold">
+        File details
+      </h1>
     </div>
   </div>
   <div
@@ -51,14 +53,3 @@ onMounted(() => {
     <ObjectTag :object-tag="objectInfo.tag" />
   </div>
 </template>
-
-<style lang="scss" scoped>
-h1 {
-  padding-left: 1rem;
-  font-weight: bold;
-}
-
-h2 {
-  font-weight: bold;
-}
-</style>

@@ -87,6 +87,10 @@ export const useObjectStore = defineStore('objectStore', () => {
 
             if (metadata) {
               obj.metadata = metadata;
+              obj.metadata.metadata.sort(
+                (metadata1: Array<{key: string, value: string}>, metadata2: Array<{key: string, value: string}> ) =>
+                  metadata1.key < metadata2.key ? -1 : metadata1.key > metadata2.key ? 1 : 0
+              );
               obj.name = metadata.metadata.find((x: { key: string }) => x.key === 'name')?.value;
             }
 

@@ -10,7 +10,9 @@ defineProps<{
 <template>
   <div class="grid">
     <div class="col-12">
-      <h2>Tags</h2>
+      <h2 class="font-bold">
+        Tags
+      </h2>
     </div>
     <div
       v-for="tag in objectTag?.tagset"
@@ -27,9 +29,3 @@ defineProps<{
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-h2 {
-  font-weight: bold;
-}
-</style>

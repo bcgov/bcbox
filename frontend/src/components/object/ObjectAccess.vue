@@ -12,7 +12,9 @@ defineProps({
 <template>
   <div class="grid">
     <div class="col-12">
-      <h2>Access</h2>
+      <h2 class="font-bold">
+        Access
+      </h2>
     </div>
     <div class="col-3">
       Managed by:
@@ -22,9 +24,3 @@ defineProps({
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-h2 {
-  font-weight: bold;
-}
-</style>

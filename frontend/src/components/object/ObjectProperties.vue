@@ -13,7 +13,9 @@ defineProps({
 <template>
   <div class="grid">
     <div class="col-12">
-      <h2>Properties</h2>
+      <h2 class="font-bold">
+        Properties
+      </h2>
     </div>
     <div class="col-3">
       Name:
@@ -59,9 +61,3 @@ defineProps({
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-h2 {
-  font-weight: bold;
-}
-</style>

@@ -56,6 +56,7 @@ const closeInfo = async () => {
           class="p-button-outlined"
           @click="navigate"
         >
+          <font-awesome-icon icon="file-contract" />
           View all details
         </Button>
       </router-link>
@@ -79,5 +80,6 @@ h2 {
 
 button {
   margin-top: 15px;
+  text-indent: 10px;
 }
 </style>
