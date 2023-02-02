@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Vue
-import { ref, Ref } from 'vue';
+import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 // PrimeVue
 import { useToast } from 'primevue/usetoast';
@@ -10,6 +10,8 @@ import FileUpload from 'primevue/fileupload';
 import { useObjectStore } from '@/store';
 // Component
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
+
+import type { Ref } from 'vue';
 
 defineProps({
   closeCallback: {

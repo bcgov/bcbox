@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
@@ -10,6 +10,8 @@ import ObjectPermissionAddUser from '@/components/object/ObjectPermissionAddUser
 import { useToaster } from '@/composables/useToaster';
 import { useObjectStore } from '@/store';
 import { Permissions } from '@/utils/constants';
+
+import type { Ref } from 'vue';
 
 // Props
 const props = defineProps<{

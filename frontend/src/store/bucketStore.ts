@@ -1,10 +1,12 @@
-import { ref, Ref, isProxy, toRaw } from 'vue';
+import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 
-import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
 import { bucketService, permissionService, userService } from '@/services';
 import { Permissions } from '@/utils/constants';
 import { useConfigStore, useUserStore } from '@/store';
+
+import type { Ref } from 'vue';
+import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
 
 export const useBucketStore = defineStore('bucket', () => {
   const { config } = storeToRefs(useConfigStore());

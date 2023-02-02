@@ -1,9 +1,10 @@
-import { ref, Ref, isProxy, toRaw } from 'vue';
+import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 import { objectService, permissionService, userService } from '@/services';
 import { useConfigStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
+import type { Ref } from 'vue';
 import type { COMSObject, IdentityProvider, Metadata, Tagging, Tag, User, UserPermissions } from '@/interfaces';
 
 export const useObjectStore = defineStore('objectStore', () => {
