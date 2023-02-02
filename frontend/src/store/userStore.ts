@@ -1,18 +1,21 @@
-import { ref, Ref } from 'vue';
+import { ref } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
-import type { User } from '@/interfaces';
 import { userService } from '@/services';
 import { useAuthStore, useConfigStore } from '@/store';
+
+import type { Ref } from 'vue';
+import type { IdentityProvider, User } from '@/interfaces';
 
 export const useUserStore = defineStore('user', () => {
   const { getIdentityId } = useAuthStore();
   const { getKeycloak } = storeToRefs(useAuthStore());
   const { config } = storeToRefs(useConfigStore());
 
-  const userSearch = ref([] as User[]);
-  const idps = ref([] as Object[]);
-  const loading = ref(false);
+  // State
   const currentUser: Ref<User | null> = ref(null);
+  const idps: Ref<Array<IdentityProvider>> = ref([]);
+  const loading: Ref<boolean> = ref(false);
+  const userSearch: Ref<Array<User>> = ref([]);
 
   async function init() {
     await getUser();
@@ -66,7 +69,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   function clearSearch() {
-    userSearch.value = ([] as User[]);
+    userSearch.value = [];
   }
 
   return { idps, loading, currentUser, userSearch, clearSearch, init, listIdps, searchUsers };

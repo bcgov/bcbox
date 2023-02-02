@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Vue
-import { ref } from 'vue';
+import { ref, Ref } from 'vue';
 import { useRoute } from 'vue-router';
 // PrimeVue
 import { useToast } from 'primevue/usetoast';
@@ -22,9 +22,9 @@ const objectStore = useObjectStore();
 const route = useRoute();
 const toast = useToast();
 
-const pendingFiles = ref([] as File[]);
-const successfulFiles = ref([] as File[]);
-const failedFiles = ref([] as File[]);
+const pendingFiles: Ref<Array<File>> = ref([]);
+const successfulFiles: Ref<Array<File>> = ref([]);
+const failedFiles: Ref<Array<File>> = ref([]);
 
 const onSelectedFiles = (event: any) => {
   pendingFiles.value = event.files;

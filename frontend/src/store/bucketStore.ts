@@ -1,4 +1,4 @@
-import { ref, isProxy, toRaw } from 'vue';
+import { ref, Ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 
 import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
@@ -11,10 +11,10 @@ export const useBucketStore = defineStore('bucket', () => {
   const { currentUser } = storeToRefs(useUserStore());
 
   // state
-  const loading = ref(false);
-  const buckets = ref([] as Bucket[]);
-  const permissions = ref([] as UserPermissions[]);
-  const selectedBucketPermissionsForUser = ref([] as Permission[]);
+  const loading: Ref<boolean> = ref(false);
+  const buckets: Ref<Array<Bucket>> = ref([]);
+  const permissions: Ref<Array<UserPermissions>> = ref([]);
+  const selectedBucketPermissionsForUser: Ref<Array<Permission>> = ref([]);
 
   // actions
   async function load() {
@@ -27,7 +27,7 @@ export const useBucketStore = defineStore('bucket', () => {
           objectPerms: true
         })).data;
         const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
-        let response = [] as Bucket[];
+        let response = Array<Bucket>();
         if (uniqueIds.length) {
           response = (await bucketService.searchForBuckets({ bucketId: uniqueIds })).data;
           response.forEach((x: Bucket) => {
@@ -66,7 +66,7 @@ export const useBucketStore = defineStore('bucket', () => {
         const perms = searchPerms[0].permissions;
 
         const uniqueIds = [...new Set(perms.map((x: Permission) => x.userId))];
-        const uniqueUsers: User[] = (await userService.searchForUsers({ userId: uniqueIds })).data;
+        const uniqueUsers: Array<User> = (await userService.searchForUsers({ userId: uniqueIds })).data;
 
         const hasPermission = (userId: string, permission: string) => {
           return perms.some((perm: any) => perm.userId === userId && perm.permCode === permission);
