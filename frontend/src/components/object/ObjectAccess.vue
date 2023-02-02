@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 
 defineProps({
   objectAccess: {
@@ -23,4 +23,4 @@ defineProps({
       {{ objectAccess?.managedBy }}
     </div>
   </div>
-</template>
+</template> -->
