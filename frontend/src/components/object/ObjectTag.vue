@@ -8,7 +8,10 @@ defineProps<{
 </script>
 
 <template>
-  <div class="grid">
+  <div
+    v-if="objectTag.tagset.length"
+    class="grid"
+  >
     <div class="col-12">
       <h2 class="font-bold">
         Tags
