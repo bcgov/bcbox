@@ -30,6 +30,9 @@ export const useBucketStore = defineStore('bucket', () => {
         let response = [] as Bucket[];
         if (uniqueIds.length) {
           response = (await bucketService.searchForBuckets({ bucketId: uniqueIds })).data;
+          response.forEach((x: Bucket) => {
+            x.userPermissions = permResponse.find((p: any) => p.bucketId === x.bucketId)?.permissions;
+          });
         }
         buckets.value = response;
       }
@@ -38,7 +41,10 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  function getBucketInfo(bucketId: string) {
+  async function getBucketInfo(bucketId: string) {
+    if (!buckets.value.length) {
+      await load();
+    }
     let bucket = buckets.value.find((x) => x.bucketId === bucketId);
     if (isProxy(bucket)) {
       bucket = toRaw(bucket);
@@ -105,12 +111,12 @@ export const useBucketStore = defineStore('bucket', () => {
   async function getBucketPermissionsForUser(bucketId: string) {
     try {
       loading.value = true;
-  
+
       if (currentUser.value) {
-        const bucketPerms = 
+        const bucketPerms =
           (await permissionService.bucketSearchPermissions({ bucketId, userId: currentUser.value.userId })).data;
-        if(bucketPerms && bucketPerms[0] && bucketPerms[0].permissions) {
-          selectedBucketPermissionsForUser.value =bucketPerms[0].permissions;
+        if (bucketPerms && bucketPerms[0] && bucketPerms[0].permissions) {
+          selectedBucketPermissionsForUser.value = bucketPerms[0].permissions;
         }
       }
     } finally {

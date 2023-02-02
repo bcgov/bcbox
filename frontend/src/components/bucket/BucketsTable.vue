@@ -6,11 +6,12 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 import BucketPermission from './BucketPermission.vue';
-import { useBucketStore, useUserStore } from '@/store';
-import { RouteNames } from '@/utils/constants';
+import { useBucketStore } from '@/store';
+import { Permissions, RouteNames } from '@/utils/constants';
+
+import type { Bucket, Permission } from '@/interfaces';
 
 const { loading, buckets } = storeToRefs(useBucketStore());
-const { currentUser } = storeToRefs(useUserStore());
 
 const permissionsVisible = ref(false);
 const permissionsBucketId = ref('');
@@ -26,6 +27,10 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
   permissionsVisible.value = true;
   permissionsBucketId.value = bucketId;
   permissionBucketName.value = bucketName;
+};
+
+const displayPermissionsIcon = (bucket: Bucket) => {
+  return bucket.userPermissions?.find( (x: Permission) => x.permCode === Permissions.MANAGE);
 };
 </script>
 
@@ -86,7 +91,7 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
       >
         <template #body="{ data }">
           <Button
-            v-if="currentUser?.elevatedRights"
+            v-if="displayPermissionsIcon(data)"
             class="p-button-lg p-button-text"
             @click="showPermissions(data.bucketId, data.bucketName)"
           >

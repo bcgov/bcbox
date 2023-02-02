@@ -3,10 +3,11 @@ import { storeToRefs } from 'pinia';
 
 import Toolbar from 'primevue/toolbar';
 
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 const { getKeycloak } = storeToRefs(useAuthStore());
+// const { home, items } = storeToRefs(useNavStore());
 </script>
 
 <template>
@@ -32,6 +33,16 @@ const { getKeycloak } = storeToRefs(useAuthStore());
         </ol>
       </template>
     </Toolbar>
+
+    <!-- Breadcrumb
+         Removed for now -->
+    <!-- <div>
+      <Breadcrumb
+        :home="home"
+        :model="items"
+        aria-label="breadcrumb"
+      />
+    </div> -->
   </div>
 </template>
 

@@ -9,8 +9,7 @@ import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
 // State
 import { storeToRefs } from 'pinia';
-import { useBucketStore } from '@/store';
-import { useObjectStore } from '@/store';
+import { useBucketStore, useObjectStore } from '@/store';
 // Components
 import DeleteObjectButton from './DeleteObjectButton.vue';
 import DownloadObjectButton from './DownloadObjectButton.vue';
@@ -19,6 +18,7 @@ import ObjectTable from './ObjectTable.vue';
 import ObjectUpload from './ObjectUpload.vue';
 
 const bucketStore = useBucketStore();
+//const navStore = useNavStore();
 const objectStore = useObjectStore();
 const { multiSelectedObjects } = storeToRefs(objectStore);
 const route = useRoute();
@@ -54,6 +54,15 @@ const listObjects = async () => {
   }
 };
 
+// const updateBreadcrumb = async () => {
+//   try {
+//     const bucket = await bucketStore.getBucketInfo(route.query.bucketId as string);
+//     navStore.replace('__listObjectsDynamic', bucket?.bucketName ?? 'Unknown bucket');
+//   } catch (error: any) {
+//     toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: error, life: 5000 });
+//   }
+// };
+
 // Download
 const multiSelectedObjectIds = computed(() => {
   return multiSelectedObjects.value.map((o) => o.id);
@@ -61,54 +70,58 @@ const multiSelectedObjectIds = computed(() => {
 
 // Get the user's list of objects
 onMounted(() => {
+  // Removed for now
+  // updateBreadcrumb();
   listObjects();
 });
 </script>
 
 <template>
   <div>
-    <ObjectUpload
-      v-if="displayUpload"
-      class="mb-4"
-      :close-callback="closeUpload"
-    />
-    <Button
-      class="mr-2"
-      :disabled="displayUpload"
-      @click="showUpload"
-    >
-      <font-awesome-icon
-        icon="fa-solid fa-upload"
-        class="mr-1"
-      /> Upload
-    </Button>
-    <DownloadObjectButton
-      :mode="ButtonMode.BUTTON"
-      :ids="multiSelectedObjectIds"
-    />
-    <DeleteObjectButton
-      class="ml-2"
-      :mode="ButtonMode.BUTTON"
-      :ids="multiSelectedObjectIds"
-    />
-  </div>
-
-  <div class="flex mt-4">
-    <div class="flex-grow-1">
-      <ObjectTable
-        :display-info="displayInfo"
-        @show-info="showInfo"
+    <div>
+      <ObjectUpload
+        v-if="displayUpload"
+        class="mb-4"
+        :close-callback="closeUpload"
+      />
+      <Button
+        class="mr-2"
+        :disabled="displayUpload"
+        @click="showUpload"
+      >
+        <font-awesome-icon
+          icon="fa-solid fa-upload"
+          class="mr-1"
+        /> Upload
+      </Button>
+      <DownloadObjectButton
+        :mode="ButtonMode.BUTTON"
+        :ids="multiSelectedObjectIds"
+      />
+      <DeleteObjectButton
+        class="ml-2"
+        :mode="ButtonMode.BUTTON"
+        :ids="multiSelectedObjectIds"
       />
     </div>
-    <div
-      v-if="displayInfo"
-      class="flex-shrink-0 ml-3"
-      style="max-width: 33%; min-width: 33%"
-    >
-      <ObjectSidebar
-        :display-info="displayInfo"
-        @close-info="closeInfo"
-      />
+
+    <div class="flex mt-4">
+      <div class="flex-grow-1">
+        <ObjectTable
+          :display-info="displayInfo"
+          @show-info="showInfo"
+        />
+      </div>
+      <div
+        v-if="displayInfo"
+        class="flex-shrink-0 ml-3"
+        style="max-width: 33%; min-width: 33%"
+      >
+        <ObjectSidebar
+          :display-info="displayInfo"
+          @close-info="closeInfo"
+        />
+      </div>
     </div>
   </div>
 </template>
