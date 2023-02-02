@@ -23,7 +23,8 @@ export const RouteNames = Object.freeze({
   Developer: 'developer',
   ListBuckets: 'listBuckets',
   ListObjects: 'listObjects',
-  Logout: 'logout,'
+  Logout: 'logout,',
+  ObjectFileDetails: 'objectFileDetails'
 });
 
 export const ValidationMessages = Object.freeze({

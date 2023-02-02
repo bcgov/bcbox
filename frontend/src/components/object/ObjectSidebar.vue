@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { RouteNames } from '@/utils/constants';
 // PrimeVue
 import Button from 'primevue/button';
 // Other
-import { formatDateLong } from '@/utils/formatters';
+import ObjectAccess from '@/components/object/ObjectAccess.vue';
+import ObjectMetadata from '@/components/object/ObjectMetadata.vue';
+import ObjectProperties from '@/components/object/ObjectProperties.vue';
+import ObjectTag from '@/components/object/ObjectTag.vue';
 
 defineProps({
   displayInfo: {
@@ -37,63 +41,25 @@ const closeInfo = async () => {
     </div>
   </div>
   <div class="pl-2">
-    <div class="grid">
-      <div class="col-12">
-        <h2>Properties</h2>
-      </div>
-      <div class="col-3">
-        Name:
-      </div>
-      <div class="col-9">
-        {{ displayInfo?.name }}
-      </div>
-      <div class="col-3">
-        Size:
-      </div>
-      <div class="col-9">
-        {{ displayInfo?.size }}
-      </div>
-      <div class="col-3">
-        Object ID:
-      </div>
-      <div class="col-9">
-        {{ displayInfo?.id }}
-      </div>
-      <div class="col-3">
-        Created by:
-      </div>
-      <div class="col-9">
-        {{ displayInfo?.createdBy }}
-      </div>
-      <div class="col-3">
-        Creation date:
-      </div>
-      <div class="col-9">
-        {{ formatDateLong(displayInfo?.createdAt) }}
-      </div>
-      <div class="col-3">
-        Updated by:
-      </div>
-      <div class="col-9">
-        {{ displayInfo?.updatedBy }}
-      </div>
-      <div class="col-3">
-        Updated date:
-      </div>
-      <div class="col-9">
-        {{ formatDateLong(displayInfo?.updatedAt) }}
-      </div>
-    </div>
-    <div class="grid">
-      <div class="col-12">
-        <h2>Access</h2>
-      </div>
-      <div class="col-3">
-        Managed by:
-      </div>
-      <div class="col-9">
-        {{ displayInfo?.managedBy }}
-      </div>
+    <ObjectProperties :object-properties="displayInfo" />
+    <ObjectAccess :object-access="displayInfo" />
+    <ObjectMetadata :object-metadata="displayInfo?.metadata" />
+    <ObjectTag :object-tag="displayInfo?.tag" />
+    <div class="col-9">
+      <router-link
+        v-slot="{ navigate }"
+        custom
+        :to="{ name: RouteNames.ObjectFileDetails, query: { objId: displayInfo?.id } }"
+      >
+        <Button
+          label="Primary"
+          class="p-button-outlined"
+          @click="navigate"
+        >
+          <font-awesome-icon icon="file-contract" />
+          View all details
+        </Button>
+      </router-link>
     </div>
   </div>
 </template>
@@ -110,5 +76,10 @@ h2 {
 
 .black {
   color: black;
+}
+
+button {
+  margin-top: 15px;
+  text-indent: 10px;
 }
 </style>

@@ -10,6 +10,17 @@ const router = createRouter({
       name: RouteNames.Home,
       component: () => import('../views/HomeView.vue'),
     },
+    {
+      path: '/detail',
+      children: [
+        {
+          path: 'objects',
+          name: RouteNames.ObjectFileDetails,
+          component: () => import('../views/ObjectFileDetailsView.vue'),
+          meta: { requiresAuth: true },
+        }
+      ]
+    },
     // {
     //   path: '/create',
     //   children: [
@@ -45,6 +56,12 @@ const router = createRouter({
           name: RouteNames.ListObjects,
           component: () => import('../views/ListObjectsView.vue'),
           meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' },
+        },
+        {
+          path: 'detail/object',
+          name: RouteNames.ObjectFileDetails,
+          component: () => import('../views/ObjectFileDetailsView.vue'),
+          meta: { requiresAuth: true },
         },
       ],
     },
