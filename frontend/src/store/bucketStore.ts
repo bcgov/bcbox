@@ -65,19 +65,8 @@ export const useBucketStore = defineStore('bucket', () => {
       if (searchPerms[0]) {
         const perms = searchPerms[0].permissions;
 
-        // TODO: Feed a comma separated list instead of searching individual users once COMS accepts that
-        // const uniqueIds = [...new Set(perms.map((x: any) => x.userId))].join(',');
-        // const uniqueUsers = await userService.searchForUsers({ userId: uniqueIds });
-
         const uniqueIds = [...new Set(perms.map((x: Permission) => x.userId))];
-        const uniqueUsers: User[] = [];
-
-        await Promise.all(
-          uniqueIds.map(async (x: any) => {
-            const userResponse = await userService.searchForUsers({ userId: x });
-            uniqueUsers.push(userResponse.data[0]);
-          })
-        );
+        const uniqueUsers: User[] = (await userService.searchForUsers({ userId: uniqueIds })).data;
 
         const hasPermission = (userId: string, permission: string) => {
           return perms.some((perm: any) => perm.userId === userId && perm.permCode === permission);
