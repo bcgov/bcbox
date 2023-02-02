@@ -2,7 +2,7 @@
 import { formatDateLong } from '@/utils/formatters';
 
 defineProps({
-  displayInfo: {
+  objectProperties: {
     type: Object,
     default: undefined
   }
@@ -19,43 +19,43 @@ defineProps({
       Name:
     </div>
     <div class="col-9">
-      {{ displayInfo?.name }}
+      {{ objectProperties?.name }}
     </div>
     <div class="col-3">
       Size:
     </div>
     <div class="col-9">
-      {{ displayInfo?.size }}
+      {{ objectProperties?.size }}
     </div>
     <div class="col-3">
       Object ID:
     </div>
     <div class="col-9">
-      {{ displayInfo?.id }}
+      {{ objectProperties?.id }}
     </div>
     <div class="col-3">
       Created by:
     </div>
     <div class="col-9">
-      {{ displayInfo?.createdBy }}
+      {{ objectProperties?.createdBy }}
     </div>
     <div class="col-3">
       Creation date:
     </div>
     <div class="col-9">
-      {{ formatDateLong(displayInfo?.createdAt) }}
+      {{ formatDateLong(objectProperties?.createdAt) }}
     </div>
     <div class="col-3">
       Updated by:
     </div>
     <div class="col-9">
-      {{ displayInfo?.updatedBy }}
+      {{ objectProperties?.updatedBy }}
     </div>
     <div class="col-3">
       Updated date:
     </div>
     <div class="col-9">
-      {{ formatDateLong(displayInfo?.updatedAt) }}
+      {{ formatDateLong(objectProperties?.updatedAt) }}
     </div>
   </div>
 </template>

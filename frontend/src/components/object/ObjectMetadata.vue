@@ -3,7 +3,7 @@ import type { Metadata } from '@/interfaces';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 
-const props = defineProps<{
+defineProps<{
   objectMetadata: Metadata;
 }>();
 </script>
@@ -15,7 +15,7 @@ const props = defineProps<{
     </div>
     <div>
       <DataTable
-        :value="props.objectMetadata.metadata"
+        :value="objectMetadata.metadata"
         striped-rows
         responsive-layout="scroll"
       >

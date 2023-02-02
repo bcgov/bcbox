@@ -2,7 +2,7 @@
 import type { ObjectTag } from '@/interfaces';
 import Button from 'primevue/button';
 
-const props = defineProps<{
+defineProps<{
   objectTag: ObjectTag;
 }>();
 </script>
@@ -13,7 +13,7 @@ const props = defineProps<{
       <h2>Tags</h2>
     </div>
     <div
-      v-for="tag in props.objectTag.tagSet"
+      v-for="tag in objectTag?.tagSet"
       :key="tag.key + tag.value"
     >
       <div class="col-3">

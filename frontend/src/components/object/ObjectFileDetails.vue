@@ -1,16 +1,39 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import { useObjectStore } from '@/store';
 import ObjectAccess from './ObjectAccess.vue';
 import ObjectTag from './ObjectTag.vue';
 import ObjectMetadata from './ObjectMetadata.vue';
 import ObjectProperties from './ObjectProperties.vue';
+import type { COMSObject } from '@/interfaces';
 
-defineProps({
-  displayInfo: {
-    type: Object,
-    default: undefined
+const props = defineProps({
+  objId: {
+    type: String,
+    default: ({} as COMSObject)
   }
 });
 
+const toast = useToast();
+
+const objectStore = useObjectStore();
+const objectInfo: any = ref();
+const isInfoLoaded: any = ref(false);
+
+const getObjectInfo = async (objId: any) => {
+  try {
+    await objectStore.listObjects({ objId: objId });
+    objectInfo.value = await objectStore.getObjectInfo(objId);
+    isInfoLoaded.value = true;
+  } catch (error: any) {
+    toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
+  }
+};
+
+onMounted(() => {
+  getObjectInfo(props.objId);
+});
 </script>
 
 <template>
@@ -23,11 +46,14 @@ defineProps({
       <h1>File details</h1>
     </div>
   </div>
-  <div class="pl-2">
-    <ObjectProperties :display-info="displayInfo" />
-    <ObjectAccess :display-info="displayInfo" />
-    <ObjectMetadata :object-metadata="displayInfo?.metadata" />
-    <ObjectTag :object-tag="displayInfo?.tag" />
+  <div
+    v-if="isInfoLoaded"
+    class="pl-2"
+  >
+    <ObjectProperties :object-properties="objectInfo" />
+    <ObjectAccess :object-access="objectInfo" />
+    <ObjectMetadata :object-metadata="objectInfo.metadata" />
+    <ObjectTag :object-tag="objectInfo.tag" />
   </div>
 </template>
 

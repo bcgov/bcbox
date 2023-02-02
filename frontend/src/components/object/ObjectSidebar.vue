@@ -41,15 +41,15 @@ const closeInfo = async () => {
     </div>
   </div>
   <div class="pl-2">
-    <ObjectProperties :display-info="displayInfo" />
-    <ObjectAccess :display-info="displayInfo" />
+    <ObjectProperties :object-properties="displayInfo" />
+    <ObjectAccess :object-access="displayInfo" />
     <ObjectMetadata :object-metadata="displayInfo?.metadata" />
     <ObjectTag :object-tag="displayInfo?.tag" />
     <div class="col-9">
       <router-link
         v-slot="{ navigate }"
         custom
-        :to="{ name: RouteNames.ObjectFileDetails }"
+        :to="{ name: RouteNames.ObjectFileDetails, params: { objId: displayInfo?.id } }"
       >
         <Button
           role="link"

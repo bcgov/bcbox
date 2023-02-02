@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 defineProps({
-  displayInfo: {
+  objectAccess: {
     type: Object,
     default: undefined
   }
@@ -18,7 +18,7 @@ defineProps({
       Managed by:
     </div>
     <div class="col-9">
-      {{ displayInfo?.managedBy }}
+      {{ objectAccess?.managedBy }}
     </div>
   </div>
 </template>
