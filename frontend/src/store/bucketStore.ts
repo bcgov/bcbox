@@ -1,5 +1,6 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
+import { useToast } from 'primevue/usetoast';
 
 import { bucketService, permissionService, userService } from '@/services';
 import { useConfigStore, useUserStore } from '@/store';
@@ -11,14 +12,15 @@ import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from
 export const useBucketStore = defineStore('bucket', () => {
   const { config } = storeToRefs(useConfigStore());
   const { currentUser } = storeToRefs(useUserStore());
+  const toast = useToast();
 
-  // state
+  // State
   const loading: Ref<boolean> = ref(false);
   const buckets: Ref<Array<Bucket>> = ref([]);
   const permissions: Ref<Array<UserPermissions>> = ref([]);
   const selectedBucketPermissionsForUser: Ref<Array<Permission>> = ref([]);
 
-  // actions
+  // Actions
   async function load() {
     try {
       loading.value = true;
@@ -118,9 +120,13 @@ export const useBucketStore = defineStore('bucket', () => {
   async function addBucketPermission(bucketId: string, userId: string, permCode: string) {
     try {
       loading.value = true;
-
       await permissionService.bucketAddPermissions(bucketId, [{ userId, permCode }]);
-    } finally {
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error updating permission', detail: error, life: 3000 });
+    }
+    finally {
+      await getBucketPermissions(bucketId);
       loading.value = false;
     }
   }
@@ -128,9 +134,13 @@ export const useBucketStore = defineStore('bucket', () => {
   async function deleteBucketPermission(bucketId: string, userId: string, permCode: string) {
     try {
       loading.value = true;
-
       await permissionService.bucketDeletePermission(bucketId, { userId, permCode });
-    } finally {
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error updating permission', detail: error, life: 3000 });
+    }
+    finally {
+      await getBucketPermissions(bucketId);
       loading.value = false;
     }
   }
@@ -142,9 +152,10 @@ export const useBucketStore = defineStore('bucket', () => {
       for (const [, value] of Object.entries(Permissions)) {
         await permissionService.bucketDeletePermission(bucketId, { userId, permCode: value });
       }
-
-      await getBucketPermissions(bucketId);
+    } catch (error) {
+      toast.add({ severity: 'error', summary: 'Error removing user permission', detail: error, life: 3000 });
     } finally {
+      await getBucketPermissions(bucketId);
       loading.value = false;
     }
   }
