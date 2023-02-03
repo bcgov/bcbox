@@ -11,6 +11,8 @@ import { useObjectStore } from '@/store';
 // Component
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
 
+import type { Ref } from 'vue';
+
 defineProps({
   closeCallback: {
     type: Function,
@@ -22,9 +24,9 @@ const objectStore = useObjectStore();
 const route = useRoute();
 const toast = useToast();
 
-const pendingFiles = ref([] as File[]);
-const successfulFiles = ref([] as File[]);
-const failedFiles = ref([] as File[]);
+const pendingFiles: Ref<Array<File>> = ref([]);
+const successfulFiles: Ref<Array<File>> = ref([]);
+const failedFiles: Ref<Array<File>> = ref([]);
 
 const onSelectedFiles = (event: any) => {
   pendingFiles.value = event.files;

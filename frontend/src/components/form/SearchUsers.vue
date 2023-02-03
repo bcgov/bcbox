@@ -5,13 +5,17 @@ import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import RadioButton from 'primevue/radiobutton';
 
-import { useBucketStore, useConfigStore, useUserStore } from '@/store';
+import { useConfigStore, useUserStore } from '@/store';
 import { Regex } from '@/utils/constants';
-import type { IdentityProvider, User } from '@/interfaces';
+import type { IdentityProvider, User, UserPermissions } from '@/interfaces';
+
+// Props
+const props = defineProps<{
+  permissions: UserPermissions[];
+}>();
 
 // Store
 const userStore = useUserStore();
-const { permissions } = storeToRefs(useBucketStore());
 const { config } = storeToRefs(useConfigStore());
 const { userSearch } = storeToRefs(useUserStore());
 
@@ -49,7 +53,7 @@ const onCancel = () => {
 
 const onChange = (event: any) => {
   // Duplicate user check
-  if( !permissions.value.some(perm => perm.userId === event.value?.userId) ) {
+  if( !props.permissions.some(perm => perm.userId === event.value?.userId) ) {
     // Set state
     selectedUser.value = event.value;
   }

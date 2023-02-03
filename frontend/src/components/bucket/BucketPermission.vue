@@ -92,6 +92,7 @@ onMounted(() => {
       />
       <Column
         header="Upload"
+        header-class="header-center"
         body-class="content-center"
       >
         <template #body="{ data }">
@@ -105,6 +106,7 @@ onMounted(() => {
       </Column>
       <Column
         header="Read"
+        header-class="header-center"
         body-class="content-center"
       >
         <template #body="{ data }">
@@ -118,6 +120,7 @@ onMounted(() => {
       </Column>
       <Column
         header="Update"
+        header-class="header-center"
         body-class="content-center"
       >
         <template #body="{ data }">
@@ -131,6 +134,7 @@ onMounted(() => {
       </Column>
       <Column
         header="Delete"
+        header-class="header-center"
         body-class="content-center"
       >
         <template #body="{ data }">
@@ -144,6 +148,7 @@ onMounted(() => {
       </Column>
       <Column
         header="Manage"
+        header-class="header-center"
         body-class="content-center"
       >
         <template #body="{ data }">
@@ -172,42 +177,8 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.content-center) {
-  text-align: center !important;
-}
-
-:deep(.p-datatable-thead > tr > th) {
-  background-color: transparent;
-}
-
-:deep(.p-column-title) {
-  font-weight: bold;
-}
-
-:deep(.p-paginator) {
-  justify-content: right;
-}
-
-:deep(.header-right .p-column-header-content) {
-  justify-content: right;
-}
-
-:deep(.content-right) {
-  text-align: right !important;
-}
-
 :deep(.p-button.p-button-lg) {
   padding: 0;
   margin-left: 1rem;
-}
-
-:deep(.truncate) {
-  max-width: 1px;
-  white-space: nowrap;
-
-  > div {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
 </style>

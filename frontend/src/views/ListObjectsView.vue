@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref, Ref } from 'vue';
+import { ref } from 'vue';
 import { useRoute } from 'vue-router';
-// PrimeVue
 import { useToast } from 'primevue/usetoast';
-// State
-import { useBucketStore } from '@/store';
 
 import ObjectList from '@/components/object/ObjectList.vue';
 import { RouteNames } from '@/utils/constants';
 
+import { useBucketStore } from '@/store';
+
+import type { Ref } from 'vue';
 import type { Bucket } from '@/interfaces';
 
 const bucketStore = useBucketStore();

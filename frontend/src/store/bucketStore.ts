@@ -1,20 +1,22 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 
-import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
 import { bucketService, permissionService, userService } from '@/services';
 import { Permissions } from '@/utils/constants';
 import { useConfigStore, useUserStore } from '@/store';
 
+import type { Ref } from 'vue';
+import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
+
 export const useBucketStore = defineStore('bucket', () => {
-  const { currentUser } = storeToRefs(useUserStore());
   const { config } = storeToRefs(useConfigStore());
+  const { currentUser } = storeToRefs(useUserStore());
 
   // state
-  const loading = ref(false);
-  const buckets = ref([] as Bucket[]);
-  const permissions = ref([] as UserPermissions[]);
-  const selectedBucketPermissionsForUser = ref([] as Permission[]);
+  const loading: Ref<boolean> = ref(false);
+  const buckets: Ref<Array<Bucket>> = ref([]);
+  const permissions: Ref<Array<UserPermissions>> = ref([]);
+  const selectedBucketPermissionsForUser: Ref<Array<Permission>> = ref([]);
 
   // actions
   async function load() {
@@ -27,7 +29,7 @@ export const useBucketStore = defineStore('bucket', () => {
           objectPerms: true
         })).data;
         const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
-        let response = [] as Bucket[];
+        let response = Array<Bucket>();
         if (uniqueIds.length) {
           response = (await bucketService.searchForBuckets({ bucketId: uniqueIds })).data;
           response.forEach((x: Bucket) => {
@@ -65,19 +67,8 @@ export const useBucketStore = defineStore('bucket', () => {
       if (searchPerms[0]) {
         const perms = searchPerms[0].permissions;
 
-        // TODO: Feed a comma separated list instead of searching individual users once COMS accepts that
-        // const uniqueIds = [...new Set(perms.map((x: any) => x.userId))].join(',');
-        // const uniqueUsers = await userService.searchForUsers({ userId: uniqueIds });
-
         const uniqueIds = [...new Set(perms.map((x: Permission) => x.userId))];
-        const uniqueUsers: User[] = [];
-
-        await Promise.all(
-          uniqueIds.map(async (x: any) => {
-            const userResponse = await userService.searchForUsers({ userId: x });
-            uniqueUsers.push(userResponse.data[0]);
-          })
-        );
+        const uniqueUsers: Array<User> = (await userService.searchForUsers({ userId: uniqueIds })).data;
 
         const hasPermission = (userId: string, permission: string) => {
           return perms.some((perm: any) => perm.userId === userId && perm.permCode === permission);

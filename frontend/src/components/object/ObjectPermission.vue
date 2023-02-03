@@ -1,22 +1,25 @@
 <script setup lang="ts">
-// Vue
-import { onMounted } from 'vue';
-// PrimeVue etc
+import { onMounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Checkbox from 'primevue/checkbox';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
+
+import ObjectPermissionAddUser from '@/components/object/ObjectPermissionAddUser.vue';
 import { useToaster } from '@/composables/useToaster';
-// State
-import { storeToRefs } from 'pinia';
 import { useObjectStore } from '@/store';
-// Other
 import { Permissions } from '@/utils/constants';
 
+import type { Ref } from 'vue';
 
+// Props
 const props = defineProps<{
   objectId: string;
 }>();
+
+// State
+const showSearchUsers: Ref<boolean> = ref(false);
 
 const objectStore = useObjectStore();
 const { loading, selectedObjectPermissions } = storeToRefs(useObjectStore());
@@ -24,6 +27,10 @@ const { loading, selectedObjectPermissions } = storeToRefs(useObjectStore());
 onMounted(() => {
   fetchPermissions();
 });
+
+const cancelSearchUsers = () => {
+  showSearchUsers.value = false;
+};
 
 const fetchPermissions = () => {
   useToaster(() => objectStore.getObjectPermissions(props.objectId), { summary: 'Unable to load permissions.' });
@@ -45,6 +52,23 @@ const removeObjectUser = async (userId: string) => {
 
 <template>
   <div>
+    <div v-if="!showSearchUsers">
+      <Button
+        class="mt-1 mb-4"
+        @click="showSearchUsers = true"
+      >
+        <font-awesome-icon
+          icon="fa-solid fa-user-plus"
+          class="mr-1"
+        /> Add user
+      </Button>
+    </div>
+    <div v-else>
+      <ObjectPermissionAddUser
+        @cancel-search-users="cancelSearchUsers"
+      />
+    </div>
+
     <DataTable
       :loading="loading"
       :value="selectedObjectPermissions"
@@ -68,7 +92,12 @@ const removeObjectUser = async (userId: string) => {
         header="Name"
       />
       <Column
+        field="idpName"
+        header="Provider"
+      />
+      <Column
         header="Read"
+        header-class="header-center"
         body-class="content-center"
       >
         <template #body="{ data }">
@@ -82,6 +111,7 @@ const removeObjectUser = async (userId: string) => {
       </Column>
       <Column
         header="Update"
+        header-class="header-center"
         body-class="content-center"
       >
         <template #body="{ data }">
@@ -95,6 +125,7 @@ const removeObjectUser = async (userId: string) => {
       </Column>
       <Column
         header="Delete"
+        header-class="header-center"
         body-class="content-center"
       >
         <template #body="{ data }">
@@ -108,6 +139,7 @@ const removeObjectUser = async (userId: string) => {
       </Column>
       <Column
         header="Manage"
+        header-class="header-center"
         body-class="content-center"
       >
         <template #body="{ data }">
@@ -135,42 +167,8 @@ const removeObjectUser = async (userId: string) => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.content-center) {
-  text-align: center !important;
-}
-
-:deep(.p-datatable-thead > tr > th) {
-  background-color: transparent;
-}
-
-:deep(.p-column-title) {
-  font-weight: bold;
-}
-
-:deep(.p-paginator) {
-  justify-content: right;
-}
-
-:deep(.header-right .p-column-header-content) {
-  justify-content: right;
-}
-
-:deep(.content-right) {
-  text-align: right !important;
-}
-
 :deep(.p-button.p-button-lg) {
   padding: 0;
   margin-left: 1rem;
-}
-
-:deep(.truncate) {
-  max-width: 1px;
-  white-space: nowrap;
-
-  > div {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
 </style>

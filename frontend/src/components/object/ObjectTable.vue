@@ -49,13 +49,13 @@ const showPermissions = async (objectId: string, objectName: string) => {
   permissionsObjectName.value = objectName;
 };
 
-// Permission gaurds for the buttons
+// Permission guards for the buttons
 const isActionAllowed = (objectPermissions: Permission[], perm: string) => {
   // If you have bucket manage you can do it all
   // OR if you have the specified permission on the object
   return (
-    selectedBucketPermissionsForUser.value.some((bp) => bp.permCode === Permissions.MANAGE) 
-    || 
+    selectedBucketPermissionsForUser.value.some((bp) => bp.permCode === Permissions.MANAGE)
+    ||
     objectPermissions.some((op) => op.permCode === perm)
   );
 };
@@ -174,6 +174,7 @@ const isActionAllowed = (objectPermissions: Permission[], perm: string) => {
       v-model:visible="permissionsVisible"
       :draggable="false"
       :modal="true"
+      class="permissions-modal"
     >
       <!-- eslint-enable vue/no-v-model-argument -->
       <template #header>

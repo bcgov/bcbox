@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { onMounted, ref, Ref } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useObjectStore } from '@/store';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
+
 import ObjectAccess from '@/components/object/ObjectAccess.vue';
 import ObjectMetadata from '@/components/object/ObjectMetadata.vue';
 import ObjectProperties from '@/components/object/ObjectProperties.vue';
 import ObjectTag from '@/components/object/ObjectTag.vue';
+import { useObjectStore } from '@/store';
+
+import type { Ref } from 'vue';
 import type { COMSObject } from '@/interfaces';
 
 const toast = useToast();

@@ -1,20 +1,22 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 import { objectService, permissionService, userService } from '@/services';
-import { useUserStore } from '@/store';
+import { useConfigStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
-import type { COMSObject, Metadata, Tagging, Tag, User, UserPermissions } from '@/interfaces';
+import type { Ref } from 'vue';
+import type { COMSObject, IdentityProvider, Metadata, Tagging, Tag, User, UserPermissions } from '@/interfaces';
 
 export const useObjectStore = defineStore('objectStore', () => {
+  const { config } = storeToRefs(useConfigStore());
   const { currentUser } = storeToRefs(useUserStore());
 
   // state
-  const loading = ref(false);
-  const objectList = ref([] as COMSObject[]);
-  const selectedObject = ref({});
-  const selectedObjectPermissions = ref([] as UserPermissions[]);
-  const multiSelectedObjects = ref([] as COMSObject[]); // all selected table row items
+  const loading: Ref<boolean> = ref(false);
+  const objectList: Ref<Array<COMSObject>> = ref([]);
+  const selectedObject: Ref<COMSObject | null> = ref(null);
+  const selectedObjectPermissions: Ref<Array<UserPermissions>> = ref([]);
+  const multiSelectedObjects: Ref<Array<COMSObject>> = ref([]); // All selected table row items
 
   // actions
   function getObjectInfo(objectId: string) {
@@ -88,13 +90,13 @@ export const useObjectStore = defineStore('objectStore', () => {
             if (metadata) {
               obj.metadata = metadata;
               obj.metadata.metadata.sort(
-                (metadata1: any, metadata2: any ) =>
+                (metadata1: any, metadata2: any) =>
                   metadata1.key < metadata2.key ? -1 : metadata1.key > metadata2.key ? 1 : 0
               );
               obj.name = metadata.metadata.find((x: { key: string }) => x.key === 'name')?.value;
             }
 
-            if(taggingResponse) {
+            if (taggingResponse) {
               obj.tag = taggingResponse.find((x: Tagging) => x.objectId === obj.id);
               obj.tag.tagset.sort(
                 (tag1: Tag, tag2: Tag) => tag1.key < tag2.key ? -1 : tag1.key > tag2.key ? 1 : 0
@@ -103,7 +105,7 @@ export const useObjectStore = defineStore('objectStore', () => {
 
             // Add the permissions to each object list item
             obj.permissions = permResponse
-              .find((p: { objectId: string, permission: UserPermissions}) => p.objectId === obj.id).permissions;
+              .find((p: { objectId: string, permission: UserPermissions }) => p.objectId === obj.id).permissions;
           });
         }
         objectList.value = objects;
@@ -144,9 +146,12 @@ export const useObjectStore = defineStore('objectStore', () => {
 
         const userPermissions: UserPermissions[] = [];
         uniqueUsers.forEach((user: User) => {
+          const idp = config.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
+
           userPermissions.push({
             userId: user.userId,
             fullName: user.fullName,
+            idpName: idp?.name,
             read: hasPermission(user.userId, Permissions.READ),
             update: hasPermission(user.userId, Permissions.UPDATE),
             delete: hasPermission(user.userId, Permissions.DELETE),
