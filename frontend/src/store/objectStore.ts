@@ -1,5 +1,7 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
+import { useToast } from 'primevue/usetoast';
+
 import { objectService, permissionService, userService } from '@/services';
 import { useBucketStore, useConfigStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
@@ -13,15 +15,16 @@ export const useObjectStore = defineStore('objectStore', () => {
   const { selectedBucketPermissionsForUser } = storeToRefs(useBucketStore());
   const { config } = storeToRefs(useConfigStore());
   const { currentUser } = storeToRefs(useUserStore());
+  const toast = useToast();
 
-  // state
+  // State
   const loading: Ref<boolean> = ref(false);
   const objectList: Ref<Array<COMSObject>> = ref([]);
   const selectedObject: Ref<COMSObject | null> = ref(null);
   const selectedObjectPermissions: Ref<Array<UserPermissions>> = ref([]);
   const multiSelectedObjects: Ref<Array<COMSObject>> = ref([]); // All selected table row items
 
-  // actions
+  // Actions
   function getObjectInfo(objectId: string) {
     let object = objectList.value.find((x) => x.id === objectId);
     if (isProxy(object)) {
@@ -173,30 +176,30 @@ export const useObjectStore = defineStore('objectStore', () => {
     }
   }
 
-  async function addObjectPermission(
-    bucketId: string,
-    userId: string,
-    permCode: string
-  ) {
+  async function addObjectPermission(bucketId: string, userId: string, permCode: string) {
     try {
       loading.value = true;
-
       await objectService.addPermissions(bucketId, [{ userId, permCode }]);
-    } finally {
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error updating permission', detail: error, life: 3000 });
+    }
+    finally {
+      await getObjectPermissions(bucketId);
       loading.value = false;
     }
   }
 
-  async function deleteObjectPermission(
-    bucketId: string,
-    userId: string,
-    permCode: string
-  ) {
+  async function deleteObjectPermission(bucketId: string, userId: string, permCode: string) {
     try {
       loading.value = true;
-
       await objectService.deletePermission(bucketId, { userId, permCode });
-    } finally {
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error updating permission', detail: error, life: 3000 });
+    }
+    finally {
+      await getObjectPermissions(bucketId);
       loading.value = false;
     }
   }
@@ -211,9 +214,12 @@ export const useObjectStore = defineStore('objectStore', () => {
           permCode: value,
         });
       }
-
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error updating permission', detail: error, life: 3000 });
+    }
+    finally {
       await getObjectPermissions(bucketId);
-    } finally {
       loading.value = false;
     }
   }
