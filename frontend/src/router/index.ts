@@ -1,113 +1,124 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useAuthStore } from '@/store';
+
+import { AuthService } from '@/services';
 import { RouteNames } from '@/utils/constants';
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    {
-      path: '/',
-      name: RouteNames.Home,
-      component: () => import('../views/HomeView.vue'),
-    },
-    {
-      path: '/detail',
-      children: [
-        {
-          path: 'objects',
-          name: RouteNames.ObjectFileDetails,
-          component: () => import('../views/ObjectFileDetailsView.vue'),
-          meta: { requiresAuth: true },
-        }
-      ]
-    },
-    // {
-    //   path: '/create',
-    //   children: [
-    //     {
-    //       path: 'bucket',
-    //       name: RouteNames.CreateBucket,
-    //       component: () => import('../views/CreateBucketView.vue'),
-    //       meta: { requiresAuth: true },
-    //     },
-    //   ],
-    // },
-    // {
-    //   path: '/detail',
-    //   children: [{}],
-    // },
-    {
-      path: '/developer',
-      name: RouteNames.Developer,
-      component: () => import('../views/DeveloperView.vue'),
-      meta: { requiresAuth: true, breadcrumb: 'Developer' },
-    },
-    {
-      path: '/list',
-      children: [
-        {
-          path: 'buckets',
-          name: RouteNames.ListBuckets,
-          component: () => import('../views/ListBucketsView.vue'),
-          meta: { requiresAuth: true, breadcrumb: 'Buckets' },
-        },
-        {
-          path: 'objects',
-          name: RouteNames.ListObjects,
-          component: () => import('../views/ListObjectsView.vue'),
-          meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' },
-        },
-        {
-          path: 'detail/object',
-          name: RouteNames.ObjectFileDetails,
-          component: () => import('../views/ObjectFileDetailsView.vue'),
-          meta: { requiresAuth: true },
-        },
-      ],
-    },
-    {
-      path: '/logout',
-      name: RouteNames.Logout,
-      redirect: () => {
-        return { path: '/' };
+import type { RouteRecordRaw } from 'vue-router';
+
+let isFirstTransition = true;
+
+const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/',
+    name: RouteNames.Home,
+    component: () => import('../views/HomeView.vue'),
+  },
+  // {
+  //   path: '/create',
+  //   children: [
+  //     {
+  //       path: 'bucket',
+  //       name: RouteNames.CreateBucket,
+  //       component: () => import('../views/CreateBucketView.vue'),
+  //       meta: { requiresAuth: true },
+  //     },
+  //   ],
+  // },
+  {
+    path: '/detail',
+    children: [
+      {
+        path: 'objects',
+        name: RouteNames.ObjectFileDetails,
+        component: () => import('../views/ObjectFileDetailsView.vue'),
+        meta: { requiresAuth: true },
+      }
+    ]
+  },
+  {
+    path: '/developer',
+    name: RouteNames.Developer,
+    component: () => import('../views/DeveloperView.vue'),
+    meta: { requiresAuth: true, breadcrumb: 'Developer' },
+  },
+  {
+    path: '/list',
+    children: [
+      {
+        path: 'buckets',
+        name: RouteNames.ListBuckets,
+        component: () => import('../views/ListBucketsView.vue'),
+        meta: { requiresAuth: true, breadcrumb: 'Buckets' },
       },
-    },
-    // {
-    //   path: '/permission',
-    //   children: [{}],
-    // },
-    // {
-    //   path: '/update',
-    //   children: [{}],
-    // },
-  ],
-});
+      {
+        path: 'objects',
+        name: RouteNames.ListObjects,
+        component: () => import('../views/ListObjectsView.vue'),
+        meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' },
+      },
+      {
+        path: 'detail/object',
+        name: RouteNames.ObjectFileDetails,
+        component: () => import('../views/ObjectFileDetailsView.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  { // TODO: This path may not be needed at all
+    path: '/logout',
+    name: RouteNames.Logout,
+    redirect: { name: RouteNames.Home }
+  },
+  // {
+  //   path: '/permission',
+  //   children: [{}],
+  // },
+  // {
+  //   path: '/update',
+  //   children: [{}],
+  // },
+];
 
-router.beforeEach((to) => {
-  // Removed for now
-  // const navStore = useNavStore();
-  // navStore.navigate(to);
+export default function getRouter() {
+  const authService = new AuthService();
+  const router = createRouter({
+    history: createWebHistory(),
+    routes
+  });
 
-  if (to.meta.requiresAuth) {
-    const authStore = useAuthStore();
+  router.beforeEach(async (to, _from, next) => {
+    // Removed for now
+    // const navStore = useNavStore();
+    // navStore.navigate(to);
 
-    const unsubscribe = authStore.$onAction(({ name, after, onError }) => {
-      if (name === 'init') {
-        after(() => {
-          // console.log('auth guard - keycloak is ready.');
-          if (!authStore.getKeycloak.authenticated) {
-            authStore.login();
-            unsubscribe();
-          }
-        });
-        onError((err) => {
-          console.error(`Error in route gaurd waiting for Keycloak ${err}`); // eslint-disable-line no-console
-          unsubscribe();
-          throw new Error(`Failed to initialize Kecloak: ${(err as Error).message}`);
+    if (to.query && isFirstTransition) {
+      // Login Callback Handler
+      if (['code', 'state', 'session_state'].every(attr => Object.keys(to.query).includes(attr))) {
+        await authService.loginCallback();
+      }
+
+      // Backend Redirection Artifact
+      if (['code', 'r', 'state', 'session_state'].some(attr => Object.keys(to.query).includes(attr))) {
+        router.replace({
+          path: (to.query.r) ? to.query.r.toString() : to.path,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+          query: (({ code, r, state, session_state, ...q }) => q)(to.query)
         });
       }
-    });
-  }
-});
+    }
 
-export default router;
+    if (to.meta.requiresAuth) {
+      const user = authService.getUser();
+      if (!user) await authService.login();
+    }
+
+    next();
+  });
+
+  router.afterEach(() => {
+    isFirstTransition = false;
+  });
+
+  return router;
+}
+
