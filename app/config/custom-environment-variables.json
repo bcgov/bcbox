@@ -4,10 +4,9 @@
     "coms": {
       "apiPath": "FRONTEND_COMS_APIPATH"
     },
-    "keycloak": {
-      "clientId": "FRONTEND_KC_CLIENTID",
-      "realm": "FRONTEND_KC_REALM",
-      "serverUrl": "FRONTEND_KC_SERVERURL"
+    "oidc": {
+      "authority": "FRONTEND_OIDC_AUTHORITY",
+      "clientId": "FRONTEND_OIDC_CLIENTID"
     }
   },
   "server": {
