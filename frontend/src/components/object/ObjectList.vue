@@ -1,21 +1,20 @@
 <script setup lang="ts">
-// Types
-import { ButtonMode } from '@/interfaces/common/enums';
-// Vue
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-// PrimeVue
+import { storeToRefs } from 'pinia';
+
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
-// State
-import { storeToRefs } from 'pinia';
+
+import DeleteObjectButton from '@/components/object/DeleteObjectButton.vue';
+import DownloadObjectButton from '@/components/object/DownloadObjectButton.vue';
+import ObjectSidebar from '@/components/object/ObjectSidebar.vue';
+import ObjectTable from '@/components/object/ObjectTable.vue';
+import ObjectUpload from '@/components/object/ObjectUpload.vue';
+import { ButtonMode } from '@/interfaces/common/enums';
 import { useBucketStore, useObjectStore } from '@/store';
-// Components
-import DeleteObjectButton from './DeleteObjectButton.vue';
-import DownloadObjectButton from './DownloadObjectButton.vue';
-import ObjectSidebar from './ObjectSidebar.vue';
-import ObjectTable from './ObjectTable.vue';
-import ObjectUpload from './ObjectUpload.vue';
+import { Permissions } from '@/utils/constants';
+
 
 const bucketStore = useBucketStore();
 //const navStore = useNavStore();
@@ -78,12 +77,15 @@ onMounted(() => {
 
 <template>
   <div>
-    <div>
+    <div
+      v-if="displayUpload"
+      class="mb-4"
+    >
       <ObjectUpload
-        v-if="displayUpload"
-        class="mb-4"
         :close-callback="closeUpload"
       />
+    </div>
+    <div>
       <Button
         class="mr-2"
         :disabled="displayUpload"

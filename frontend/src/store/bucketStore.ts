@@ -2,8 +2,8 @@ import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 
 import { bucketService, permissionService, userService } from '@/services';
-import { Permissions } from '@/utils/constants';
 import { useConfigStore, useUserStore } from '@/store';
+import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
@@ -149,6 +149,13 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
+  // Permission guards for the buttons
+  function isActionAllowed(perm: string) {
+    // If you have bucket manage you can do it all
+    // OR if you have the specified permission on the bucket
+    return selectedBucketPermissionsForUser.value.some((p) => p.permCode === Permissions.MANAGE || p.permCode === perm);
+  }
+
   return {
     loading,
     load,
@@ -158,6 +165,7 @@ export const useBucketStore = defineStore('bucket', () => {
     addBucketPermission,
     deleteBucketPermission,
     removeBucketUser,
+    isActionAllowed,
     buckets,
     permissions,
     selectedBucketPermissionsForUser
