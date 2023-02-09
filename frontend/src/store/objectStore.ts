@@ -220,13 +220,10 @@ export const useObjectStore = defineStore('objectStore', () => {
 
   // Permission guards for the buttons
   function isActionAllowed(objectPermissions: Permission[], perm: string, userId?: string) {
-    // If you have bucket manage you can do it all
-    // OR if you have the specified permission on the bucket
+    // If you have the specified permission on the bucket
     // OR if you have the specified permission on the object
     return (
-      selectedBucketPermissionsForUser.value.some((bp) => bp.permCode === Permissions.MANAGE && bp.userId === userId)
-      ||
-      selectedBucketPermissionsForUser.value.some((bp) => bp.permCode === perm && bp.userId === userId)
+      selectedBucketPermissionsForUser.value.some((bp) => bp.permCode === perm)
       ||
       objectPermissions.some((op) => op.permCode === perm && op.userId === userId)
     );

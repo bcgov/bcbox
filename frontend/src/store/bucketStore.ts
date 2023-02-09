@@ -149,13 +149,6 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  // Permission guards for the buttons
-  function isActionAllowed(perm: string) {
-    // If you have bucket manage you can do it all
-    // OR if you have the specified permission on the bucket
-    return selectedBucketPermissionsForUser.value.some((p) => p.permCode === Permissions.MANAGE || p.permCode === perm);
-  }
-
   return {
     loading,
     load,
@@ -165,7 +158,6 @@ export const useBucketStore = defineStore('bucket', () => {
     addBucketPermission,
     deleteBucketPermission,
     removeBucketUser,
-    isActionAllowed,
     buckets,
     permissions,
     selectedBucketPermissionsForUser

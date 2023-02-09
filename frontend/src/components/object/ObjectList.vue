@@ -13,8 +13,6 @@ import ObjectTable from '@/components/object/ObjectTable.vue';
 import ObjectUpload from '@/components/object/ObjectUpload.vue';
 import { ButtonMode } from '@/interfaces/common/enums';
 import { useBucketStore, useObjectStore } from '@/store';
-import { Permissions } from '@/utils/constants';
-
 
 const bucketStore = useBucketStore();
 //const navStore = useNavStore();
