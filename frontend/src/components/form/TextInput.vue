@@ -1,23 +1,26 @@
-<script lang="ts">
-export default {
-  props: {
-    name: { type: String, required: true },
-    type: { type: String, default: 'text' },
-    rules: { type: null, default: null },
-    label: { type: String, default: '' },
-  },
-};
-</script>
-
 <script setup lang="ts">
+import { ref } from 'vue';
 import InputText from 'primevue/inputtext';
 import { Field, ErrorMessage } from 'vee-validate';
+
+import type { Ref } from 'vue';
+
+const props = defineProps({
+  name: { type: String, required: true },
+  type: { type: String, default: 'text' },
+  rules: { type: null, default: null },
+  label: { type: String, default: '' },
+  value: { type: String, default: '' }
+});
+
+const value: Ref<String> = ref(props.value);
 </script>
 
 <template>
   <div class="field">
     <Field
       v-slot="{ field }"
+      v-model="value"
       :name="name"
       :type="type"
       :rules="rules"
@@ -28,7 +31,10 @@ import { Field, ErrorMessage } from 'vee-validate';
         :type="type"
       />
     </Field>
-    <ErrorMessage :name="name" />
+    <ErrorMessage
+      :name="name"
+      class="p-error"
+    />
   </div>
 </template>
 

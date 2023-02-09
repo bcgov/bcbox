@@ -17,10 +17,14 @@ const permissionsVisible = ref(false);
 const permissionsBucketId = ref('');
 const permissionBucketName = ref('');
 
-const emit = defineEmits(['show-info']);
+const emit = defineEmits(['show-info', 'show-bucket-config']);
 
 const showInfo = async (id: number) => {
   emit('show-info', id);
+};
+
+const showBucketConfig = async (isUpdate: boolean, bucket: Bucket) => {
+  emit('show-bucket-config', isUpdate, bucket);
 };
 
 const showPermissions = async (bucketId: string, bucketName: string) => {
@@ -90,6 +94,12 @@ const displayPermissionsIcon = (bucket: Bucket) => {
         body-class="content-right action-buttons"
       >
         <template #body="{ data }">
+          <Button
+            class="p-button-lg p-button-text"
+            @click="showBucketConfig(true, data)"
+          >
+            <font-awesome-icon icon="fas fa-cog" />
+          </Button>
           <Button
             v-if="displayPermissionsIcon(data)"
             class="p-button-lg p-button-text"

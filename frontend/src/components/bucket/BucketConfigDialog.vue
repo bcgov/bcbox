@@ -1,0 +1,50 @@
+<script setup lang="ts">
+import Dialog from 'primevue/dialog';
+import BucketConfigForm from '@/components/bucket/BucketConfigForm.vue';
+import type { Bucket } from '@/interfaces';
+
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+const props = defineProps<{
+  display: boolean;
+  header: string;
+  title: string;
+  isUpdate: boolean;
+  bucket?: Bucket;
+}>();
+
+const emit = defineEmits(['close-bucket-config']);
+
+const closeDialog = async () => {
+  emit('close-bucket-config');
+};
+</script>
+
+<template>
+  <div>
+    <Dialog
+      v-model:visible="$props.display"
+      :style="{width: '50vw'}"
+      :modal="true"
+    >
+      <template #header>
+        <div class="flex">
+          <font-awesome-icon
+            icon="fas fa-cog"
+            class="pr-3 pt-2"
+            style="font-size: 2rem"
+          />
+          <div>
+            <h1>{{ header }}</h1>
+            <h3>{{ title }}</h3>
+          </div>
+        </div>
+      </template>
+      <BucketConfigForm
+        :is-update="props.isUpdate"
+        :bucket="props.bucket"
+        @submit-bucket-config="closeDialog"
+        @cancel-bucket-config="closeDialog"
+      />
+    </Dialog>
+  </div>
+</template>

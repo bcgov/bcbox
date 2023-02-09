@@ -30,3 +30,9 @@ export const RouteNames = Object.freeze({
 export const ValidationMessages = Object.freeze({
   Required: 'This field is required.',
 });
+
+export const BucketConfig = Object.freeze({
+  headerNewBucket: 'Configure new bucket',
+  titleNewBucket: 'Use this form to configure a bucket to be used in BCBox for the first time.',
+  headerUpdateBucket: 'Configure existing bucket'
+});
