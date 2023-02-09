@@ -3,7 +3,6 @@ import Dialog from 'primevue/dialog';
 import BucketConfigForm from '@/components/bucket/BucketConfigForm.vue';
 import type { Bucket } from '@/interfaces';
 
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const props = defineProps<{
   display: boolean;
   header: string;
@@ -22,7 +21,7 @@ const closeDialog = async () => {
 <template>
   <div>
     <Dialog
-      v-model:visible="$props.display"
+      :visible="props.display"
       :style="{width: '50vw'}"
       :modal="true"
     >
