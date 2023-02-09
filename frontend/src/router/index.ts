@@ -7,11 +7,22 @@ import type { RouteRecordRaw } from 'vue-router';
 
 let isFirstTransition = true;
 
+/**
+ * @function createProps
+ * Parses the route query and params to generate vue props
+ * @param {object} route The route object
+ * @returns {object} a Vue props object
+ */
+function createProps(route: { query: any; params: any; }): object {
+  return { ...route.query, ...route.params };
+}
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: RouteNames.Home,
     component: () => import('../views/HomeView.vue'),
+    props: createProps
   },
   // {
   //   path: '/create',
@@ -32,6 +43,7 @@ const routes: Array<RouteRecordRaw> = [
         name: RouteNames.ObjectFileDetails,
         component: () => import('../views/ObjectFileDetailsView.vue'),
         meta: { requiresAuth: true },
+        props: createProps
       }
     ]
   },
@@ -40,6 +52,7 @@ const routes: Array<RouteRecordRaw> = [
     name: RouteNames.Developer,
     component: () => import('../views/DeveloperView.vue'),
     meta: { requiresAuth: true, breadcrumb: 'Developer' },
+    props: createProps
   },
   {
     path: '/list',
@@ -49,18 +62,21 @@ const routes: Array<RouteRecordRaw> = [
         name: RouteNames.ListBuckets,
         component: () => import('../views/ListBucketsView.vue'),
         meta: { requiresAuth: true, breadcrumb: 'Buckets' },
+        props: createProps
       },
       {
         path: 'objects',
         name: RouteNames.ListObjects,
         component: () => import('../views/ListObjectsView.vue'),
         meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' },
+        props: createProps
       },
       {
         path: 'detail/object',
         name: RouteNames.ObjectFileDetails,
         component: () => import('../views/ObjectFileDetailsView.vue'),
         meta: { requiresAuth: true },
+        props: createProps
       },
     ],
   },
