@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import { Form } from 'vee-validate';
+import { ref, Ref } from 'vue';
 import { useBucketStore } from '@/store';
 import { useToast } from 'primevue/usetoast';
 import TextInput from '@/components/form/TextInput.vue';
@@ -14,6 +15,8 @@ const props = defineProps<{
 
 const bucketStore = useBucketStore();
 const toast = useToast();
+
+const invalid: Ref<boolean> = ref(false);
 
 const emit = defineEmits(['submit-bucket-config', 'cancel-bucket-config']);
 
@@ -65,7 +68,10 @@ const onCancel = async () => {
 
 <template>
   <div>
-    <Form @submit="onSubmit">
+    <Form
+      @invalid-submit="invalid=true"
+      @submit="onSubmit"
+    >
       <TextInput
         :value="props.bucket?.bucketName"
         name="bucketName"
@@ -106,6 +112,7 @@ const onCancel = async () => {
         label="Apply"
         type="submit"
         icon="pi pi-check"
+        :disabled="!invalid"
         autofocus
       />
       <Button

@@ -24,6 +24,7 @@ const closeDialog = async () => {
       :visible="props.display"
       :style="{width: '50vw'}"
       :modal="true"
+      @update:visible="closeDialog"
     >
       <template #header>
         <div class="flex">
