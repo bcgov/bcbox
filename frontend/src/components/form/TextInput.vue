@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import InputText from 'primevue/inputtext';
-import { Field, ErrorMessage } from 'vee-validate';
+import { useField, Field, ErrorMessage } from 'vee-validate';
 
 import type { Ref } from 'vue';
 
@@ -14,6 +14,8 @@ const props = defineProps({
 });
 
 const value: Ref<String> = ref(props.value);
+
+const { errors } = useField(props.name);
 </script>
 
 <template>
@@ -29,6 +31,7 @@ const value: Ref<String> = ref(props.value);
       <InputText
         v-bind="field"
         :type="type"
+        :class="errors.length ? 'p-invalid' : ''"
       />
     </Field>
     <ErrorMessage
