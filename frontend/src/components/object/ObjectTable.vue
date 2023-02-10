@@ -1,25 +1,19 @@
 <script setup lang="ts">
-// Types
-import { ButtonMode } from '@/interfaces/common/enums';
-import type { Permission } from '@/interfaces';
-
-// Vue
-import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
-// PrimeVue
+import { storeToRefs } from 'pinia';
+
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
-// State
-import { useBucketStore } from '@/store';
-import { useObjectStore } from '@/store';
-// Other
+
+import DeleteObjectButton from '@/components/object/DeleteObjectButton.vue';
+import DownloadObjectButton from '@/components/object/DownloadObjectButton.vue';
+import ObjectPermission from '@/components/object/ObjectPermission.vue';
+import { ButtonMode } from '@/interfaces/common/enums';
+import { useObjectStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
-import DeleteObjectButton from './DeleteObjectButton.vue';
-import DownloadObjectButton from './DownloadObjectButton.vue';
-import ObjectPermission from './ObjectPermission.vue';
 
 defineProps({
   displayInfo: {
@@ -28,10 +22,9 @@ defineProps({
   },
 });
 
-const { selectedBucketPermissionsForUser } = storeToRefs(useBucketStore());
-const { loading, multiSelectedObjects, objectList } = storeToRefs(
-  useObjectStore()
-);
+const objectStore = useObjectStore();
+const { loading, multiSelectedObjects, objectList } = storeToRefs(objectStore);
+const { currentUser } = storeToRefs(useUserStore());
 
 const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
@@ -47,17 +40,6 @@ const showPermissions = async (objectId: string, objectName: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
   permissionsObjectName.value = objectName;
-};
-
-// Permission guards for the buttons
-const isActionAllowed = (objectPermissions: Permission[], perm: string) => {
-  // If you have bucket manage you can do it all
-  // OR if you have the specified permission on the object
-  return (
-    selectedBucketPermissionsForUser.value.some((bp) => bp.permCode === Permissions.MANAGE)
-    ||
-    objectPermissions.some((op) => op.permCode === perm)
-  );
 };
 </script>
 
@@ -143,12 +125,12 @@ const isActionAllowed = (objectPermissions: Permission[], perm: string) => {
       >
         <template #body="{ data }">
           <DownloadObjectButton
-            v-if="isActionAllowed(data.permissions, Permissions.READ)"
+            v-if="objectStore.isActionAllowed(data.permissions, Permissions.READ, currentUser?.userId)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />
           <Button
-            v-if="isActionAllowed(data.permissions, Permissions.MANAGE)"
+            v-if="objectStore.isActionAllowed(data.permissions, Permissions.MANAGE, currentUser?.userId)"
             class="p-button-lg p-button-text"
             @click="showPermissions(data.id, data.name)"
           >
@@ -161,7 +143,7 @@ const isActionAllowed = (objectPermissions: Permission[], perm: string) => {
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
           <DeleteObjectButton
-            v-if="isActionAllowed(data.permissions, Permissions.DELETE)"
+            v-if="objectStore.isActionAllowed(data.permissions, Permissions.DELETE, currentUser?.userId)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />

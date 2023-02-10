@@ -1,13 +1,16 @@
 import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 import { objectService, permissionService, userService } from '@/services';
-import { useConfigStore, useUserStore } from '@/store';
+import { useBucketStore, useConfigStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { COMSObject, IdentityProvider, Metadata, Tagging, Tag, User, UserPermissions } from '@/interfaces';
+import type {
+  COMSObject, IdentityProvider, Metadata, Permission, Tagging, Tag, User, UserPermissions
+} from '@/interfaces';
 
 export const useObjectStore = defineStore('objectStore', () => {
+  const { selectedBucketPermissionsForUser } = storeToRefs(useBucketStore());
   const { config } = storeToRefs(useConfigStore());
   const { currentUser } = storeToRefs(useUserStore());
 
@@ -73,7 +76,8 @@ export const useObjectStore = defineStore('objectStore', () => {
         const permResponse = (await permissionService.objectSearchPermissions({
           userId: currentUser.value.userId,
           bucketId: params.bucketId ?? undefined,
-          bucketPerms: true
+          bucketPerms: true,
+          permCode: [Permissions.READ, Permissions.UPDATE, Permissions.DELETE, Permissions.MANAGE]
         })).data;
 
         const uniqueIds = [...new Set(permResponse.map((x: { objectId: string }) => x.objectId))];
@@ -214,6 +218,17 @@ export const useObjectStore = defineStore('objectStore', () => {
     }
   }
 
+  // Permission guards for the buttons
+  function isActionAllowed(objectPermissions: Permission[], perm: string, userId?: string) {
+    // If you have the specified permission on the bucket
+    // OR if you have the specified permission on the object
+    return (
+      selectedBucketPermissionsForUser.value.some((bp) => bp.permCode === perm)
+      ||
+      objectPermissions.some((op) => op.permCode === perm && op.userId === userId)
+    );
+  }
+
   return {
     loading,
     multiSelectedObjects,
@@ -229,5 +244,6 @@ export const useObjectStore = defineStore('objectStore', () => {
     addObjectPermission,
     deleteObjectPermission,
     removeObjectUser,
+    isActionAllowed
   };
 });

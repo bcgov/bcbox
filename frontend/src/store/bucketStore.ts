@@ -2,8 +2,8 @@ import { ref, isProxy, toRaw } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 
 import { bucketService, permissionService, userService } from '@/services';
-import { Permissions } from '@/utils/constants';
 import { useConfigStore, useUserStore } from '@/store';
+import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
