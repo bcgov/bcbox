@@ -6,25 +6,27 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { useToast } from 'primevue/usetoast';
 
-import DeleteObjectButton from '@/components/object/DeleteObjectButton.vue';
-import DownloadObjectButton from '@/components/object/DownloadObjectButton.vue';
-import ObjectAccess from '@/components/object/ObjectAccess.vue';
-import ObjectMetadata from '@/components/object/ObjectMetadata.vue';
-import ObjectPermission from '@/components/object/ObjectPermission.vue';
-import ObjectProperties from '@/components/object/ObjectProperties.vue';
-import ObjectTag from '@/components/object/ObjectTag.vue';
-import { useBucketStore, useObjectStore, useUserStore } from '@/store';
+import {
+  DeleteObjectButton,
+  DownloadObjectButton,
+  ObjectAccess,
+  ObjectMetadata,
+  ObjectPermission,
+  ObjectProperties,
+  ObjectTag
+} from '@/components/object';
+
+import { useObjectStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { COMSObject, Permission } from '@/interfaces';
+import type { COMSObject } from '@/interfaces';
 import { ButtonMode } from '@/interfaces/common/enums';
 
 const objectStore = useObjectStore();
 const toast = useToast();
 const route = useRoute();
 
-const { selectedBucketPermissionsForUser } = storeToRefs(useBucketStore());
 const { objectList } = storeToRefs(objectStore);
 const { currentUser } = storeToRefs(useUserStore());
 

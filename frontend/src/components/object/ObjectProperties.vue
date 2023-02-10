@@ -25,9 +25,9 @@ const props = defineProps({
   }
 });
 
-const bucket: Ref<Bucket | undefined > = ref(undefined);
-const createdBy = ref();
-const updatedBy = ref();
+const bucket: Ref<Bucket | undefined > = ref();
+const createdBy: Ref<string | undefined> = ref();
+const updatedBy: Ref<string | undefined> = ref();
 
 async function getBucketData() {
   // Get some associated bucket information
@@ -36,8 +36,8 @@ async function getBucketData() {
 
 async function getUserData() {
   await userStore.searchUsers({userId:[props.objectProperties?.createdBy, props.objectProperties?.updatedBy]});
-  createdBy.value = userSearch.value.find( x => x.userId === props.objectProperties?.createdBy );
-  updatedBy.value = userSearch.value.find( x => x.userId === props.objectProperties?.updatedBy );
+  createdBy.value = userSearch.value.find( x => x.userId === props.objectProperties?.createdBy )?.fullName;
+  updatedBy.value = userSearch.value.find( x => x.userId === props.objectProperties?.updatedBy )?.fullName;
 }
 
 onMounted(() => {
@@ -82,7 +82,7 @@ watch( props, async () => {
     <GridRow
       v-if="fullView"
       label="Created by"
-      :value="userSearch.find( x => x.userId === objectProperties?.createdBy)?.fullName"
+      :value="createdBy"
     />
     <GridRow
       v-if="fullView"
@@ -91,7 +91,7 @@ watch( props, async () => {
     />
     <GridRow
       label="Updated by"
-      :value="userSearch.find( x => x.userId === objectProperties?.updatedBy)?.fullName"
+      :value="updatedBy"
     />
     <GridRow
       label="Updated date"

@@ -1,13 +1,10 @@
 <script setup lang="ts">
-// Types
-import { ButtonMode } from '@/interfaces/common/enums';
 import { ref, type PropType } from 'vue';
-
-// PrimeVue/Font
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-// State
+
+import { ButtonMode } from '@/interfaces/common/enums';
 import { useObjectStore } from '@/store';
 
 const objectStore = useObjectStore();

@@ -1,15 +1,12 @@
 <script setup lang="ts">
-// Vue
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
-// PrimeVue
 import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
-// State
-import { useObjectStore } from '@/store';
-// Component
+
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
+import { useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
 

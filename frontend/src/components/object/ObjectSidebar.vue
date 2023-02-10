@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { RouteNames } from '@/utils/constants';
-// PrimeVue
 import Button from 'primevue/button';
-// Other
-import ObjectAccess from '@/components/object/ObjectAccess.vue';
-import ObjectMetadata from '@/components/object/ObjectMetadata.vue';
-import ObjectProperties from '@/components/object/ObjectProperties.vue';
-import ObjectTag from '@/components/object/ObjectTag.vue';
+
+import {
+  ObjectMetadata,
+  ObjectProperties,
+  ObjectTag
+} from '@/components/object';
 
 defineProps({
   displayInfo: {

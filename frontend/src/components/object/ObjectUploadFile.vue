@@ -1,9 +1,7 @@
 <script setup lang="ts">
-// PrimeVue
+import { filesize } from 'filesize';
 import Badge from 'primevue/badge';
 import Button from 'primevue/button';
-// Utils
-import { filesize } from 'filesize';
 
 defineProps({
   files: {

@@ -13,7 +13,6 @@ defineProps({
     default: undefined
   }
 });
-
 </script>
 
 <template>

@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
+import type { Ref } from 'vue';
 import type { Permission } from '@/interfaces';
 
 const userStore = useUserStore();
@@ -16,7 +17,7 @@ const props = defineProps({
   }
 });
 
-const managedBy = ref();
+const managedBy: Ref<string | undefined> = ref();
 
 async function getUserData() {
   const uniqueIds = [...new Set(props.objectAccess?.permissions
