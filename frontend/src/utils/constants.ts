@@ -32,7 +32,6 @@ export const ValidationMessages = Object.freeze({
 });
 
 export const BucketConfig = Object.freeze({
-  headerNewBucket: 'Configure new bucket',
-  titleNewBucket: 'Use this form to configure a bucket to be used in BCBox for the first time.',
-  headerUpdateBucket: 'Configure existing bucket'
+  headerNewBucket: 'Configure bucket',
+  titleNewBucket: 'Use this form to configure a bucket to be used in BCBox for the first time.'
 });

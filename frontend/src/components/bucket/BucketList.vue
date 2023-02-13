@@ -3,10 +3,10 @@ import Button from 'primevue/button';
 import { ref, onMounted, Ref } from 'vue';
 import BucketsTable from './BucketsTable.vue';
 import BucketsSidebar from './BucketsSidebar.vue';
+import { BucketConfig as BucketConfigConst } from '@/utils/constants';
+import BucketConfigDialog from '@/components/bucket/BucketConfigDialog.vue';
 import { useBucketStore } from '@/store';
 import { useToaster } from '@/composables/useToaster';
-import BucketConfigDialog from '@/components/bucket/BucketConfigDialog.vue';
-import { BucketConfig as BucketConfigConst } from '@/utils/constants';
 import type { Bucket } from '@/interfaces';
 
 const bucketStore = useBucketStore();
@@ -33,7 +33,7 @@ const closeInfo = () => {
 
 const showBucketConfig = (isUpdate: boolean, bucket: Bucket) => {
   if(isUpdate) {
-    bucketConfigHeader.value = BucketConfigConst.headerUpdateBucket;
+    bucketConfigHeader.value = BucketConfigConst.headerNewBucket;
     bucketConfigTitle.value = bucket.bucketName;
   } else {
     bucketConfigHeader.value = BucketConfigConst.headerNewBucket;
