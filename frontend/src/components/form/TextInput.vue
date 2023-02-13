@@ -1,42 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { toRef } from 'vue';
 import InputText from 'primevue/inputtext';
-import { useField, Field, ErrorMessage } from 'vee-validate';
-
-import type { Ref } from 'vue';
+import { useField, ErrorMessage } from 'vee-validate';
 
 const props = defineProps({
   name: { type: String, required: true },
   type: { type: String, default: 'text' },
-  rules: { type: null, default: null },
   label: { type: String, default: '' },
-  value: { type: String, default: '' }
+  placeholder: { type: String, default: '' },
 });
 
-const value: Ref<String> = ref(props.value);
-
-const { errors } = useField(props.name);
+const { errorMessage, value } = useField<string>(toRef(props, 'name'));
 </script>
 
 <template>
   <div class="field">
-    <Field
-      v-slot="{ field }"
+    <label :for="name">{{ label }}</label>
+    <InputText
       v-model="value"
+      :aria-describedby="`${name}-help`"
       :name="name"
       :type="type"
-      :rules="rules"
-    >
-      <label :for="name">{{ label }}</label>
-      <InputText
-        v-bind="field"
-        :type="type"
-        :class="errors.length ? 'p-invalid' : ''"
-      />
-    </Field>
+      :placeholder="placeholder"
+      :class="{ 'p-invalid': errorMessage }"
+    />
     <ErrorMessage
       :name="name"
-      class="p-error"
     />
   </div>
 </template>

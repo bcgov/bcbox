@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import { Form } from 'vee-validate';
+import * as yup from 'yup';
 import { useBucketStore } from '@/store';
 import { useToast } from 'primevue/usetoast';
 import TextInput from '@/components/form/TextInput.vue';
-import { validateRequired } from '@/utils/formValidators';
 import type { Bucket } from '@/interfaces';
 
 const props = defineProps<{
@@ -16,6 +16,24 @@ const bucketStore = useBucketStore();
 const toast = useToast();
 
 const emit = defineEmits(['submit-bucket-config', 'cancel-bucket-config']);
+
+const initialValues = {
+  bucketName: props.bucket?.bucketName,
+  bucket: props.bucket?.bucket,
+  endpoint: props.bucket?.endpoint,
+  accessKeyId: props.bucket?.accessKeyId,
+  secretAccessKey: props.bucket?.secretAccessKey,
+  key: props.bucket?.key
+};
+
+const schema = yup.object({
+  bucketName: yup.string().max(255).required().label('Bucket name'),
+  bucket: yup.string().max(255).required().label('Bucket'),
+  endpoint: yup.string().max(255).required().label('Endpoint'),
+  accessKeyId: yup.string().max(255).required().label('Access Key ID'),
+  secretAccessKey: yup.string().max(255).required().label('Secret Access Key'),
+  key: yup.string().max(255).required().label('Key'),
+});
 
 const onSubmit = async (values: any) => {
 
@@ -34,6 +52,7 @@ const onSubmit = async (values: any) => {
       await bucketStore.createBucket(formBucket);
 
     await bucketStore.load();
+    emit('submit-bucket-config');
 
     toast.add(
       {
@@ -44,6 +63,7 @@ const onSubmit = async (values: any) => {
       }
     );
   } catch (error: any) {
+    emit('cancel-bucket-config');
     toast.add(
       {
         severity: 'error',
@@ -52,9 +72,6 @@ const onSubmit = async (values: any) => {
         life: 5000
       }
     );
-  }
-  finally {
-    emit('submit-bucket-config');
   }
 };
 
@@ -66,43 +83,33 @@ const onCancel = async () => {
 <template>
   <div>
     <Form
+      :initial-values="initialValues"
+      :validation-schema="schema"
       @submit="onSubmit"
     >
       <TextInput
-        :value="props.bucket?.bucketName"
         name="bucketName"
         label="Bucket name (what other users will see)"
-        :rules="validateRequired"
       />
       <TextInput
-        :value="props.bucket?.bucket"
         name="bucket"
         label="Bucket"
-        :rules="validateRequired"
       />
       <TextInput
-        :value="props.bucket?.endpoint"
         name="endpoint"
         label="Endpoint"
-        :rules="validateRequired"
       />
       <TextInput
-        :value="props.bucket?.accessKeyId"
         name="accessKeyId"
         label="Access key Identifier"
-        :rules="validateRequired"
       />
       <TextInput
-        :value="props.bucket?.secretAccessKey"
         name="secretAccessKey"
         label="Secret access key"
-        :rules="validateRequired"
       />
       <TextInput
-        :value="props.bucket?.key"
         name="key"
         label="Key"
-        :rules="validateRequired"
       />
       <Button
         label="Apply"
