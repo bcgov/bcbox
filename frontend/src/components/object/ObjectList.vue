@@ -11,7 +11,8 @@ import {
   DownloadObjectButton,
   ObjectSidebar,
   ObjectTable,
-  ObjectUpload} from '@/components/object';
+  ObjectUpload
+} from '@/components/object';
 import { ButtonMode } from '@/interfaces/common/enums';
 import { useBucketStore, useObjectStore } from '@/store';
 

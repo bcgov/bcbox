@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch} from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
@@ -11,7 +11,7 @@ const userStore = useUserStore();
 const { userSearch } = storeToRefs(userStore);
 
 const props = defineProps({
-  objectAccess: {
+  objectInfo: {
     type: Object,
     default: undefined
   }
@@ -20,9 +20,9 @@ const props = defineProps({
 const managedBy: Ref<string | undefined> = ref();
 
 async function getUserData() {
-  const uniqueIds = [...new Set(props.objectAccess?.permissions
+  const uniqueIds = [...new Set(props.objectInfo?.permissions
     .filter( (x: Permission) => x.permCode === Permissions.MANAGE )
-    .map((x: Permission) => x.userId))];
+    .map( (x: Permission) => x.userId) )];
 
   await userStore.searchUsers({userId: uniqueIds} );
 
@@ -33,8 +33,8 @@ onMounted(() => {
   getUserData();
 });
 
-watch( props, async () => {
-  await getUserData();
+watch( props, () => {
+  getUserData();
 });
 </script>
 

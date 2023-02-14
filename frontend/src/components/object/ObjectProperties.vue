@@ -15,7 +15,7 @@ const userStore = useUserStore();
 const { userSearch } = storeToRefs(userStore);
 
 const props = defineProps({
-  objectProperties: {
+  objectInfo: {
     type: Object,
     default: undefined
   },
@@ -31,13 +31,13 @@ const updatedBy: Ref<string | undefined> = ref();
 
 async function getBucketData() {
   // Get some associated bucket information
-  bucket.value = await bucketStore.getBucketInfo(props.objectProperties?.bucketId);
+  bucket.value = await bucketStore.getBucketInfo(props.objectInfo?.bucketId);
 }
 
 async function getUserData() {
-  await userStore.searchUsers({userId:[props.objectProperties?.createdBy, props.objectProperties?.updatedBy]});
-  createdBy.value = userSearch.value.find( x => x.userId === props.objectProperties?.createdBy )?.fullName;
-  updatedBy.value = userSearch.value.find( x => x.userId === props.objectProperties?.updatedBy )?.fullName;
+  await userStore.searchUsers({userId:[props.objectInfo?.createdBy, props.objectInfo?.updatedBy]});
+  createdBy.value = userSearch.value.find( x => x.userId === props.objectInfo?.createdBy )?.fullName;
+  updatedBy.value = userSearch.value.find( x => x.userId === props.objectInfo?.updatedBy )?.fullName;
 }
 
 onMounted(() => {
@@ -45,9 +45,9 @@ onMounted(() => {
   getUserData();
 });
 
-watch( props, async () => {
-  await getBucketData();
-  await getUserData();
+watch( props, () => {
+  getBucketData();
+  getUserData();
 });
 
 </script>
@@ -62,7 +62,7 @@ watch( props, async () => {
 
     <GridRow
       label="Name"
-      :value="objectProperties?.name"
+      :value="objectInfo?.name"
     />
     <GridRow
       v-if="fullView"
@@ -73,11 +73,11 @@ watch( props, async () => {
     <GridRow
       v-if="fullView"
       label="Bucket ID"
-      :value="objectProperties?.bucketId"
+      :value="objectInfo?.bucketId"
     />
     <GridRow
       label="Object ID"
-      :value="objectProperties?.id"
+      :value="objectInfo?.id"
     />
     <GridRow
       v-if="fullView"
@@ -87,7 +87,7 @@ watch( props, async () => {
     <GridRow
       v-if="fullView"
       label="Creation date"
-      :value="formatDateLong(objectProperties?.createdAt)"
+      :value="formatDateLong(objectInfo?.createdAt)"
     />
     <GridRow
       label="Updated by"
@@ -95,7 +95,7 @@ watch( props, async () => {
     />
     <GridRow
       label="Updated date"
-      :value="formatDateLong(objectProperties?.updatedAt)"
+      :value="formatDateLong(objectInfo?.updatedAt)"
     />
   </div>
 </template>

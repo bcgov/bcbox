@@ -33,9 +33,9 @@ const { currentUser } = storeToRefs(useUserStore());
 const objectInfo: Ref<COMSObject> = ref({} as COMSObject);
 const isInfoLoaded: Ref<Boolean> = ref(false);
 
-const permissionsVisible = ref(false);
-const permissionsObjectId = ref('');
-const permissionsObjectName = ref('');
+const permissionsVisible: Ref<boolean> = ref(false);
+const permissionsObjectId: Ref<string> = ref('');
+const permissionsObjectName: Ref<string> = ref('');
 
 const getObjectInfo = (objId: string) => {
   try {
@@ -97,8 +97,8 @@ onMounted(() => {
       v-if="isInfoLoaded"
       class="pl-2"
     >
-      <ObjectProperties :object-properties="objectInfo" />
-      <ObjectAccess :object-access="objectInfo" />
+      <ObjectProperties :object-info="objectInfo" />
+      <ObjectAccess :object-info="objectInfo" />
       <ObjectMetadata :object-metadata="objectInfo.metadata" />
       <ObjectTag :object-tag="objectInfo.tag" />
     </div>

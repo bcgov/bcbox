@@ -42,7 +42,7 @@ const closeInfo = async () => {
   </div>
   <div class="pl-2">
     <ObjectProperties
-      :object-properties="displayInfo"
+      :object-info="displayInfo"
       :full-view="false"
     />
     <ObjectMetadata :object-metadata="displayInfo?.metadata" />
