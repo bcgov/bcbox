@@ -7,9 +7,11 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
 
-import DeleteObjectButton from '@/components/object/DeleteObjectButton.vue';
-import DownloadObjectButton from '@/components/object/DownloadObjectButton.vue';
-import ObjectPermission from '@/components/object/ObjectPermission.vue';
+import {
+  DeleteObjectButton,
+  DownloadObjectButton,
+  ObjectPermission
+} from '@/components/object';
 import { ButtonMode } from '@/interfaces/common/enums';
 import { useObjectStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';

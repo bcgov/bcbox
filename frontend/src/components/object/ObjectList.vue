@@ -6,11 +6,13 @@ import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
 
-import DeleteObjectButton from '@/components/object/DeleteObjectButton.vue';
-import DownloadObjectButton from '@/components/object/DownloadObjectButton.vue';
-import ObjectSidebar from '@/components/object/ObjectSidebar.vue';
-import ObjectTable from '@/components/object/ObjectTable.vue';
-import ObjectUpload from '@/components/object/ObjectUpload.vue';
+import {
+  DeleteObjectButton,
+  DownloadObjectButton,
+  ObjectSidebar,
+  ObjectTable,
+  ObjectUpload
+} from '@/components/object';
 import { ButtonMode } from '@/interfaces/common/enums';
 import { useBucketStore, useObjectStore } from '@/store';
 

@@ -1,12 +1,41 @@
-<!-- <script setup lang="ts">
+<script setup lang="ts">
+import { onMounted, ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useUserStore } from '@/store';
+import { Permissions } from '@/utils/constants';
 
-defineProps({
-  objectAccess: {
+import type { Ref } from 'vue';
+import type { Permission } from '@/interfaces';
+
+const userStore = useUserStore();
+const { userSearch } = storeToRefs(userStore);
+
+const props = defineProps({
+  objectInfo: {
     type: Object,
     default: undefined
   }
 });
 
+const managedBy: Ref<string | undefined> = ref();
+
+async function getUserData() {
+  const uniqueIds = [...new Set(props.objectInfo?.permissions
+    .filter( (x: Permission) => x.permCode === Permissions.MANAGE )
+    .map( (x: Permission) => x.userId) )];
+
+  await userStore.searchUsers({userId: uniqueIds} );
+
+  managedBy.value = userSearch.value.map( x => x.fullName ).join( ', ');
+}
+
+onMounted(() => {
+  getUserData();
+});
+
+watch( props, () => {
+  getUserData();
+});
 </script>
 
 <template>
@@ -20,7 +49,7 @@ defineProps({
       Managed by:
     </div>
     <div class="col-9">
-      {{ objectAccess?.managedBy }}
+      {{ managedBy }}
     </div>
   </div>
-</template> -->
+</template>

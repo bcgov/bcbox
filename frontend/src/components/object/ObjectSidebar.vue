@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { RouteNames } from '@/utils/constants';
-// PrimeVue
 import Button from 'primevue/button';
-// Other
-import ObjectAccess from '@/components/object/ObjectAccess.vue';
-import ObjectMetadata from '@/components/object/ObjectMetadata.vue';
-import ObjectProperties from '@/components/object/ObjectProperties.vue';
-import ObjectTag from '@/components/object/ObjectTag.vue';
+
+import {
+  ObjectMetadata,
+  ObjectProperties,
+  ObjectTag
+} from '@/components/object';
 
 defineProps({
   displayInfo: {
@@ -41,8 +41,10 @@ const closeInfo = async () => {
     </div>
   </div>
   <div class="pl-2">
-    <ObjectProperties :object-properties="displayInfo" />
-    <ObjectAccess :object-access="displayInfo" />
+    <ObjectProperties
+      :object-info="displayInfo"
+      :full-view="false"
+    />
     <ObjectMetadata :object-metadata="displayInfo?.metadata" />
     <ObjectTag :object-tag="displayInfo?.tag" />
     <div class="col-9">

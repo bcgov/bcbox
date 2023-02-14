@@ -1,11 +1,53 @@
 <script setup lang="ts">
+import { onMounted, ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useBucketStore, useUserStore } from '@/store';
+import GridRow from '@/components/form/GridRow.vue';
+import { RouteNames } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
 
-defineProps({
-  objectProperties: {
+import type { Ref } from 'vue';
+import type { Bucket } from '@/interfaces';
+
+const bucketStore = useBucketStore();
+const userStore = useUserStore();
+
+const { userSearch } = storeToRefs(userStore);
+
+const props = defineProps({
+  objectInfo: {
     type: Object,
     default: undefined
+  },
+  fullView: {
+    type: Boolean,
+    default: true
   }
+});
+
+const bucket: Ref<Bucket | undefined > = ref();
+const createdBy: Ref<string | undefined> = ref();
+const updatedBy: Ref<string | undefined> = ref();
+
+async function getBucketData() {
+  // Get some associated bucket information
+  bucket.value = await bucketStore.getBucketInfo(props.objectInfo?.bucketId);
+}
+
+async function getUserData() {
+  await userStore.searchUsers({userId:[props.objectInfo?.createdBy, props.objectInfo?.updatedBy]});
+  createdBy.value = userSearch.value.find( x => x.userId === props.objectInfo?.createdBy )?.fullName;
+  updatedBy.value = userSearch.value.find( x => x.userId === props.objectInfo?.updatedBy )?.fullName;
+}
+
+onMounted(() => {
+  getBucketData();
+  getUserData();
+});
+
+watch( props, () => {
+  getBucketData();
+  getUserData();
 });
 
 </script>
@@ -17,77 +59,43 @@ defineProps({
         Properties
       </h2>
     </div>
-    <div
-      v-if="objectProperties?.name"
-      class="col-3"
-    >
-      Name:
-    </div>
-    <div
-      v-if="objectProperties?.name"
-      class="col-9"
-    >
-      {{ objectProperties?.name }}
-    </div>
-    <div
-      v-if="objectProperties?.id"
-      class="col-3"
-    >
-      Object ID:
-    </div>
-    <div
-      v-if="objectProperties?.id"
-      class="col-9"
-    >
-      {{ objectProperties?.id }}
-    </div>
-    <div
-      v-if="objectProperties?.createdBy"
-      class="col-3"
-    >
-      Created by:
-    </div>
-    <div
-      v-if="objectProperties?.createdBy"
-      class="col-9"
-    >
-      {{ objectProperties?.createdBy }}
-    </div>
-    <div
-      v-if="objectProperties?.createdAt"
-      class="col-3"
-    >
-      Creation date:
-    </div>
-    <div
-      v-if="objectProperties?.createdAt"
-      class="col-9"
-    >
-      {{ formatDateLong(objectProperties?.createdAt) }}
-    </div>
-    <div
-      v-if="objectProperties?.updatedBy"
-      class="col-3"
-    >
-      Updated by:
-    </div>
-    <div
-      v-if="objectProperties?.updatedBy"
-      class="col-9"
-    >
-      {{ objectProperties?.updatedBy }}
-    </div>
-    <div
-      v-if="objectProperties?.updatedAt"
-      class="col-3"
-    >
-      Updated date:
-    </div>
-    <div
-      v-if="objectProperties?.updatedAt"
-      class="col-9"
-    >
-      {{ formatDateLong(objectProperties?.updatedAt) }}
-    </div>
+
+    <GridRow
+      label="Name"
+      :value="objectInfo?.name"
+    />
+    <GridRow
+      v-if="fullView"
+      label="Bucket"
+      :value="bucket?.bucketName"
+      :link="{ name: RouteNames.ListObjects, query: { bucketId: bucket?.bucketId } }"
+    />
+    <GridRow
+      v-if="fullView"
+      label="Bucket ID"
+      :value="objectInfo?.bucketId"
+    />
+    <GridRow
+      label="Object ID"
+      :value="objectInfo?.id"
+    />
+    <GridRow
+      v-if="fullView"
+      label="Created by"
+      :value="createdBy"
+    />
+    <GridRow
+      v-if="fullView"
+      label="Creation date"
+      :value="formatDateLong(objectInfo?.createdAt)"
+    />
+    <GridRow
+      label="Updated by"
+      :value="updatedBy"
+    />
+    <GridRow
+      label="Updated date"
+      :value="formatDateLong(objectInfo?.updatedAt)"
+    />
   </div>
 </template>
