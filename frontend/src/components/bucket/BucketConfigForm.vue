@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import { Form } from 'vee-validate';
-import * as yup from 'yup';
+import { object, string } from 'yup';
 import { useBucketStore } from '@/store';
 import { useToast } from 'primevue/usetoast';
 import TextInput from '@/components/form/TextInput.vue';
@@ -26,13 +26,13 @@ const initialValues = {
   key: props.bucket?.key
 };
 
-const schema = yup.object({
-  bucketName: yup.string().max(255).required().label('Bucket name'),
-  bucket: yup.string().max(255).required().label('Bucket'),
-  endpoint: yup.string().max(255).required().label('Endpoint'),
-  accessKeyId: yup.string().max(255).required().label('Access Key ID'),
-  secretAccessKey: yup.string().max(255).required().label('Secret Access Key'),
-  key: yup.string().max(255).required().label('Key'),
+const schema = object({
+  bucketName: string().max(255).required().label('Bucket name'),
+  bucket: string().max(255).required().label('Bucket'),
+  endpoint: string().max(255).required().label('Endpoint'),
+  accessKeyId: string().max(255).required().label('Access Key ID'),
+  secretAccessKey: string().max(255).required().label('Secret Access Key'),
+  key: string().max(255).required().label('Key'),
 });
 
 const onSubmit = async (values: any) => {
