@@ -2,9 +2,9 @@
 import Button from 'primevue/button';
 import { ref, onMounted, Ref } from 'vue';
 import BucketsTable from './BucketsTable.vue';
-import BucketsSidebar from './BucketsSidebar.vue';
 import { BucketConfig as BucketConfigConst } from '@/utils/constants';
 import BucketConfigDialog from '@/components/bucket/BucketConfigDialog.vue';
+import BucketsSidebar from './BucketsSidebar.vue';
 import { useBucketStore } from '@/store';
 import { useToaster } from '@/composables/useToaster';
 import type { Bucket } from '@/interfaces';
