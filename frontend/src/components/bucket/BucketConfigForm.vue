@@ -49,8 +49,6 @@ const onSubmit = async (values: any) => {
       active: true
     } as Bucket;
 
-    console.log(props.bucket);
-
     props.bucket ?
       await bucketStore.updateBucket(props.bucket!.bucketId, formBucket) :
       await bucketStore.createBucket(formBucket);
