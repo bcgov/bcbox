@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import { ref, onMounted, Ref } from 'vue';
-import BucketsTable from './BucketsTable.vue';
+import BucketsTable from '@/components/bucket/BucketsTable.vue';
 import { BucketConfig as BucketConfigConst } from '@/utils/constants';
 import BucketConfigDialog from '@/components/bucket/BucketConfigDialog.vue';
 import BucketsSidebar from './BucketsSidebar.vue';
