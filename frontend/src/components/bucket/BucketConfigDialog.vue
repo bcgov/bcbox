@@ -19,32 +19,30 @@ const closeDialog = () => {
 </script>
 
 <template>
-  <div>
-    <Dialog
-      :visible="props.display"
-      :style="{width: '50vw'}"
-      :modal="true"
-      @update:visible="closeDialog"
-    >
-      <template #header>
-        <div class="flex">
-          <font-awesome-icon
-            icon="fas fa-cog"
-            class="pr-3 pt-2"
-            style="font-size: 2rem"
-          />
-          <div>
-            <h1>{{ header }}</h1>
-            <h3>{{ title }}</h3>
-          </div>
+  <Dialog
+    :visible="props.display"
+    :style="{width: '50vw'}"
+    :modal="true"
+    @update:visible="closeDialog"
+  >
+    <template #header>
+      <div class="flex">
+        <font-awesome-icon
+          icon="fas fa-cog"
+          class="pr-3 pt-2"
+          style="font-size: 2rem"
+        />
+        <div>
+          <h1>{{ header }}</h1>
+          <h3>{{ title }}</h3>
         </div>
-      </template>
-      <BucketConfigForm
-        :is-update="props.isUpdate"
-        :bucket="props.bucket"
-        @submit-bucket-config="closeDialog"
-        @cancel-bucket-config="closeDialog"
-      />
-    </Dialog>
-  </div>
+      </div>
+    </template>
+    <BucketConfigForm
+      :is-update="props.isUpdate"
+      :bucket="props.bucket"
+      @submit-bucket-config="closeDialog"
+      @cancel-bucket-config="closeDialog"
+    />
+  </Dialog>
 </template>
