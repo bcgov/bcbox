@@ -16,7 +16,7 @@ const displayInfo: any = ref(null);
 const displayBucketConfig: Ref<boolean> = ref(false);
 const bucketConfigHeader: Ref<string> = ref('');
 const bucketConfigTitle: Ref<string> = ref('');
-const bucketToUpdate: Ref<Bucket> = ref({} as Bucket);
+const bucketToUpdate: Ref<Bucket | undefined> = ref(undefined);
 
 const showInfo = async (bucketId: any) => {
   displayInfo.value = await bucketStore.getBucketInfo(bucketId);
