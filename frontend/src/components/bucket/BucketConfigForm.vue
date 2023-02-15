@@ -9,7 +9,6 @@ import TextInput from '@/components/form/TextInput.vue';
 import type { Bucket } from '@/interfaces';
 
 const props = defineProps<{
-  isUpdate: boolean;
   bucket?: Bucket;
 }>();
 
@@ -50,7 +49,9 @@ const onSubmit = async (values: any) => {
       active: true
     } as Bucket;
 
-    props.isUpdate ?
+    console.log(props.bucket);
+
+    props.bucket ?
       await bucketStore.updateBucket(props.bucket!.bucketId, formBucket) :
       await bucketStore.createBucket(formBucket);
 

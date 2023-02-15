@@ -7,7 +7,6 @@ const props = defineProps<{
   display: boolean;
   header: string;
   title: string;
-  isUpdate: boolean;
   bucket?: Bucket;
 }>();
 
@@ -39,7 +38,6 @@ const closeDialog = () => {
       </div>
     </template>
     <BucketConfigForm
-      :is-update="props.isUpdate"
       :bucket="props.bucket"
       @submit-bucket-config="closeDialog"
       @cancel-bucket-config="closeDialog"

@@ -16,7 +16,6 @@ const displayInfo: any = ref(null);
 const displayBucketConfig: Ref<boolean> = ref(false);
 const bucketConfigHeader: Ref<string> = ref('');
 const bucketConfigTitle: Ref<string> = ref('');
-const isBucketConfigUpdate: Ref<boolean> = ref(false);
 const bucketToUpdate: Ref<Bucket> = ref({} as Bucket);
 
 const showInfo = async (bucketId: any) => {
@@ -35,7 +34,6 @@ const showBucketConfig = (isUpdate: boolean, bucket: Bucket) => {
     bucketConfigHeader.value = BucketConfigConst.headerNewBucket;
     bucketConfigTitle.value = BucketConfigConst.titleNewBucket;
   }
-  isBucketConfigUpdate.value = isUpdate;
   bucketToUpdate.value = bucket;
   displayBucketConfig.value = true;
 };
@@ -66,7 +64,6 @@ onMounted(() => {
       </Button>
       <BucketConfigDialog
         v-if="displayBucketConfig"
-        :is-update="isBucketConfigUpdate"
         :bucket="bucketToUpdate"
         :display="displayBucketConfig"
         :header="bucketConfigHeader"
