@@ -27,13 +27,9 @@ const closeInfo = () => {
 };
 
 const showBucketConfig = (isUpdate: boolean, bucket: Bucket) => {
-  if(isUpdate) {
-    bucketConfigHeader.value = BucketConfigConst.headerNewBucket;
-    bucketConfigTitle.value = bucket.bucketName;
-  } else {
-    bucketConfigHeader.value = BucketConfigConst.headerNewBucket;
-    bucketConfigTitle.value = BucketConfigConst.titleNewBucket;
-  }
+
+  bucketConfigHeader.value = BucketConfigConst.headerNewBucket;
+  bucketConfigTitle.value = isUpdate ? bucket.bucketName : BucketConfigConst.titleNewBucket;
   bucketToUpdate.value = bucket;
   displayBucketConfig.value = true;
 };
