@@ -17,7 +17,7 @@ const permissionsVisible = ref(false);
 const permissionsBucketId = ref('');
 const permissionBucketName = ref('');
 
-const emit = defineEmits(['show-info', 'show-bucket-config']);
+const emit = defineEmits(['show-bucket-config', 'show-info']);
 
 const showInfo = async (id: number) => {
   emit('show-info', id);

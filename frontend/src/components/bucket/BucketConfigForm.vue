@@ -16,7 +16,7 @@ const props = defineProps<{
 const bucketStore = useBucketStore();
 const toast = useToast();
 
-const emit = defineEmits(['submit-bucket-config', 'cancel-bucket-config']);
+const emit = defineEmits(['cancel-bucket-config', 'submit-bucket-config']);
 
 const initialValues = {
   bucketName: props.bucket?.bucketName,
