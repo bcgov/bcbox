@@ -13,7 +13,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['close-bucket-config']);
 
-const closeDialog = async () => {
+const closeDialog = () => {
   emit('close-bucket-config');
 };
 </script>

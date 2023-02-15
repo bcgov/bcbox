@@ -14,13 +14,9 @@ const bucketStore = useBucketStore();
 const displayInfo: any = ref(null);
 
 const displayBucketConfig: Ref<boolean> = ref(false);
-
 const bucketConfigHeader: Ref<string> = ref('');
-
 const bucketConfigTitle: Ref<string> = ref('');
-
 const isBucketConfigUpdate: Ref<boolean> = ref(false);
-
 const bucketToUpdate: Ref<Bucket> = ref({} as Bucket);
 
 const showInfo = async (bucketId: any) => {
@@ -62,7 +58,7 @@ onMounted(() => {
     <div>
       <Button
         label="Primary"
-        class="p-button-outlined"
+        class="p-button-outlined mt-4"
         @click="showBucketConfig(false, {} as Bucket)"
       >
         <font-awesome-icon icon="fa-solid fa-plus" />
@@ -110,7 +106,6 @@ h3 {
 
 button {
   float: right;
-  margin-top: 15px;
   text-indent: 10px;
 }
 </style>

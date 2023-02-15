@@ -4,6 +4,7 @@ import { Form } from 'vee-validate';
 import { object, string } from 'yup';
 import { useBucketStore } from '@/store';
 import { useToast } from 'primevue/usetoast';
+import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
 import type { Bucket } from '@/interfaces';
 
@@ -42,9 +43,13 @@ const onSubmit = async (values: any) => {
       bucketName: values.bucketName,
       bucket: values.bucket,
       endpoint: values.endpoint,
-      accessKeyId: values.accessKeyId,
-      secretAccessKey: values.secretAccessKey,
-      key: values.key
+      accessKeyId: values.accessKeyId !== 'REDACTED' && values.accessKeyId !== '' ?
+        values.accessKeyId : undefined,
+      secretAccessKey:
+        values.secretAccessKey !== 'REDACTED' && values.secretAccessKey !== '' ?
+          values.secretAccessKey : undefined,
+      key: values.key,
+      active: true
     } as Bucket;
 
     props.isUpdate ?
@@ -75,7 +80,7 @@ const onSubmit = async (values: any) => {
   }
 };
 
-const onCancel = async () => {
+const onCancel = () => {
   emit('cancel-bucket-config');
 };
 </script>
@@ -99,11 +104,11 @@ const onCancel = async () => {
         name="endpoint"
         label="Endpoint"
       />
-      <TextInput
+      <Password
         name="accessKeyId"
         label="Access key Identifier"
       />
-      <TextInput
+      <Password
         name="secretAccessKey"
         label="Secret access key"
       />
@@ -131,6 +136,16 @@ const onCancel = async () => {
 
 :deep(.p-inputtext) {
   width: 65% !important;
+}
+
+:deep(.pi-eye) {
+  right: auto !important;
+  margin-left: 10px;
+}
+
+:deep(.pi-eye-slash) {
+  right: auto !important;
+  margin-left: 10px;
 }
 
 button {
