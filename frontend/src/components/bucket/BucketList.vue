@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 import { ref, onMounted, Ref } from 'vue';
-import BucketsTable from '@/components/bucket/BucketsTable.vue';
+import BucketConfigForm from '@/components/bucket/BucketConfigForm.vue';
 import { BucketConfig as BucketConfigConst } from '@/utils/constants';
-import BucketConfigDialog from '@/components/bucket/BucketConfigDialog.vue';
+import BucketsTable from '@/components/bucket/BucketsTable.vue';
 import BucketsSidebar from './BucketsSidebar.vue';
 import { useBucketStore } from '@/store';
 import { useToaster } from '@/composables/useToaster';
@@ -26,10 +27,10 @@ const closeInfo = () => {
   displayInfo.value = null;
 };
 
-const showBucketConfig = (isUpdate: boolean, bucket: Bucket) => {
+const showBucketConfig = (bucket?: Bucket) => {
 
   bucketConfigHeader.value = BucketConfigConst.headerNewBucket;
-  bucketConfigTitle.value = isUpdate ? bucket.bucketName : BucketConfigConst.titleNewBucket;
+  bucketConfigTitle.value = bucket ? bucket.bucketName : BucketConfigConst.titleNewBucket;
   bucketToUpdate.value = bucket;
   displayBucketConfig.value = true;
 };
@@ -53,19 +54,36 @@ onMounted(() => {
       <Button
         label="Primary"
         class="p-button-outlined mt-4"
-        @click="showBucketConfig(false, {} as Bucket)"
+        @click="showBucketConfig()"
       >
         <font-awesome-icon icon="fa-solid fa-plus" />
         Configure new bucket
       </Button>
-      <BucketConfigDialog
-        v-if="displayBucketConfig"
-        :bucket="bucketToUpdate"
-        :display="displayBucketConfig"
-        :header="bucketConfigHeader"
-        :title="bucketConfigTitle"
-        @close-bucket-config="closeBucketConfig"
-      />
+      <Dialog
+        :visible="displayBucketConfig"
+        :style="{width: '50vw'}"
+        :modal="true"
+        @update:visible="closeBucketConfig"
+      >
+        <template #header>
+          <div class="flex">
+            <font-awesome-icon
+              icon="fas fa-cog"
+              class="pr-3 pt-2"
+              style="font-size: 2rem"
+            />
+            <div>
+              <h1>{{ bucketConfigHeader }}</h1>
+              <h3>{{ bucketConfigTitle }}</h3>
+            </div>
+          </div>
+        </template>
+        <BucketConfigForm
+          :bucket="bucketToUpdate"
+          @submit-bucket-config="closeBucketConfig"
+          @cancel-bucket-config="closeBucketConfig"
+        />
+      </Dialog>
     </div>
     <div class="flex mt-7">
       <div class="flex-grow-1">

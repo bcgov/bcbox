@@ -23,8 +23,8 @@ const showInfo = async (id: number) => {
   emit('show-info', id);
 };
 
-const showBucketConfig = async (isUpdate: boolean, bucket: Bucket) => {
-  emit('show-bucket-config', isUpdate, bucket);
+const showBucketConfig = async (bucket: Bucket) => {
+  emit('show-bucket-config', bucket);
 };
 
 const showPermissions = async (bucketId: string, bucketName: string) => {
@@ -96,7 +96,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
         <template #body="{ data }">
           <Button
             class="p-button-lg p-button-text"
-            @click="showBucketConfig(true, data)"
+            @click="showBucketConfig(data)"
           >
             <font-awesome-icon icon="fas fa-cog" />
           </Button>
