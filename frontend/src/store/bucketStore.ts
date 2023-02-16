@@ -160,6 +160,26 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
+  async function createBucket(bucket: Bucket) {
+    try {
+      loading.value = true;
+
+      return (await bucketService.createBucket(bucket)).data;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function updateBucket(bucketId: string, bucket: Bucket) {
+    try {
+      loading.value = true;
+
+      return (await bucketService.updateBucket(bucketId, bucket)).data;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     loading,
     load,
@@ -169,6 +189,8 @@ export const useBucketStore = defineStore('bucket', () => {
     addBucketPermission,
     deleteBucketPermission,
     removeBucketUser,
+    createBucket,
+    updateBucket,
     buckets,
     permissions,
     selectedBucketPermissionsForUser
