@@ -2,10 +2,10 @@
 import Button from 'primevue/button';
 import { Form } from 'vee-validate';
 import { object, string } from 'yup';
-import { useBucketStore } from '@/store';
 import { useToast } from 'primevue/usetoast';
 import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
+import { useBucketStore } from '@/store';
 import type { Bucket } from '@/interfaces';
 
 const props = defineProps<{
@@ -114,15 +114,16 @@ const onCancel = () => {
         label="Key"
       />
       <Button
+        class="mt-2"
         label="Apply"
         type="submit"
         icon="pi pi-check"
         autofocus
       />
       <Button
+        class="p-button-text mt-2"
         label="Cancel"
         icon="pi pi-times"
-        class="p-button-text"
         @click="onCancel"
       />
     </Form>
@@ -143,9 +144,5 @@ const onCancel = () => {
 :deep(.pi-eye-slash) {
   right: auto !important;
   margin-left: 10px;
-}
-
-button {
-  margin-top: 20px;
 }
 </style>
