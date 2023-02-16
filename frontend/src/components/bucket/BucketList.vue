@@ -2,7 +2,6 @@
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import { ref, onMounted, Ref } from 'vue';
-
 import { BucketConfig as BucketConfigConst } from '@/utils/constants';
 import BucketConfigForm from '@/components/bucket/BucketConfigForm.vue';
 import BucketsSidebar from '@/components/bucket/BucketsSidebar.vue';
