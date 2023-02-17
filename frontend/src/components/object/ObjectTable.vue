@@ -60,6 +60,8 @@ const showPermissions = async (objectId: string, objectName: string) => {
       paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
       current-page-report-template="{first}-{last} of {totalRecords}"
       :rows-per-page-options="[10, 20, 50]"
+      sort-field="name"
+      :sort-order="1"
     >
       <template #empty>
         <div
@@ -96,6 +98,7 @@ const showPermissions = async (objectId: string, objectName: string) => {
       </Column>
       <Column
         field="id"
+        :sortable="true"
         header="Object ID"
         body-class="truncate"
       >
@@ -112,7 +115,9 @@ const showPermissions = async (objectId: string, objectName: string) => {
         </template>
       </Column>
       <Column
+        field="updatedAt"
         header="Updated date"
+        :sortable="true"
         :hidden="displayInfo ? true : false"
       >
         <template #body="{ data }">
