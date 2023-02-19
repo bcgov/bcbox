@@ -34,6 +34,7 @@
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
     "primevue": "^3.21.0",
+    "qrcode.vue": "^3.3.3",
     "vee-validate": "^4.7.1",
     "vue": "^3.2.41",
     "vue-router": "^4.1.5",
