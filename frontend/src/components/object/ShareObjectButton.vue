@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, type PropType } from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import Button from "primevue/button";
-import Dialog from "primevue/dialog";
-import InputText from "primevue/inputtext";
-import { useToast } from "primevue/usetoast";
+import { computed, ref, type PropType } from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
+import QrcodeVue from 'qrcode.vue';
+import { useToast } from 'primevue/usetoast';
 
-import type { COMSObject } from "@/interfaces";
+import type { COMSObject } from '@/interfaces';
 
 const toast = useToast();
 
@@ -28,15 +29,19 @@ const shareLink = computed(() => {
 const copyLinkToClipboard = () => {
   navigator.clipboard.writeText(shareLink.value);
   toast.add({
-    severity: "info",
-    summary: "Share Link copied to clipboard",
+    severity: 'info',
+    summary: 'Share Link copied to clipboard',
     life: 3000,
   });
 };
 </script>
 
 <template>
-  <Dialog v-model:visible="displayShareDialog" header="Share" :modal="true">
+  <Dialog
+    v-model:visible="displayShareDialog"
+    header="Share"
+    :modal="true"
+  >
     <template #header>
       <div class="flex">
         <font-awesome-icon
@@ -61,19 +66,37 @@ const copyLinkToClipboard = () => {
     </ul>
 
     <label for="shareLink">Share Link</label>
-    <div class="p-inputgroup">
-      <InputText name="shareLink" readonly :value="shareLink" />
+    <div class="p-inputgroup mb-4">
+      <InputText
+        name="shareLink"
+        readonly
+        :value="shareLink"
+      />
       <Button
         class="p-button-outlined p-button-secondary"
         @click="copyLinkToClipboard"
       >
-        <font-awesome-icon icon="fa fa-clipboard" class="mr-2" /> Copy Link
+        <font-awesome-icon
+          icon="fa fa-clipboard"
+          class="mr-2"
+        /> Copy Link
       </Button>
     </div>
-    <pre>{{ props.obj }}</pre>
+
+    <h2 class="mb-2">
+      QR Code
+    </h2>
+    <qrcode-vue
+      :value="shareLink"
+      :size="200"
+      level="L"
+    />
   </Dialog>
 
-  <Button class="p-button-lg p-button-text" @click="displayShareDialog = true">
+  <Button
+    class="p-button-lg p-button-text"
+    @click="displayShareDialog = true"
+  >
     <font-awesome-icon icon="fa-solid fa-share-alt" />
   </Button>
 </template>
