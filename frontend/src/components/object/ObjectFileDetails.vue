@@ -13,7 +13,8 @@ import {
   ObjectMetadata,
   ObjectPermission,
   ObjectProperties,
-  ObjectTag
+  ObjectTag,
+  ShareObjectButton
 } from '@/components/object';
 
 import { useObjectStore, useUserStore } from '@/store';
@@ -70,9 +71,10 @@ onMounted(() => {
         </h1>
       </div>
       <div class="action-buttons">
-        <Button class="p-button-lg p-button-text">
-          <font-awesome-icon icon="fa-solid fa-share-nodes" />
-        </Button>
+        <ShareObjectButton
+          v-if="objectStore.isActionAllowed(objectInfo.permissions, Permissions.MANAGE, currentUser?.userId)"
+          :obj="objectInfo"
+        />
         <DownloadObjectButton
           v-if="objectStore.isActionAllowed(objectInfo.permissions, Permissions.READ, currentUser?.userId)"
           :mode="ButtonMode.ICON"

@@ -3,6 +3,7 @@ import { computed, ref, type PropType } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import InputSwitch from 'primevue/inputswitch';
 import InputText from 'primevue/inputtext';
 import QrcodeVue from 'qrcode.vue';
 import { useToast } from 'primevue/usetoast';
@@ -34,6 +35,12 @@ const copyLinkToClipboard = () => {
     life: 3000,
   });
 };
+
+// Public external
+const externalLink = ref('false');
+const getExternalLink = () => {
+  alert('get external');
+};
 </script>
 
 <template>
@@ -41,6 +48,7 @@ const copyLinkToClipboard = () => {
     v-model:visible="displayShareDialog"
     header="Share"
     :modal="true"
+    :style="{ minWidth: '600px' }"
   >
     <template #header>
       <div class="flex">
@@ -64,6 +72,15 @@ const copyLinkToClipboard = () => {
         To share to a BCBox user, you must first apply permissions to them
       </li>
     </ul>
+
+    <div v-if="props.obj.public">
+      <h4>Generate External (non-BCBox) public link</h4>
+      <InputSwitch
+        v-model="externalLink"
+        class="mb-4"
+        @click="getExternalLink"
+      />
+    </div>
 
     <label for="shareLink">Share Link</label>
     <div class="p-inputgroup mb-4">
