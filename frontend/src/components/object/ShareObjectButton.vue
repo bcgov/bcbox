@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { computed, ref, type PropType } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { storeToRefs } from 'pinia';
 
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputSwitch from 'primevue/inputswitch';
 import InputText from 'primevue/inputtext';
-import ProgressSpinner from 'primevue/progressspinner';
 
 import QrcodeVue from 'qrcode.vue';
-import { useObjectStore } from '@/store';
+import { useConfigStore } from '@/store';
 import { useToast } from 'primevue/usetoast';
 
 import type { COMSObject } from '@/interfaces';
 
-const objectStore = useObjectStore();
+const { config } = storeToRefs(useConfigStore());
 
 const toast = useToast();
 
@@ -46,24 +46,9 @@ const copyLinkToClipboard = () => {
 
 // Public external
 const useExternalLink = ref(false);
-const loadingExternal = ref(false);
-const comsUrl = ref('');
-const getExternalLink = async () => {
-  if (useExternalLink.value) {
-    try {
-      loadingExternal.value = true;
-      comsUrl.value = await objectStore.getObjectComsUrl(props.obj.id);
-    } catch (error) {
-      toast.add({
-        severity: 'error',
-        summary: 'Error getting external file link',
-        life: 3000,
-      });
-    } finally {
-      loadingExternal.value = false;
-    }
-  }
-};
+const comsUrl = computed(() => {
+  return `${config.value.coms?.apiPath}/object/${props.obj.id}`;
+});
 </script>
 
 <template>
@@ -96,47 +81,42 @@ const getExternalLink = async () => {
       </li>
     </ul>
 
+    {{ config.coms.apiPath }}
+
     <div v-if="props.obj.public">
       <h4>Generate External (non-BCBox) public link</h4>
       <InputSwitch
         v-model="useExternalLink"
         class="mb-4"
-        :loading="loadingExternal"
-        @change="getExternalLink"
       />
     </div>
 
-    <div v-if="loadingExternal">
-      <ProgressSpinner />
-    </div>
-    <div v-else>
-      <label for="shareLink">Share Link</label>
-      <div class="p-inputgroup mb-4">
-        <InputText
-          name="shareLink"
-          readonly
-          :value="shareLink"
-        />
-        <Button
-          class="p-button-outlined p-button-secondary"
-          @click="copyLinkToClipboard"
-        >
-          <font-awesome-icon
-            icon="fa fa-clipboard"
-            class="mr-2"
-          /> Copy Link
-        </Button>
-      </div>
-
-      <h2 class="mb-2">
-        QR Code
-      </h2>
-      <qrcode-vue
+    <label for="shareLink">Share Link</label>
+    <div class="p-inputgroup mb-4">
+      <InputText
+        name="shareLink"
+        readonly
         :value="shareLink"
-        :size="250"
-        level="L"
       />
+      <Button
+        class="p-button-outlined p-button-secondary"
+        @click="copyLinkToClipboard"
+      >
+        <font-awesome-icon
+          icon="fa fa-clipboard"
+          class="mr-2"
+        /> Copy Link
+      </Button>
     </div>
+
+    <h2 class="mb-2">
+      QR Code
+    </h2>
+    <qrcode-vue
+      :value="shareLink"
+      :size="250"
+      level="L"
+    />
   </Dialog>
 
   <Button
