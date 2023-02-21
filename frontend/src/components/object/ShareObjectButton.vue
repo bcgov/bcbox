@@ -49,7 +49,7 @@ const useExternalLink = ref(false);
 const loadingExternal = ref(false);
 const comsUrl = ref('');
 const getExternalLink = async () => {
-  if (useExternalLink.value && !comsUrl.value) {
+  if (useExternalLink.value) {
     try {
       loadingExternal.value = true;
       comsUrl.value = await objectStore.getObjectComsUrl(props.obj.id);
