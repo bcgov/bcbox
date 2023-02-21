@@ -81,8 +81,6 @@ const comsUrl = computed(() => {
       </li>
     </ul>
 
-    {{ config.coms.apiPath }}
-
     <div v-if="props.obj.public">
       <h4>Generate External (non-BCBox) public link</h4>
       <InputSwitch
