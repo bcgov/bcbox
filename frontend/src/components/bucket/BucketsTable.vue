@@ -52,6 +52,8 @@ const displayPermissionsIcon = (bucket: Bucket) => {
       paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
       current-page-report-template="{first}-{last} of {totalRecords}"
       :rows-per-page-options="[10, 20, 50]"
+      sort-field="bucketName"
+      :sort-order="1"
     >
       <template #empty>
         <div
@@ -67,7 +69,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
         </template>
       </Column>
       <Column
-        field="name"
+        field="bucketName"
         header="Bucket Name"
         body-class="truncate"
       >
