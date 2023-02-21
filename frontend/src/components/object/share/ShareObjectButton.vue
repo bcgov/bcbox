@@ -5,18 +5,15 @@ import { storeToRefs } from 'pinia';
 
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import InputSwitch from 'primevue/inputswitch';
-import InputText from 'primevue/inputtext';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 
-import QrcodeVue from 'qrcode.vue';
+import ShareLinkContent from './ShareLinkContent.vue';
 import { useConfigStore } from '@/store';
-import { useToast } from 'primevue/usetoast';
 
 import type { COMSObject } from '@/interfaces';
 
 const { config } = storeToRefs(useConfigStore());
-
-const toast = useToast();
 
 // Props
 const props = defineProps({
@@ -30,22 +27,9 @@ const props = defineProps({
 const displayShareDialog = ref(false);
 
 // Share link
-const shareLink = computed(() => {
-  return useExternalLink.value
-    ? comsUrl.value
-    : `${window.location.origin}/list/detail/object?objId=${props.obj.id}`;
+const bcBoxLink = computed(() => {
+  return `${window.location.origin}/list/detail/object?objId=${props.obj.id}`;
 });
-const copyLinkToClipboard = () => {
-  navigator.clipboard.writeText(shareLink.value);
-  toast.add({
-    severity: 'info',
-    summary: 'Share Link copied to clipboard',
-    life: 3000,
-  });
-};
-
-// Public external
-const useExternalLink = ref(false);
 const comsUrl = computed(() => {
   return `${config.value.coms?.apiPath}/object/${props.obj.id}`;
 });
@@ -74,7 +58,8 @@ const comsUrl = computed(() => {
     <h2>Share</h2>
     <ul class="mb-4">
       <li>
-        To share publicly, you must set the file to public in the object list
+        To share publicly or with a direct file link, you must set the file to
+        public in the object list
       </li>
       <li>
         To share to a BCBox user, you must first apply permissions to them
@@ -82,39 +67,27 @@ const comsUrl = computed(() => {
     </ul>
 
     <div v-if="props.obj.public">
-      <h4>Generate External (non-BCBox) public link</h4>
-      <InputSwitch
-        v-model="useExternalLink"
-        class="mb-4"
+      <TabView>
+        <TabPanel header="Share link">
+          <ShareLinkContent
+            :share-link="bcBoxLink"
+            label="Share Link"
+          />
+        </TabPanel>
+        <TabPanel header="Direct public file link">
+          <ShareLinkContent
+            :share-link="comsUrl"
+            label="Direct Link"
+          />
+        </TabPanel>
+      </TabView>
+    </div>
+    <div v-else>
+      <ShareLinkContent
+        :share-link="bcBoxLink"
+        label="Share Link"
       />
     </div>
-
-    <label for="shareLink">Share Link</label>
-    <div class="p-inputgroup mb-4">
-      <InputText
-        name="shareLink"
-        readonly
-        :value="shareLink"
-      />
-      <Button
-        class="p-button-outlined p-button-secondary"
-        @click="copyLinkToClipboard"
-      >
-        <font-awesome-icon
-          icon="fa fa-clipboard"
-          class="mr-2"
-        /> Copy Link
-      </Button>
-    </div>
-
-    <h2 class="mb-2">
-      QR Code
-    </h2>
-    <qrcode-vue
-      :value="shareLink"
-      :size="250"
-      level="L"
-    />
   </Dialog>
 
   <Button
