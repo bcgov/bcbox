@@ -129,10 +129,15 @@ export const useObjectStore = defineStore('objectStore', () => {
     await objectService.getObject(objectId, versionId);
   }
 
-  // async function readObject(objectId: string) {
-  //   const response = await objectService.readObject(objectId);
-  //   selectedObject.value = response.data;
-  // }
+  async function getObjectComsUrl(objectId: string) {
+    try {
+      const res = await objectService.getObjectUrl(objectId);
+      return res.data;
+    } catch (error) {
+      console.error(`Error obtaining object URL: ${error}`); // eslint-disable-line no-console
+      throw error;
+    }
+  }
 
   async function getObjectPermissions(objectId: string) {
     try {
@@ -245,6 +250,7 @@ export const useObjectStore = defineStore('objectStore', () => {
     deleteObjectList,
     getObjectInfo,
     getObject,
+    getObjectComsUrl,
     listObjects,
     getObjectPermissions,
     addObjectPermission,

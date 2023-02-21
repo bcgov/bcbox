@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { computed, ref, type PropType } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputSwitch from 'primevue/inputswitch';
 import InputText from 'primevue/inputtext';
+import ProgressSpinner from 'primevue/progressspinner';
+
 import QrcodeVue from 'qrcode.vue';
+import { useObjectStore } from '@/store';
 import { useToast } from 'primevue/usetoast';
 
 import type { COMSObject } from '@/interfaces';
+
+const objectStore = useObjectStore();
 
 const toast = useToast();
 
@@ -25,7 +31,9 @@ const displayShareDialog = ref(false);
 
 // Share link
 const shareLink = computed(() => {
-  return `${window.location.origin}/list/detail/object?objId=${props.obj.id}`;
+  return useExternalLink.value
+    ? comsUrl.value
+    : `${window.location.origin}/list/detail/object?objId=${props.obj.id}`;
 });
 const copyLinkToClipboard = () => {
   navigator.clipboard.writeText(shareLink.value);
@@ -37,9 +45,24 @@ const copyLinkToClipboard = () => {
 };
 
 // Public external
-const externalLink = ref('false');
-const getExternalLink = () => {
-  alert('get external');
+const useExternalLink = ref(false);
+const loadingExternal = ref(false);
+const comsUrl = ref('');
+const getExternalLink = async () => {
+  if (useExternalLink.value && !comsUrl.value) {
+    try {
+      loadingExternal.value = true;
+      comsUrl.value = await objectStore.getObjectComsUrl(props.obj.id);
+    } catch (error) {
+      toast.add({
+        severity: 'error',
+        summary: 'Error getting external file link',
+        life: 3000,
+      });
+    } finally {
+      loadingExternal.value = false;
+    }
+  }
 };
 </script>
 
@@ -48,7 +71,7 @@ const getExternalLink = () => {
     v-model:visible="displayShareDialog"
     header="Share"
     :modal="true"
-    :style="{ minWidth: '600px' }"
+    :style="{ minWidth: '700px' }"
   >
     <template #header>
       <div class="flex">
@@ -76,38 +99,44 @@ const getExternalLink = () => {
     <div v-if="props.obj.public">
       <h4>Generate External (non-BCBox) public link</h4>
       <InputSwitch
-        v-model="externalLink"
+        v-model="useExternalLink"
         class="mb-4"
-        @click="getExternalLink"
+        :loading="loadingExternal"
+        @change="getExternalLink"
       />
     </div>
 
-    <label for="shareLink">Share Link</label>
-    <div class="p-inputgroup mb-4">
-      <InputText
-        name="shareLink"
-        readonly
+    <div v-if="loadingExternal">
+      <ProgressSpinner />
+    </div>
+    <div v-else>
+      <label for="shareLink">Share Link</label>
+      <div class="p-inputgroup mb-4">
+        <InputText
+          name="shareLink"
+          readonly
+          :value="shareLink"
+        />
+        <Button
+          class="p-button-outlined p-button-secondary"
+          @click="copyLinkToClipboard"
+        >
+          <font-awesome-icon
+            icon="fa fa-clipboard"
+            class="mr-2"
+          /> Copy Link
+        </Button>
+      </div>
+
+      <h2 class="mb-2">
+        QR Code
+      </h2>
+      <qrcode-vue
         :value="shareLink"
+        :size="250"
+        level="L"
       />
-      <Button
-        class="p-button-outlined p-button-secondary"
-        @click="copyLinkToClipboard"
-      >
-        <font-awesome-icon
-          icon="fa fa-clipboard"
-          class="mr-2"
-        /> Copy Link
-      </Button>
     </div>
-
-    <h2 class="mb-2">
-      QR Code
-    </h2>
-    <qrcode-vue
-      :value="shareLink"
-      :size="200"
-      level="L"
-    />
   </Dialog>
 
   <Button
@@ -117,3 +146,12 @@ const getExternalLink = () => {
     <font-awesome-icon icon="fa-solid fa-share-alt" />
   </Button>
 </template>
+
+<style scoped lang="scss">
+h2 {
+  font-weight: bold;
+}
+ul {
+  padding-left: 22px;
+}
+</style>

@@ -72,6 +72,21 @@ export default {
   },
 
   /**
+   * @function getObjectUrl
+   * Get an object's s3 url (don't redirect to download)
+   * @param objectId The id for the object to get
+   * @param versionId An optional versionId
+   */
+  getObjectUrl(objectId: string, versionId?: string) {
+    return comsAxios().get(`${PATH}/${objectId}`, {
+      params: {
+        versionId: versionId,
+        download: 'url',
+      },
+    });
+  },
+
+  /**
    * @function listObjects
    * List and search for all objects
    * @returns {Promise} An axios response
