@@ -1,6 +1,6 @@
-import type { Permission } from '@/interfaces';
+import type { Audit } from '@/interfaces/common/Audit';
 
-export interface Bucket {
+export interface Bucket extends Audit {
   bucketId: string;
   bucketName: string;
   accessKeyId: string;
@@ -10,7 +10,4 @@ export interface Bucket {
   secretAccessKey: string;
   region: string;
   active: boolean;
-
-  // Optional array of current user permissions to the bucket
-  userPermissions?: Array<Permission>;
 }

@@ -4,8 +4,6 @@ import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import ProgressSpinner from 'primevue/progressspinner';
-import { useToast } from 'primevue/usetoast';
 
 import {
   DeleteObjectButton,
@@ -18,37 +16,13 @@ import {
   ShareObjectButton
 } from '@/components/object';
 
-import { useObjectStore, useUserStore } from '@/store';
-import { Permissions } from '@/utils/constants';
-
 import type { Ref } from 'vue';
-import type { COMSObject } from '@/interfaces';
-import { ButtonMode } from '@/interfaces/common/enums';
-
-const objectStore = useObjectStore();
-const toast = useToast();
 const route = useRoute();
 
-const { loading, objectList } = storeToRefs(objectStore);
-const { currentUser } = storeToRefs(useUserStore());
-
-const objectInfo: Ref<COMSObject> = ref({} as COMSObject);
 
 const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsObjectId: Ref<string> = ref('');
 const permissionsObjectName: Ref<string> = ref('');
-
-const getObjectInfo = async (objId: string) => {
-  try {
-    await objectStore.listObjects({ objId });
-    if(!objectInfo.value || !objectList.value[0]) {
-      throw Error(`Object ${objId} not found or you do not have access`);
-    }
-    objectInfo.value = objectList.value[0];
-  } catch (error: any) {
-    toast.add({ severity: 'error', summary: 'Unable to load Object.', detail: error, life: 5000 });
-  }
-};
 
 const showPermissions = async (objectId: string, objectName: string) => {
   permissionsVisible.value = true;
@@ -56,9 +30,6 @@ const showPermissions = async (objectId: string, objectName: string) => {
   permissionsObjectName.value = objectName;
 };
 
-onMounted(() => {
-  getObjectInfo(route.query.objId as string);
-});
 </script>
 
 <template>
@@ -99,19 +70,17 @@ onMounted(() => {
           :mode="ButtonMode.ICON"
           :ids="[objectInfo.id]"
         />
-      </div>
+      </div> -->
     </div>
 
-    <ProgressSpinner v-if="loading" />
-
-    <div
-      v-else
-      class="pl-2"
-    >
-      <ObjectProperties :object-info="objectInfo" />
-      <ObjectAccess :object-info="objectInfo" />
-      <ObjectMetadata :object-metadata="objectInfo.metadata" />
-      <ObjectTag :object-tag="objectInfo.tag" />
+    <div class="pl-2">
+      <ObjectProperties
+        :object-info-id="(route.query.objId as string)"
+        :full-view="true"
+      />
+      <ObjectAccess :object-info-id="(route.query.objId as string)" />
+      <ObjectMetadata :object-info-id="(route.query.objId as string)" />
+      <ObjectTag :object-info-id="(route.query.objId as string)" />
     </div>
   </div>
 

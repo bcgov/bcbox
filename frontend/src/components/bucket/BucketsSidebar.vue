@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 
-defineProps({
-  displayInfo: {
-    type: Object,
-    default: undefined
-  }
-});
+import type { Bucket } from '@/interfaces';
 
+// Props
+defineProps<{
+  displayInfo: Bucket
+}>();
+
+// Emits
 const emit = defineEmits(['close-info']);
 
+// Actions
 const closeInfo = async () => {
   emit('close-info');
 };
@@ -59,7 +61,7 @@ const closeInfo = async () => {
         Managed by:
       </div>
       <div class="col-9">
-        {{ displayInfo?.managedBy }}
+        {{ '' }}
       </div>
     </div>
   </div>

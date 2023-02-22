@@ -1,10 +1,6 @@
-export interface Permission {
-  bucketId: string;
-  createdAt: string;
-  createdBy: string;
-  id: string;
+import type { Audit } from '@/interfaces/common/Audit';
+
+export interface Permission extends Audit {
+  active: boolean;
   permCode: string;
-  updatedAt?: string;
-  updatedBy?: string;
-  userId: string;
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, Ref, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import Button from 'primevue/button';
@@ -8,8 +8,10 @@ import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 
 import BucketPermissionAddUser from '@/components/bucket/BucketPermissionAddUser.vue';
-import { useBucketStore } from '@/store';
+import { usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
+
+import type { Ref } from 'vue';
 
 // Props
 const props = defineProps<{
@@ -17,31 +19,31 @@ const props = defineProps<{
 }>();
 
 // Store
-const bucketStore = useBucketStore();
-const { loading, permissions } = storeToRefs(useBucketStore());
+const permissionStore = usePermissionStore();
+const { getMappedBucketToUserPermissions } = storeToRefs(permissionStore);
 
 // State
 const showSearchUsers: Ref<boolean> = ref(false);
 
-// Functions
+// Actions
 const cancelSearchUsers = () => {
   showSearchUsers.value = false;
 };
 
 const removeBucketUser = (userId: string) => {
-  bucketStore.removeBucketUser(props.bucketId, userId);
+  permissionStore.removeBucketUser(props.bucketId, userId);
 };
 
 const updateBucketPermission = (value: any, userId: string, permCode: string) => {
   if (value) {
-    bucketStore.addBucketPermission(props.bucketId, userId, permCode);
+    permissionStore.addBucketPermission(props.bucketId, userId, permCode);
   } else {
-    bucketStore.deleteBucketPermission(props.bucketId, userId, permCode);
+    permissionStore.deleteBucketPermission(props.bucketId, userId, permCode);
   }
 };
 
 onMounted(() => {
-  bucketStore.getBucketPermissions(props.bucketId);
+  permissionStore.mapBucketToUserPermissions(props.bucketId);
 });
 </script>
 
@@ -65,8 +67,7 @@ onMounted(() => {
     </div>
 
     <DataTable
-      :loading="loading"
-      :value="permissions"
+      :value="getMappedBucketToUserPermissions"
       data-key="bucketId"
       class="p-datatable-sm"
       striped-rows

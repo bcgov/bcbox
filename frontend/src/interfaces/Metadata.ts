@@ -1,12 +1,4 @@
 export interface Metadata {
-  createdAt: string;
-  createdBy: string;
-  deleteMarker: boolean;
-  id: string;
-  metadata: Array<{ id: string; key: string; value: string }>;
-  mimeType: string;
+  metadata: Array<{ key: string; value: string }>;
   objectId: string;
-  updatedAt: string;
-  updatedBy: string;
-  versionId: string;
 }

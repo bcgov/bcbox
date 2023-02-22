@@ -1,16 +1,13 @@
-export interface User {
+import type { Audit } from '@/interfaces/common/Audit';
+
+export interface User extends Audit {
   active: boolean;
-  createdAt: string;
-  createdBy: string; // guid
-  elevatedRights: boolean;
   email: string;
   firstName: string;
   fullName: string;
   identityId: string;
   idp: string;
   lastName: string;
-  updatedAt: string;
-  updatedBy: string;
-  userId: string; // guid
+  userId: string;
   username: string;
 }

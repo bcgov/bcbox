@@ -1,11 +1,7 @@
 import { comsAxios } from './interceptors';
 const PATH = '/object';
-const OBJECT_PERMISSION_PATH = 'permission/object';
 
 export default {
-  // ------------------------------------------------------------
-  // Object
-  // ------------------------------------------------------------
   /**
    * @function createObject
    * Post an object
@@ -118,28 +114,4 @@ export default {
     fd.append('file', object);
     return comsAxios().post(`${PATH}/${objectId}`, fd, config);
   },
-
-
-  /**
-   * @function addPermissions
-   * Adds the given permissions to the object
-   * @param {string} objectId ID of the object to add permissions to
-   * @param {Array<Object>} data Array containing permissions to add
-   * @returns {Promise} An axios response
-   */
-  addPermissions(objectId: string, data: Array<Object>) {
-    return comsAxios().put(`${OBJECT_PERMISSION_PATH}/${objectId}`, data);
-  },
-
-  /**
- * @function deletePermission
- * Deletes the given permission from the object
- * @param {string} objectId ID of the object to remove permissions from
- * @param {Object} params Object containing the permission to remove
- * @returns {Promise} An axios response
- */
-  deletePermission(objectId: string, params: Object) {
-    return comsAxios().delete(`${OBJECT_PERMISSION_PATH}/${objectId}`, { params: params });
-  },
-  // -----------------------------------------------------/object
 };

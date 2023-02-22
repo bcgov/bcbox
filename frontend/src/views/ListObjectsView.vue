@@ -1,32 +1,26 @@
 <script setup lang="ts">
-import { useToast } from 'primevue/usetoast';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-
+import { storeToRefs } from 'pinia';
 import ObjectList from '@/components/object/ObjectList.vue';
-import { RouteNames } from '@/utils/constants';
-
 import { useBucketStore } from '@/store';
+import { RouteNames } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { Bucket } from '@/interfaces';
 
+// Store
 const bucketStore = useBucketStore();
+const { getBuckets } = storeToRefs(bucketStore);
 const route = useRoute();
-const toast = useToast();
 
-const bucket: Ref< Bucket | undefined > = ref(undefined);
+// State
+const bucket: Ref<Bucket | undefined> = ref(undefined);
 
-const getBucketName = async () => {
-  try {
-    bucket.value = await bucketStore.getBucketInfo(route.query.bucketId as string);
-  } catch (error: any) {
-    toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: error, life: 5000 });
-  }
-};
-
-getBucketName();
-
+// Actions
+watch( getBuckets, () => {
+  bucket.value = bucketStore.getBucketById(route.query.bucketId as string);
+});
 </script>
 
 <template>

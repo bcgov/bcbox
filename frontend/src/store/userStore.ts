@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  async function searchUsers(params: Object) {
+  async function searchUsers(params: object) {
     try {
       loading.value = true;
       const response = (await userService.searchForUsers(params)).data;

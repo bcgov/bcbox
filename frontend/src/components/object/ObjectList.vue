@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
 import Button from 'primevue/button';
-import { useToast } from 'primevue/usetoast';
 
 import {
   DeleteObjectButton,
@@ -14,24 +13,30 @@ import {
   ObjectUpload
 } from '@/components/object';
 import { ButtonMode } from '@/interfaces/common/enums';
-import { useBucketStore, useObjectStore } from '@/store';
+import { useBucketStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
+import { Permissions } from '@/utils/constants';
 
-const bucketStore = useBucketStore();
+import type { Ref } from 'vue';
+
+// Store
+const permissionStore = usePermissionStore();
 //const navStore = useNavStore();
 const objectStore = useObjectStore();
 const { multiSelectedObjects } = storeToRefs(objectStore);
+const { currentUser } = storeToRefs(useUserStore());
 const route = useRoute();
-const toast = useToast();
 
-const displayInfo: any = ref(null);
+// State
+const objectInfoId: Ref<string | undefined> = ref(undefined);
 const displayUpload = ref(false);
 
-const showInfo = async (objId: any) => {
-  displayInfo.value = await objectStore.getObjectInfo(objId);
+// Actions
+const showObjectInfo = async (objectId: any) => {
+  objectInfoId.value = objectId;
 };
 
-const closeInfo = () => {
-  displayInfo.value = null;
+const closeObjectInfo = () => {
+  objectInfoId.value = undefined;
 };
 
 const showUpload = () => {
@@ -40,17 +45,6 @@ const showUpload = () => {
 
 const closeUpload = () => {
   displayUpload.value = false;
-};
-
-const listObjects = async () => {
-  try {
-    await Promise.all([
-      bucketStore.getBucketPermissionsForUser(route.query.bucketId?.toString() || ''),
-      objectStore.listObjects({ bucketId: route.query.bucketId })
-    ]);
-  } catch (error: any) {
-    toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
-  }
 };
 
 // const updateBreadcrumb = async () => {
@@ -67,11 +61,20 @@ const multiSelectedObjectIds = computed(() => {
   return multiSelectedObjects.value.map((o) => o.id);
 });
 
-// Get the user's list of objects
+
+const load = async () => {
+  await permissionStore.fetchBucketPermissions();
+  await useBucketStore().fetchBuckets();
+  await permissionStore.fetchObjectPermissions({
+    bucketId: route.query.bucketId,
+  });
+  await objectStore.fetchObjects({ bucketId: route.query.bucketId });
+};
+
 onMounted(() => {
   // Removed for now
   // updateBreadcrumb();
-  listObjects();
+  load();
 });
 </script>
 
@@ -96,7 +99,7 @@ onMounted(() => {
           class="mr-1"
         /> Upload
       </Button>
-      <DownloadObjectButton
+      <!-- <DownloadObjectButton
         :mode="ButtonMode.BUTTON"
         :ids="multiSelectedObjectIds"
       />
@@ -104,24 +107,24 @@ onMounted(() => {
         class="ml-2"
         :mode="ButtonMode.BUTTON"
         :ids="multiSelectedObjectIds"
-      />
+      /> -->
     </div>
 
     <div class="flex mt-4">
       <div class="flex-grow-1">
         <ObjectTable
-          :display-info="displayInfo"
-          @show-info="showInfo"
+          :object-info-id="objectInfoId"
+          @show-object-info="showObjectInfo"
         />
       </div>
       <div
-        v-if="displayInfo"
+        v-if="objectInfoId"
         class="flex-shrink-0 ml-3"
         style="max-width: 33%; min-width: 33%"
       >
         <ObjectSidebar
-          :display-info="displayInfo"
-          @close-info="closeInfo"
+          :object-info-id="objectInfoId"
+          @close-object-info="closeObjectInfo"
         />
       </div>
     </div>

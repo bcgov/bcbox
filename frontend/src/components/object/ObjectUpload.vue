@@ -10,12 +10,9 @@ import { useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
 
-defineProps({
-  closeCallback: {
-    type: Function,
-    required: true,
-  },
-});
+defineProps<{
+  closeCallback: Function,
+}>();
 
 const objectStore = useObjectStore();
 const route = useRoute();

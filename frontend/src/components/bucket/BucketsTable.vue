@@ -4,22 +4,27 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
-import { ref } from 'vue';
-
-import BucketPermission from './BucketPermission.vue';
-import { useBucketStore } from '@/store';
+import BucketPermission from '@/components/bucket/BucketPermission.vue';
+import { useAppStore, useBucketStore, usePermissionStore, useUserStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 
-import type { Bucket, Permission } from '@/interfaces';
+import type { Ref } from 'vue';
+import type { Bucket } from '@/interfaces';
 
-const { loading, buckets } = storeToRefs(useBucketStore());
+// Store
+const permissionStore = usePermissionStore();
+const { getLoading } = storeToRefs(useAppStore());
+const { getBuckets } = storeToRefs(useBucketStore());
+const { currentUser } = storeToRefs(useUserStore());
 
-const permissionsVisible = ref(false);
-const permissionsBucketId = ref('');
-const permissionBucketName = ref('');
+// State
+const permissionsVisible: Ref<boolean> = ref(false);
+const permissionsBucketId: Ref<string> = ref('');
+const permissionBucketName: Ref<string> = ref('');
 
 const emit = defineEmits(['show-bucket-config', 'show-info']);
 
+// Functions
 const showInfo = async (id: number) => {
   emit('show-info', id);
 };
@@ -35,15 +40,15 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
 };
 
 const displayPermissionsIcon = (bucket: Bucket) => {
-  return bucket.userPermissions?.find( (x: Permission) => x.permCode === Permissions.MANAGE);
+  return permissionStore.getBucketActionAllowed(bucket.bucketId, currentUser.value?.userId, Permissions.MANAGE );
 };
 </script>
 
 <template>
   <div>
     <DataTable
-      :loading="loading"
-      :value="buckets"
+      :loading="getLoading"
+      :value="getBuckets"
       data-key="bucketId"
       class="p-datatable-sm"
       striped-rows
@@ -58,7 +63,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
     >
       <template #empty>
         <div
-          v-if="!loading"
+          v-if="!getLoading"
           class="flex justify-content-center"
         >
           <h3>There are no buckets associated with your account.</h3>

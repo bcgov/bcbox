@@ -8,17 +8,14 @@ import {
   ObjectTag
 } from '@/components/object';
 
-defineProps({
-  displayInfo: {
-    type: Object,
-    default: undefined
-  }
-});
+defineProps<{
+  objectInfoId: string;
+}>();
 
-const emit = defineEmits(['close-info']);
+const emit = defineEmits(['close-object-info']);
 
-const closeInfo = async () => {
-  emit('close-info');
+const closeObjectInfo = async () => {
+  emit('close-object-info');
 };
 </script>
 
@@ -34,7 +31,7 @@ const closeInfo = async () => {
     <div class="col-fixed align-items-center">
       <Button
         class="p-button-lg p-button-rounded p-button-text black"
-        @click="closeInfo"
+        @click="closeObjectInfo"
       >
         <font-awesome-icon icon="fa-solid fa-xmark" />
       </Button>
@@ -42,11 +39,11 @@ const closeInfo = async () => {
   </div>
   <div class="pl-2">
     <ObjectProperties
-      :object-info="displayInfo"
+      :object-info-id="objectInfoId"
       :full-view="false"
     />
-    <ObjectMetadata :object-metadata="displayInfo?.metadata" />
-    <ObjectTag :object-tag="displayInfo?.tag" />
+    <ObjectMetadata :object-info-id="objectInfoId" />
+    <ObjectTag :object-info-id="objectInfoId" />
     <div class="col-9">
       <router-link
         v-slot="{ navigate }"

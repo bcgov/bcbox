@@ -1,55 +1,54 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useBucketStore, useUserStore } from '@/store';
+import { useBucketStore, useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
 import GridRow from '@/components/form/GridRow.vue';
 import { RouteNames } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
-import type { Bucket } from '@/interfaces';
+import type { Bucket, COMSObject, Metadata } from '@/interfaces';
 
 const bucketStore = useBucketStore();
+const metadataStore = useMetadataStore();
+const objectStore = useObjectStore();
+const permissionStore = usePermissionStore();
 const userStore = useUserStore();
 
 const { userSearch } = storeToRefs(userStore);
 
-const props = defineProps({
-  objectInfo: {
-    type: Object,
-    default: undefined
-  },
-  fullView: {
-    type: Boolean,
-    default: true
-  }
-});
+const props = defineProps<{
+  objectInfoId: string;
+  fullView: boolean;
+}>();
 
-const bucket: Ref<Bucket | undefined > = ref();
-const createdBy: Ref<string | undefined> = ref();
-const updatedBy: Ref<string | undefined> = ref();
+const bucket: Ref<Bucket | undefined> = ref(undefined);
+const object: Ref<COMSObject | undefined> = ref(undefined);
+const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
+const createdBy: Ref<string | undefined> = ref(undefined);
+const updatedBy: Ref<string | undefined> = ref(undefined);
 
-async function getBucketData() {
-  // Get some associated bucket information
-  bucket.value = await bucketStore.getBucketInfo(props.objectInfo?.bucketId);
-}
+async function load() {
+  await permissionStore.fetchObjectPermissions({objId: props.objectInfoId});
+  await objectStore.fetchObjects();
+  await metadataStore.fetchMetadata({objId: props.objectInfoId});
 
-async function getUserData() {
-  await userStore.searchUsers({userId:[props.objectInfo?.createdBy, props.objectInfo?.updatedBy]});
-  createdBy.value = userSearch.value.find( x => x.userId === props.objectInfo?.createdBy )?.fullName;
-  updatedBy.value = userSearch.value.find( x => x.userId === props.objectInfo?.updatedBy )?.fullName;
+  object.value = objectStore.getObjectById(props.objectInfoId);
+  objectMetadata.value = metadataStore.getMetadataByObjectId(object.value?.id as string);
+  bucket.value = bucketStore.getBucketById(object.value?.bucketId as string);
+
+  await userStore.searchUsers({userId:[object.value?.createdBy, object.value?.updatedBy]});
+  createdBy.value = userSearch.value.find( x => x.userId === object.value?.createdBy )?.fullName;
+  updatedBy.value = userSearch.value.find( x => x.userId === object.value?.updatedBy )?.fullName;
 }
 
 onMounted(() => {
-  getBucketData();
-  getUserData();
+  load();
 });
 
 watch( props, () => {
-  getBucketData();
-  getUserData();
+  load();
 });
-
 </script>
 
 <template>
@@ -62,7 +61,7 @@ watch( props, () => {
 
     <GridRow
       label="Name"
-      :value="objectInfo?.name"
+      :value="objectMetadata?.metadata.find(x => x.key === 'name')?.value"
     />
     <GridRow
       v-if="fullView"
@@ -73,11 +72,11 @@ watch( props, () => {
     <GridRow
       v-if="fullView"
       label="Bucket ID"
-      :value="objectInfo?.bucketId"
+      :value="object?.bucketId"
     />
     <GridRow
       label="Object ID"
-      :value="objectInfo?.id"
+      :value="object?.id"
     />
     <GridRow
       v-if="fullView"
@@ -87,7 +86,7 @@ watch( props, () => {
     <GridRow
       v-if="fullView"
       label="Creation date"
-      :value="formatDateLong(objectInfo?.createdAt)"
+      :value="formatDateLong(object?.createdAt as string)"
     />
     <GridRow
       label="Updated by"
@@ -95,7 +94,7 @@ watch( props, () => {
     />
     <GridRow
       label="Updated date"
-      :value="formatDateLong(objectInfo?.updatedAt)"
+      :value="formatDateLong(object?.updatedAt as string)"
     />
   </div>
 </template>

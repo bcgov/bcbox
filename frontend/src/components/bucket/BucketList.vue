@@ -8,23 +8,28 @@ import { useToaster } from '@/composables/useToaster';
 import { useBucketStore } from '@/store';
 import { BucketConfig } from '@/utils/constants';
 
-import type { Bucket } from '@/interfaces';
 import type { Ref } from 'vue';
+import type { Bucket } from '@/interfaces';
 
+// Store
 const bucketStore = useBucketStore();
+const permissionStore = usePermissionStore();
+const userStore = useUserStore();
 
-const displayInfo: any = ref(null);
+// State
+const displayInfo: Ref<Bucket | undefined> = ref(undefined);
 
 const displayBucketConfig: Ref<boolean> = ref(false);
 const bucketConfigTitle: Ref<string> = ref(BucketConfig.TITLE_NEW_BUCKET);
 const bucketToUpdate: Ref<Bucket | undefined> = ref(undefined);
 
+// Actions
 const showInfo = async (bucketId: any) => {
-  displayInfo.value = await bucketStore.getBucketInfo(bucketId);
+  displayInfo.value = bucketStore.getBucketById(bucketId);
 };
 
 const closeInfo = () => {
-  displayInfo.value = null;
+  displayInfo.value = undefined;
 };
 
 const showBucketConfig = (bucket?: Bucket) => {
@@ -37,8 +42,13 @@ const closeBucketConfig = () => {
   displayBucketConfig.value = false;
 };
 
+const load = async () => {
+  await permissionStore.fetchBucketPermissions({ objectPerms: true });
+  await bucketStore.fetchBuckets();
+};
+
 onMounted(() => {
-  useToaster(bucketStore.load, { summary: 'Unable to load buckets.' });
+  load();
 });
 </script>
 

@@ -7,8 +7,6 @@ import Dialog from 'primevue/dialog';
 import { ButtonMode } from '@/interfaces/common/enums';
 import { useObjectStore } from '@/store';
 
-const objectStore = useObjectStore();
-
 // Props
 const props = defineProps({
   mode: {
@@ -21,8 +19,13 @@ const props = defineProps({
   },
 });
 
-// Download the object(s)
+// Store
+const objectStore = useObjectStore();
+
+// State
 const displayNoFileDlg = ref(false);
+
+// Actions
 const download = () => {
   if (props.ids.length) {
     // For now we are looping the supplied IDs (if multiple selected) until there is a batching feature

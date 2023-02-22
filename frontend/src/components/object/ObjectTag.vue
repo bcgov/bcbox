@@ -1,10 +1,31 @@
 <script setup lang="ts">
+import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button';
+import { useTagStore } from '@/store';
+
+import type { Ref } from 'vue';
 import type { Tagging } from '@/interfaces';
 
-defineProps<{
-  objectTag: Tagging;
+const tagStore = useTagStore();
+
+const props = defineProps<{
+  objectInfoId: string;
 }>();
+
+const objectTagging: Ref<Tagging | undefined> = ref(undefined);
+
+async function load() {
+  await tagStore.fetchTagging({objId: props.objectInfoId});
+  objectTagging.value = tagStore.getTaggingByObjectId(props.objectInfoId);
+}
+
+onMounted(() => {
+  load();
+});
+
+watch( props, () => {
+  load();
+});
 </script>
 
 <template>
@@ -18,7 +39,7 @@ defineProps<{
       </h2>
     </div>
     <div
-      v-for="tag in objectTag?.tagset"
+      v-for="tag in objectTagging?.tagset"
       :key="tag.key + tag.value"
     >
       <div class="col-3">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useRoute } from 'vue-router';
 
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -15,29 +16,33 @@ import {
   ShareObjectButton
 } from '@/components/object';
 import { ButtonMode } from '@/interfaces/common/enums';
-import { useObjectStore, useUserStore } from '@/store';
+import { useAppStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
 
-defineProps({
-  displayInfo: {
-    type: Object,
-    default: undefined,
-  },
-});
+// Props
+defineProps<{
+  objectInfoId?: string;
+}>();
 
+// Emits
+const emit = defineEmits(['show-object-info']);
+
+// Store
 const objectStore = useObjectStore();
-const { loading, multiSelectedObjects, objectList } = storeToRefs(objectStore);
+const permissionStore = usePermissionStore();
+const route = useRoute();
+const { getObjects } = storeToRefs(objectStore);
 const { currentUser } = storeToRefs(useUserStore());
 
+// State
 const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
 const permissionsObjectName = ref('');
 
-const emit = defineEmits(['show-info']);
-
+// Actions
 const showInfo = async (id: string) => {
-  emit('show-info', id);
+  emit('show-object-info', id);
 };
 
 const showPermissions = async (objectId: string, objectName: string) => {
@@ -55,8 +60,7 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
   <div>
     <DataTable
       v-model:selection="multiSelectedObjects"
-      :loading="loading"
-      :value="objectList"
+      :value="getObjects"
       data-key="id"
       class="p-datatable-sm"
       striped-rows
@@ -71,7 +75,7 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
     >
       <template #empty>
         <div
-          v-if="!loading"
+          v-if="!useAppStore().getLoading"
           class="flex justify-content-center"
         >
           <h3>
@@ -124,7 +128,7 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
         field="updatedAt"
         header="Updated date"
         :sortable="true"
-        :hidden="displayInfo ? true : false"
+        :hidden="objectInfoId ? true : false"
       >
         <template #body="{ data }">
           {{ formatDateLong(data.updatedAt) }}
@@ -154,12 +158,12 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
             :obj="data"
           />
           <DownloadObjectButton
-            v-if="objectStore.isActionAllowed(data.permissions, Permissions.READ, currentUser?.userId)"
+            v-if="permissionStore.getObjectActionAllowed(data.id, route.query.bucketId, currentUser?.userId, Permissions.READ)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />
           <Button
-            v-if="objectStore.isActionAllowed(data.permissions, Permissions.MANAGE, currentUser?.userId)"
+            v-if="permissionStore.getObjectActionAllowed(data.id, route.query.bucketId, currentUser?.userId, Permissions.MANAGE)"
             class="p-button-lg p-button-text"
             @click="showPermissions(data.id, data.name)"
           >
@@ -172,7 +176,7 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
           <DeleteObjectButton
-            v-if="objectStore.isActionAllowed(data.permissions, Permissions.DELETE, currentUser?.userId)"
+            v-if="permissionStore.getObjectActionAllowed(data.id, route.query.bucketId, currentUser?.userId, Permissions.DELETE)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />

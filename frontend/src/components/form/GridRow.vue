@@ -1,18 +1,9 @@
 <script setup lang="ts">
-defineProps({
-  label: {
-    type: String,
-    default: undefined
-  },
-  value: {
-    type: String,
-    default: undefined
-  },
-  link: {
-    type: Object,
-    default: undefined
-  }
-});
+defineProps<{
+  label?: string;
+  value?: string;
+  link?: object;
+}>();
 </script>
 
 <template>

@@ -10,7 +10,7 @@ export default {
    * @param {Object} params Optional object containing the data to filter against
    * @returns {Promise} An axios response
    */
-  searchForBuckets(params?: Object) {
+  searchForBuckets(params?: object) {
     return comsAxios().get(`${BUCKET_PATH}`, { params: params });
   },
 
