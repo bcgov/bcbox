@@ -235,8 +235,7 @@ export const useObjectStore = defineStore('objectStore', () => {
       loading.value = true;
       await objectService.togglePublic(objectId, isPublic);
     } catch (error) {
-      console.error(`Toggle public: ${error}`); // eslint-disable-line no-console
-      throw error;
+      toast.add({ severity: 'error', summary: 'Error updating public', detail: error, life: 3000 });
     } finally {
       loading.value = false;
     }
