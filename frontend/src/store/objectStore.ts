@@ -230,6 +230,18 @@ export const useObjectStore = defineStore('objectStore', () => {
     );
   }
 
+  async function togglePublic(objectId: string, isPublic: boolean) {
+    try {
+      loading.value = true;
+      await objectService.togglePublic(objectId, isPublic);
+    } catch (error) {
+      console.error(`Toggle public: ${error}`); // eslint-disable-line no-console
+      throw error;
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     loading,
     multiSelectedObjects,
@@ -245,6 +257,7 @@ export const useObjectStore = defineStore('objectStore', () => {
     addObjectPermission,
     deleteObjectPermission,
     removeObjectUser,
-    isActionAllowed
+    isActionAllowed,
+    togglePublic
   };
 });

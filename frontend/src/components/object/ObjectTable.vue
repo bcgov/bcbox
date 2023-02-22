@@ -6,6 +6,7 @@ import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
+import InputSwitch from 'primevue/inputswitch';
 
 import {
   DeleteObjectButton,
@@ -43,6 +44,10 @@ const showPermissions = async (objectId: string, objectName: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
   permissionsObjectName.value = objectName;
+};
+
+const togglePublic = async (objectId: string, isPublic: boolean) => {
+  await objectStore.togglePublic(objectId, isPublic);
 };
 </script>
 
@@ -123,6 +128,18 @@ const showPermissions = async (objectId: string, objectName: string) => {
       >
         <template #body="{ data }">
           {{ formatDateLong(data.updatedAt) }}
+        </template>
+      </Column>
+      <Column
+        field="publicSharing"
+        header="Public"
+      >
+        <template #body="{ data }">
+          <InputSwitch
+            v-model="data.public"
+            :disabled="!objectStore.isActionAllowed(data.permissions, Permissions.MANAGE, currentUser?.userId)"
+            @change="togglePublic(data.id, data.public)"
+          />
         </template>
       </Column>
       <Column
