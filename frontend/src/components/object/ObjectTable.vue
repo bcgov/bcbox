@@ -10,7 +10,8 @@ import Dialog from 'primevue/dialog';
 import {
   DeleteObjectButton,
   DownloadObjectButton,
-  ObjectPermission
+  ObjectPermission,
+  ShareObjectButton
 } from '@/components/object';
 import { ButtonMode } from '@/interfaces/common/enums';
 import { useObjectStore, useUserStore } from '@/store';
@@ -126,11 +127,15 @@ const showPermissions = async (objectId: string, objectName: string) => {
       </Column>
       <Column
         header="Actions"
-        header-style="width: 200px"
+        header-style="width: 220px"
         header-class="header-right"
         body-class="content-right action-buttons"
       >
         <template #body="{ data }">
+          <ShareObjectButton
+            v-if="objectStore.isActionAllowed(data.permissions, Permissions.MANAGE, currentUser?.userId)"
+            :obj="data"
+          />
           <DownloadObjectButton
             v-if="objectStore.isActionAllowed(data.permissions, Permissions.READ, currentUser?.userId)"
             :mode="ButtonMode.ICON"

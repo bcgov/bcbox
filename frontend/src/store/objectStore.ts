@@ -129,11 +129,6 @@ export const useObjectStore = defineStore('objectStore', () => {
     await objectService.getObject(objectId, versionId);
   }
 
-  // async function readObject(objectId: string) {
-  //   const response = await objectService.readObject(objectId);
-  //   selectedObject.value = response.data;
-  // }
-
   async function getObjectPermissions(objectId: string) {
     try {
       loading.value = true;
