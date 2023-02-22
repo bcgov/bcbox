@@ -68,7 +68,7 @@ const comsUrl = computed(() => {
 
     <div v-if="props.obj.public">
       <TabView>
-        <TabPanel header="Share link">
+        <TabPanel header="BCBox share link">
           <ShareLinkContent
             :share-link="bcBoxLink"
             label="Share Link"
