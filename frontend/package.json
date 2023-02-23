@@ -9,6 +9,7 @@
     "build": "vite build",
     "build:dts": "vue-tsc --declaration --emitDeclarationOnly",
     "clean": "rimraf coverage dist",
+    "debug": "vite --mode debug",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --no-fix --ignore-path .gitignore",
     "lint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "preview": "vite preview",
