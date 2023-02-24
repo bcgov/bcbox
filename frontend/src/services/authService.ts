@@ -4,13 +4,17 @@ import ConfigService from './configService';
 
 import type { User, UserManagerSettings } from 'oidc-client-ts';
 
+const isDebugMode: boolean = import.meta.env.MODE.toUpperCase() === 'DEBUG';
+const storageKey = 'entrypoint';
+const storageType = window.sessionStorage;
+
 /**
  * @class AuthService
  * A singleton wrapper for managing user authentication
  */
 export default class AuthService {
   private static _instance: AuthService;
-  private _userManager: UserManager;
+  private static _userManager: UserManager;
 
   /**
    * @constructor
@@ -18,11 +22,11 @@ export default class AuthService {
   constructor() {
     if (!AuthService._instance) {
       AuthService._instance = this;
-    }
+      AuthService._userManager = new UserManager(this.getOidcSettings());
 
-    Log.setLogger(console);
-    Log.setLevel(Log.INFO);
-    this._userManager = new UserManager(this.getOidcSettings());
+      Log.setLogger(console);
+      Log.setLevel(isDebugMode ? Log.DEBUG : Log.INFO);
+    }
 
     return AuthService._instance;
   }
@@ -44,8 +48,9 @@ export default class AuthService {
       automaticSilentRenew: true,
       authority: config.oidc.authority,
       client_id: config.oidc.clientId,
-      redirect_uri: `${window.location.protocol}//${window.location.host}`,
+      redirect_uri: `${window.location.protocol}//${window.location.host}/oidc/callback`,
       loadUserInfo: true,
+      post_logout_redirect_uri: `${window.location.protocol}//${window.location.host}/oidc/logout`,
       userStore: new WebStorageStateStore({ store: window.localStorage }),
     };
   }
@@ -68,7 +73,16 @@ export default class AuthService {
    * @returns {Promise<User | null>} Returns a user object if logged in, null otherwise
    */
   public async getUser(): Promise<User | null> {
-    return this._userManager.getUser();
+    return AuthService._userManager.getUser();
+  }
+
+  /**
+   * @function getUserManager
+   * Returns the OIDC user manager
+   * @returns {Promise<User | null>} Returns a user object if logged in, null otherwise
+   */
+  public getUserManager(): UserManager {
+    return AuthService._userManager;
   }
 
   /**
@@ -77,23 +91,24 @@ export default class AuthService {
    * @returns {Promise<void>}
    */
   public async login(): Promise<void> {
-    return this._userManager.signinRedirect({
-      redirectMethod: 'assign',
-      redirect_uri: window.location.href
-    });
+    storageType.setItem(storageKey, window.location.href);
+    return AuthService._userManager.signinRedirect();
   }
 
   /**
    * @function loginCallback
    * Handles the OIDC callback user login flow
-   * @returns {Promise<User>} Returns the user object
+   * @returns {Promise<void>} Resolves upon completion
    */
-  public async loginCallback(): Promise<User> {
-    return this._userManager.signinRedirectCallback().then(authedUser => {
-      return this._userManager.storeUser(authedUser).then(() => {
-        return authedUser;
-      });
-    });
+  public async loginCallback(): Promise<void> {
+    // Register and store user to local storage
+    await AuthService._userManager.signinRedirectCallback();
+    // await AuthService._userManager.storeUser(user); // signinRedirectCallback appears to do this already
+
+    // Return user back to original login entrypoint if specified
+    const entrypoint = storageType.getItem(storageKey);
+    if (entrypoint) storageType.removeItem(storageKey);
+    window.location.replace(entrypoint || `${window.location.protocol}//${window.location.host}`);
   }
 
   /**
@@ -102,6 +117,6 @@ export default class AuthService {
    * @returns {Promise<void>}
    */
   public async logout(): Promise<void> {
-    return this._userManager.signoutRedirect();
+    return AuthService._userManager.signoutRedirect();
   }
 }
