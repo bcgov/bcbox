@@ -8,19 +8,19 @@ import { useAuthStore, useConfigStore } from '../store';
  * @returns {object} An axios instance
  */
 export function comsAxios(timeout = 10000) {
-  const configStore = useConfigStore();
+  const { getConfig } = useConfigStore();
   const axiosOptions = {
     timeout: timeout,
-    baseURL: configStore.config.coms.apiPath,
+    baseURL: getConfig.coms.apiPath,
   };
 
   const instance = axios.create(axiosOptions);
 
   instance.interceptors.request.use(
     (cfg: any) => {
-      const authStore = useAuthStore();
-      if (authStore.ready && authStore.getKeycloak.authenticated) {
-        cfg.headers.Authorization = `Bearer ${authStore.getKeycloak.token}`;
+      const { getIsAuthenticated, getAccessToken } = useAuthStore();
+      if (getIsAuthenticated) {
+        cfg.headers.Authorization = `Bearer ${getAccessToken}`;
       }
       return Promise.resolve(cfg);
     },
