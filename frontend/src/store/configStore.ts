@@ -1,15 +1,14 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref, unref } from 'vue';
 
 import { ConfigService } from '@/services';
-import { generateGetters, isDebugMode } from './utils';
+import { isDebugMode } from './utils';
 
 import type { Ref } from 'vue';
-import type { IGetterIndex, IStateIndex } from '@/types';
 
 export type ConfigStateStore = {
   config: Ref<any | null>
-} & IStateIndex
+}
 
 export const useConfigStore = defineStore('config', () => {
   const configService = new ConfigService();
@@ -20,7 +19,9 @@ export const useConfigStore = defineStore('config', () => {
   };
 
   // Getters
-  const getters: IGetterIndex = generateGetters(state);
+  const getters = {
+    getConfig: computed(() => unref(state.config))
+  };
 
   // Actions
   async function init(): Promise<void> {

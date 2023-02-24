@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref, unref } from 'vue';
 
 import { AuthService, ConfigService } from '@/services';
-import { generateGetters, isDebugMode } from './utils';
+import { isDebugMode } from './utils';
 
 import type { IdTokenClaims, User } from 'oidc-client-ts';
 import type { Ref } from 'vue';
-import type { IGetterIndex, IStateIndex } from '@/types';
-import type { IdentityProvider } from '@/interfaces/IdentityProvider';
+import type { IdentityProvider } from '@/interfaces';
 
 export type AuthStateStore = {
   accessToken: Ref<string | undefined>,
@@ -18,7 +17,7 @@ export type AuthStateStore = {
   refreshToken: Ref<string | undefined>,
   scope: Ref<string | undefined>,
   user: Ref<User | null>
-} & IStateIndex
+}
 
 export const useAuthStore = defineStore('auth', () => {
   const authService = new AuthService();
@@ -38,14 +37,22 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   // Getters
-  const getters: IGetterIndex = generateGetters(state);
-
-  function getIdentityId(): string {
-    return configService.getConfig().idpList
-      .map((provider: IdentityProvider) => state.profile.value ?
-        state.profile.value[provider.identityKey] : undefined)
-      .filter((item?: string) => item)[0];
-  }
+  const getters = {
+    getAccessToken: computed(() => unref(state.accessToken)),
+    getExpiresAt: computed(() => unref(state.expiresAt)),
+    getIdentityId: computed(() => {
+      return configService.getConfig().idpList
+        .map((provider: IdentityProvider) => state.profile.value ?
+          state.profile.value[provider.identityKey] : undefined)
+        .filter((item?: string) => item)[0];
+    }),
+    getIdToken: computed(() => unref(state.idToken)),
+    getIsAuthenticated: computed(() => unref(state.isAuthenticated)),
+    getProfile: computed(() => unref(state.profile)),
+    getRefreshToken: computed(() => unref(state.refreshToken)),
+    getScope: computed(() => unref(state.scope)),
+    getUser: computed(() => unref(state.user))
+  };
 
   // Actions
   function _registerEvents() {
@@ -98,7 +105,6 @@ export const useAuthStore = defineStore('auth', () => {
     ...getters,
     _registerEvents,
     _updateState,
-    getIdentityId,
     init,
     login,
     loginCallback,
