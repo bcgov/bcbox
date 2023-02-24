@@ -230,6 +230,17 @@ export const useObjectStore = defineStore('objectStore', () => {
     );
   }
 
+  async function togglePublic(objectId: string, isPublic: boolean) {
+    try {
+      loading.value = true;
+      await objectService.togglePublic(objectId, isPublic);
+    } catch (error) {
+      toast.add({ severity: 'error', summary: 'Error updating public', detail: error, life: 3000 });
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     loading,
     multiSelectedObjects,
@@ -245,6 +256,7 @@ export const useObjectStore = defineStore('objectStore', () => {
     addObjectPermission,
     deleteObjectPermission,
     removeObjectUser,
-    isActionAllowed
+    isActionAllowed,
+    togglePublic
   };
 });
