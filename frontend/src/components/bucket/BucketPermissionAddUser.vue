@@ -7,12 +7,12 @@ import { useBucketStore, useConfigStore } from '@/store';
 import type { User } from '@/interfaces';
 
 // Store
-const { config } = storeToRefs(useConfigStore());
+const { getConfig } = useConfigStore();
 const { permissions } = storeToRefs(useBucketStore());
 
 // Functions
 const onAdd = (selectedUser: User) => {
-  const idp = config.value.idpList.find((idp: any) => idp.idp === selectedUser?.idp);
+  const idp = getConfig.value.idpList.find((idp: any) => idp.idp === selectedUser?.idp);
 
   permissions.value.push({
     userId: selectedUser.userId,

@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
+
 import { useAuthStore } from '@/store/authStore';
 
-const { login, logout } = useAuthStore();
-const { ready, getKeycloak } = storeToRefs(useAuthStore());
+const { getIsAuthenticated, login, logout } = useAuthStore();
 </script>
 
 <template>
   <Button
-    v-if="!getKeycloak.token"
+    v-if="!getIsAuthenticated"
     primary
-    :loading="!ready"
     @click="login()"
   >
     Log in
