@@ -5,7 +5,7 @@ import { userService } from '@/services';
 import { useAuthStore, useConfigStore } from '@/store';
 
 import type { Ref } from 'vue';
-import type { IdentityProvider, User } from '@/interfaces';
+import type { IdentityProvider, User } from '@/types';
 
 export const useUserStore = defineStore('user', () => {
   const { getIsAuthenticated, getIdentityId } = useAuthStore();

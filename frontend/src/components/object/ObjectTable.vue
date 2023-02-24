@@ -8,14 +8,14 @@ import {
   ObjectPermission,
   ShareObjectButton
 } from '@/components/object';
-import { ButtonMode } from '@/interfaces/common/enums';
 import { Button, Column, DataTable, Dialog } from '@/lib/primevue';
 import { useAppStore, useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
+import { ButtonMode } from '@/utils/enums';
 import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
-import type { COMSObject } from '@/interfaces';
+import type { COMSObject } from '@/types';
 
 // Props
 defineProps<{

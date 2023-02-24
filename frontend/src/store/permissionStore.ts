@@ -10,16 +10,13 @@ import type { Ref } from 'vue';
 
 import type {
   BucketPermission,
+  BucketPermissionsOptions,
   COMSObjectPermission,
+  COMSObjectPermissionsOptions,
   IdentityProvider,
   Permission,
   User,
-  UserPermissions
-} from '@/interfaces';
-
-import type {
-  BucketPermissionsOptions,
-  ObjectPermissionsOptions
+  UserPermissions,
 } from '@/types';
 
 export const usePermissionStore = defineStore('permission', () => {
@@ -147,7 +144,7 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  async function fetchObjectPermissions(params: ObjectPermissionsOptions = {}) {
+  async function fetchObjectPermissions(params: COMSObjectPermissionsOptions = {}) {
     try {
       appStore.beginLoading();
       const response = (await permissionService.objectSearchPermissions(params)).data;

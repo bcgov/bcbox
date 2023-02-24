@@ -5,7 +5,7 @@ import { usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { COMSObjectPermission } from '@/interfaces';
+import type { COMSObjectPermission } from '@/types';
 
 // Props
 const props = defineProps<{

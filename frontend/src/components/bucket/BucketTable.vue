@@ -7,7 +7,7 @@ import { useAppStore, useBucketStore, usePermissionStore, useUserStore } from '@
 import { Permissions, RouteNames } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { Bucket } from '@/interfaces';
+import type { Bucket } from '@/types';
 
 // Store
 const permissionStore = usePermissionStore();

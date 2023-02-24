@@ -7,7 +7,7 @@ import { useBucketStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { Bucket } from '@/interfaces';
+import type { Bucket } from '@/types';
 
 // Store
 const bucketStore = useBucketStore();

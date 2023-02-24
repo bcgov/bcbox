@@ -5,8 +5,7 @@ import { objectService } from '@/services';
 import { useAppStore, usePermissionStore, useUserStore } from '@/store';
 
 import type { Ref } from 'vue';
-import type { COMSObject } from '@/interfaces';
-import type { ObjectPermissionsOptions } from '@/types';
+import type { COMSObject, COMSObjectPermissionsOptions } from '@/types';
 
 export const useObjectStore = defineStore('objectStore', () => {
   const appStore = useAppStore();
@@ -62,7 +61,7 @@ export const useObjectStore = defineStore('objectStore', () => {
     await objectService.getObject(objectId, versionId);
   }
 
-  async function fetchObjects(params: ObjectPermissionsOptions = {}) {
+  async function fetchObjects(params: COMSObjectPermissionsOptions = {}) {
     try {
       appStore.beginLoading();
 

@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 import SearchUsers from '@/components/form/SearchUsers.vue';
 import { useConfigStore, usePermissionStore } from '@/store';
 
-import type { User } from '@/interfaces';
+import type { User } from '@/types';
 
 // Store
 const { getConfig } = storeToRefs(useConfigStore());

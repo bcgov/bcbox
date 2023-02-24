@@ -1,4 +1,4 @@
-export type ObjectPermissionsOptions = {
+export type COMSObjectPermissionsOptions = {
   bucketId?: string;
   objId?: string;
   userId?: string;

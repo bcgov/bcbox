@@ -4,7 +4,7 @@ import { Column, DataTable } from '@/lib/primevue';
 import { useMetadataStore } from '@/store';
 
 import type { Ref } from 'vue';
-import type { Metadata } from '@/interfaces';
+import type { Metadata } from '@/types';
 
 // Props
 const props = defineProps<{

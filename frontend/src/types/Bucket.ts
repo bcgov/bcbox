@@ -1,6 +1,6 @@
-import type { Audit } from '@/interfaces/common/Audit';
+import type { IAudit } from '@/interfaces';
 
-export interface Bucket extends Audit {
+export type Bucket = {
   bucketId: string;
   bucketName: string;
   accessKeyId: string;
@@ -10,4 +10,4 @@ export interface Bucket extends Audit {
   secretAccessKey: string;
   region: string;
   active: boolean;
-}
+} & IAudit;

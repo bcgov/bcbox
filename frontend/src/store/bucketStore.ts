@@ -1,12 +1,10 @@
-import { computed, ref } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
-
+import { computed, ref } from 'vue';
 import { bucketService } from '@/services';
 import { useAppStore, usePermissionStore, useUserStore } from '@/store';
 
 import type { Ref } from 'vue';
-import type { Bucket } from '@/interfaces';
-import type { BucketPermissionsOptions } from '@/types';
+import type { Bucket, BucketPermissionsOptions } from '@/types';
 
 export const useBucketStore = defineStore('bucket', () => {
   // Store

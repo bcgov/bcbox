@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import CopyToClipboard from '@/components/form/CopyToClipboard.vue';
-import { ButtonMode } from '@/interfaces/common/enums';
 import { Button, ProgressSpinner,useToast } from '@/lib/primevue';
 import { useAuthStore, useConfigStore, useUserStore } from '@/store';
+import { ButtonMode } from '@/utils/enums';
 
 const { getAccessToken, getProfile } = storeToRefs(useAuthStore());
 const { getConfig } = storeToRefs(useConfigStore());

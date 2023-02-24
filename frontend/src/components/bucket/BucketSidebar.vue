@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/lib/primevue';
 
-import type { Bucket } from '@/interfaces';
+import type { Bucket } from '@/types';
 
 // Props
 defineProps<{

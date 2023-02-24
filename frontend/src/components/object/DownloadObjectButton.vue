@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, type PropType } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { ButtonMode } from '@/interfaces/common/enums';
 import { Button, Dialog } from '@/lib/primevue';
 import { useObjectStore } from '@/store';
+import { ButtonMode } from '@/utils/enums';
 
 // Props
 const props = defineProps({

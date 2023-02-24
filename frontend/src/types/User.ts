@@ -1,6 +1,6 @@
-import type { Audit } from '@/interfaces/common/Audit';
+import type { IAudit } from '@/interfaces';
 
-export interface User extends Audit {
+export type User = {
   active: boolean;
   email: string;
   firstName: string;
@@ -10,4 +10,4 @@ export interface User extends Audit {
   lastName: string;
   userId: string;
   username: string;
-}
+} & IAudit;

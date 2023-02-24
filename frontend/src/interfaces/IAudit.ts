@@ -1,4 +1,4 @@
-export interface Audit {
+export interface IAudit {
   createdBy?: string;
   createdAt?: string;
   updatedBy?: string;

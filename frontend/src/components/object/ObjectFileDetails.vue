@@ -12,9 +12,9 @@ import {
   ObjectTag,
   ShareObjectButton
 } from '@/components/object';
-import { ButtonMode } from '@/interfaces/common/enums';
 import { Button, Dialog } from '@/lib/primevue';
 import { useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
+import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
 import { Permissions } from '@/utils/constants';

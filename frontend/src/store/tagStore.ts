@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { objectService } from '@/services';
 
 import type { Ref } from 'vue';
-import type { Tagging } from '@/interfaces';
+import type { Tagging } from '@/types';
 
 export const useTagStore = defineStore('tag', () => {
   // State

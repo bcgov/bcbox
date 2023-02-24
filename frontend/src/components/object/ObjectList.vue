@@ -9,11 +9,12 @@ import {
   ObjectTable,
   ObjectUpload
 } from '@/components/object';
-import { ButtonMode } from '@/interfaces/common/enums';
 import { Button } from '@/lib/primevue';
 import { useBucketStore, useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
+import { ButtonMode } from '@/utils/enums';
+
 import type { Ref } from 'vue';
-import type { COMSObject } from '@/interfaces';
+import type { COMSObject } from '@/types';
 
 // Store
 const bucketStore = useBucketStore();

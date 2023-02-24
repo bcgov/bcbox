@@ -4,7 +4,7 @@ import { Button } from '@/lib/primevue';
 import { useTagStore } from '@/store';
 
 import type { Ref } from 'vue';
-import type { Tagging } from '@/interfaces';
+import type { Tagging } from '@/types';
 
 // Props
 const props = defineProps<{

@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { objectService } from '@/services';
 
 import type { Ref } from 'vue';
-import type { Metadata } from '@/interfaces';
+import type { Metadata } from '@/types';
 
 export const useMetadataStore = defineStore('metadata', () => {
   // State

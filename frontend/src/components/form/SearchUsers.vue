@@ -5,7 +5,7 @@ import { Button, Dropdown, RadioButton } from '@/lib/primevue';
 import { useConfigStore, useUserStore } from '@/store';
 import { Regex } from '@/utils/constants';
 
-import type { IdentityProvider, User, UserPermissions } from '@/interfaces';
+import type { IdentityProvider, User, UserPermissions } from '@/types';
 
 // Props
 const props = defineProps<{

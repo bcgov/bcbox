@@ -1,4 +1,4 @@
-import type { Tag } from '@/interfaces';
+import type { Tag } from '@/types';
 
 export interface Tagging {
   objectId: string;
