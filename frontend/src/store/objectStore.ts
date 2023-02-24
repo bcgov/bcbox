@@ -70,7 +70,6 @@ export const useObjectStore = defineStore('objectStore', () => {
   async function listObjects(params: any = {}) {
     try {
       loading.value = true;
-
       objectList.value = [];
 
       // Checks for a users object permissions within the bucket
@@ -79,6 +78,7 @@ export const useObjectStore = defineStore('objectStore', () => {
         const permResponse = (await permissionService.objectSearchPermissions({
           userId: currentUser.value.userId,
           bucketId: params.bucketId ?? undefined,
+          objId: params.objId ?? undefined,
           bucketPerms: true,
           permCode: [Permissions.READ, Permissions.UPDATE, Permissions.DELETE, Permissions.MANAGE]
         })).data;
