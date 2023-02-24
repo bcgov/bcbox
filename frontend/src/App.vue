@@ -4,12 +4,10 @@ import { onErrorCaptured } from 'vue';
 import { RouterView } from 'vue-router';
 // PrimeVue
 import ConfirmDialog from 'primevue/confirmdialog';
-import ProgressBar from 'primevue/progressbar';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
 // Components
 import AppLayout from '@/components/layout/AppLayout.vue';
-import InitApp from '@/components/layout/InitApp.vue';
 import Navbar from '@/components/layout/Navbar.vue';
 
 const toast = useToast();
@@ -26,27 +24,12 @@ onErrorCaptured((e: Error) => {
 <template>
   <Toast />
   <ConfirmDialog />
-  <Suspense>
-    <AppLayout>
-      <template #nav>
-        <Navbar />
-      </template>
-      <template #main>
-        <RouterView /> <InitApp />
-      </template>
-    </AppLayout>
-
-    <!-- Loading -->
-    <template #fallback>
-      <AppLayout>
-        <template #nav />
-        <template #main>
-          <ProgressBar
-            mode="indeterminate"
-            style="height: 0.5em"
-          />
-        </template>
-      </AppLayout>
+  <AppLayout>
+    <template #nav>
+      <Navbar />
     </template>
-  </Suspense>
+    <template #main>
+      <RouterView /> <InitApp />
+    </template>
+  </AppLayout>
 </template>
