@@ -1,96 +1,107 @@
-import { computed, ref } from 'vue';
-import type { Ref } from 'vue';
 import { defineStore } from 'pinia';
-import Keycloak, { type KeycloakLoginOptions } from 'keycloak-js';
-import { useConfigStore } from './configStore';
-import type { IdentityProvider } from '@/interfaces/IdentityProvider';
-import { KEYCLOAK } from '@/utils/constants';
+import { ref } from 'vue';
 
+import { AuthService, ConfigService } from '@/services';
+import { generateGetters, isDebugMode } from './utils';
+
+import type { IdTokenClaims, User } from 'oidc-client-ts';
+import type { Ref } from 'vue';
+import type { IGetterIndex, IStateIndex } from '@/types';
+import type { IdentityProvider } from '@/interfaces/IdentityProvider';
+
+export type AuthStateStore = {
+  accessToken: Ref<string | undefined>,
+  expiresAt: Ref<number | undefined>,
+  idToken: Ref<string | undefined>,
+  isAuthenticated: Ref<boolean>,
+  profile: Ref<IdTokenClaims | undefined>,
+  refreshToken: Ref<string | undefined>,
+  scope: Ref<string | undefined>,
+  user: Ref<User | null>
+} & IStateIndex
 
 export const useAuthStore = defineStore('auth', () => {
-  const configStore = useConfigStore();
+  const authService = new AuthService();
+  const userManager = authService.getUserManager();
+  const configService = new ConfigService();
 
   // State
-  // Is this typescript ok...? Come back to later?
-  const _keycloak: Ref<Keycloak> = ref(new Keycloak());
-  const ready = ref(false);
-  const refreshJobInterval = ref(0);
+  const state: AuthStateStore = {
+    accessToken: ref(undefined),
+    expiresAt: ref(0),
+    idToken: ref(undefined),
+    isAuthenticated: ref(false),
+    profile: ref(undefined),
+    refreshToken: ref(undefined),
+    scope: ref(undefined),
+    user: ref(null)
+  };
 
   // Getters
-  const getKeycloak = computed(() => _keycloak.value);
-  const getIdentityProvider = computed(() => _keycloak.value.tokenParsed?.identity_provider);
+  const getters: IGetterIndex = generateGetters(state);
 
-  function getIdentityId() {
-    return configStore.config.idpList
-      .map((provider: IdentityProvider) => _keycloak.value?.tokenParsed ?
-        _keycloak.value?.tokenParsed[provider.identityKey] : undefined)
-      .filter((item?: String) => item)[0];
+  function getIdentityId(): string {
+    return configService.getConfig().idpList
+      .map((provider: IdentityProvider) => state.profile.value ?
+        state.profile.value[provider.identityKey] : undefined)
+      .filter((item?: string) => item)[0];
   }
 
   // Actions
-  function login(options?: KeycloakLoginOptions) {
-    window.location.replace(_keycloak.value.createLoginUrl(options));
+  function _registerEvents() {
+    console.debug('_registerEvents');
+
+    userManager.events.addAccessTokenExpired(_updateState);
+    userManager.events.addAccessTokenExpiring(_updateState);
+    userManager.events.addSilentRenewError(_updateState);
+    userManager.events.addUserLoaded(_updateState);
+    userManager.events.addUserSessionChanged(_updateState);
+    userManager.events.addUserSignedIn(_updateState);
+    userManager.events.addUserSignedOut(_updateState);
+    userManager.events.addUserUnloaded(_updateState);
   }
 
-  function logout() {
-    if (ready.value) {
-      window.location.replace(
-        _keycloak.value.createLogoutUrl({
-          redirectUri: `${location.origin}/`,
-        })
-      );
-    }
+  async function _updateState() {
+    console.debug('_updateState');
+
+    const user = await authService.getUser();
+    state.accessToken.value = user?.access_token;
+    state.expiresAt.value = user?.expires_at;
+    state.idToken.value = user?.id_token;
+    state.isAuthenticated.value = !!user;
+    state.profile.value = user?.profile;
+    state.refreshToken.value = user?.refresh_token;
+    state.scope.value = user?.scope;
+    state.user.value = user;
   }
 
   async function init() {
-    const initOptions = {
-      url: configStore.config.keycloak.serverUrl,
-      realm: configStore.config.keycloak.realm,
-      clientId: configStore.config.keycloak.clientId,
-      onLoad: 'check-sso',
-    };
-
-    const kc: Keycloak = new Keycloak(initOptions);
-
-    // Once KC is set up and connected flag it as 'ready'
-    kc.onReady = () => {
-      ready.value = true;
-    };
-
-    // After a refresh token fetch success
-    kc.onAuthRefreshSuccess = () => {
-      // console.log(_keycloak.value.token);
-    };
-
-    await kc
-      .init({ onLoad: 'check-sso', pkceMethod: 'S256' })
-      .then(() => {
-        // Set the state field to the inited keycloak instance
-        _keycloak.value = kc;
-
-        // Token Refresh
-        // Check token validity every 10s and, if necessary, update the token.
-        // Refresh token if it's valid for less then 70 seconds
-        refreshJobInterval.value = window.setInterval(() => {
-          kc.updateToken(KEYCLOAK.MIN_VALID_TIME_SEC) // If the token expires within 70 seconds from now get a refreshed
-            .then((refreshed: Boolean) => {
-              if (refreshed) {
-                console.log('Token refreshed ' + refreshed); // eslint-disable-line no-console
-              } else {
-                // Don't need to log this unless debugging
-                // It's for when the token doesn't need to refresh because not expired enough
-                // console.log('Token not refreshed');
-              }
-            })
-            .catch(() => {
-              console.error('Failed to refresh token'); // eslint-disable-line no-console
-            });
-        }, KEYCLOAK.REFRESH_TIME_MS); // Check every 10s
-      })
-      .catch((err) => {
-        console.error(`Authenticated Failed ${JSON.stringify(err)}`); // eslint-disable-line no-console
-      });
+    await AuthService.init();
+    await _updateState();
+    _registerEvents();
   }
 
-  return { login, logout, init, getKeycloak, getIdentityProvider, getIdentityId, ready };
+  async function login() {
+    return authService.login();
+  }
+
+  async function loginCallback() {
+    return authService.loginCallback();
+  }
+
+  async function logout() {
+    return authService.logout();
+  }
+
+  return {
+    ...(isDebugMode && state),
+    ...getters,
+    _registerEvents,
+    _updateState,
+    getIdentityId,
+    init,
+    login,
+    loginCallback,
+    logout
+  };
 });

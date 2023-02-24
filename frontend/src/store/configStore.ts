@@ -1,17 +1,37 @@
-import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import { ref } from 'vue';
+
+import { ConfigService } from '@/services';
+import { generateGetters, isDebugMode } from './utils';
+
+import type { Ref } from 'vue';
+import type { IGetterIndex, IStateIndex } from '@/types';
+
+export type ConfigStateStore = {
+  config: Ref<any | null>
+} & IStateIndex
 
 export const useConfigStore = defineStore('config', () => {
-  // state
-  const config: any = ref(null);
+  const configService = new ConfigService();
 
-  // actions
-  async function load() {
-    // TODO: more to do here, store config in storage? Flesh out error cases
-    const response = await axios.get('/config');
-    config.value = response.data;
+  // State
+  const state: ConfigStateStore = {
+    config: ref(null),
+  };
+
+  // Getters
+  const getters: IGetterIndex = generateGetters(state);
+
+  // Actions
+  async function init(): Promise<void> {
+    await ConfigService.init();
+
+    state.config.value = configService.getConfig();
   }
 
-  return { load, config };
+  return {
+    ...(isDebugMode && state),
+    ...getters,
+    init
+  };
 });
