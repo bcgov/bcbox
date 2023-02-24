@@ -42,7 +42,7 @@ const getObjectInfo = async (objId: string) => {
   try {
     await objectStore.listObjects({ objId });
     if(!objectInfo.value || !objectList.value[0]) {
-      throw Error(`Object ${objId} not found or you do not have access`)
+      throw Error(`Object ${objId} not found or you do not have access`);
     }
     objectInfo.value = objectList.value[0];
   } catch (error: any) {
