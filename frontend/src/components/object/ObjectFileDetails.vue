@@ -41,9 +41,12 @@ const permissionsObjectName: Ref<string> = ref('');
 const getObjectInfo = async (objId: string) => {
   try {
     await objectStore.listObjects({ objId });
+    if(!objectInfo.value || !objectList.value[0]) {
+      throw Error(`Object ${objId} not found or you do not have access`)
+    }
     objectInfo.value = objectList.value[0];
   } catch (error: any) {
-    toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
+    toast.add({ severity: 'error', summary: 'Unable to load Object.', detail: error, life: 5000 });
   }
 };
 
@@ -108,7 +111,7 @@ onMounted(() => {
       <ObjectProperties :object-info="objectInfo" />
       <ObjectAccess :object-info="objectInfo" />
       <ObjectMetadata :object-metadata="objectInfo.metadata" />
-      <ObjectTag :object-tag="objectInfo.tag" /> 
+      <ObjectTag :object-tag="objectInfo.tag" />
     </div>
   </div>
 
