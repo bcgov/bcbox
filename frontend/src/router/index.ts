@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import { AuthService } from '@/services';
+import { useAuthStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 import type { RouteRecordRaw } from 'vue-router';
@@ -20,7 +21,7 @@ function createProps(route: { query: any; params: any; }): object {
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: RouteNames.Home,
+    name: RouteNames.HOME,
     component: () => import('../views/HomeView.vue'),
     props: createProps
   },
@@ -40,8 +41,8 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'objects',
-        name: RouteNames.ObjectFileDetails,
-        component: () => import('../views/ObjectFileDetailsView.vue'),
+        name: RouteNames.DETAILOBJECTS,
+        component: () => import('../views/DetailObjectsView.vue'),
         meta: { requiresAuth: true },
         props: createProps
       }
@@ -49,7 +50,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/developer',
-    name: RouteNames.Developer,
+    name: RouteNames.DEVELOPER,
     component: () => import('../views/DeveloperView.vue'),
     meta: { requiresAuth: true, breadcrumb: 'Developer' },
     props: createProps
@@ -59,31 +60,43 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'buckets',
-        name: RouteNames.ListBuckets,
+        name: RouteNames.LISTBUCKETS,
         component: () => import('../views/ListBucketsView.vue'),
-        meta: { requiresAuth: true, breadcrumb: 'Buckets' },
-        props: createProps
+        meta: { requiresAuth: true, breadcrumb: 'Buckets' }
       },
       {
         path: 'objects',
-        name: RouteNames.ListObjects,
+        name: RouteNames.LISTOBJECTS,
         component: () => import('../views/ListObjectsView.vue'),
-        meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' },
-        props: createProps
+        meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' }
       },
       {
         path: 'detail/object',
-        name: RouteNames.ObjectFileDetails,
-        component: () => import('../views/ObjectFileDetailsView.vue'),
-        meta: { requiresAuth: true },
-        props: createProps
+        name: RouteNames.DETAILOBJECTS,
+        component: () => import('../views/DetailObjectsView.vue'),
+        meta: { requiresAuth: true }
       },
     ],
+    props: createProps
   },
-  { // TODO: This path may not be needed at all
-    path: '/logout',
-    name: RouteNames.Logout,
-    redirect: { name: RouteNames.Home }
+  {
+    path: '/oidc',
+    children: [
+      {
+        path: 'callback',
+        name: RouteNames.CALLBACK,
+        component: () => import('../views/CallbackView.vue'),
+        beforeEnter: async () => {
+          const { loginCallback } = useAuthStore();
+          await loginCallback();
+        }
+      },
+      {
+        path: 'logout',
+        name: RouteNames.LOGOUT,
+        redirect: { name: RouteNames.HOME }
+      },
+    ]
   },
   // {
   //   path: '/permission',
@@ -107,18 +120,13 @@ export default function getRouter() {
     // const navStore = useNavStore();
     // navStore.navigate(to);
 
-    if (to.query && isFirstTransition) {
-      // Login Callback Handler
-      if (['code', 'state', 'session_state'].every(attr => Object.keys(to.query).includes(attr))) {
-        await authService.loginCallback();
-      }
-
+    if (!to.path.includes('/oidc') && to.query && isFirstTransition) {
       // Backend Redirection Artifact
-      if (['code', 'r', 'state', 'session_state'].some(attr => Object.keys(to.query).includes(attr))) {
+      if (to.query?.r) {
         router.replace({
           path: (to.query.r) ? to.query.r.toString() : to.path,
           // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-          query: (({ code, r, state, session_state, ...q }) => q)(to.query)
+          query: (({ r, ...q }) => q)(to.query)
         });
       }
     }

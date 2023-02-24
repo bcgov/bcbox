@@ -18,17 +18,18 @@ export const Regex = Object.freeze({
 });
 
 export const RouteNames = Object.freeze({
-  Home: 'home',
-  CreateBucket: 'createBucket',
-  Developer: 'developer',
-  ListBuckets: 'listBuckets',
-  ListObjects: 'listObjects',
-  Logout: 'logout,',
-  ObjectFileDetails: 'objectFileDetails'
+  CALLBACK: 'callback',
+  CREATEBUCKET: 'createBucket',
+  DETAILOBJECTS: 'detailObjects',
+  DEVELOPER: 'developer',
+  HOME: 'home',
+  LISTBUCKETS: 'listBuckets',
+  LISTOBJECTS: 'listObjects',
+  LOGOUT: 'logout'
 });
 
 export const ValidationMessages = Object.freeze({
-  Required: 'This field is required.',
+  REQUIRED: 'This field is required.',
 });
 
 export const BucketConfig = Object.freeze({
