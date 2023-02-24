@@ -1,9 +1,10 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
-import App from './App.vue';
-import getRouter from './router';
-import { AuthService, ConfigService } from './services';
+import App from '@/App.vue';
+import getRouter from '@/router';
+import { AuthService, ConfigService } from '@/services';
+import { useAuthStore, useConfigStore } from '@/store';
 
 import './assets/main.scss';
 
@@ -26,12 +27,16 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
  * @function initializeApp
  * Initializes and mounts the Vue instance
  */
-function initializeApp(): void {
+async function initializeApp(): Promise<void> {
   const app = createApp(App);
   library.add(fas);
 
   app.use(getRouter());
   app.use(createPinia());
+
+  await useConfigStore().init();
+  await useAuthStore().init();
+
   app.use(PrimeVue);
   app.use(ToastService);
   app.use(ConfirmationService);
