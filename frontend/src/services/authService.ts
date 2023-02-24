@@ -23,6 +23,7 @@ export default class AuthService {
     if (!AuthService._instance) {
       AuthService._instance = this;
       AuthService._userManager = new UserManager(this.getOidcSettings());
+      AuthService._userManager.clearStaleState();
 
       Log.setLogger(console);
       Log.setLevel(isDebugMode ? Log.DEBUG : Log.INFO);

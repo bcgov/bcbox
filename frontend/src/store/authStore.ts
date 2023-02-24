@@ -75,7 +75,7 @@ export const useAuthStore = defineStore('auth', () => {
     state.accessToken.value = user?.access_token;
     state.expiresAt.value = user?.expires_at;
     state.idToken.value = user?.id_token;
-    state.isAuthenticated.value = !!user;
+    state.isAuthenticated.value = !!user && !user.expired;
     state.profile.value = user?.profile;
     state.refreshToken.value = user?.refresh_token;
     state.scope.value = user?.scope;

@@ -31,12 +31,11 @@ async function initializeApp(): Promise<void> {
   const app = createApp(App);
   library.add(fas);
 
-  app.use(getRouter());
   app.use(createPinia());
-
   await useConfigStore().init();
   await useAuthStore().init();
 
+  app.use(getRouter());
   app.use(PrimeVue);
   app.use(ToastService);
   app.use(ConfirmationService);

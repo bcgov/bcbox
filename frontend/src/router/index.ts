@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import { AuthService } from '@/services';
 import { useAuthStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
@@ -109,16 +108,16 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 export default function getRouter() {
-  const authService = new AuthService();
   const router = createRouter({
     history: createWebHistory(),
     routes
   });
 
   router.beforeEach(async (to, _from, next) => {
+    const { getIsAuthenticated, login } = useAuthStore();
     // Removed for now
-    // const navStore = useNavStore();
-    // navStore.navigate(to);
+    // const { navigate } = useNavStore();
+    // navigate(to);
 
     if (!to.path.includes('/oidc') && to.query && isFirstTransition) {
       // Backend Redirection Artifact
@@ -131,8 +130,8 @@ export default function getRouter() {
       }
     }
 
-    if (to.meta.requiresAuth && !(await authService.getUser())) {
-      await authService.login();
+    if (to.meta.requiresAuth && !getIsAuthenticated) {
+      await login();
     }
 
     next();
