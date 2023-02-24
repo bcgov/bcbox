@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch, unref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
 
@@ -16,9 +16,12 @@ import {
   ShareObjectButton
 } from '@/components/object';
 import { ButtonMode } from '@/interfaces/common/enums';
-import { useAppStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
+import { useAppStore, useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
+
+import type { Ref } from 'vue';
+import type { COMSObject } from '@/interfaces';
 
 // Props
 defineProps<{
@@ -29,6 +32,7 @@ defineProps<{
 const emit = defineEmits(['show-object-info']);
 
 // Store
+const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const route = useRoute();
@@ -39,27 +43,32 @@ const { currentUser } = storeToRefs(useUserStore());
 const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
 const permissionsObjectName = ref('');
+const selectedObjects: Ref<Array<COMSObject>> = ref([]);
 
 // Actions
 const showInfo = async (id: string) => {
   emit('show-object-info', id);
 };
 
-const showPermissions = async (objectId: string, objectName: string) => {
+const showPermissions = async (objectId: string, objectName?: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = objectName;
+  permissionsObjectName.value = objectName || '';
 };
 
 const togglePublic = async (objectId: string, isPublic: boolean) => {
   await objectStore.togglePublic(objectId, isPublic);
 };
+
+watch( selectedObjects, () => {
+  objectStore.setSelectedObjects(unref(selectedObjects));
+});
 </script>
 
 <template>
   <div>
     <DataTable
-      v-model:selection="multiSelectedObjects"
+      v-model:selection="selectedObjects"
       :value="getObjects"
       data-key="id"
       class="p-datatable-sm"
@@ -97,12 +106,12 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
         <template #body="{ data }">
           <div
             v-if="data.name?.length > 25"
-            v-tooltip.bottom="{ value: data.name }"
+            v-tooltip.bottom="{ value: metadataStore.getValue(data.id, 'name') }"
           >
-            {{ data.name }}
+            {{ metadataStore.getValue(data.id, 'name') }}
           </div>
           <div v-else>
-            {{ data.name }}
+            {{ metadataStore.getValue(data.id, 'name') }}
           </div>
         </template>
       </Column>
@@ -158,14 +167,16 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
             :obj="data"
           />
           <DownloadObjectButton
-            v-if="permissionStore.getObjectActionAllowed(data.id, route.query.bucketId, currentUser?.userId, Permissions.READ)"
+            v-if="permissionStore.getObjectActionAllowed(
+              data.id, currentUser?.userId, Permissions.READ, route.query.bucketId as string)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />
           <Button
-            v-if="permissionStore.getObjectActionAllowed(data.id, route.query.bucketId, currentUser?.userId, Permissions.MANAGE)"
+            v-if="permissionStore.getObjectActionAllowed(
+              data.id, currentUser?.userId, Permissions.MANAGE, route.query.bucketId as string)"
             class="p-button-lg p-button-text"
-            @click="showPermissions(data.id, data.name)"
+            @click="showPermissions(data.id, metadataStore.getValue(data.id, 'name'))"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
@@ -176,7 +187,8 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
           <DeleteObjectButton
-            v-if="permissionStore.getObjectActionAllowed(data.id, route.query.bucketId, currentUser?.userId, Permissions.DELETE)"
+            v-if="permissionStore.getObjectActionAllowed(
+              data.id, currentUser?.userId, Permissions.DELETE, route.query.bucketId as string)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />

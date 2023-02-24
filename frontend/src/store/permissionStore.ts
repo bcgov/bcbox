@@ -1,11 +1,13 @@
-import { computed, ref } from 'vue';
+import { computed, ref, toRaw, unref } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
 import { permissionService, userService } from '@/services';
 import { useAppStore, useConfigStore } from '@/store';
 import { Permissions } from '@/utils/constants';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
+
 import type {
   BucketPermission,
   COMSObjectPermission,
@@ -14,6 +16,11 @@ import type {
   User,
   UserPermissions
 } from '@/interfaces';
+
+import type {
+  BucketPermissionsOptions,
+  ObjectPermissionsOptions
+} from '@/types';
 
 export const usePermissionStore = defineStore('permission', () => {
   // Store
@@ -28,27 +35,12 @@ export const usePermissionStore = defineStore('permission', () => {
   const objectPermissions: Ref<Array<COMSObjectPermission>> = ref([]);
   const permissions: Ref<Array<Permission>> = ref([]);
 
-  // Computed Getters
+  // Getters
   const getBucketPermissions = computed(() => bucketPermissions.value);
   const getObjectPermissions = computed(() => objectPermissions.value);
   const getPermissions = computed(() => permissions.value);
   const getMappedBucketToUserPermissions = computed(() => mappedBucketToUserPermissions.value);
   const getMappedObjectToUserPermissions = computed(() => mappedObjectToUserPermissions.value);
-
-  // Getters
-  const getBucketActionAllowed = (bucketId: string, userId?: string, permCode?: string) => {
-    return bucketPermissions.value.some((x: BucketPermission) =>
-      x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
-  };
-
-  const getObjectActionAllowed = (objectId: string, bucketId?: string, userId?: string, permCode?: string) => {
-    const bucketPerm = bucketPermissions.value.some((x: BucketPermission) =>
-      x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
-    const objectPerm = objectPermissions.value.some((x: COMSObjectPermission) =>
-      x.objectId === objectId && x.userId === userId && x.permCode === permCode);
-
-    return bucketPerm || objectPerm;
-  };
 
   // Actions
   async function addBucketPermission(bucketId: string, userId: string, permCode: string) {
@@ -127,17 +119,25 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  async function fetchBucketPermissions(params: object = {}) {
+  async function fetchBucketPermissions(params: BucketPermissionsOptions = {}) {
     try {
-      appStore.beginLoading();
-      const response = (await permissionService.bucketSearchPermissions({ ...params })).data;
+      const response = (await permissionService.bucketSearchPermissions(params)).data;
+      const newPerms: Array<BucketPermission> = response.flatMap((x: any) => x.permissions);
 
-      console.log(response);
-      let perms = Array<BucketPermission>();
-      response.forEach((x: any) => {
-        perms = perms.concat(x.permissions);
-      });
-      bucketPermissions.value = perms;
+      // Remove old values matching search parameters
+      const matches = (x: BucketPermission) => (
+        (!params.bucketId || x.bucketId === params.bucketId) &&
+        (!params.userId || x.userId === params.userId) &&
+        (!params.permCode || x.permCode === params.permCode)
+      );
+
+      const [match, difference] = partition(unref(bucketPermissions), matches);
+
+      // Merge and assign
+      bucketPermissions.value = difference.concat(newPerms);
+
+      // Pass response back so bucketStore can handle bucketPerms=true correctly
+      return response;
     }
     catch (error) {
       toast.add({ severity: 'error', summary: 'Error fetching bucket permissions', detail: error, life: 3000 });
@@ -147,16 +147,27 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  async function fetchObjectPermissions(params: object = {}) {
+  async function fetchObjectPermissions(params: ObjectPermissionsOptions = {}) {
     try {
       appStore.beginLoading();
-      const response = (await permissionService.objectSearchPermissions({ ...params, bucketPerms: true })).data;
+      const response = (await permissionService.objectSearchPermissions(params)).data;
 
-      let perms = Array<COMSObjectPermission>();
-      response.forEach((x: any) => {
-        perms = perms.concat(x.permissions);
-      });
-      objectPermissions.value = perms;
+      const newPerms: Array<COMSObjectPermission> = response.flatMap((x: any) => x.permissions);
+
+      // Remove old values matching search parameters
+      const matches = (x: COMSObjectPermission) => (
+        (!params.objId || x.id === params.objId) &&
+        (!params.userId || x.userId === params.userId) &&
+        (!params.permCode || x.permCode === params.permCode)
+      );
+
+      const [match, difference] = partition(unref(objectPermissions), matches);
+
+      // Merge and assign
+      objectPermissions.value = difference.concat(newPerms);
+
+      // Pass response back so objectStore can handle objectPerms=true correctly
+      return response;
     }
     catch (error) {
       toast.add({ severity: 'error', summary: 'Error fetching object permissions', detail: error, life: 3000 });
@@ -165,6 +176,22 @@ export const usePermissionStore = defineStore('permission', () => {
       appStore.endLoading();
     }
   }
+
+  const getBucketActionAllowed = (bucketId: string, userId?: string, permCode?: string) => {
+    return bucketPermissions.value.some((x: BucketPermission) =>
+      x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
+  };
+
+  const getObjectActionAllowed = (objectId: string, userId?: string, permCode?: string, bucketId?: string) => {
+    const bucketPerm = bucketPermissions.value.some((x: BucketPermission) =>
+      x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
+    const objectPerm = objectPermissions.value.some((x: COMSObjectPermission) =>
+      x.objectId === objectId && x.userId === userId && x.permCode === permCode);
+    //console.log(`${objectId} ${userId} ${permCode} ${bucketId}`);
+
+    //console.log(`${bucketPerm} ${objectPerm}`);
+    return bucketPerm || objectPerm;
+  };
 
   async function mapBucketToUserPermissions(bucketId: string) {
     try {
@@ -290,16 +317,12 @@ export const usePermissionStore = defineStore('permission', () => {
 
 
   return {
-    // Computed Getters
+    // Getters
     getBucketPermissions,
     getObjectPermissions,
     getPermissions,
     getMappedBucketToUserPermissions,
     getMappedObjectToUserPermissions,
-
-    // Getters
-    getBucketActionAllowed,
-    getObjectActionAllowed,
 
     // Actions
     addBucketPermission,
@@ -310,6 +333,8 @@ export const usePermissionStore = defineStore('permission', () => {
     deleteObjectPermission,
     fetchBucketPermissions,
     fetchObjectPermissions,
+    getBucketActionAllowed,
+    getObjectActionAllowed,
     mapBucketToUserPermissions,
     mapObjectToUserPermissions,
     removeBucketUser,

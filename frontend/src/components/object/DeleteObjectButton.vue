@@ -37,7 +37,7 @@ const confirmDelete = () => {
       rejectLabel: 'Cancel',
       accept: async () => {
         try {
-          await objectStore.deleteObjectList(props.ids);
+          await objectStore.deleteObjects(props.ids);
         } catch (error) {
           toast.add({ severity: 'error', summary: 'Error deleting one or more files', detail: error, life: 3000 });
         }

@@ -30,7 +30,7 @@ const download = () => {
   if (props.ids.length) {
     // For now we are looping the supplied IDs (if multiple selected) until there is a batching feature
     props.ids.forEach((i) => {
-      objectStore.getObject(i, undefined);
+      objectStore.downloadObject(i, undefined);
     });
   } else {
     displayNoFileDlg.value = true;

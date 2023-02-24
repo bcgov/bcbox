@@ -6,32 +6,31 @@ import { useAppStore, usePermissionStore, useUserStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketPermission } from '@/interfaces';
+import type { BucketPermissionsOptions } from '@/types';
 
 export const useBucketStore = defineStore('bucket', () => {
   // Store
-  const { getBucketPermissions } = storeToRefs(usePermissionStore());
-  const { getConfig } = useConfigStore();
+  const permissionStore = usePermissionStore();
   const { currentUser } = storeToRefs(useUserStore());
 
   // State
   const buckets: Ref<Array<Bucket>> = ref([]);
 
-  // Computed Getters
+  // Getters
   const getBuckets = computed(() => buckets.value);
 
   // Getters
-  const getBucketById = (bucketId: string) => buckets.value.find((x) => x.bucketId === bucketId);
+
 
   // Actions
-  async function fetchBuckets() {
+  async function fetchBuckets(params: BucketPermissionsOptions) {
     try {
       useAppStore().beginLoading();
 
       if (currentUser.value) {
-        const bucketPerms = getBucketPermissions.value.filter((x: BucketPermission) =>
-          x.userId === currentUser.value?.userId
-        );
-        const uniqueIds = [...new Set(bucketPerms.map((x: { bucketId: string }) => x.bucketId))];
+        const permResponse = await permissionStore.fetchBucketPermissions(params);
+
+        const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
         let response = Array<Bucket>();
         if (uniqueIds.length) {
           response = (await bucketService.searchForBuckets({ bucketId: uniqueIds })).data;
@@ -43,15 +42,16 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
+  const getBucketById = (bucketId: string) => buckets.value.find((x) => x.bucketId === bucketId);
+
   return {
-    // Computed Getters
+    // Getters
     getBuckets,
 
-    // Getters
+    // Actions
+    fetchBuckets,
     getBucketById,
 
-    // Actions
-    fetchBuckets
   };
 });
 

@@ -10,11 +10,11 @@ import { BucketConfig } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { Bucket } from '@/interfaces';
+import { storeToRefs } from 'pinia';
 
 // Store
 const bucketStore = useBucketStore();
-const permissionStore = usePermissionStore();
-const userStore = useUserStore();
+const { currentUser } = storeToRefs(useUserStore());
 
 // State
 const displayInfo: Ref<Bucket | undefined> = ref(undefined);
@@ -43,8 +43,7 @@ const closeBucketConfig = () => {
 };
 
 const load = async () => {
-  await permissionStore.fetchBucketPermissions({ objectPerms: true });
-  await bucketStore.fetchBuckets();
+  await bucketStore.fetchBuckets({ userId: currentUser.value?.userId, objectPerms: true });
 };
 
 onMounted(() => {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch} from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
@@ -13,16 +13,20 @@ import {
   ObjectUpload
 } from '@/components/object';
 import { ButtonMode } from '@/interfaces/common/enums';
-import { useBucketStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
+import { useBucketStore, useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
+import type { COMSObject } from '@/interfaces';
 
 // Store
+const bucketStore = useBucketStore();
+const metadataStore = useMetadataStore();
 const permissionStore = usePermissionStore();
 //const navStore = useNavStore();
 const objectStore = useObjectStore();
-const { multiSelectedObjects } = storeToRefs(objectStore);
+
+const { getObjects, getSelectedObjects } = storeToRefs(objectStore);
 const { currentUser } = storeToRefs(useUserStore());
 const route = useRoute();
 
@@ -57,18 +61,15 @@ const closeUpload = () => {
 // };
 
 // Download
-const multiSelectedObjectIds = computed(() => {
-  return multiSelectedObjects.value.map((o) => o.id);
+const selectedObjectIds = computed(() => {
+  return getSelectedObjects.value.map((o) => o.id);
 });
 
 
 const load = async () => {
-  await permissionStore.fetchBucketPermissions();
-  await useBucketStore().fetchBuckets();
-  await permissionStore.fetchObjectPermissions({
-    bucketId: route.query.bucketId,
-  });
-  await objectStore.fetchObjects({ bucketId: route.query.bucketId });
+  await bucketStore.fetchBuckets({ userId: currentUser.value?.userId, objectPerms: true });
+  await objectStore.fetchObjects({ bucketId: route.query.bucketId as string });
+  await metadataStore.fetchMetadata({objId: getObjects.value.map( (x: COMSObject) => x.id )});
 };
 
 onMounted(() => {
@@ -76,6 +77,12 @@ onMounted(() => {
   // updateBreadcrumb();
   load();
 });
+
+watch( getObjects, () => {
+  // Watch for object changes to get associated metadata
+  metadataStore.fetchMetadata({objId: getObjects.value.map( (x: COMSObject) => x.id )});
+});
+
 </script>
 
 <template>
@@ -99,15 +106,14 @@ onMounted(() => {
           class="mr-1"
         /> Upload
       </Button>
-      <!-- <DownloadObjectButton
+      <DownloadObjectButton
         :mode="ButtonMode.BUTTON"
-        :ids="multiSelectedObjectIds"
+        :ids="selectedObjectIds"
       />
       <DeleteObjectButton
-        class="ml-2"
         :mode="ButtonMode.BUTTON"
-        :ids="multiSelectedObjectIds"
-      /> -->
+        :ids="selectedObjectIds"
+      />
     </div>
 
     <div class="flex mt-4">

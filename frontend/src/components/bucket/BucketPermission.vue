@@ -42,8 +42,13 @@ const updateBucketPermission = (value: any, userId: string, permCode: string) =>
   }
 };
 
+const load = async () => {
+  await permissionStore.fetchBucketPermissions({ bucketId: props.bucketId });
+  await permissionStore.mapBucketToUserPermissions(props.bucketId);
+};
+
 onMounted(() => {
-  permissionStore.mapBucketToUserPermissions(props.bucketId);
+  load();
 });
 </script>
 

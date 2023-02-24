@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useBucketStore, useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
+import { useBucketStore, useMetadataStore, useObjectStore, useUserStore } from '@/store';
 import GridRow from '@/components/form/GridRow.vue';
 import { RouteNames } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
@@ -12,7 +12,6 @@ import type { Bucket, COMSObject, Metadata } from '@/interfaces';
 const bucketStore = useBucketStore();
 const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
-const permissionStore = usePermissionStore();
 const userStore = useUserStore();
 
 const { userSearch } = storeToRefs(userStore);
@@ -29,10 +28,8 @@ const createdBy: Ref<string | undefined> = ref(undefined);
 const updatedBy: Ref<string | undefined> = ref(undefined);
 
 async function load() {
-  await permissionStore.fetchObjectPermissions({objId: props.objectInfoId});
-  await objectStore.fetchObjects();
+  await objectStore.fetchObjects({objId: props.objectInfoId});
   await metadataStore.fetchMetadata({objId: props.objectInfoId});
-
   object.value = objectStore.getObjectById(props.objectInfoId);
   objectMetadata.value = metadataStore.getMetadataByObjectId(object.value?.id as string);
   bucket.value = bucketStore.getBucketById(object.value?.bucketId as string);

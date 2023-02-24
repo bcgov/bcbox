@@ -7,9 +7,11 @@ import { useAppStore, useConfigStore, usePermissionStore, useUserStore } from '@
 
 import type { Ref } from 'vue';
 import type { COMSObject, COMSObjectPermission } from '@/interfaces';
+import type { ObjectPermissionsOptions } from '@/types';
 
 export const useObjectStore = defineStore('objectStore', () => {
   const appStore = useAppStore();
+  const permissionStore = usePermissionStore();
   const toast = useToast();
   const { getConfig } = useConfigStore();
   const { getObjectPermissions } = storeToRefs(usePermissionStore());
@@ -19,10 +21,11 @@ export const useObjectStore = defineStore('objectStore', () => {
   const objects: Ref<Array<COMSObject>> = ref([]);
   //const selectedObject: Ref<COMSObject | null> = ref(null);
   //const selectedObjectPermissions: Ref<Array<UserPermissions>> = ref([]);
-  //const multiSelectedObjects: Ref<Array<COMSObject>> = ref([]); // All selected table row items
+  const selectedObjects: Ref<Array<COMSObject>> = ref([]); // All selected table row items
 
   // Computed Getters
   const getObjects = computed(() => objects.value);
+  const getSelectedObjects = computed(() => selectedObjects.value);
 
   // Getters
   const getObjectById = (objectId: string) => objects.value.find((x) => x.id === objectId);
@@ -57,20 +60,23 @@ export const useObjectStore = defineStore('objectStore', () => {
     }
   }
 
-  async function fetchObjects(params: any = {}) {
+  async function downloadObject(objectId: string, versionId?: string) {
+    await objectService.getObject(objectId, versionId);
+  }
+
+  async function fetchObjects(params: ObjectPermissionsOptions = {}) {
     try {
       appStore.beginLoading();
 
       if (currentUser.value) {
-        const objectPerms = getObjectPermissions.value.filter((x: COMSObjectPermission) =>
-          x.userId === currentUser.value?.userId
-        );
+        const permResponse = await permissionStore.fetchObjectPermissions(params);
 
-        const uniqueIds = [...new Set(objectPerms.map((x: { objectId: string }) => x.objectId))];
-
+        const uniqueIds = [...new Set(permResponse.map((x: { id: string }) => x.id))];
+        let response = Array<COMSObject>();
         if (uniqueIds.length) {
-          objects.value = (await objectService.listObjects({ objId: uniqueIds, ...params })).data;
+          response = (await objectService.listObjects({ ...params, objId: uniqueIds })).data;
         }
+        objects.value = response;
       }
     } catch (error) {
       console.error(`Error obtaining object list: ${error}`); // eslint-disable-line no-console
@@ -80,9 +86,14 @@ export const useObjectStore = defineStore('objectStore', () => {
     }
   }
 
+  function setSelectedObjects(selected: Array<COMSObject>) {
+    selectedObjects.value = selected;
+  }
+
   return {
     // Computed Getters
     getObjects,
+    getSelectedObjects,
 
     // Getters
     getObjectById,
@@ -90,7 +101,9 @@ export const useObjectStore = defineStore('objectStore', () => {
     // Actions
     createObject,
     deleteObjects,
+    downloadObject,
     fetchObjects,
+    setSelectedObjects
   };
 });
 

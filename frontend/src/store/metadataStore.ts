@@ -11,7 +11,6 @@ export const useMetadataStore = defineStore('metadata', () => {
 
   // Getters
   const getMetadata = computed(() => metadata.value);
-  const getMetadataByObjectId = (objectId: string) => metadata.value.find((x: Metadata) => x.objectId === objectId);
 
   // Actions
   async function fetchMetadata(params: object = {}) {
@@ -25,9 +24,17 @@ export const useMetadataStore = defineStore('metadata', () => {
     }
   }
 
+  const getMetadataByObjectId = (objectId: string) => metadata.value.find((x: Metadata) => x.objectId === objectId);
+  const getValue = (objectId: string, key: string) =>
+    getMetadataByObjectId(objectId)?.metadata.find(x => x.key === key)?.value;
+
   return {
+    // Getters
     getMetadata,
+
+    // Actions
     getMetadataByObjectId,
-    fetchMetadata
+    fetchMetadata,
+    getValue
   };
 });

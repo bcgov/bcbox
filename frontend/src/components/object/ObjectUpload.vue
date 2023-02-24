@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import { useToast } from 'primevue/usetoast';
 import Button from 'primevue/button';
 import FileUpload from 'primevue/fileupload';
 
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
-import { useObjectStore } from '@/store';
+import { useObjectStore, useUserStore } from '@/store';
 
 import type { Ref } from 'vue';
 
@@ -17,6 +18,8 @@ defineProps<{
 const objectStore = useObjectStore();
 const route = useRoute();
 const toast = useToast();
+
+const { currentUser } = storeToRefs(useUserStore());
 
 const pendingFiles: Ref<Array<File>> = ref([]);
 const successfulFiles: Ref<Array<File>> = ref([]);
@@ -50,8 +53,8 @@ const onUpload = async (event: any) => {
     // Clear selected files at the end of upload process
     pendingFiles.value = [];
 
-    // Update object list
-    await objectStore.listObjects({ bucketId: bucketId });
+    // Update object store
+    await objectStore.fetchObjects({ bucketId: bucketId });
   } else {
     toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to acquire bucket ID', life: 3000 });
   }
@@ -121,7 +124,7 @@ const noFilesChosen = (files?: Array<File>): boolean => !files?.length;
           class="border-2 border-dashed border-circle p-5 text-7xl text-400 border-400"
         />
         <p class="mt-4 mb-0">
-          Drag and drop files to here to upload.
+          Drag and drop files here to upload.
         </p>
       </div>
       <ObjectUploadFile
