@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { filesize } from 'filesize';
-import Badge from 'primevue/badge';
-import Button from 'primevue/button';
+import { Badge, Button } from '@/lib/primevue';
 
+// Props
 defineProps({
   files: {
     type: Array<any>, // TODO: Change any to more specific type

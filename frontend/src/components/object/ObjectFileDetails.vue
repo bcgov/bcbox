@@ -1,10 +1,7 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch, unref } from 'vue';
 import { useRoute } from 'vue-router';
-import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-
 import {
   DeleteObjectButton,
   DownloadObjectButton,
@@ -16,6 +13,7 @@ import {
   ShareObjectButton
 } from '@/components/object';
 import { ButtonMode } from '@/interfaces/common/enums';
+import { Button, Dialog } from '@/lib/primevue';
 import { useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
 
 import type { Ref } from 'vue';
@@ -43,12 +41,8 @@ const showPermissions = async (objectId: string, objectName?: string) => {
   permissionsObjectName.value = objectName || '';
 };
 
-async function load() {
+onMounted(async () => {
   await permissionStore.fetchBucketPermissions({ userId: currentUser.value?.userId, objectPerms: true });
-}
-
-onMounted(() => {
-  load();
 });
 
 watch( [routeObjId, getObjects], () => {

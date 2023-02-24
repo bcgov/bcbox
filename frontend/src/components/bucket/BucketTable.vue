@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-import Dialog from 'primevue/dialog';
+import { ref } from 'vue';
 import BucketPermission from '@/components/bucket/BucketPermission.vue';
+import { Button, Column, DataTable, Dialog } from '@/lib/primevue';
 import { useAppStore, useBucketStore, usePermissionStore, useUserStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 

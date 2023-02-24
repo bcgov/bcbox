@@ -1,17 +1,9 @@
 <script setup lang="ts">
 import { ref, type PropType } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import { useConfirm } from 'primevue/useconfirm';
-import { useToast } from 'primevue/usetoast';
-
+import { Button, Dialog, useConfirm, useToast } from '@/lib/primevue';
 import { ButtonMode } from '@/interfaces/common/enums';
 import { useObjectStore } from '@/store/objectStore';
-
-const confirm = useConfirm();
-const objectStore = useObjectStore();
-const toast = useToast();
 
 // Props
 const props = defineProps({
@@ -25,8 +17,14 @@ const props = defineProps({
   },
 });
 
-// Deletion
+// State
 const displayNoFileDialog = ref(false);
+
+// Actions
+const confirm = useConfirm();
+const objectStore = useObjectStore();
+const toast = useToast();
+
 const confirmDelete = () => {
   if (props.ids.length) {
     const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} files` : 'this file';

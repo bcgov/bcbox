@@ -5,7 +5,7 @@ import { bucketService } from '@/services';
 import { useAppStore, usePermissionStore, useUserStore } from '@/store';
 
 import type { Ref } from 'vue';
-import type { Bucket, BucketPermission } from '@/interfaces';
+import type { Bucket } from '@/interfaces';
 import type { BucketPermissionsOptions } from '@/types';
 
 export const useBucketStore = defineStore('bucket', () => {
@@ -18,9 +18,6 @@ export const useBucketStore = defineStore('bucket', () => {
 
   // Getters
   const getBuckets = computed(() => buckets.value);
-
-  // Getters
-
 
   // Actions
   async function fetchBuckets(params: BucketPermissionsOptions) {
@@ -51,7 +48,6 @@ export const useBucketStore = defineStore('bucket', () => {
     // Actions
     fetchBuckets,
     getBucketById,
-
   };
 });
 

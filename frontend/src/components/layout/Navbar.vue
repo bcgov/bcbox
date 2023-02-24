@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import Toolbar from 'primevue/toolbar';
-
+import { Toolbar } from '@/lib/primevue';
 import { useAuthStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 

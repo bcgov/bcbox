@@ -1,12 +1,11 @@
-import { computed, ref } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
-import { useToast } from 'primevue/usetoast';
-
+import { computed, ref } from 'vue';
+import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
-import { useAppStore, useConfigStore, usePermissionStore, useUserStore } from '@/store';
+import { useAppStore, usePermissionStore, useUserStore } from '@/store';
 
 import type { Ref } from 'vue';
-import type { COMSObject, COMSObjectPermission } from '@/interfaces';
+import type { COMSObject } from '@/interfaces';
 import type { ObjectPermissionsOptions } from '@/types';
 
 export const useObjectStore = defineStore('objectStore', () => {
@@ -14,7 +13,6 @@ export const useObjectStore = defineStore('objectStore', () => {
   const permissionStore = usePermissionStore();
   const toast = useToast();
   const { getConfig } = useConfigStore();
-  const { getObjectPermissions } = storeToRefs(usePermissionStore());
   const { currentUser } = storeToRefs(useUserStore());
 
   // State

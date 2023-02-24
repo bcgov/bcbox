@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import { RouteNames } from '@/utils/constants';
-import Button from 'primevue/button';
-
 import {
   ObjectMetadata,
   ObjectProperties,
   ObjectTag
 } from '@/components/object';
+import { RouteNames } from '@/utils/constants';
+import { Button } from '@/lib/primevue';
 
+// Props
 defineProps<{
   objectInfoId: string;
 }>();
 
+// Emits
 const emit = defineEmits(['close-object-info']);
 
+// Actions
 const closeObjectInfo = async () => {
   emit('close-object-info');
 };

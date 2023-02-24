@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import Button from 'primevue/button';
+import { Button } from '@/lib/primevue';
 import { useTagStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { Tagging } from '@/interfaces';
 
-const tagStore = useTagStore();
-
+// Props
 const props = defineProps<{
   objectInfoId: string;
 }>();
 
+// Store
+const tagStore = useTagStore();
+
+// State
 const objectTagging: Ref<Tagging | undefined> = ref(undefined);
 
+// Actions
 async function load() {
   await tagStore.fetchTagging({objId: props.objectInfoId});
   objectTagging.value = tagStore.getTaggingByObjectId(props.objectInfoId);

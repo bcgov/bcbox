@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
+import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
+import { BucketSidebar, BucketTable } from '@/components/bucket';
+import { useBucketStore, useUserStore } from '@/store';
 
 import { BucketConfigForm, BucketsSidebar, BucketsTable } from '@/components/bucket';
 import { useToaster } from '@/composables/useToaster';
@@ -10,7 +11,6 @@ import { BucketConfig } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { Bucket } from '@/interfaces';
-import { storeToRefs } from 'pinia';
 
 // Store
 const bucketStore = useBucketStore();
@@ -42,12 +42,8 @@ const closeBucketConfig = () => {
   displayBucketConfig.value = false;
 };
 
-const load = async () => {
+onMounted(async () => {
   await bucketStore.fetchBuckets({ userId: currentUser.value?.userId, objectPerms: true });
-};
-
-onMounted(() => {
-  load();
 });
 </script>
 
@@ -104,7 +100,7 @@ onMounted(() => {
         class="flex-shrink-0 ml-3"
         style="max-width: 33%; min-width: 33%"
       >
-        <BucketsSidebar
+        <BucketSidebar
           :display-info="displayInfo"
           @close-info="closeInfo"
         />

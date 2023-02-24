@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
-import Dropdown from 'primevue/dropdown';
-import RadioButton from 'primevue/radiobutton';
-
+import { onMounted, ref, Ref, watch } from 'vue';
+import { Button, Dropdown, RadioButton } from '@/lib/primevue';
 import { useConfigStore, useUserStore } from '@/store';
 import { Regex } from '@/utils/constants';
+
 import type { IdentityProvider, User, UserPermissions } from '@/interfaces';
 
 // Props
@@ -29,7 +27,7 @@ const userSearchPlaceholder: Ref<string | undefined> = ref('');
 // Emits
 const emit = defineEmits(['add-user', 'cancel-search-users']);
 
-// Functions
+// Actions
 const getUserDropdownLabel = (option: User) => {
   if( selectedIDP.value?.idp ) {
     if( selectedIDP.value.searchable ) {

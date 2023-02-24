@@ -1,32 +1,35 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useBucketStore, useMetadataStore, useObjectStore, useUserStore } from '@/store';
+import { onMounted, ref, watch } from 'vue';
 import GridRow from '@/components/form/GridRow.vue';
+import { useBucketStore, useMetadataStore, useObjectStore, useUserStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
 import type { Bucket, COMSObject, Metadata } from '@/interfaces';
 
-const bucketStore = useBucketStore();
-const metadataStore = useMetadataStore();
-const objectStore = useObjectStore();
-const userStore = useUserStore();
-
-const { userSearch } = storeToRefs(userStore);
-
+// Props
 const props = defineProps<{
   objectInfoId: string;
   fullView: boolean;
 }>();
 
+// Store
+const bucketStore = useBucketStore();
+const metadataStore = useMetadataStore();
+const objectStore = useObjectStore();
+const userStore = useUserStore();
+const { userSearch } = storeToRefs(userStore);
+
+// State
 const bucket: Ref<Bucket | undefined> = ref(undefined);
 const object: Ref<COMSObject | undefined> = ref(undefined);
 const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
 const createdBy: Ref<string | undefined> = ref(undefined);
 const updatedBy: Ref<string | undefined> = ref(undefined);
 
+// Actions
 async function load() {
   await objectStore.fetchObjects({objId: props.objectInfoId});
   await metadataStore.fetchMetadata({objId: props.objectInfoId});

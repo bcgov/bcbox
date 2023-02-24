@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-
 import { useConfigStore } from '@/store';
 
 const { getConfig } = storeToRefs(useConfigStore());

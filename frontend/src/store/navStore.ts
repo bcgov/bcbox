@@ -1,16 +1,17 @@
-import { ref } from 'vue';
 import { defineStore } from 'pinia';
+import { ref } from 'vue';
+
 import type { RouteLocationNormalized } from 'vue-router';
 
 export const useNavStore = defineStore('nav', () => {
-  // state
+  // State
   const home = ref({
     label: 'Home',
     to: '/',
   });
   const items = ref([] as any[]);
 
-  // actions
+  // Actions
   function navigate(navLink: RouteLocationNormalized) {
     // Get the path without any hash info
     const fullPath = navLink.fullPath.split('#')[0];
@@ -37,7 +38,15 @@ export const useNavStore = defineStore('nav', () => {
     if (item) item.label = newLabel;
   }
 
-  return { home, items, navigate, replace };
+  return {
+    // State
+    home,
+    items,
+
+    // Actions
+    navigate,
+    replace
+  };
 });
 
 export default useNavStore;

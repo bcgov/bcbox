@@ -1,29 +1,30 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { storeToRefs } from 'pinia';
-import { useToast } from 'primevue/usetoast';
-import Button from 'primevue/button';
-import FileUpload from 'primevue/fileupload';
-
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
+import { Button, FileUpload, useToast } from '@/lib/primevue';
 import { useObjectStore, useUserStore } from '@/store';
 
 import type { Ref } from 'vue';
 
+// Props
 defineProps<{
   closeCallback: Function,
 }>();
 
+// Store
 const objectStore = useObjectStore();
-const route = useRoute();
-const toast = useToast();
-
 const { currentUser } = storeToRefs(useUserStore());
 
+// State
 const pendingFiles: Ref<Array<File>> = ref([]);
 const successfulFiles: Ref<Array<File>> = ref([]);
 const failedFiles: Ref<Array<File>> = ref([]);
+
+// Actions
+const route = useRoute();
+const toast = useToast();
 
 const onSelectedFiles = (event: any) => {
   pendingFiles.value = event.files;

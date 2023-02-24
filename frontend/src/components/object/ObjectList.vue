@@ -1,10 +1,7 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref, watch} from 'vue';
 import { useRoute } from 'vue-router';
-import { storeToRefs } from 'pinia';
-
-import Button from 'primevue/button';
-
 import {
   DeleteObjectButton,
   DownloadObjectButton,
@@ -13,16 +10,14 @@ import {
   ObjectUpload
 } from '@/components/object';
 import { ButtonMode } from '@/interfaces/common/enums';
+import { Button } from '@/lib/primevue';
 import { useBucketStore, useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
-import { Permissions } from '@/utils/constants';
-
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/interfaces';
 
 // Store
 const bucketStore = useBucketStore();
 const metadataStore = useMetadataStore();
-const permissionStore = usePermissionStore();
 //const navStore = useNavStore();
 const objectStore = useObjectStore();
 

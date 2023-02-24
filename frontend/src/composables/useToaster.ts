@@ -1,4 +1,4 @@
-import { useToast } from 'primevue/usetoast';
+import { useToast } from '@/lib/primevue';
 
 export async function useToaster(callback: Function, options: any = {}) {
   const toast = useToast();

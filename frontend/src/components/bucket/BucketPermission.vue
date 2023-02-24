@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
+import { onMounted, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import Checkbox from 'primevue/checkbox';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-
 import BucketPermissionAddUser from '@/components/bucket/BucketPermissionAddUser.vue';
+import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
 import { usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
@@ -42,13 +38,9 @@ const updateBucketPermission = (value: any, userId: string, permCode: string) =>
   }
 };
 
-const load = async () => {
+onMounted( async () => {
   await permissionStore.fetchBucketPermissions({ bucketId: props.bucketId });
   await permissionStore.mapBucketToUserPermissions(props.bucketId);
-};
-
-onMounted(() => {
-  load();
 });
 </script>
 

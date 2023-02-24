@@ -1,5 +1,5 @@
-import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
+import { computed, ref } from 'vue';
 import { objectService } from '@/services';
 
 import type { Ref } from 'vue';
@@ -11,7 +11,6 @@ export const useTagStore = defineStore('tag', () => {
 
   // Getters
   const getTagging = computed(() => tagging.value);
-  const getTaggingByObjectId = (objectId: string) => tagging.value.find((x: Tagging) => x.objectId === objectId);
 
   // Actions
   async function fetchTagging(params: object = {}) {
@@ -25,9 +24,14 @@ export const useTagStore = defineStore('tag', () => {
     }
   }
 
+  const getTaggingByObjectId = (objectId: string) => tagging.value.find((x: Tagging) => x.objectId === objectId);
+
   return {
+    // Getters
     getTagging,
+
+    // Actions
+    fetchTagging,
     getTaggingByObjectId,
-    fetchTagging
   };
 });

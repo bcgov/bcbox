@@ -1,4 +1,5 @@
 import { comsAxios } from './interceptors';
+
 const PATH = '/object';
 
 export default {

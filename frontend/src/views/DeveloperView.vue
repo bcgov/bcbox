@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
-import ProgressSpinner from 'primevue/progressspinner';
-import { useToast } from 'primevue/usetoast';
-
+import CopyToClipboard from '@/components/form/CopyToClipboard.vue';
+import { ButtonMode } from '@/interfaces/common/enums';
+import { Button, ProgressSpinner,useToast } from '@/lib/primevue';
 import { useAuthStore, useConfigStore, useUserStore } from '@/store';
 
 const { getAccessToken, getProfile } = storeToRefs(useAuthStore());
@@ -12,6 +11,7 @@ const { getConfig } = storeToRefs(useConfigStore());
 const userStore = useUserStore();
 const { loading, idps } = storeToRefs(userStore);
 
+// Actions
 const toast = useToast();
 
 const getIdps = async () => {

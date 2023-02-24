@@ -1,6 +1,6 @@
-import { computed, ref, toRaw, unref } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
-import { useToast } from 'primevue/usetoast';
+import { computed, ref, unref } from 'vue';
+import { useToast } from '@/lib/primevue';
 import { permissionService, userService } from '@/services';
 import { useAppStore, useConfigStore } from '@/store';
 import { Permissions } from '@/utils/constants';

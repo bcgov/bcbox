@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import ConfirmDialog from 'primevue/confirmdialog';
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
-import { onBeforeMount, onErrorCaptured } from 'vue';
+import { onErrorCaptured } from 'vue';
 import { RouterView } from 'vue-router';
+import { ConfirmDialog, ProgressBar, Toast, useToast }from '@/lib/primevue';
+import { storeToRefs } from 'pinia';
+import { onBeforeMount, onErrorCaptured } from 'vue';
 
 import { AppLayout, Navbar, ProgressLoader } from '@/components/layout';
 import { useAppStore, useAuthStore, useUserStore } from '@/store';

@@ -1,14 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, unref } from 'vue';
 import { storeToRefs } from 'pinia';
+import { ref, watch, unref } from 'vue';
 import { useRoute } from 'vue-router';
-
-import Button from 'primevue/button';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-import Dialog from 'primevue/dialog';
-import InputSwitch from 'primevue/inputswitch';
-
 import {
   DeleteObjectButton,
   DownloadObjectButton,
@@ -16,6 +9,7 @@ import {
   ShareObjectButton
 } from '@/components/object';
 import { ButtonMode } from '@/interfaces/common/enums';
+import { Button, Column, DataTable, Dialog } from '@/lib/primevue';
 import { useAppStore, useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
@@ -35,7 +29,6 @@ const emit = defineEmits(['show-object-info']);
 const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
-const route = useRoute();
 const { getObjects } = storeToRefs(objectStore);
 const { currentUser } = storeToRefs(useUserStore());
 
@@ -46,6 +39,8 @@ const permissionsObjectName = ref('');
 const selectedObjects: Ref<Array<COMSObject>> = ref([]);
 
 // Actions
+const route = useRoute();
+
 const showInfo = async (id: string) => {
   emit('show-object-info', id);
 };

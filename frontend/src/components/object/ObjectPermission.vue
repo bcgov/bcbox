@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
+import { onMounted, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import Checkbox from 'primevue/checkbox';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-
 import ObjectPermissionAddUser from '@/components/object/ObjectPermissionAddUser.vue';
+import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
 import { usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
