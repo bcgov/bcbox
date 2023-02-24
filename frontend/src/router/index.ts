@@ -131,9 +131,8 @@ export default function getRouter() {
       }
     }
 
-    if (to.meta.requiresAuth) {
-      const user = authService.getUser();
-      if (!user) await authService.login();
+    if (to.meta.requiresAuth && !(await authService.getUser())) {
+      await authService.login();
     }
 
     next();

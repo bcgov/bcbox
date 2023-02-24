@@ -1,22 +1,21 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-// PrimeVue
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import { useToast } from 'primevue/usetoast';
-// State
+
 import { useAuthStore, useConfigStore, useUserStore } from '@/store';
 
-const { config } = storeToRefs(useConfigStore());
-const { getKeycloak } = storeToRefs(useAuthStore());
-const userStore = useUserStore();
+const { getAccessToken, getProfile } = useAuthStore();
+const { getConfig } = useConfigStore();
+const { listIdps } = useUserStore();
 const { loading, idps } = storeToRefs(useUserStore());
 
 const toast = useToast();
 
 const getIdps = async () => {
   try {
-    await userStore.listIdps();
+    await listIdps();
   } catch (error) {
     toast.add({ severity: 'error', summary: 'Error calling list IDPs endpoint example', detail: error, life: 3000 });
   }
@@ -40,13 +39,13 @@ const getIdps = async () => {
     </div>
 
     <h3>Config</h3>
-    {{ config }}
+    {{ getConfig }}
 
     <h3>Token</h3>
-    {{ getKeycloak.token }}
+    {{ getAccessToken }}
 
-    <h3>Parsed Token</h3>
-    {{ getKeycloak.tokenParsed }}
+    <h3>Profile</h3>
+    {{ getProfile }}
   </div>
 </template>
 

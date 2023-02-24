@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
 import { useAuthStore } from '@/store';
 
-const { getKeycloak } = storeToRefs(useAuthStore());
+const { getIsAuthenticated } = useAuthStore();
 </script>
 
 <template>
   <div>
-    <h3 v-if="!getKeycloak.authenticated">
+    <h3 v-if="!getIsAuthenticated">
       Please login to continue.
+    </h3>
+    <h3 v-else>
+      Welcome to BCBox.
     </h3>
   </div>
 </template>
