@@ -56,8 +56,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Actions
   function _registerEvents() {
-    console.debug('_registerEvents');
-
     userManager.events.addAccessTokenExpired(_updateState);
     userManager.events.addAccessTokenExpiring(_updateState);
     userManager.events.addSilentRenewError(_updateState);
@@ -69,8 +67,6 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function _updateState() {
-    console.debug('_updateState');
-
     const user = await authService.getUser();
     state.accessToken.value = user?.access_token;
     state.expiresAt.value = user?.expires_at;

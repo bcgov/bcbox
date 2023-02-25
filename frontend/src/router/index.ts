@@ -86,8 +86,8 @@ const routes: Array<RouteRecordRaw> = [
         name: RouteNames.CALLBACK,
         component: () => import('../views/CallbackView.vue'),
         beforeEnter: async () => {
-          const { loginCallback } = useAuthStore();
-          await loginCallback();
+          const authStore = useAuthStore();
+          await authStore.loginCallback();
         }
       },
       {
@@ -114,7 +114,7 @@ export default function getRouter() {
   });
 
   router.beforeEach(async (to, _from, next) => {
-    const { getIsAuthenticated, login } = useAuthStore();
+    const authStore = useAuthStore();
     // Removed for now
     // const { navigate } = useNavStore();
     // navigate(to);
@@ -130,8 +130,8 @@ export default function getRouter() {
       }
     }
 
-    if (to.meta.requiresAuth && !getIsAuthenticated) {
-      await login();
+    if (to.meta.requiresAuth && !authStore.getIsAuthenticated) {
+      await authStore.login();
     }
 
     next();

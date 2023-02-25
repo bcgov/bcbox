@@ -1,27 +1,23 @@
-import { createApp } from 'vue';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import PrimeVue from 'primevue/config';
+import ConfirmationService from 'primevue/confirmationservice';
+import ToastService from 'primevue/toastservice';
+import Tooltip from 'primevue/tooltip';
 import { createPinia } from 'pinia';
+import { createApp } from 'vue';
 
 import App from '@/App.vue';
 import getRouter from '@/router';
-import { AuthService, ConfigService } from '@/services';
 import { useAuthStore, useConfigStore } from '@/store';
+import { AuthService, ConfigService } from '@/services';
 
-import './assets/main.scss';
-
-// PrimeVue
-import PrimeVue from 'primevue/config';
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
-import ToastService from 'primevue/toastservice';
-import Tooltip from 'primevue/tooltip';
-import ConfirmationService from 'primevue/confirmationservice';
-
-// FontAwesome
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import '@/assets/main.scss';
 
 /**
  * @function initializeApp

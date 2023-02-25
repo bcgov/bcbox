@@ -6,16 +6,17 @@ import { useToast } from 'primevue/usetoast';
 
 import { useAuthStore, useConfigStore, useUserStore } from '@/store';
 
-const { getAccessToken, getProfile } = useAuthStore();
-const { getConfig } = useConfigStore();
-const { listIdps } = useUserStore();
-const { loading, idps } = storeToRefs(useUserStore());
+const { getAccessToken, getProfile } = storeToRefs(useAuthStore());
+const { getConfig } = storeToRefs(useConfigStore());
+
+const userStore = useUserStore();
+const { loading, idps } = storeToRefs(userStore);
 
 const toast = useToast();
 
 const getIdps = async () => {
   try {
-    await listIdps();
+    await userStore.listIdps();
   } catch (error) {
     toast.add({ severity: 'error', summary: 'Error calling list IDPs endpoint example', detail: error, life: 3000 });
   }

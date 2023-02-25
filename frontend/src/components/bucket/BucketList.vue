@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { ref, onMounted, Ref } from 'vue';
-import { BucketConfig as BucketConfigConst } from '@/utils/constants';
-import BucketConfigForm from '@/components/bucket/BucketConfigForm.vue';
-import BucketsSidebar from '@/components/bucket/BucketsSidebar.vue';
-import BucketsTable from '@/components/bucket/BucketsTable.vue';
-import { useBucketStore } from '@/store';
+import { ref, onMounted } from 'vue';
+
+import { BucketConfigForm, BucketsSidebar, BucketsTable } from '@/components/bucket';
 import { useToaster } from '@/composables/useToaster';
+import { useBucketStore } from '@/store';
+import { BucketConfig as BucketConfigConst } from '@/utils/constants';
+
 import type { Bucket } from '@/interfaces';
+import type { Ref } from 'vue';
 
 const bucketStore = useBucketStore();
 

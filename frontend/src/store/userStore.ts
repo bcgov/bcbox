@@ -21,10 +21,10 @@ export const useUserStore = defineStore('user', () => {
   }
 
   // Hydrates the logged in users info from the COMS database
-  async function getUser() {
+  async function getUser(): Promise<string | void> {
     if (!currentUser.value && getIsAuthenticated) {
-      if (getIdentityId()) {
-        await searchUsers({ identityId: getIdentityId() });
+      if (getIdentityId) {
+        await searchUsers({ identityId: getIdentityId });
 
         if (userSearch.value.length) {
           currentUser.value = userSearch.value[0];
@@ -32,10 +32,10 @@ export const useUserStore = defineStore('user', () => {
             return idp.idp === userSearch.value[0].idp;
           })?.elevatedRights;
         }
+        return Promise.resolve();
       }
     }
-
-    return currentUser.value ?? undefined;
+    return Promise.resolve('Not authenticated');
   }
 
   async function listIdps() {
@@ -71,5 +71,5 @@ export const useUserStore = defineStore('user', () => {
     userSearch.value = [];
   }
 
-  return { idps, loading, currentUser, userSearch, clearSearch, init, listIdps, searchUsers };
+  return { idps, loading, currentUser, userSearch, clearSearch, getUser, init, listIdps, searchUsers };
 });

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-// import { storeToRefs } from 'pinia';
+import { storeToRefs } from 'pinia';
 import Toolbar from 'primevue/toolbar';
 
 import { useAuthStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 // const { home, items } = storeToRefs(useNavStore());
-const { getIsAuthenticated } = useAuthStore();
+const { getIsAuthenticated } = storeToRefs(useAuthStore());
 </script>
 
 <template>

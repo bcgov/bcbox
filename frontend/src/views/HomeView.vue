@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { useAuthStore } from '@/store';
 
-const { getIsAuthenticated } = useAuthStore();
+const { getIsAuthenticated } = storeToRefs(useAuthStore());
 </script>
 
 <template>

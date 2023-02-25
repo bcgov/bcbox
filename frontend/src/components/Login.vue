@@ -1,23 +1,25 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 
 import { useAuthStore } from '@/store/authStore';
 
-const { getIsAuthenticated, login, logout } = useAuthStore();
+const authStore = useAuthStore();
+const { getIsAuthenticated } = storeToRefs(authStore);
 </script>
 
 <template>
   <Button
     v-if="!getIsAuthenticated"
     primary
-    @click="login()"
+    @click="authStore.login()"
   >
     Log in
   </Button>
   <Button
     v-else
     primary
-    @click="logout()"
+    @click="authStore.logout()"
   >
     Log out
   </Button>
