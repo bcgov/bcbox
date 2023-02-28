@@ -147,6 +147,7 @@ export const usePermissionStore = defineStore('permission', () => {
   async function fetchObjectPermissions(params: COMSObjectPermissionsOptions = {}) {
     try {
       appStore.beginLoading();
+
       const response = (await permissionService.objectSearchPermissions(params)).data;
 
       const newPerms: Array<COMSObjectPermission> = response.flatMap((x: any) => x.permissions);

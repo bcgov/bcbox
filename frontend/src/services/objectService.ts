@@ -1,5 +1,7 @@
 import { comsAxios } from './interceptors';
 
+import type { ListObjectsOptions } from '@/types';
+
 const PATH = '/object';
 
 export default {
@@ -73,7 +75,7 @@ export default {
    * List and search for all objects
    * @returns {Promise} An axios response
    */
-  listObjects(params: any = {}) {
+  listObjects(params: ListObjectsOptions = {}) {
     // remove objId array if its first element is undefined
     if (params.objId && params.objId[0] === undefined) delete params.objId;
     return comsAxios().get(PATH, { params: params });

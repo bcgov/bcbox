@@ -1,13 +1,17 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, unref } from 'vue';
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
 import { useAppStore, usePermissionStore, useUserStore } from '@/store';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-import type { COMSObject, COMSObjectPermissionsOptions } from '@/types';
+import type { COMSObject, COMSObjectPermissionsOptions, ListObjectsOptions } from '@/types';
 
 export const useObjectStore = defineStore('objectStore', () => {
+  const toast = useToast();
+
+  // Store
   const appStore = useAppStore();
   const permissionStore = usePermissionStore();
   const toast = useToast();
@@ -16,16 +20,11 @@ export const useObjectStore = defineStore('objectStore', () => {
 
   // State
   const objects: Ref<Array<COMSObject>> = ref([]);
-  //const selectedObject: Ref<COMSObject | null> = ref(null);
-  //const selectedObjectPermissions: Ref<Array<UserPermissions>> = ref([]);
   const selectedObjects: Ref<Array<COMSObject>> = ref([]); // All selected table row items
 
-  // Computed Getters
+  // Getters
   const getObjects = computed(() => objects.value);
   const getSelectedObjects = computed(() => selectedObjects.value);
-
-  // Getters
-  const getObjectById = (objectId: string) => objects.value.find((x) => x.id === objectId);
 
   // Actions
   async function createObject(object: any, bucketId?: string) {
@@ -33,7 +32,7 @@ export const useObjectStore = defineStore('objectStore', () => {
       appStore.beginLoading();
       await objectService.createObject(object, bucketId);
     } catch (error) {
-      console.error(`Error uploading: ${error}`); // eslint-disable-line no-console
+      toast.add({ severity: 'error', summary: 'Error creating object', detail: error, life: 3000 });
       throw error;
     } finally {
       appStore.endLoading();
@@ -49,7 +48,7 @@ export const useObjectStore = defineStore('objectStore', () => {
         })
       );
     } catch (error) {
-      console.error(`Error deleting ${objectIds}: ${error}`); // eslint-disable-line no-console
+      toast.add({ severity: 'error', summary: 'Error deleting object', detail: error, life: 3000 });
       throw error;
     } finally {
       fetchObjects();
@@ -66,40 +65,56 @@ export const useObjectStore = defineStore('objectStore', () => {
       appStore.beginLoading();
 
       if (currentUser.value) {
+        // Get a unique list of object IDs the user has access to
         const permResponse = await permissionStore.fetchObjectPermissions(params);
+        const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))];
 
-        const uniqueIds = [...new Set(permResponse.map((x: { id: string }) => x.id))];
         let response = Array<COMSObject>();
         if (uniqueIds.length) {
-          response = (await objectService.listObjects({ ...params, objId: uniqueIds })).data;
+          response = (await objectService.listObjects({ ...params as ListObjectsOptions, objId: uniqueIds })).data;
+
+          // Remove old values matching search parameters
+          const matches = (x: COMSObject) => (
+            (!params.objId || x.id === params.objId) &&
+            (!params.bucketId || x.bucketId === params.bucketId)
+          );
+
+          const [match, difference] = partition(unref(objects), matches);
+
+          // Merge and assign
+          objects.value = difference.concat(response);
         }
-        objects.value = response;
+        else {
+          objects.value = response;
+        }
       }
-    } catch (error) {
-      console.error(`Error obtaining object list: ${error}`); // eslint-disable-line no-console
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error downloading object', detail: error, life: 3000 });
       throw error;
-    } finally {
+    }
+    finally {
       appStore.endLoading();
     }
   }
+
+  const getObjectById = (objectId: string) => objects.value.find((x) => x.id === objectId);
 
   function setSelectedObjects(selected: Array<COMSObject>) {
     selectedObjects.value = selected;
   }
 
   return {
-    // Computed Getters
+    // Getters
     getObjects,
     getSelectedObjects,
-
-    // Getters
-    getObjectById,
 
     // Actions
     createObject,
     deleteObjects,
     downloadObject,
     fetchObjects,
+    getObjectById,
     setSelectedObjects
   };
 });

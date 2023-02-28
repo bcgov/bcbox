@@ -1,4 +1,4 @@
-export interface Tag {
+export type Tag = {
   key: string;
   value: string;
 }

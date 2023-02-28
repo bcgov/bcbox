@@ -1,4 +1,4 @@
-export interface IdentityProvider {
+export type IdentityProvider = {
   name: string;
   elevatedRights: boolean;
   identityKey: string;

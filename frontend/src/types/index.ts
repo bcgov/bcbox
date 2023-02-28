@@ -13,3 +13,6 @@ export type { UserPermissions } from './UserPermissions';
 
 export type { BucketPermissionsOptions } from './options/BucketPermissionsOptions';
 export type { COMSObjectPermissionsOptions } from './options/COMSObjectPermissionsOptions';
+export type { FetchMetadataOptions } from './options/FetchMetadataOptions';
+export type { FetchTaggingOptions } from './options/FetchTaggingOptions';
+export type { ListObjectsOptions } from './options/ListObjectsOptions';

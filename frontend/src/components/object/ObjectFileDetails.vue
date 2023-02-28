@@ -46,7 +46,7 @@ onMounted(async () => {
 });
 
 watch( [routeObjId, getObjects], () => {
-  metadataStore.fetchMetadata({objId: routeObjId });
+  metadataStore.fetchMetadata({objId: unref(routeObjId) });
   bucketId.value = objectStore.getObjectById(unref(routeObjId))?.bucketId || '';
 });
 </script>

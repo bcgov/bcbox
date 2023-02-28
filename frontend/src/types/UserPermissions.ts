@@ -1,4 +1,4 @@
-export interface UserPermissions {
+export type UserPermissions = {
   userId: string;
   idpName?: string;
   elevatedRights?: boolean;

@@ -1,6 +1,6 @@
 import type { Tag } from '@/types';
 
-export interface Tagging {
+export type Tagging = {
   objectId: string;
   tagset: Array<Tag>;
 }

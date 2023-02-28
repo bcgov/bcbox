@@ -10,7 +10,7 @@ import {
   ObjectUpload
 } from '@/components/object';
 import { Button } from '@/lib/primevue';
-import { useBucketStore, useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
+import { useBucketStore, useMetadataStore, useObjectStore, useUserStore } from '@/store';
 import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
@@ -61,22 +61,17 @@ const selectedObjectIds = computed(() => {
   return getSelectedObjects.value.map((o) => o.id);
 });
 
-
-const load = async () => {
-  await bucketStore.fetchBuckets({ userId: currentUser.value?.userId, objectPerms: true });
-  await objectStore.fetchObjects({ bucketId: route.query.bucketId as string });
-  await metadataStore.fetchMetadata({objId: getObjects.value.map( (x: COMSObject) => x.id )});
-};
-
-onMounted(() => {
+onMounted(async () => {
   // Removed for now
   // updateBreadcrumb();
-  load();
+
+  await bucketStore.fetchBuckets({ userId: currentUser.value?.userId, objectPerms: true });
+  await objectStore.fetchObjects({ bucketId: route.query.bucketId as string });
 });
 
-watch( getObjects, () => {
+watch( getObjects, async () => {
   // Watch for object changes to get associated metadata
-  metadataStore.fetchMetadata({objId: getObjects.value.map( (x: COMSObject) => x.id )});
+  await metadataStore.fetchMetadata({objId: getObjects.value.map( (x: COMSObject) => x.id )});
 });
 
 </script>

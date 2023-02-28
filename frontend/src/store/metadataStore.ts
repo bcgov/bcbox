@@ -1,11 +1,18 @@
-import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
+import { computed, ref, unref } from 'vue';
+import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
+import { useAppStore } from '@/store';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { Metadata } from '@/types';
+import type { FetchMetadataOptions } from '@/types';
 
 export const useMetadataStore = defineStore('metadata', () => {
+  const appStore = useAppStore();
+  const toast = useToast();
+
   // State
   const metadata: Ref<Array<Metadata>> = ref([]);
 
@@ -13,14 +20,30 @@ export const useMetadataStore = defineStore('metadata', () => {
   const getMetadata = computed(() => metadata.value);
 
   // Actions
-  async function fetchMetadata(params: object = {}) {
+  async function fetchMetadata(params: FetchMetadataOptions = {}) {
     try {
-      metadata.value = (await objectService.getMetadata(null, { ...params })).data;
+      appStore.beginLoading();
+
+      const response = (await objectService.getMetadata(null, { ...params })).data;
+
+      // Remove old values matching search parameters
+      const matches = (x: Metadata) => (
+        (!params.objId ||
+          (Array.isArray(params.objId) && params.objId.some((y: string) => x.objectId === y)) ||
+          (!Array.isArray(params.objId) && params.objId === x.objectId))
+      );
+
+      const [match, difference] = partition(unref(metadata), matches);
+
+      // Merge and assign
+      metadata.value = difference.concat(response);
     }
     catch (error) {
-      console.error(`fetchMetadata error: ${error}`); // eslint-disable-line no-console
-      // So that a caller can action it
+      toast.add({ severity: 'error', summary: 'Error fetching metadata', detail: error, life: 3000 });
       throw error;
+    }
+    finally {
+      appStore.endLoading();
     }
   }
 
