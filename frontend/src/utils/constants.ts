@@ -1,6 +1,6 @@
-export const KEYCLOAK = Object.freeze({
-  MIN_VALID_TIME_SEC: 70,
-  REFRESH_TIME_MS: 10000,
+export const BucketConfig = Object.freeze({
+  headerNewBucket: 'Configure bucket',
+  titleNewBucket: 'Use this form to configure a bucket to be used in BCBox for the first time.'
 });
 
 export const Permissions = Object.freeze({
@@ -25,14 +25,15 @@ export const RouteNames = Object.freeze({
   HOME: 'home',
   LISTBUCKETS: 'listBuckets',
   LISTOBJECTS: 'listObjects',
+  LOGIN: 'login',
   LOGOUT: 'logout'
+});
+
+export const StorageKey = Object.freeze({
+  AUTH: 'entrypoint',
+  CONFIG: 'config'
 });
 
 export const ValidationMessages = Object.freeze({
   REQUIRED: 'This field is required.',
-});
-
-export const BucketConfig = Object.freeze({
-  headerNewBucket: 'Configure bucket',
-  titleNewBucket: 'Use this form to configure a bucket to be used in BCBox for the first time.'
 });

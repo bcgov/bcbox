@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import { useAuthStore } from '@/store';
-import { RouteNames } from '@/utils/constants';
+import { RouteNames, StorageKey } from '@/utils/constants';
 
 import type { RouteRecordRaw } from 'vue-router';
 
@@ -84,16 +84,21 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'callback',
         name: RouteNames.CALLBACK,
-        component: () => import('../views/CallbackView.vue'),
-        beforeEnter: async () => {
-          const authStore = useAuthStore();
-          await authStore.loginCallback();
+        component: () => import('../views/OidcCallbackView.vue'),
+      },
+      {
+        path: 'login',
+        name: RouteNames.LOGIN,
+        component: () => import('../views/OidcLoginView.vue'),
+        beforeEnter: () => {
+          const entrypoint = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+          window.sessionStorage.setItem(StorageKey.AUTH, entrypoint);
         }
       },
       {
         path: 'logout',
         name: RouteNames.LOGOUT,
-        redirect: { name: RouteNames.HOME }
+        component: () => import('../views/OidcLogoutView.vue')
       },
     ]
   },
@@ -131,7 +136,7 @@ export default function getRouter() {
     }
 
     if (to.meta.requiresAuth && !authStore.getIsAuthenticated) {
-      await authStore.login();
+      router.replace({ name: RouteNames.LOGIN });
     }
 
     next();

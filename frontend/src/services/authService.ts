@@ -1,14 +1,10 @@
 import { Log, UserManager, WebStorageStateStore } from 'oidc-client-ts';
 
-// import getRouter from '@/router';
 import ConfigService from './configService';
 
 import type { User, UserManagerSettings } from 'oidc-client-ts';
 
 const isDebugMode: boolean = import.meta.env.MODE.toUpperCase() === 'DEBUG';
-// const router = getRouter();
-const storageKey = 'entrypoint';
-const storageType = window.sessionStorage;
 
 /**
  * @class AuthService
@@ -93,9 +89,7 @@ export default class AuthService {
    * @returns {Promise<void>}
    */
   public async login(): Promise<void> {
-    const relativeLocation = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    storageType.setItem(storageKey, relativeLocation);
-    return AuthService._userManager.signinRedirect();
+    return AuthService._userManager.signinRedirect({ redirectMethod: 'replace' });
   }
 
   /**
@@ -108,12 +102,6 @@ export default class AuthService {
     await AuthService._userManager.signinRedirectCallback();
     // signinRedirectCallback appears to do this already?
     // await AuthService._userManager.storeUser(user);
-
-    // Return user back to original login entrypoint if specified
-    const entrypoint = storageType.getItem(storageKey);
-    if (entrypoint) storageType.removeItem(storageKey);
-    // router.replace(entrypoint || '/');
-    window.location.replace(entrypoint || '/');
   }
 
   /**

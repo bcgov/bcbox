@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const storageKey = 'config';
+import { StorageKey } from '@/utils/constants';
+
 const storageType = window.sessionStorage;
 
 /**
@@ -29,12 +30,12 @@ export default class ConfigService {
    */
   public static async init(): Promise<ConfigService> {
     return new Promise((resolve, reject) => {
-      if (storageType.getItem(storageKey) === null) {
+      if (storageType.getItem(StorageKey.CONFIG) === null) {
         axios.get('/config').then(({ data }) => {
-          storageType.setItem(storageKey, JSON.stringify(data));
+          storageType.setItem(StorageKey.CONFIG, JSON.stringify(data));
           resolve(new ConfigService());
         }).catch(err => {
-          storageType.removeItem(storageKey);
+          storageType.removeItem(StorageKey.CONFIG);
           reject(`Failed to initialize configuration: ${err}`);
         });
       } else {
@@ -50,7 +51,7 @@ export default class ConfigService {
    */
   public getConfig(): any | undefined {
     try {
-      const cfgString = storageType.getItem(storageKey);
+      const cfgString = storageType.getItem(StorageKey.CONFIG);
       return cfgString ? JSON.parse(cfgString) : undefined;
     } catch (err: unknown) {
       // eslint-disable-next-line no-console
