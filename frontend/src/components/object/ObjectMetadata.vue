@@ -9,6 +9,7 @@ import type { Metadata } from '@/types';
 // Props
 const props = defineProps<{
   objectInfoId: string;
+  fullView: boolean;
 }>();
 
 // Store
@@ -19,7 +20,9 @@ const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
 
 // Actions
 async function load() {
-  await metadataStore.fetchMetadata({objId: props.objectInfoId});
+  if( props.fullView ) {
+    await metadataStore.fetchMetadata({objId: props.objectInfoId});
+  }
   objectMetadata.value = metadataStore.getMetadataByObjectId(props.objectInfoId);
 }
 

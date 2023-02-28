@@ -44,7 +44,10 @@ const closeObjectInfo = async () => {
       :object-info-id="objectInfoId"
       :full-view="false"
     />
-    <ObjectMetadata :object-info-id="objectInfoId" />
+    <ObjectMetadata
+      :object-info-id="objectInfoId"
+      :full-view="false"
+    />
     <ObjectTag :object-info-id="objectInfoId" />
     <div class="col-9">
       <router-link

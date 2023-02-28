@@ -19,7 +19,7 @@ import { ButtonMode } from '@/utils/enums';
 import type { Ref } from 'vue';
 import { Permissions } from '@/utils/constants';
 
-// State
+// Store
 const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
@@ -27,7 +27,7 @@ const route = useRoute();
 const { getObjects } = storeToRefs(objectStore);
 const { currentUser } = storeToRefs(useUserStore());
 
-// Store
+// State
 const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsObjectId: Ref<string> = ref('');
 const permissionsObjectName: Ref<string> = ref('');
@@ -99,7 +99,10 @@ watch( [routeObjId, getObjects], () => {
         :full-view="true"
       />
       <ObjectAccess :object-info-id="routeObjId" />
-      <ObjectMetadata :object-info-id="routeObjId" />
+      <ObjectMetadata
+        :object-info-id="routeObjId"
+        :full-view="true"
+      />
       <ObjectTag :object-info-id="routeObjId" />
     </div>
   </div>

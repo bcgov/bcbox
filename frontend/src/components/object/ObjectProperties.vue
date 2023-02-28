@@ -31,8 +31,10 @@ const updatedBy: Ref<string | undefined> = ref(undefined);
 
 // Actions
 async function load() {
-  await objectStore.fetchObjects({objId: props.objectInfoId});
-  await metadataStore.fetchMetadata({objId: props.objectInfoId});
+  if( props.fullView ) {
+    await objectStore.fetchObjects({objId: props.objectInfoId});
+    await metadataStore.fetchMetadata({objId: props.objectInfoId});
+  }
   object.value = objectStore.getObjectById(props.objectInfoId);
   objectMetadata.value = metadataStore.getMetadataByObjectId(object.value?.id as string);
   bucket.value = bucketStore.getBucketById(object.value?.bucketId as string);
