@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import { useAuthStore } from '@/store';
+import { useAppStore, useAuthStore } from '@/store';
 import { RouteNames, StorageKey } from '@/utils/constants';
 
 import type { RouteRecordRaw } from 'vue-router';
@@ -113,16 +113,19 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 export default function getRouter() {
+  const appStore = useAppStore();
+  const authStore = useAuthStore();
   const router = createRouter({
     history: createWebHistory(),
     routes
   });
 
   router.beforeEach(async (to, _from, next) => {
-    const authStore = useAuthStore();
     // Removed for now
     // const { navigate } = useNavStore();
     // navigate(to);
+
+    appStore.beginDeterminateLoading();
 
     if (!to.path.includes('/oidc') && to.query && isFirstTransition) {
       // Backend Redirection Artifact
@@ -144,6 +147,7 @@ export default function getRouter() {
 
   router.afterEach(() => {
     isFirstTransition = false;
+    appStore.endDeterminateLoading();
   });
 
   return router;

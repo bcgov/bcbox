@@ -20,9 +20,9 @@ export type AuthStateStore = {
 }
 
 export const useAuthStore = defineStore('auth', () => {
+  const configService = new ConfigService();
   const authService = new AuthService();
   const userManager = authService.getUserManager();
-  const configService = new ConfigService();
 
   // State
   const state: AuthStateStore = {

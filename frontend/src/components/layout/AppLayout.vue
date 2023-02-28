@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import BCGovHeader from '@/components/bcgov/BCGovHeader.vue';
-import Footer from '@/components/layout/Footer.vue';
+import { Header, Footer } from '@/components/layout';
 </script>
 
 <template>
   <div class="layout-app">
     <!-- Header/Nav -->
     <div class="layout-head">
-      <BCGovHeader />
+      <Header />
       <slot name="nav" />
     </div>
 

@@ -1,30 +1,28 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import ConfirmDialog from 'primevue/confirmdialog';
-import ProgressBar from 'primevue/progressbar';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
-import { onBeforeMount, onErrorCaptured, ref } from 'vue';
+import { onBeforeMount, onErrorCaptured } from 'vue';
 import { RouterView } from 'vue-router';
 
-import AppLayout from '@/components/layout/AppLayout.vue';
-import Navbar from '@/components/layout/Navbar.vue';
-import { useAuthStore, useUserStore } from '@/store';
+import { AppLayout, Navbar, ProgressLoader } from '@/components/layout';
+import { useAppStore, useAuthStore, useUserStore } from '@/store';
 
-import type { Ref } from 'vue';
+const appStore = useAppStore();
+const { getIsLoading } = storeToRefs(appStore);
 
-// TODO: Make this pull from appStore as global loading/navigation cue instead
-const loading: Ref<boolean> = ref(true);
-
-// TODO: Do we actually need userStore mounting for all pages?
 onBeforeMount(async () => {
+  appStore.beginDeterminateLoading();
   await useAuthStore().init();
+  // TODO: Do we actually need userStore mounting for all pages?
   await useUserStore().init();
-  loading.value = false;
+  appStore.endDeterminateLoading();
 });
 
-const toast = useToast();
 // Suspense error captured
 onErrorCaptured((e: Error) => {
+  const toast = useToast();
   toast.add({
     severity: 'error',
     summary: 'Error initializing app',
@@ -35,11 +33,7 @@ onErrorCaptured((e: Error) => {
 
 <template>
   <ConfirmDialog />
-  <ProgressBar
-    v-if="loading"
-    mode="indeterminate"
-    style="height: 0.2em; position: sticky; top: 0; z-index: 1000"
-  />
+  <ProgressLoader v-if="getIsLoading" />
   <Toast />
   <AppLayout>
     <template #nav>

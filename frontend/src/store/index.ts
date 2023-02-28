@@ -1,3 +1,4 @@
+export { useAppStore } from './appStore';
 export { useAuthStore } from './authStore';
 export { useBucketStore } from './bucketStore';
 export { useConfigStore } from './configStore';

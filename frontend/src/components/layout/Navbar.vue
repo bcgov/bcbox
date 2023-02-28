@@ -54,6 +54,7 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
   display: flex;
   color: #fcba19;
   background-color: #38598a;
+  padding: 0rem 3rem 0rem 3.5rem;
   width: 100%;
   -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
   -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
