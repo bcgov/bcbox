@@ -4,9 +4,8 @@ config:
   configMap:
     FRONTEND_APIPATH: api/v1
     FRONTEND_COMS_APIPATH: https://coms-test-master.apps.silver.devops.gov.bc.ca/api/v1
-    FRONTEND_KC_CLIENTID: bc-box-4555
-    FRONTEND_KC_REALM: standard
-    FRONTEND_KC_SERVERURL: https://test.loginproxy.gov.bc.ca/auth
+    FRONTEND_OIDC_AUTHORITY: https://test.loginproxy.gov.bc.ca/auth/realms/standard
+    FRONTEND_OIDC_CLIENTID: bc-box-4555
     SERVER_APIPATH: /api/v1
     SERVER_BODYLIMIT: 30mb
     # SERVER_LOGFILE: ~
