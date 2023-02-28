@@ -3,14 +3,14 @@ import { storeToRefs } from 'pinia';
 
 import { useConfigStore } from '@/store';
 
-const { config } = storeToRefs(useConfigStore());
+const { getConfig } = storeToRefs(useConfigStore());
 </script>
 
 <template>
   <div class="footer-line flex justify-content-between flex-wrap">
     <div>This is a footer</div>
-    <div v-if="config">
-      v{{ config.version }}-{{ config.gitRev.substring(0, 8) }}
+    <div v-if="getConfig">
+      v{{ getConfig.version }}-{{ getConfig.gitRev.substring(0, 8) }}
     </div>
   </div>
 </template>

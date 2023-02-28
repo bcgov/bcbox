@@ -34,11 +34,14 @@ import Login from '../Login.vue';
 
 <style lang="scss" scoped>
 #header-branding {
-  background-color: #2e57a4;
+  background-color: #003366;
   font-size: 13px;
   color: white;
   padding: 10px 50px 0px 50px;
   white-space: nowrap;
+  @media not print {
+    border-bottom: 2px solid #fcba19;
+  }
 }
 
 #title-branding {
