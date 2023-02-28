@@ -29,6 +29,6 @@ describe('TextInput.vue', () => {
     await wrapper.find('input[name="test"]').trigger('blur');
     await flushPromises();
     expect(wrapper.find('span').isVisible()).toBe(true);
-    expect(await wrapper.find('span').text()).toBe(ValidationMessages.Required);
+    expect(await wrapper.find('span').text()).toBe(ValidationMessages.REQUIRED);
   });
 });

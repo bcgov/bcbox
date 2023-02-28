@@ -9,6 +9,7 @@ const { getLoadingMode, getLoadingValue } = storeToRefs(appStore);
 </script>
 
 <template>
+  <!-- eslint-disable vue/attribute-hyphenation -->
   <ProgressBar
     :mode="getLoadingMode"
     :showValue="false"

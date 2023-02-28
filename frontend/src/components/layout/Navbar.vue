@@ -50,12 +50,12 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
 
 <style lang="scss" scoped>
 .navigation-main {
-  box-shadow: 0 6px 8px -4px #b3b1b3;
-  display: flex;
-  color: #fcba19;
   background-color: #38598a;
-  padding: 0rem 3rem 0rem 3.5rem;
+  color: #fcba19;
+  display: flex;
+  padding: 0rem 3rem 0rem 3rem;
   width: 100%;
+  box-shadow: 0 6px 8px -4px #b3b1b3;
   -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
   -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
   .p-toolbar {

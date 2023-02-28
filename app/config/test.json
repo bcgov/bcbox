@@ -1,8 +1,8 @@
 {
   "frontend": {
-    "keycloak": {
-      "clientId": "client-frontend-local",
-      "realm": "01234567"
+    "oidc": {
+      "authority": "https://some.authority",
+      "clientId": "client-frontend-local"
     }
   },
   "server": {

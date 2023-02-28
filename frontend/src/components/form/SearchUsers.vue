@@ -16,7 +16,7 @@ const props = defineProps<{
 
 // Store
 const userStore = useUserStore();
-const { config } = storeToRefs(useConfigStore());
+const { getConfig } = storeToRefs(useConfigStore());
 const { userSearch } = storeToRefs(useUserStore());
 
 // State
@@ -101,7 +101,7 @@ watch(selectedIDP, () => {
 
 onMounted(() => {
   // Set default IDP
-  selectedIDP.value = config.value.idpList[0];
+  selectedIDP.value = getConfig.value.idpList[0];
 
   onReset();
 });
@@ -109,9 +109,9 @@ onMounted(() => {
 
 <template>
   <div>
-    <div v-if="config.idpList.length <= 3">
+    <div v-if="getConfig.idpList.length <= 3">
       <div
-        v-for="idp of config.idpList"
+        v-for="idp of getConfig.idpList"
         :key="idp.idp"
         class="field-radiobutton mt-1"
       >
@@ -128,7 +128,7 @@ onMounted(() => {
     <div v-else>
       <Dropdown
         v-model="selectedIDP"
-        :options="config.idpList"
+        :options="getConfig.idpList"
         :option-label="(option) => {return `${option.name} (${option.elevatedRights ? 'internal': 'external' })`}"
         class="mt-1"
         @change="onReset"
