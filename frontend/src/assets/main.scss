@@ -1,6 +1,6 @@
-@import './base.css';
-@import './primevue.scss';
-@import './variables.scss';
+@import "./base.css";
+@import "./primevue.scss";
+@import "./variables.scss";
 
 #app {
   margin: 0 auto;
@@ -30,24 +30,29 @@
 }
 
 // Info/settings dialog modals
-.bcbox-info-dlg.p-dialog {
-  .p-dialog-header {
-    padding-bottom: 0;
-    .svg-inline--fa {
-      color: $bcbox-icon-primary;
-      font-size: 1.8rem;
-      padding-top: .15rem;
-      padding-right: .75rem;
+.bcbox-info-dlg {
+  &.p-dialog {
+    .p-dialog-header {
+      padding-bottom: 0;
+
+      .svg-inline--fa {
+        color: $bcbox-icon-primary;
+        font-size: 1.8rem;
+        padding-right: 0.75rem;
+        padding-top: 0.15rem;
+      }
+
+      .p-dialog-title {
+        flex-grow: 1;
+        font-size: 1.8rem;
+        font-weight: bold;
+      }
     }
-    .p-dialog-title {
-      flex-grow: 1;
-      font-size: 1.8rem;
-      font-weight: bold;
+
+    .bcbox-info-dlg-subhead {
+      font-weight: normal;
+      margin-bottom: 1.5rem;
+      padding-left: 3.1rem;
     }
-  }
-  .bcbox-info-dlg-subhead {
-    padding-left: 3.1rem;
-    margin-bottom: 1.5rem;
-    font-weight: normal;
   }
 }
