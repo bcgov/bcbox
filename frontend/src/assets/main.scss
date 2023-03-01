@@ -1,6 +1,6 @@
-@import "./base.css";
-@import "./primevue.scss";
-@import "./variables.scss";
+@import './base.css';
+@import './primevue.scss';
+@import './variables.scss';
 
 #app {
   margin: 0 auto;
@@ -38,8 +38,8 @@
       .svg-inline--fa {
         color: $bcbox-icon-primary;
         font-size: 1.8rem;
-        padding-right: 0.75rem;
-        padding-top: 0.15rem;
+        padding-right: .75rem;
+        padding-top: .15rem;
       }
 
       .p-dialog-title {
