@@ -17,6 +17,7 @@ defineProps<{
     </div>
     <div>
       <DataTable
+        v-if="objectMetadata"
         :value="objectMetadata.metadata"
         striped-rows
         responsive-layout="scroll"

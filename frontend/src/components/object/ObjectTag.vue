@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
   <div
-    v-if="objectTag.tagset.length"
+    v-if="objectTag?.tagset?.length"
     class="grid"
   >
     <div class="col-12">

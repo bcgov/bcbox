@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import ProgressSpinner from 'primevue/progressspinner';
 import { useToast } from 'primevue/usetoast';
 
 import {
@@ -28,22 +29,24 @@ const objectStore = useObjectStore();
 const toast = useToast();
 const route = useRoute();
 
-const { objectList } = storeToRefs(objectStore);
+const { loading, objectList } = storeToRefs(objectStore);
 const { currentUser } = storeToRefs(useUserStore());
 
 const objectInfo: Ref<COMSObject> = ref({} as COMSObject);
-const isInfoLoaded: Ref<Boolean> = ref(false);
 
 const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsObjectId: Ref<string> = ref('');
 const permissionsObjectName: Ref<string> = ref('');
 
-const getObjectInfo = (objId: string) => {
+const getObjectInfo = async (objId: string) => {
   try {
-    objectInfo.value = (objectList.value.find((x: COMSObject) => x.id === objId) as COMSObject);
-    isInfoLoaded.value = true;
+    await objectStore.listObjects({ objId });
+    if(!objectInfo.value || !objectList.value[0]) {
+      throw Error(`Object ${objId} not found or you do not have access`);
+    }
+    objectInfo.value = objectList.value[0];
   } catch (error: any) {
-    toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
+    toast.add({ severity: 'error', summary: 'Unable to load Object.', detail: error, life: 5000 });
   }
 };
 
@@ -70,7 +73,11 @@ onMounted(() => {
           File details
         </h1>
       </div>
-      <div class="action-buttons">
+
+      <div
+        v-if="!loading && objectInfo.permissions"
+        class="action-buttons"
+      >
         <ShareObjectButton
           v-if="objectStore.isActionAllowed(objectInfo.permissions, Permissions.MANAGE, currentUser?.userId)"
           :obj="objectInfo"
@@ -95,8 +102,10 @@ onMounted(() => {
       </div>
     </div>
 
+    <ProgressSpinner v-if="loading" />
+
     <div
-      v-if="isInfoLoaded"
+      v-else
       class="pl-2"
     >
       <ObjectProperties :object-info="objectInfo" />
