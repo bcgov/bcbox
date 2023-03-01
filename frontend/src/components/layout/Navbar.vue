@@ -23,7 +23,7 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
             </router-link>
           </li>
           <li class="mr-2">
-            <router-link :to="{ name: RouteNames.LISTBUCKETS }">
+            <router-link :to="{ name: RouteNames.LIST_BUCKETS }">
               My Buckets
             </router-link>
           </li>

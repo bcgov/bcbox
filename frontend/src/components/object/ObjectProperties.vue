@@ -68,7 +68,7 @@ watch( props, () => {
       v-if="fullView"
       label="Bucket"
       :value="bucket?.bucketName"
-      :link="{ name: RouteNames.LISTOBJECTS, query: { bucketId: bucket?.bucketId } }"
+      :link="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucket?.bucketId } }"
     />
     <GridRow
       v-if="fullView"

@@ -38,7 +38,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'objects',
-        name: RouteNames.DETAILOBJECTS,
+        name: RouteNames.DETAIL_OBJECTS,
         component: () => import('../views/DetailObjectsView.vue'),
         meta: { requiresAuth: true },
         props: createProps
@@ -57,19 +57,19 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: 'buckets',
-        name: RouteNames.LISTBUCKETS,
+        name: RouteNames.LIST_BUCKETS,
         component: () => import('../views/ListBucketsView.vue'),
         meta: { requiresAuth: true, breadcrumb: 'Buckets' }
       },
       {
         path: 'objects',
-        name: RouteNames.LISTOBJECTS,
+        name: RouteNames.LIST_OBJECTS,
         component: () => import('../views/ListObjectsView.vue'),
         meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' }
       },
       {
         path: 'detail/object',
-        name: RouteNames.DETAILOBJECTS,
+        name: RouteNames.DETAIL_OBJECTS,
         component: () => import('../views/DetailObjectsView.vue'),
         meta: { requiresAuth: true }
       },

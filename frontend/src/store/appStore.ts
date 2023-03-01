@@ -5,7 +5,7 @@ import { isDebugMode } from './utils';
 
 import type { Ref } from 'vue';
 
-export type AppStateStore = {
+export type AppStoreState = {
   loadingCalls: Ref<number>
   loadingInterval: Ref<ReturnType<typeof setTimeout> | undefined>
   loadingMode: Ref<'determinate' | 'indeterminate'>
@@ -14,7 +14,7 @@ export type AppStateStore = {
 
 export const useAppStore = defineStore('app', () => {
   // State
-  const state: AppStateStore = {
+  const state: AppStoreState = {
     loadingCalls: ref(0),
     loadingInterval: ref(undefined),
     loadingMode: ref('indeterminate'),
@@ -36,7 +36,7 @@ export const useAppStore = defineStore('app', () => {
     state.loadingMode.value = 'determinate';
     state.loadingInterval.value = setInterval(() => {
       let newValue = state.loadingValue.value + Math.floor(Math.random() * 10) + 1;
-      if (newValue >= 95) newValue = 95;
+      if (newValue >= 100) newValue = 100;
       state.loadingValue.value = newValue;
     }, 1000);
   }

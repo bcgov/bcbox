@@ -6,7 +6,7 @@ import { isDebugMode } from './utils';
 
 import type { Ref } from 'vue';
 
-export type ConfigStateStore = {
+export type ConfigStoreState = {
   config: Ref<any | null>
 }
 
@@ -14,7 +14,7 @@ export const useConfigStore = defineStore('config', () => {
   const configService = new ConfigService();
 
   // State
-  const state: ConfigStateStore = {
+  const state: ConfigStoreState = {
     config: ref(null),
   };
 

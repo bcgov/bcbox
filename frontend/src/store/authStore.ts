@@ -8,7 +8,7 @@ import type { IdTokenClaims, User } from 'oidc-client-ts';
 import type { Ref } from 'vue';
 import type { IdentityProvider } from '@/interfaces';
 
-export type AuthStateStore = {
+export type AuthStoreState = {
   accessToken: Ref<string | undefined>,
   expiresAt: Ref<number | undefined>,
   idToken: Ref<string | undefined>,
@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
   const userManager = authService.getUserManager();
 
   // State
-  const state: AuthStateStore = {
+  const state: AuthStoreState = {
     accessToken: ref(undefined),
     expiresAt: ref(0),
     idToken: ref(undefined),

@@ -42,7 +42,7 @@ getBucketName();
         icon="fa-solid fa-box-open"
         class="mr-1"
       />
-      <router-link :to="{ name: RouteNames.LISTOBJECTS, query: { bucketId: bucket.bucketId } }">
+      <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucket.bucketId } }">
         {{ bucket.bucketName }}
       </router-link>
     </h2>

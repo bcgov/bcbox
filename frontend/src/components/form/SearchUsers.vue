@@ -75,7 +75,7 @@ const onInput = async (event: any) => {
       }
     }
     else {
-      if( input.match( Regex.Email ) ) {
+      if( input.match( Regex.EMAIL ) ) {
         await userStore.searchUsers({ idp: selectedIDP.value.idp, email: input });
       }
     }

@@ -79,12 +79,12 @@ const displayPermissionsIcon = (bucket: Bucket) => {
             v-if="data.bucketName.length > 150"
             v-tooltip.bottom="{ value: data.bucketName }"
           >
-            <router-link :to="{ name: RouteNames.LISTOBJECTS, query: { bucketId: data.bucketId } }">
+            <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: data.bucketId } }">
               {{ data.bucketName }}
             </router-link>
           </div>
           <div v-else>
-            <router-link :to="{ name: RouteNames.LISTOBJECTS, query: { bucketId: data.bucketId } }">
+            <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: data.bucketId } }">
               {{ data.bucketName }}
             </router-link>
           </div>
