@@ -39,12 +39,17 @@ const onUpload = async (event: any) => {
 
     // Send all files to COMS for upload
     await Promise.allSettled(
-      event.files.map( async (file: File) => {
+      event.files.map(async (file: File) => {
         try {
           await objectStore.createObject(file, bucketId);
           successfulFiles.value.push(file);
         } catch (error) {
-          toast.add({ severity: 'error', summary: 'Error', detail: `Failed to upload file ${file.name}`, life: 3000 });
+          toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: `Failed to upload file ${file.name}`,
+            life: 3000,
+          });
           failedFiles.value.push(file);
         }
       })
@@ -56,7 +61,12 @@ const onUpload = async (event: any) => {
     // Update object list
     await objectStore.listObjects({ bucketId: bucketId });
   } else {
-    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to acquire bucket ID', life: 3000 });
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to acquire bucket ID',
+      life: 3000,
+    });
   }
 };
 
@@ -66,6 +76,11 @@ const onRemoveUploadedFile = async (index: number) => {
 
 const onRemoveFailedFile = async (index: number) => {
   failedFiles.value.splice(index, 1);
+};
+
+// Based on files prop from upload component, are we in ready to upload mode
+const noFilesChosen = (files: File[]) => {
+  return !files || files.length === 0;
 };
 </script>
 
@@ -77,18 +92,23 @@ const onRemoveFailedFile = async (index: number) => {
     @select="onSelectedFiles"
     @uploader="onUpload"
   >
-    <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
+    <template
+      #header="{ chooseCallback, uploadCallback, clearCallback, files }"
+    >
       <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
         <div class="flex gap-2">
-          <Button @click="chooseCallback()">
+          <Button
+            :class="{ 'p-button-outlined': !noFilesChosen(files) }"
+            @click="chooseCallback()"
+          >
             <font-awesome-icon
               icon="fa-solid fa-plus"
               class="mr-1"
             />Choose
           </Button>
           <Button
-            class="p-button-outlined"
-            :disabled="!files || files.length === 0"
+            :class="{ 'p-button-outlined': noFilesChosen(files) }"
+            :disabled="noFilesChosen(files)"
             @click="uploadCallback()"
           >
             <font-awesome-icon
