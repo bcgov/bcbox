@@ -1,6 +1,6 @@
-export const KEYCLOAK = Object.freeze({
-  MIN_VALID_TIME_SEC: 70,
-  REFRESH_TIME_MS: 10000,
+export const BucketConfig = Object.freeze({
+  HEADER_NEW_BUCKET: 'Configure bucket',
+  TITLE_NEW_BUCKET: 'Use this form to configure a bucket to be used in BCBox for the first time.'
 });
 
 export const Permissions = Object.freeze({
@@ -14,24 +14,26 @@ export const Permissions = Object.freeze({
 export const Regex = Object.freeze({
   // https://emailregex.com/
   // HTML5 - Modified to require domain of at least 2 characters
-  Email: '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]{2,})+$'
+  EMAIL: '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]{2,})+$'
 });
 
 export const RouteNames = Object.freeze({
-  Home: 'home',
-  CreateBucket: 'createBucket',
-  Developer: 'developer',
-  ListBuckets: 'listBuckets',
-  ListObjects: 'listObjects',
-  Logout: 'logout,',
-  ObjectFileDetails: 'objectFileDetails'
+  CALLBACK: 'callback',
+  CREATE_BUCKET: 'createBucket',
+  DETAIL_OBJECTS: 'detailObjects',
+  DEVELOPER: 'developer',
+  HOME: 'home',
+  LIST_BUCKETS: 'listBuckets',
+  LIST_OBJECTS: 'listObjects',
+  LOGIN: 'login',
+  LOGOUT: 'logout'
+});
+
+export const StorageKey = Object.freeze({
+  AUTH: 'entrypoint',
+  CONFIG: 'config'
 });
 
 export const ValidationMessages = Object.freeze({
-  Required: 'This field is required.',
-});
-
-export const BucketConfig = Object.freeze({
-  headerNewBucket: 'Configure bucket',
-  titleNewBucket: 'Use this form to configure a bucket to be used in BCBox for the first time.'
+  REQUIRED: 'This field is required.',
 });

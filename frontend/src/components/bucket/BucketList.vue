@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
-import { ref, onMounted, Ref } from 'vue';
-import { BucketConfig as BucketConfigConst } from '@/utils/constants';
-import BucketConfigForm from '@/components/bucket/BucketConfigForm.vue';
-import BucketsSidebar from '@/components/bucket/BucketsSidebar.vue';
-import BucketsTable from '@/components/bucket/BucketsTable.vue';
-import { useBucketStore } from '@/store';
+import { ref, onMounted } from 'vue';
+
+import { BucketConfigForm, BucketsSidebar, BucketsTable } from '@/components/bucket';
 import { useToaster } from '@/composables/useToaster';
+import { useBucketStore } from '@/store';
+import { BucketConfig } from '@/utils/constants';
+
 import type { Bucket } from '@/interfaces';
+import type { Ref } from 'vue';
 
 const bucketStore = useBucketStore();
 
 const displayInfo: any = ref(null);
 
 const displayBucketConfig: Ref<boolean> = ref(false);
-const bucketConfigHeader: Ref<string> = ref('');
-const bucketConfigTitle: Ref<string> = ref('');
+const bucketConfigTitle: Ref<string> = ref(BucketConfig.TITLE_NEW_BUCKET);
 const bucketToUpdate: Ref<Bucket | undefined> = ref(undefined);
 
 const showInfo = async (bucketId: any) => {
@@ -28,8 +28,7 @@ const closeInfo = () => {
 };
 
 const showBucketConfig = (bucket?: Bucket) => {
-  bucketConfigHeader.value = BucketConfigConst.headerNewBucket;
-  bucketConfigTitle.value = bucket ? bucket.bucketName : BucketConfigConst.titleNewBucket;
+  bucketConfigTitle.value = bucket?.bucketName || BucketConfig.TITLE_NEW_BUCKET;
   bucketToUpdate.value = bucket;
   displayBucketConfig.value = true;
 };
@@ -72,7 +71,7 @@ onMounted(() => {
               style="font-size: 2rem"
             />
             <div>
-              <h1>{{ bucketConfigHeader }}</h1>
+              <h1>{{ BucketConfig.HEADER_NEW_BUCKET }}</h1>
               <h3>{{ bucketConfigTitle }}</h3>
             </div>
           </div>

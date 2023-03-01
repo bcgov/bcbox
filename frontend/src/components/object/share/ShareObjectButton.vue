@@ -13,7 +13,7 @@ import { useConfigStore } from '@/store';
 
 import type { COMSObject } from '@/interfaces';
 
-const { config } = storeToRefs(useConfigStore());
+const { getConfig } = storeToRefs(useConfigStore());
 
 // Props
 const props = defineProps({
@@ -31,7 +31,7 @@ const bcBoxLink = computed(() => {
   return `${window.location.origin}/list/detail/object?objId=${props.obj.id}`;
 });
 const comsUrl = computed(() => {
-  return `${config.value.coms?.apiPath}/object/${props.obj.id}`;
+  return `${getConfig.value.coms?.apiPath}/object/${props.obj.id}`;
 });
 </script>
 

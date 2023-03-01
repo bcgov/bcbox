@@ -1,20 +1,28 @@
 <script setup lang="ts">
-// Vue
-import { onErrorCaptured } from 'vue';
-import { RouterView } from 'vue-router';
-// PrimeVue
+import { storeToRefs } from 'pinia';
 import ConfirmDialog from 'primevue/confirmdialog';
-import ProgressBar from 'primevue/progressbar';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
-// Components
-import AppLayout from '@/components/layout/AppLayout.vue';
-import InitApp from '@/components/layout/InitApp.vue';
-import Navbar from '@/components/layout/Navbar.vue';
+import { onBeforeMount, onErrorCaptured } from 'vue';
+import { RouterView } from 'vue-router';
 
-const toast = useToast();
+import { AppLayout, Navbar, ProgressLoader } from '@/components/layout';
+import { useAppStore, useAuthStore, useUserStore } from '@/store';
+
+const appStore = useAppStore();
+const { getIsLoading } = storeToRefs(appStore);
+
+onBeforeMount(async () => {
+  appStore.beginDeterminateLoading();
+  await useAuthStore().init();
+  // TODO: Do we actually need userStore mounting for all pages?
+  await useUserStore().init();
+  appStore.endDeterminateLoading();
+});
+
 // Suspense error captured
 onErrorCaptured((e: Error) => {
+  const toast = useToast();
   toast.add({
     severity: 'error',
     summary: 'Error initializing app',
@@ -24,29 +32,15 @@ onErrorCaptured((e: Error) => {
 </script>
 
 <template>
-  <Toast />
   <ConfirmDialog />
-  <Suspense>
-    <AppLayout>
-      <template #nav>
-        <Navbar />
-      </template>
-      <template #main>
-        <RouterView /> <InitApp />
-      </template>
-    </AppLayout>
-
-    <!-- Loading -->
-    <template #fallback>
-      <AppLayout>
-        <template #nav />
-        <template #main>
-          <ProgressBar
-            mode="indeterminate"
-            style="height: 0.5em"
-          />
-        </template>
-      </AppLayout>
+  <ProgressLoader v-if="getIsLoading" />
+  <Toast />
+  <AppLayout>
+    <template #nav>
+      <Navbar />
     </template>
-  </Suspense>
+    <template #main>
+      <RouterView />
+    </template>
+  </AppLayout>
 </template>

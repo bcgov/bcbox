@@ -1,8 +1,8 @@
 import { ValidationMessages } from '@/utils/constants';
 
-export function validateRequired(value: any) {
+export function validateRequired(value: any): boolean | string {
   if (!value) {
-    return ValidationMessages.Required;
+    return ValidationMessages.REQUIRED;
   }
   return true;
 }

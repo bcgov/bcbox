@@ -1,32 +1,34 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-
 import Toolbar from 'primevue/toolbar';
 
 import { useAuthStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
-const { getKeycloak } = storeToRefs(useAuthStore());
 // const { home, items } = storeToRefs(useNavStore());
+const { getIsAuthenticated } = storeToRefs(useAuthStore());
 </script>
 
 <template>
-  <div v-if="getKeycloak.authenticated">
+  <nav
+    v-if="getIsAuthenticated"
+    class="navigation-main"
+  >
     <Toolbar>
       <template #start>
         <ol class="list-none m-0 p-0 flex flex-row align-items-center font-semibold">
           <li class="mr-2">
-            <router-link :to="{ name: RouteNames.Home }">
+            <router-link :to="{ name: RouteNames.HOME }">
               Home
             </router-link>
           </li>
           <li class="mr-2">
-            <router-link :to="{ name: RouteNames.ListBuckets }">
+            <router-link :to="{ name: RouteNames.LIST_BUCKETS }">
               My Buckets
             </router-link>
           </li>
           <li class="mr-2">
-            <router-link :to="{ name: RouteNames.Developer }">
+            <router-link :to="{ name: RouteNames.DEVELOPER }">
               Developer
             </router-link>
           </li>
@@ -43,11 +45,57 @@ const { getKeycloak } = storeToRefs(useAuthStore());
         aria-label="breadcrumb"
       />
     </div> -->
-  </div>
+  </nav>
 </template>
 
 <style lang="scss" scoped>
-.p-toolbar {
-  padding: 0px 50px 0px 50px;
+.navigation-main {
+  background-color: #38598a;
+  color: #fcba19;
+  display: flex;
+  padding: 0rem 3rem 0rem 3rem;
+  width: 100%;
+  box-shadow: 0 6px 8px -4px #b3b1b3;
+  -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
+  -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
+  .p-toolbar {
+    background-color: #38598a !important;
+    border: none;
+    padding: 0;
+    ol {
+      display: flex;
+      flex-direction: row;
+      margin: 0;
+      color: #ffffff;
+      list-style: none;
+      li {
+        a {
+          display: flex;
+          font-weight: normal;
+          min-height: 2rem;
+          color: #ffffff;
+          padding: 0.4rem 0.8rem 0.6rem 0.8rem;
+          text-decoration: none;
+
+          &:focus {
+            outline: none;
+            outline-offset: 0;
+          }
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+        & ~ li {
+          border-left: 1px solid #9b9b9b;
+          margin-left: -0.6rem;
+        }
+      }
+      .router-link-exact-active {
+        background-color: #7ba2cc80;
+        border-bottom: 2px solid #fcba19;
+        font-weight: bold;
+      }
+    }
+  }
 }
 </style>

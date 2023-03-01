@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { useToast } from 'primevue/usetoast';
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
 
 import ObjectList from '@/components/object/ObjectList.vue';
 import { RouteNames } from '@/utils/constants';
@@ -42,7 +42,7 @@ getBucketName();
         icon="fa-solid fa-box-open"
         class="mr-1"
       />
-      <router-link :to="{ name: RouteNames.ListObjects, query: { bucketId: bucket.bucketId } }">
+      <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucket.bucketId } }">
         {{ bucket.bucketName }}
       </router-link>
     </h2>

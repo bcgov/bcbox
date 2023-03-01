@@ -10,7 +10,7 @@ import type { Ref } from 'vue';
 import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
 
 export const useBucketStore = defineStore('bucket', () => {
-  const { config } = storeToRefs(useConfigStore());
+  const { getConfig } = useConfigStore();
   const { currentUser } = storeToRefs(useUserStore());
   const toast = useToast();
 
@@ -78,7 +78,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
         const userPermissions: UserPermissions[] = [];
         uniqueUsers.forEach((user: User) => {
-          const idp = config.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
+          const idp = getConfig.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
 
           userPermissions.push({
             userId: user.userId,
@@ -196,3 +196,5 @@ export const useBucketStore = defineStore('bucket', () => {
     selectedBucketPermissionsForUser
   };
 });
+
+export default useBucketStore;

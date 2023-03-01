@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import Dialog from 'primevue/dialog';
+import { ref } from 'vue';
+
 import BucketPermission from './BucketPermission.vue';
 import { useBucketStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
@@ -78,12 +79,12 @@ const displayPermissionsIcon = (bucket: Bucket) => {
             v-if="data.bucketName.length > 150"
             v-tooltip.bottom="{ value: data.bucketName }"
           >
-            <router-link :to="{ name: RouteNames.ListObjects, query: { bucketId: data.bucketId } }">
+            <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: data.bucketId } }">
               {{ data.bucketName }}
             </router-link>
           </div>
           <div v-else>
-            <router-link :to="{ name: RouteNames.ListObjects, query: { bucketId: data.bucketId } }">
+            <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: data.bucketId } }">
               {{ data.bucketName }}
             </router-link>
           </div>

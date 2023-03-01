@@ -4,7 +4,7 @@ import { validateRequired } from '@/utils/formValidators';
 describe('validateRequired', () => {
   it.each(['', null, undefined, false])('returns error message when given %o', (str) => {
     const response = validateRequired(str);
-    expect(response).toBe(ValidationMessages.Required);
+    expect(response).toBe(ValidationMessages.REQUIRED);
   });
 
   it('returns true when given truthy value', async () => {

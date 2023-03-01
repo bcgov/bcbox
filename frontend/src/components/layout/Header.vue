@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Login from '../Login.vue';
+import LoginButton from './LoginButton.vue';
 </script>
 
 <template>
@@ -25,7 +25,7 @@ import Login from '../Login.vue';
           </div>
         </div>
         <div class="col-fixed">
-          <Login />
+          <LoginButton />
         </div>
       </div>
     </nav>
@@ -34,11 +34,17 @@ import Login from '../Login.vue';
 
 <style lang="scss" scoped>
 #header-branding {
-  background-color: #2e57a4;
+  background-color: #003366;
   font-size: 13px;
   color: white;
-  padding: 10px 50px 0px 50px;
+  padding: 0.5rem 3rem 0rem 3rem;
   white-space: nowrap;
+  box-shadow: 0 6px 8px -4px #b3b1b3;
+  -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;
+  -moz-box-shadow: 0 6px 8px -4px #b3b1b3;
+  @media not print {
+    border-bottom: 2px solid #fcba19;
+  }
 }
 
 #title-branding {

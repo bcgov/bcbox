@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { defineStore, storeToRefs } from 'pinia';
+import { defineStore } from 'pinia';
 import { userService } from '@/services';
 import { useAuthStore, useConfigStore } from '@/store';
 
@@ -7,9 +7,8 @@ import type { Ref } from 'vue';
 import type { IdentityProvider, User } from '@/interfaces';
 
 export const useUserStore = defineStore('user', () => {
-  const { getIdentityId } = useAuthStore();
-  const { getKeycloak } = storeToRefs(useAuthStore());
-  const { config } = storeToRefs(useConfigStore());
+  const { getIsAuthenticated, getIdentityId } = useAuthStore();
+  const { getConfig } = useConfigStore();
 
   // State
   const currentUser: Ref<User | null> = ref(null);
@@ -22,21 +21,21 @@ export const useUserStore = defineStore('user', () => {
   }
 
   // Hydrates the logged in users info from the COMS database
-  async function getUser() {
-    if (!currentUser.value && getKeycloak.value.authenticated) {
-      if (getIdentityId()) {
-        await searchUsers({ identityId: getIdentityId() });
+  async function getUser(): Promise<string | void> {
+    if (!currentUser.value && getIsAuthenticated) {
+      if (getIdentityId) {
+        await searchUsers({ identityId: getIdentityId });
 
         if (userSearch.value.length) {
           currentUser.value = userSearch.value[0];
-          currentUser.value.elevatedRights = config.value.idpList.find((idp: any) => {
+          currentUser.value.elevatedRights = getConfig.idpList.find((idp: any) => {
             return idp.idp === userSearch.value[0].idp;
           })?.elevatedRights;
         }
+        return Promise.resolve();
       }
     }
-
-    return currentUser.value ?? undefined;
+    return Promise.resolve('Not authenticated');
   }
 
   async function listIdps() {
@@ -72,5 +71,7 @@ export const useUserStore = defineStore('user', () => {
     userSearch.value = [];
   }
 
-  return { idps, loading, currentUser, userSearch, clearSearch, init, listIdps, searchUsers };
+  return { idps, loading, currentUser, userSearch, clearSearch, getUser, init, listIdps, searchUsers };
 });
+
+export default useUserStore;

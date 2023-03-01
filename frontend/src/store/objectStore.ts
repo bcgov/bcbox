@@ -13,7 +13,7 @@ import type {
 
 export const useObjectStore = defineStore('objectStore', () => {
   const { selectedBucketPermissionsForUser } = storeToRefs(useBucketStore());
-  const { config } = storeToRefs(useConfigStore());
+  const { getConfig } = useConfigStore();
   const { currentUser } = storeToRefs(useUserStore());
   const toast = useToast();
 
@@ -148,7 +148,7 @@ export const useObjectStore = defineStore('objectStore', () => {
 
         const userPermissions: UserPermissions[] = [];
         uniqueUsers.forEach((user: User) => {
-          const idp = config.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
+          const idp = getConfig.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
 
           userPermissions.push({
             userId: user.userId,
@@ -260,3 +260,5 @@ export const useObjectStore = defineStore('objectStore', () => {
     togglePublic
   };
 });
+
+export default useObjectStore;
