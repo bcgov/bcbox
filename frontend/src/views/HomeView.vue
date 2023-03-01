@@ -6,14 +6,13 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
 </script>
 
 <template>
-  <div>
-    <h3 v-if="!getIsAuthenticated">
-      Please login to continue.
-    </h3>
-    <h3 v-else>
-      Welcome to BCBox.
-    </h3>
-  </div>
+  <h3 v-if="!getIsAuthenticated">
+    Please login to continue.
+  </h3>
+  <h3 v-else>
+    Welcome to BCBox.
+  </h3>
+  <img src="@/assets/images/bcboxy.png">
 </template>
 
 <style lang="scss" scoped>

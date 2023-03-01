@@ -5,8 +5,6 @@ import { RouteNames, StorageKey } from '@/utils/constants';
 
 import type { RouteRecordRaw } from 'vue-router';
 
-let isFirstTransition = true;
-
 /**
  * @function createProps
  * Parses the route query and params to generate vue props
@@ -124,18 +122,15 @@ export default function getRouter() {
     // Removed for now
     // const { navigate } = useNavStore();
     // navigate(to);
-
     appStore.beginDeterminateLoading();
 
-    if (!to.path.includes('/oidc') && to.query && isFirstTransition) {
-      // Backend Redirection Artifact
-      if (to.query?.r) {
-        router.replace({
-          path: (to.query.r) ? to.query.r.toString() : to.path,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-          query: (({ r, ...q }) => q)(to.query)
-        });
-      }
+    // Backend Redirection Handler
+    if (to.query?.r) {
+      router.replace({
+        path: (to.query.r) ? to.query.r.toString() : to.path,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+        query: (({ r, ...q }) => q)(to.query)
+      });
     }
 
     if (to.meta.requiresAuth && !authStore.getIsAuthenticated) {
@@ -146,7 +141,6 @@ export default function getRouter() {
   });
 
   router.afterEach(() => {
-    isFirstTransition = false;
     appStore.endDeterminateLoading();
   });
 
