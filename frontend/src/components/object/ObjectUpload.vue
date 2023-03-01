@@ -44,12 +44,7 @@ const onUpload = async (event: any) => {
           await objectStore.createObject(file, bucketId);
           successfulFiles.value.push(file);
         } catch (error) {
-          toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: `Failed to upload file ${file.name}`,
-            life: 3000,
-          });
+          toast.add({ severity: 'error', summary: 'Error', detail: `Failed to upload file ${file.name}`, life: 3000 });
           failedFiles.value.push(file);
         }
       })
@@ -61,12 +56,7 @@ const onUpload = async (event: any) => {
     // Update object list
     await objectStore.listObjects({ bucketId: bucketId });
   } else {
-    toast.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'Failed to acquire bucket ID',
-      life: 3000,
-    });
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to acquire bucket ID', life: 3000 });
   }
 };
 
@@ -92,9 +82,7 @@ const noFilesChosen = (files: File[]) => {
     @select="onSelectedFiles"
     @uploader="onUpload"
   >
-    <template
-      #header="{ chooseCallback, uploadCallback, clearCallback, files }"
-    >
+    <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
       <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
         <div class="flex gap-2">
           <Button
