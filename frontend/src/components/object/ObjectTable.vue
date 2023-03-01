@@ -8,7 +8,7 @@ import {
   ObjectPermission,
   ShareObjectButton
 } from '@/components/object';
-import { Button, Column, DataTable, Dialog } from '@/lib/primevue';
+import { Button, Column, DataTable, Dialog, InputSwitch } from '@/lib/primevue';
 import { useAppStore, useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
@@ -79,7 +79,7 @@ watch( selectedObjects, () => {
     >
       <template #empty>
         <div
-          v-if="!useAppStore().getLoading"
+          v-if="!useAppStore().getIsLoading"
           class="flex justify-content-center"
         >
           <h3>
@@ -145,7 +145,8 @@ watch( selectedObjects, () => {
         <template #body="{ data }">
           <InputSwitch
             v-model="data.public"
-            :disabled="!objectStore.isActionAllowed(data.permissions, Permissions.MANAGE, currentUser?.userId)"
+            :disabled="!permissionStore.getObjectActionAllowed(
+              data.id, currentUser?.userId, Permissions.MANAGE, route.query.bucketId as string)"
             @change="togglePublic(data.id, data.public)"
           />
         </template>
@@ -158,8 +159,9 @@ watch( selectedObjects, () => {
       >
         <template #body="{ data }">
           <ShareObjectButton
-            v-if="objectStore.isActionAllowed(data.permissions, Permissions.MANAGE, currentUser?.userId)"
-            :obj="data"
+            v-if="permissionStore.getObjectActionAllowed(
+              data.id, currentUser?.userId, Permissions.MANAGE, route.query.bucketId as string)"
+            :id="data.id"
           />
           <DownloadObjectButton
             v-if="permissionStore.getObjectActionAllowed(

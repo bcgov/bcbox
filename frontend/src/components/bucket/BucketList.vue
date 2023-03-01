@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
-import { BucketSidebar, BucketTable } from '@/components/bucket';
+import { BucketConfigForm, BucketSidebar, BucketTable } from '@/components/bucket';
+import { Button, Dialog } from '@/lib/primevue';
 import { useBucketStore, useUserStore } from '@/store';
-
-import { BucketConfigForm, BucketsSidebar, BucketsTable } from '@/components/bucket';
-import { useToaster } from '@/composables/useToaster';
-import { useBucketStore } from '@/store';
 import { BucketConfig } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -90,7 +87,7 @@ onMounted(async () => {
     </div>
     <div class="flex mt-7">
       <div class="flex-grow-1">
-        <BucketsTable
+        <BucketTable
           @show-info="showInfo"
           @show-bucket-config="showBucketConfig"
         />

@@ -21,7 +21,7 @@ export const useTagStore = defineStore('tag', () => {
   // Actions
   async function fetchTagging(params: FetchTaggingOptions = {}) {
     try {
-      appStore.beginLoading();
+      appStore.beginIndeterminateLoading();
 
       const response = (await objectService.getObjectTagging({ ...params })).data;
 
@@ -42,7 +42,7 @@ export const useTagStore = defineStore('tag', () => {
       throw error;
     }
     finally {
-      appStore.endLoading();
+      appStore.endIndeterminateLoading();
     }
   }
 
@@ -57,3 +57,5 @@ export const useTagStore = defineStore('tag', () => {
     getTaggingByObjectId,
   };
 });
+
+export default useTagStore;

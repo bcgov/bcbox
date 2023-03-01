@@ -18,6 +18,7 @@ import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
 import { Permissions } from '@/utils/constants';
+import type { COMSObject } from '@/types';
 
 // Store
 const metadataStore = useMetadataStore();
@@ -32,6 +33,7 @@ const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsObjectId: Ref<string> = ref('');
 const permissionsObjectName: Ref<string> = ref('');
 const routeObjId: Ref<string> = ref(route.query.objId as string);
+const obj: Ref<COMSObject | undefined> = ref(undefined);
 const bucketId: Ref<string> = ref('');
 
 // Actions
@@ -47,7 +49,8 @@ onMounted(async () => {
 
 watch( [routeObjId, getObjects], () => {
   metadataStore.fetchMetadata({objId: unref(routeObjId) });
-  bucketId.value = objectStore.getObjectById(unref(routeObjId))?.bucketId || '';
+  obj.value = objectStore.getObjectById(unref(routeObjId));
+  bucketId.value = obj.value?.bucketId || '';
 });
 </script>
 
@@ -65,16 +68,15 @@ watch( [routeObjId, getObjects], () => {
       </div>
 
       <div
-        v-if="!loading && objectInfo.permissions"
+        v-if="obj"
         class="action-buttons"
       >
         <ShareObjectButton
-          v-if="objectStore.isActionAllowed(objectInfo.permissions, Permissions.MANAGE, currentUser?.userId)"
-          :obj="objectInfo"
+          v-if="permissionStore.getObjectActionAllowed(routeObjId, currentUser?.userId, Permissions.MANAGE, bucketId)"
+          :id="routeObjId"
         />
         <DownloadObjectButton
           v-if="permissionStore.getObjectActionAllowed(routeObjId, currentUser?.userId, Permissions.READ, bucketId)"
-
           :mode="ButtonMode.ICON"
           :ids="[routeObjId]"
         />

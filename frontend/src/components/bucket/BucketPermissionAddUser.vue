@@ -6,7 +6,7 @@ import { useConfigStore, usePermissionStore } from '@/store';
 import type { User } from '@/types';
 
 // Store
-const { getConfig } = useConfigStore();
+const { getConfig } = storeToRefs(useConfigStore());
 const permissionStore = usePermissionStore();
 
 // Actions

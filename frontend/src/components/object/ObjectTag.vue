@@ -34,7 +34,7 @@ watch( props, () => {
 
 <template>
   <div
-    v-if="objectTag?.tagset?.length"
+    v-if="objectTagging?.tagset"
     class="grid"
   >
     <div class="col-12">

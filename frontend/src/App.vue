@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { onErrorCaptured } from 'vue';
-import { RouterView } from 'vue-router';
-import { ConfirmDialog, ProgressBar, Toast, useToast }from '@/lib/primevue';
 import { storeToRefs } from 'pinia';
 import { onBeforeMount, onErrorCaptured } from 'vue';
-
+import { RouterView } from 'vue-router';
 import { AppLayout, Navbar, ProgressLoader } from '@/components/layout';
+import { ConfirmDialog, Toast, useToast }from '@/lib/primevue';
 import { useAppStore, useAuthStore, useUserStore } from '@/store';
 
 const appStore = useAppStore();

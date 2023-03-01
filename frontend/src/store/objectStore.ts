@@ -14,8 +14,6 @@ export const useObjectStore = defineStore('objectStore', () => {
   // Store
   const appStore = useAppStore();
   const permissionStore = usePermissionStore();
-  const toast = useToast();
-  const { getConfig } = useConfigStore();
   const { currentUser } = storeToRefs(useUserStore());
 
   // State
@@ -29,19 +27,19 @@ export const useObjectStore = defineStore('objectStore', () => {
   // Actions
   async function createObject(object: any, bucketId?: string) {
     try {
-      appStore.beginLoading();
+      appStore.beginIndeterminateLoading();
       await objectService.createObject(object, bucketId);
     } catch (error) {
       toast.add({ severity: 'error', summary: 'Error creating object', detail: error, life: 3000 });
       throw error;
     } finally {
-      appStore.endLoading();
+      appStore.endIndeterminateLoading();
     }
   }
 
   async function deleteObjects(objectIds: Array<string>) {
     try {
-      appStore.beginLoading();
+      appStore.beginIndeterminateLoading();
       await Promise.all(
         objectIds.map(async (id) => {
           await objectService.deleteObject(id);
@@ -52,7 +50,7 @@ export const useObjectStore = defineStore('objectStore', () => {
       throw error;
     } finally {
       fetchObjects();
-      appStore.endLoading();
+      appStore.endIndeterminateLoading();
     }
   }
 
@@ -62,7 +60,7 @@ export const useObjectStore = defineStore('objectStore', () => {
 
   async function fetchObjects(params: COMSObjectPermissionsOptions = {}) {
     try {
-      appStore.beginLoading();
+      appStore.beginIndeterminateLoading();
 
       if (currentUser.value) {
         // Get a unique list of object IDs the user has access to
@@ -94,7 +92,7 @@ export const useObjectStore = defineStore('objectStore', () => {
       throw error;
     }
     finally {
-      appStore.endLoading();
+      appStore.endIndeterminateLoading();
     }
   }
 
@@ -102,6 +100,18 @@ export const useObjectStore = defineStore('objectStore', () => {
 
   function setSelectedObjects(selected: Array<COMSObject>) {
     selectedObjects.value = selected;
+  }
+
+  async function togglePublic(objectId: string, isPublic: boolean) {
+    try {
+      appStore.beginIndeterminateLoading();
+      await objectService.togglePublic(objectId, isPublic);
+    } catch (error) {
+      console.error(`Toggle public: ${error}`); // eslint-disable-line no-console
+      throw error;
+    } finally {
+      appStore.endIndeterminateLoading();
+    }
   }
 
   return {
@@ -115,7 +125,8 @@ export const useObjectStore = defineStore('objectStore', () => {
     downloadObject,
     fetchObjects,
     getObjectById,
-    setSelectedObjects
+    setSelectedObjects,
+    togglePublic
   };
 });
 

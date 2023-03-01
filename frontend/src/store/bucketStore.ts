@@ -12,6 +12,7 @@ export const useBucketStore = defineStore('bucket', () => {
   const toast = useToast();
 
   // Store
+  const appStore = useAppStore();
   const permissionStore = usePermissionStore();
   const { currentUser } = storeToRefs(useUserStore());
 
@@ -24,7 +25,7 @@ export const useBucketStore = defineStore('bucket', () => {
   // Actions
   async function fetchBuckets(params: BucketPermissionsOptions) {
     try {
-      useAppStore().beginLoading();
+      appStore.beginIndeterminateLoading();
 
       if (currentUser.value) {
         // Get a unique list of bucket IDs the user has access to
@@ -54,7 +55,7 @@ export const useBucketStore = defineStore('bucket', () => {
       toast.add({ severity: 'error', summary: 'Error fetching buckets', detail: error, life: 3000 });
     }
     finally {
-      useAppStore().endLoading();
+      appStore.endIndeterminateLoading();
     }
   }
 

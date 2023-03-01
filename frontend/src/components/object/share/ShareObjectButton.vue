@@ -1,37 +1,43 @@
 <script setup lang="ts">
-import { computed, ref, type PropType } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { storeToRefs } from 'pinia';
+import { computed, ref, onMounted } from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ShareLinkContent } from '@/components/object';
+import { Button, Dialog, TabView, TabPanel } from '@/lib/primevue';
+import { useConfigStore, useMetadataStore, useObjectStore } from '@/store';
 
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
-
-import ShareLinkContent from './ShareLinkContent.vue';
-import { useConfigStore } from '@/store';
-
-import type { COMSObject } from '@/interfaces';
-
-const { getConfig } = storeToRefs(useConfigStore());
+import type { Ref } from 'vue';
+import type { COMSObject } from '@/types';
 
 // Props
 const props = defineProps({
-  obj: {
-    type: Object as PropType<COMSObject>,
+  id: {
+    type: String,
     required: true,
   },
 });
+
+// Store
+const metadataStore = useMetadataStore();
+const objectStore = useObjectStore();
+const { getConfig } = storeToRefs(useConfigStore());
+
+// State
+const obj: Ref<COMSObject | undefined> = ref(undefined);
 
 // Dialog
 const displayShareDialog = ref(false);
 
 // Share link
 const bcBoxLink = computed(() => {
-  return `${window.location.origin}/list/detail/object?objId=${props.obj.id}`;
+  return `${window.location.origin}/list/detail/object?objId=${props.id}`;
 });
 const comsUrl = computed(() => {
-  return `${getConfig.value.coms?.apiPath}/object/${props.obj.id}`;
+  return `${getConfig.value.coms?.apiPath}/object/${props.id}`;
+});
+
+onMounted( () => {
+  obj.value = objectStore.getObjectById(props.id);
 });
 </script>
 

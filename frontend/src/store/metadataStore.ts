@@ -22,7 +22,7 @@ export const useMetadataStore = defineStore('metadata', () => {
   // Actions
   async function fetchMetadata(params: FetchMetadataOptions = {}) {
     try {
-      appStore.beginLoading();
+      appStore.beginIndeterminateLoading();
 
       const response = (await objectService.getMetadata(null, { ...params })).data;
 
@@ -43,7 +43,7 @@ export const useMetadataStore = defineStore('metadata', () => {
       throw error;
     }
     finally {
-      appStore.endLoading();
+      appStore.endIndeterminateLoading();
     }
   }
 
@@ -61,3 +61,5 @@ export const useMetadataStore = defineStore('metadata', () => {
     getValue
   };
 });
+
+export default useMetadataStore;

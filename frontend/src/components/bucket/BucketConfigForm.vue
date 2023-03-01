@@ -6,7 +6,7 @@ import { useToast } from 'primevue/usetoast';
 import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
 import { useBucketStore } from '@/store';
-import type { Bucket } from '@/interfaces';
+import type { Bucket } from '@/types';
 
 const props = defineProps<{
   bucket?: Bucket;

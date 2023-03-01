@@ -1,6 +1,5 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { ref } from 'vue';
-import { defineStore } from 'pinia';
 import { userService } from '@/services';
 import { useAuthStore, useConfigStore } from '@/store';
 
@@ -9,7 +8,7 @@ import type { IdentityProvider, User } from '@/types';
 
 export const useUserStore = defineStore('user', () => {
   const { getIsAuthenticated, getIdentityId } = useAuthStore();
-  const { getConfig } = useConfigStore();
+  const { getConfig } = storeToRefs(useConfigStore());
 
   // State
   const currentUser: Ref<User | null> = ref(null);
@@ -29,7 +28,7 @@ export const useUserStore = defineStore('user', () => {
 
         if (userSearch.value.length) {
           currentUser.value = userSearch.value[0];
-          currentUser.value.elevatedRights = getConfig.idpList.find((idp: any) => {
+          currentUser.value.elevatedRights = getConfig.value.idpList.find((idp: any) => {
             return idp.idp === userSearch.value[0].idp;
           })?.elevatedRights;
         }

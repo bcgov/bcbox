@@ -7,3 +7,5 @@ export const useVersionStore = defineStore('version', () => {
 
   };
 });
+
+export default useVersionStore;

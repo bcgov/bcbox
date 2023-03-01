@@ -10,4 +10,5 @@ export type User = {
   lastName: string;
   userId: string;
   username: string;
+  elevatedRights: boolean;
 } & IAudit;
