@@ -36,3 +36,5 @@ export const useConfigStore = defineStore('config', () => {
     init
   };
 });
+
+export default useConfigStore;

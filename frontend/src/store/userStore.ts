@@ -73,3 +73,5 @@ export const useUserStore = defineStore('user', () => {
 
   return { idps, loading, currentUser, userSearch, clearSearch, getUser, init, listIdps, searchUsers };
 });
+
+export default useUserStore;

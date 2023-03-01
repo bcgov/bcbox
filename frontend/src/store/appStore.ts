@@ -70,3 +70,5 @@ export const useAppStore = defineStore('app', () => {
     endIndeterminateLoading
   };
 });
+
+export default useAppStore;

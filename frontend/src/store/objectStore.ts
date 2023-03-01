@@ -260,3 +260,5 @@ export const useObjectStore = defineStore('objectStore', () => {
     togglePublic
   };
 });
+
+export default useObjectStore;

@@ -1,7 +1,7 @@
-export { useAppStore } from './appStore';
-export { useAuthStore } from './authStore';
-export { useBucketStore } from './bucketStore';
-export { useConfigStore } from './configStore';
-export { useNavStore } from './navStore';
-export { useObjectStore } from './objectStore';
-export { useUserStore } from './userStore';
+export { default as useAppStore } from './appStore';
+export { default as useAuthStore } from './authStore';
+export { default as useBucketStore } from './bucketStore';
+export { default as useConfigStore } from './configStore';
+export { default as useNavStore } from './navStore';
+export { default as useObjectStore } from './objectStore';
+export { default as useUserStore } from './userStore';

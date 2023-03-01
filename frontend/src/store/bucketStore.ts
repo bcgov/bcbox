@@ -196,3 +196,5 @@ export const useBucketStore = defineStore('bucket', () => {
     selectedBucketPermissionsForUser
   };
 });
+
+export default useBucketStore;

@@ -39,3 +39,5 @@ export const useNavStore = defineStore('nav', () => {
 
   return { home, items, navigate, replace };
 });
+
+export default useNavStore;

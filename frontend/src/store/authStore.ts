@@ -107,3 +107,5 @@ export const useAuthStore = defineStore('auth', () => {
     logout
   };
 });
+
+export default useAuthStore;
