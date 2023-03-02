@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
 import { Button, FileUpload, useToast } from '@/lib/primevue';
-import { useObjectStore, useUserStore } from '@/store';
+import { useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
 
 // Props
-defineProps<{
+type Props = {
   closeCallback: Function,
-}>();
+};
+
+const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const objectStore = useObjectStore();
-const { currentUser } = storeToRefs(useUserStore());
 
 // State
 const pendingFiles: Ref<Array<File>> = ref([]);
@@ -107,7 +107,7 @@ const noFilesChosen = (files?: Array<File>): boolean => !files?.length;
             class="p-button-outlined"
             @click="() => {
               clearCallback();
-              closeCallback();
+              props.closeCallback();
             }"
           >
             <font-awesome-icon

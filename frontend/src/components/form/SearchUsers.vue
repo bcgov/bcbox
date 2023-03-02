@@ -8,9 +8,11 @@ import { Regex } from '@/utils/constants';
 import type { IdentityProvider, User, UserPermissions } from '@/types';
 
 // Props
-const props = defineProps<{
+type Props = {
   permissions: UserPermissions[];
-}>();
+};
+
+const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const userStore = useUserStore();

@@ -7,10 +7,12 @@ import type { Ref } from 'vue';
 import type { Metadata } from '@/types';
 
 // Props
-const props = defineProps<{
+type Props = {
   objectInfoId: string;
   fullView: boolean;
-}>();
+};
+
+const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const metadataStore = useMetadataStore();

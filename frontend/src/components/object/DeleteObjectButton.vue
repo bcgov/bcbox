@@ -6,16 +6,12 @@ import { useObjectStore } from '@/store/objectStore';
 import { ButtonMode } from '@/utils/enums';
 
 // Props
-const props = defineProps({
-  mode: {
-    type: String as PropType<ButtonMode>,
-    required: true,
-  },
-  ids: {
-    type: Array<string>,
-    required: true,
-  },
-});
+type Props = {
+  mode: ButtonMode;
+  ids: Array<string>;
+};
+
+const props = withDefaults(defineProps<Props>(), {});
 
 // State
 const displayNoFileDialog = ref(false);
@@ -67,7 +63,7 @@ const confirmDelete = () => {
   </Dialog>
 
   <Button
-    v-if="mode === ButtonMode.ICON"
+    v-if="props.mode === ButtonMode.ICON"
     class="p-button-lg p-button-text p-button-danger"
     @click="confirmDelete()"
   >

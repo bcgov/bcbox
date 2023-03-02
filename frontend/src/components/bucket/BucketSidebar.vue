@@ -4,9 +4,11 @@ import { Button } from '@/lib/primevue';
 import type { Bucket } from '@/types';
 
 // Props
-defineProps<{
+type Props = {
   displayInfo: Bucket
-}>();
+};
+
+const props = withDefaults(defineProps<Props>(), {});
 
 // Emits
 const emit = defineEmits(['close-info']);
@@ -44,13 +46,13 @@ const closeInfo = async () => {
         Bucket Name:
       </div>
       <div class="col-9">
-        {{ displayInfo?.bucketName }}
+        {{ props.displayInfo?.bucketName }}
       </div>
       <div class="col-3">
         Bucket ID:
       </div>
       <div class="col-9">
-        {{ displayInfo?.bucketId }}
+        {{ props.displayInfo?.bucketId }}
       </div>
     </div>
     <div class="grid">

@@ -23,7 +23,17 @@ export const useBucketStore = defineStore('bucket', () => {
   const getBuckets = computed(() => buckets.value);
 
   // Actions
-  async function fetchBuckets(params: BucketPermissionsOptions) {
+  async function createBucket(bucket: Bucket) {
+    try {
+      appStore.beginIndeterminateLoading();
+
+      return (await bucketService.createBucket(bucket)).data;
+    } finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
+  async function fetchBuckets(params?: BucketPermissionsOptions) {
     try {
       appStore.beginIndeterminateLoading();
 
@@ -38,7 +48,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
           // Remove old values matching search parameters
           const matches = (x: Bucket) => (
-            (!params.bucketId || x.bucketId === params.bucketId)
+            (!params?.bucketId || x.bucketId === params.bucketId)
           );
 
           const [match, difference] = partition(unref(buckets), matches);
@@ -61,13 +71,25 @@ export const useBucketStore = defineStore('bucket', () => {
 
   const getBucketById = (bucketId: string) => buckets.value.find((x) => x.bucketId === bucketId);
 
+  async function updateBucket(bucketId: string, bucket: Bucket) {
+    try {
+      appStore.beginIndeterminateLoading();
+
+      return (await bucketService.updateBucket(bucketId, bucket)).data;
+    } finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   return {
     // Getters
     getBuckets,
 
     // Actions
+    createBucket,
     fetchBuckets,
     getBucketById,
+    updateBucket
   };
 });
 

@@ -8,9 +8,11 @@ import type { Ref } from 'vue';
 import type { COMSObjectPermission } from '@/types';
 
 // Props
-const props = defineProps<{
+type Props = {
   objectInfoId: string;
-}>();
+};
+
+const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const permissionStore = usePermissionStore();

@@ -42,7 +42,13 @@ const getIdps = async () => {
     <h3>Config</h3>
     {{ getConfig }}
 
-    <h3>Token</h3>
+    <div class="flex mt-3">
+      <h3>Token</h3>
+      <CopyToClipboard
+        :mode="ButtonMode.ICON"
+        :to-copy="getAccessToken"
+      />
+    </div>
     {{ getAccessToken }}
 
     <h3>Profile</h3>

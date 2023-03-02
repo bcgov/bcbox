@@ -18,9 +18,13 @@ import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
 
 // Props
-defineProps<{
+type Props = {
   objectInfoId?: string;
-}>();
+};
+
+const props = withDefaults(defineProps<Props>(), {
+  objectInfoId: undefined
+});
 
 // Emits
 const emit = defineEmits(['show-object-info']);
@@ -132,7 +136,7 @@ watch( selectedObjects, () => {
         field="updatedAt"
         header="Updated date"
         :sortable="true"
-        :hidden="objectInfoId ? true : false"
+        :hidden="props.objectInfoId ? true : false"
       >
         <template #body="{ data }">
           {{ formatDateLong(data.updatedAt) }}

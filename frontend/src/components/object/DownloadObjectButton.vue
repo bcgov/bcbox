@@ -6,16 +6,12 @@ import { useObjectStore } from '@/store';
 import { ButtonMode } from '@/utils/enums';
 
 // Props
-const props = defineProps({
-  mode: {
-    type: String as PropType<ButtonMode>,
-    required: true,
-  },
-  ids: {
-    type: Array<string>,
-    required: true,
-  },
-});
+type Props = {
+  mode: ButtonMode;
+  ids: Array<string>;
+};
+
+const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const objectStore = useObjectStore();
@@ -53,7 +49,7 @@ const download = () => {
   </Dialog>
 
   <Button
-    v-if="mode === ButtonMode.ICON"
+    v-if="props.mode === ButtonMode.ICON"
     class="p-button-lg p-button-text"
     @click="download()"
   >

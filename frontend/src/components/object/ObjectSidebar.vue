@@ -8,9 +8,11 @@ import { RouteNames } from '@/utils/constants';
 import { Button } from '@/lib/primevue';
 
 // Props
-defineProps<{
+type Props = {
   objectInfoId: string;
-}>();
+};
+
+const props = withDefaults(defineProps<Props>(), {});
 
 // Emits
 const emit = defineEmits(['close-object-info']);
@@ -41,19 +43,19 @@ const closeObjectInfo = async () => {
   </div>
   <div class="pl-2">
     <ObjectProperties
-      :object-info-id="objectInfoId"
+      :object-info-id="props.objectInfoId"
       :full-view="false"
     />
     <ObjectMetadata
-      :object-info-id="objectInfoId"
+      :object-info-id="props.objectInfoId"
       :full-view="false"
     />
-    <ObjectTag :object-info-id="objectInfoId" />
+    <ObjectTag :object-info-id="props.objectInfoId" />
     <div class="col-9">
       <router-link
         v-slot="{ navigate }"
         custom
-        :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objId: objectInfoId } }"
+        :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objId: props.objectInfoId } }"
       >
         <Button
           label="Primary"

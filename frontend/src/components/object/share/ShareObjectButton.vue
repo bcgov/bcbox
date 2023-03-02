@@ -10,12 +10,11 @@ import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
 
 // Props
-const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-});
+type Props = {
+  id: string;
+};
+
+const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const metadataStore = useMetadataStore();
@@ -56,9 +55,9 @@ onMounted( () => {
       />
       <span class="p-dialog-title">Share</span>
     </template>
-    
+
     <h3 class="bcbox-info-dialog-subhead">
-      {{ props.obj.name }}
+      {{ metadataStore.getValue(id, 'name') }}
     </h3>
 
     <ul class="mb-4">
@@ -79,7 +78,7 @@ onMounted( () => {
         />
       </TabPanel>
       <TabPanel
-        v-if="props.obj.public"
+        v-if="obj?.public"
         header="Direct public file link"
       >
         <ShareLinkContent

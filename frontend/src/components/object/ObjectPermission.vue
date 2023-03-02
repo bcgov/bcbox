@@ -10,9 +10,11 @@ import { Permissions } from '@/utils/constants';
 import type { Ref } from 'vue';
 
 // Props
-const props = defineProps<{
+type Props = {
   objectId: string;
-}>();
+};
+
+const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const permissionStore = usePermissionStore();

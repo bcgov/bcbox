@@ -9,17 +9,14 @@ import { useToast } from 'primevue/usetoast';
 const toast = useToast();
 
 // Props
-const props = defineProps({
-  label: {
-    type: String,
-    required: true,
-  },
-  shareLink: {
-    type: String,
-    required: true,
-  },
-});
+type Props = {
+  label: string;
+  shareLink: string;
+};
 
+const props = withDefaults(defineProps<Props>(), {});
+
+// Actions
 const copyLinkToClipboard = () => {
   navigator.clipboard.writeText(props.shareLink);
   toast.add({

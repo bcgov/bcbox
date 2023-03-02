@@ -4,10 +4,10 @@ import { Button, useToast } from '@/lib/primevue';
 import { ButtonMode } from '@/utils/enums';
 
 // Props
-interface Props {
+type Props = {
   mode?: ButtonMode,
   toCopy?: string
-}
+};
 
 const props = withDefaults(defineProps<Props>(), {
   mode: ButtonMode.BUTTON,

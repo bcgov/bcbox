@@ -14,10 +14,10 @@ import {
 } from '@/components/object';
 import { Button, Dialog } from '@/lib/primevue';
 import { useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
+import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
-import { Permissions } from '@/utils/constants';
 import type { COMSObject } from '@/types';
 
 // Store
