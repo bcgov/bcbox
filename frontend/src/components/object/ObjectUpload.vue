@@ -69,9 +69,7 @@ const onRemoveFailedFile = async (index: number) => {
 };
 
 // Based on files prop from upload component, are we in ready to upload mode
-const noFilesChosen = (files: File[]) => {
-  return !files || files.length === 0;
-};
+const noFilesChosen = (files?: Array<File>): boolean => !files?.length;
 </script>
 
 <template>
