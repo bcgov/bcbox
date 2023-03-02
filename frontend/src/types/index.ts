@@ -10,7 +10,6 @@ export type { Tag } from './Tag';
 export type { User } from './User';
 export type { UserPermissions } from './UserPermissions';
 
-
 export type { BucketPermissionsOptions } from './options/BucketPermissionsOptions';
 export type { COMSObjectPermissionsOptions } from './options/COMSObjectPermissionsOptions';
 export type { FetchMetadataOptions } from './options/FetchMetadataOptions';

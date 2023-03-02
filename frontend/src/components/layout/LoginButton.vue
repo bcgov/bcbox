@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
 import { useRouter } from 'vue-router';
 
+import { Button } from '@/lib/primevue';
 import { useAuthStore } from '@/store/authStore';
 import { RouteNames } from '@/utils/constants';
 

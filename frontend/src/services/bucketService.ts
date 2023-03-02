@@ -1,5 +1,7 @@
 import { comsAxios } from './interceptors';
+
 import type { Bucket } from '@/types';
+
 const BUCKET_PATH = 'bucket';
 
 export default {

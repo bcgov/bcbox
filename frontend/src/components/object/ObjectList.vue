@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref, watch} from 'vue';
+import { computed, onMounted, ref, unref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+
 import {
   DeleteObjectButton,
   DownloadObjectButton,
@@ -23,7 +24,7 @@ const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 
 const { getObjects, getSelectedObjects } = storeToRefs(objectStore);
-const { currentUser } = storeToRefs(useUserStore());
+const { getCurrentUser } = storeToRefs(useUserStore());
 const route = useRoute();
 
 // State
@@ -58,20 +59,20 @@ const closeUpload = () => {
 
 // Download
 const selectedObjectIds = computed(() => {
-  return getSelectedObjects.value.map((o) => o.id);
+  return unref(getSelectedObjects).map((o) => o.id);
 });
 
 onMounted(async () => {
   // Removed for now
   // updateBreadcrumb();
 
-  await bucketStore.fetchBuckets({ userId: currentUser.value?.userId, objectPerms: true });
+  await bucketStore.fetchBuckets({ userId: getCurrentUser.value?.userId, objectPerms: true });
   await objectStore.fetchObjects({ bucketId: route.query.bucketId as string });
 });
 
-watch( getObjects, async () => {
+watch( getObjects, () => {
   // Watch for object changes to get associated metadata
-  await metadataStore.fetchMetadata({objId: getObjects.value.map( (x: COMSObject) => x.id )});
+  metadataStore.fetchMetadata({objId: getObjects.value.map( (x: COMSObject) => x.id )});
 });
 
 </script>

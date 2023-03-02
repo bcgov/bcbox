@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
 import ObjectPermissionAddUser from '@/components/object/ObjectPermissionAddUser.vue';
 import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
 import { usePermissionStore } from '@/store';

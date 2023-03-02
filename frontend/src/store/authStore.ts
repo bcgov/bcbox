@@ -2,10 +2,11 @@ import { defineStore } from 'pinia';
 import { computed, ref, unref } from 'vue';
 
 import { AuthService, ConfigService } from '@/services';
-import { isDebugMode } from './utils';
+import { isDebugMode } from '@/utils/utils';
 
 import type { IdTokenClaims, User } from 'oidc-client-ts';
 import type { Ref } from 'vue';
+
 import type { IdentityProvider } from '@/types';
 
 export type AuthStoreState = {

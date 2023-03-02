@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
 import { Button, useToast } from '@/lib/primevue';
 import { ButtonMode } from '@/utils/enums';
 

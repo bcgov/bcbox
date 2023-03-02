@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+
 import SearchUsers from '@/components/form/SearchUsers.vue';
 import { useConfigStore, usePermissionStore } from '@/store';
 

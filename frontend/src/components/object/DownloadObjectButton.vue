@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
+import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
 import { Button, Dialog } from '@/lib/primevue';
 import { useObjectStore } from '@/store';
 import { ButtonMode } from '@/utils/enums';

@@ -1,12 +1,18 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref, unref } from 'vue';
+
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
 import { useAppStore, usePermissionStore, useUserStore } from '@/store';
-import { partition } from '@/utils/utils';
+import { isDebugMode, partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { COMSObject, COMSObjectPermissionsOptions, ListObjectsOptions } from '@/types';
+
+export type ObjectStoreState = {
+  objects: Ref<Array<COMSObject>>;
+  selectedObjects: Ref<Array<COMSObject>>; // All selected table row items
+}
 
 export const useObjectStore = defineStore('objectStore', () => {
   const toast = useToast();
@@ -14,15 +20,19 @@ export const useObjectStore = defineStore('objectStore', () => {
   // Store
   const appStore = useAppStore();
   const permissionStore = usePermissionStore();
-  const { currentUser } = storeToRefs(useUserStore());
+  const { getCurrentUser } = storeToRefs(useUserStore());
 
   // State
-  const objects: Ref<Array<COMSObject>> = ref([]);
-  const selectedObjects: Ref<Array<COMSObject>> = ref([]); // All selected table row items
+  const state: ObjectStoreState = {
+    objects: ref([]),
+    selectedObjects: ref([]),
+  };
 
   // Getters
-  const getObjects = computed(() => objects.value);
-  const getSelectedObjects = computed(() => selectedObjects.value);
+  const getters = {
+    getObjects: computed(() => unref(state.objects)),
+    getSelectedObjects: computed(() => unref(state.selectedObjects))
+  };
 
   // Actions
   async function createObject(object: any, bucketId?: string) {
@@ -62,7 +72,7 @@ export const useObjectStore = defineStore('objectStore', () => {
     try {
       appStore.beginIndeterminateLoading();
 
-      if (currentUser.value) {
+      if (getCurrentUser.value) {
         // Get a unique list of object IDs the user has access to
         const permResponse = await permissionStore.fetchObjectPermissions(params);
         const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))];
@@ -77,13 +87,13 @@ export const useObjectStore = defineStore('objectStore', () => {
             (!params.bucketId || x.bucketId === params.bucketId)
           );
 
-          const [match, difference] = partition(unref(objects), matches);
+          const [match, difference] = partition(unref(state.objects), matches);
 
           // Merge and assign
-          objects.value = difference.concat(response);
+          state.objects.value = difference.concat(response);
         }
         else {
-          objects.value = response;
+          state.objects.value = response;
         }
       }
     }
@@ -96,10 +106,10 @@ export const useObjectStore = defineStore('objectStore', () => {
     }
   }
 
-  const getObjectById = (objectId: string) => objects.value.find((x) => x.id === objectId);
+  const getObjectById = (objectId: string) => state.objects.value.find((x) => x.id === objectId);
 
   function setSelectedObjects(selected: Array<COMSObject>) {
-    selectedObjects.value = selected;
+    state.selectedObjects.value = selected;
   }
 
   async function togglePublic(objectId: string, isPublic: boolean) {
@@ -115,9 +125,11 @@ export const useObjectStore = defineStore('objectStore', () => {
   }
 
   return {
+    // State
+    ...(isDebugMode && state),
+
     // Getters
-    getObjects,
-    getSelectedObjects,
+    ...getters,
 
     // Actions
     createObject,

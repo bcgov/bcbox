@@ -1,22 +1,31 @@
 import { defineStore } from 'pinia';
 import { computed, ref, unref } from 'vue';
+
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
 import { useAppStore } from '@/store';
-import { partition } from '@/utils/utils';
+import { isDebugMode, partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { FetchTaggingOptions, Tagging } from '@/types';
+
+export type TagStoreState = {
+  tagging: Ref<Array<Tagging>>
+}
 
 export const useTagStore = defineStore('tag', () => {
   const appStore = useAppStore();
   const toast = useToast();
 
   // State
-  const tagging: Ref<Array<Tagging>> = ref([]);
+  const state: TagStoreState = {
+    tagging: ref([])
+  };
 
   // Getters
-  const getTagging = computed(() => tagging.value);
+  const getters = {
+    getTagging: computed(() => unref(state.tagging))
+  };
 
   // Actions
   async function fetchTagging(params: FetchTaggingOptions = {}) {
@@ -32,10 +41,10 @@ export const useTagStore = defineStore('tag', () => {
           (!Array.isArray(params.objId) && params.objId === x.objectId))
       );
 
-      const [match, difference] = partition(unref(tagging), matches);
+      const [match, difference] = partition(unref(state.tagging), matches);
 
       // Merge and assign
-      tagging.value = difference.concat(response);
+      state.tagging.value = difference.concat(response);
     }
     catch (error) {
       toast.add({ severity: 'error', summary: 'Error fetching tags', detail: error, life: 3000 });
@@ -46,11 +55,14 @@ export const useTagStore = defineStore('tag', () => {
     }
   }
 
-  const getTaggingByObjectId = (objectId: string) => tagging.value.find((x: Tagging) => x.objectId === objectId);
+  const getTaggingByObjectId = (objectId: string) => state.tagging.value.find((x: Tagging) => x.objectId === objectId);
 
   return {
+    // State
+    ...(isDebugMode && state),
+
     // Getters
-    getTagging,
+    ...getters,
 
     // Actions
     fetchTagging,

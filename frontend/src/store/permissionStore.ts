@@ -1,13 +1,13 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref, unref } from 'vue';
+
 import { useToast } from '@/lib/primevue';
 import { permissionService, userService } from '@/services';
 import { useAppStore, useConfigStore } from '@/store';
 import { Permissions } from '@/utils/constants';
-import { partition } from '@/utils/utils';
+import { isDebugMode, partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-
 import type {
   BucketPermission,
   BucketPermissionsOptions,
@@ -19,6 +19,14 @@ import type {
   UserPermissions,
 } from '@/types';
 
+export type PermissionStoreState = {
+  bucketPermissions: Ref<Array<BucketPermission>>;
+  mappedBucketToUserPermissions: Ref<Array<UserPermissions>>;
+  mappedObjectToUserPermissions: Ref<Array<UserPermissions>>;
+  objectPermissions: Ref<Array<COMSObjectPermission>>;
+  permissions: Ref<Array<Permission>>;
+}
+
 export const usePermissionStore = defineStore('permission', () => {
   // Store
   const appStore = useAppStore();
@@ -26,18 +34,22 @@ export const usePermissionStore = defineStore('permission', () => {
   const toast = useToast();
 
   // State
-  const bucketPermissions: Ref<Array<BucketPermission>> = ref([]);
-  const mappedBucketToUserPermissions: Ref<Array<UserPermissions>> = ref([]);
-  const mappedObjectToUserPermissions: Ref<Array<UserPermissions>> = ref([]);
-  const objectPermissions: Ref<Array<COMSObjectPermission>> = ref([]);
-  const permissions: Ref<Array<Permission>> = ref([]);
+  const state: PermissionStoreState = {
+    bucketPermissions: ref([]),
+    mappedBucketToUserPermissions: ref([]),
+    mappedObjectToUserPermissions: ref([]),
+    objectPermissions: ref([]),
+    permissions: ref([])
+  };
 
   // Getters
-  const getBucketPermissions = computed(() => bucketPermissions.value);
-  const getObjectPermissions = computed(() => objectPermissions.value);
-  const getPermissions = computed(() => permissions.value);
-  const getMappedBucketToUserPermissions = computed(() => mappedBucketToUserPermissions.value);
-  const getMappedObjectToUserPermissions = computed(() => mappedObjectToUserPermissions.value);
+  const getters = {
+    getBucketPermissions: computed(() => unref(state.bucketPermissions)),
+    getMappedBucketToUserPermissions: computed(() => unref(state.mappedBucketToUserPermissions)),
+    getMappedObjectToUserPermissions: computed(() => unref(state.mappedObjectToUserPermissions)),
+    getObjectPermissions: computed(() => unref(state.objectPermissions)),
+    getPermissions: computed(() => unref(state.permissions))
+  };
 
   // Actions
   async function addBucketPermission(bucketId: string, userId: string, permCode: string) {
@@ -57,7 +69,7 @@ export const usePermissionStore = defineStore('permission', () => {
 
   function addBucketUser(user: UserPermissions) {
     try {
-      getMappedBucketToUserPermissions.value.push(user);
+      getters.getMappedBucketToUserPermissions.value.push(user);
     } catch (error) {
       toast.add({ severity: 'error', summary: 'Error adding bucket user', detail: error, life: 3000 });
     }
@@ -80,7 +92,7 @@ export const usePermissionStore = defineStore('permission', () => {
 
   function addObjectUser(user: UserPermissions) {
     try {
-      getMappedObjectToUserPermissions.value.push(user);
+      getters.getMappedObjectToUserPermissions.value.push(user);
     } catch (error) {
       toast.add({ severity: 'error', summary: 'Error adding object user', detail: error, life: 3000 });
     }
@@ -128,10 +140,10 @@ export const usePermissionStore = defineStore('permission', () => {
         (!params.permCode || x.permCode === params.permCode)
       );
 
-      const [match, difference] = partition(unref(bucketPermissions), matches);
+      const [match, difference] = partition(unref(state.bucketPermissions), matches);
 
       // Merge and assign
-      bucketPermissions.value = difference.concat(newPerms);
+      state.bucketPermissions.value = difference.concat(newPerms);
 
       // Pass response back so bucketStore can handle bucketPerms=true correctly
       return response;
@@ -159,10 +171,10 @@ export const usePermissionStore = defineStore('permission', () => {
         (!params.permCode || x.permCode === params.permCode)
       );
 
-      const [match, difference] = partition(unref(objectPermissions), matches);
+      const [match, difference] = partition(unref(state.objectPermissions), matches);
 
       // Merge and assign
-      objectPermissions.value = difference.concat(newPerms);
+      state.objectPermissions.value = difference.concat(newPerms);
 
       // Pass response back so objectStore can handle objectPerms=true correctly
       return response;
@@ -175,26 +187,24 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  const getBucketActionAllowed = (bucketId: string, userId?: string, permCode?: string) => {
-    return bucketPermissions.value.some((x: BucketPermission) =>
+  const getIsBucketActionAllowed = (bucketId: string, userId?: string, permCode?: string) => {
+    return state.bucketPermissions.value.some((x: BucketPermission) =>
       x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
   };
 
-  const getObjectActionAllowed = (objectId: string, userId?: string, permCode?: string, bucketId?: string) => {
-    const bucketPerm = bucketPermissions.value.some((x: BucketPermission) =>
+  const getIsObjectActionAllowed = (objectId: string, userId?: string, permCode?: string, bucketId?: string) => {
+    const bucketPerm = state.bucketPermissions.value.some((x: BucketPermission) =>
       x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
-    const objectPerm = objectPermissions.value.some((x: COMSObjectPermission) =>
+    const objectPerm = state.objectPermissions.value.some((x: COMSObjectPermission) =>
       x.objectId === objectId && x.userId === userId && x.permCode === permCode);
-    //console.log(`${objectId} ${userId} ${permCode} ${bucketId}`);
 
-    //console.log(`${bucketPerm} ${objectPerm}`);
     return bucketPerm || objectPerm;
   };
 
   async function mapBucketToUserPermissions(bucketId: string) {
     try {
       appStore.beginIndeterminateLoading();
-      const bucketPerms = bucketPermissions.value.filter((x: BucketPermission) => x.bucketId === bucketId);
+      const bucketPerms = state.bucketPermissions.value.filter((x: BucketPermission) => x.bucketId === bucketId);
       const uniqueIds = [...new Set(bucketPerms.map((x: BucketPermission) => x.userId))];
       const uniqueUsers: Array<User> = (await userService.searchForUsers({ userId: uniqueIds })).data;
 
@@ -219,7 +229,7 @@ export const usePermissionStore = defineStore('permission', () => {
         });
       });
 
-      mappedBucketToUserPermissions.value = userPermissions;
+      state.mappedBucketToUserPermissions.value = userPermissions;
     }
     catch (error) {
       toast.add({
@@ -237,7 +247,7 @@ export const usePermissionStore = defineStore('permission', () => {
   async function mapObjectToUserPermissions(objectId: string) {
     try {
       appStore.beginIndeterminateLoading();
-      const objectPerms = objectPermissions.value.filter((x: COMSObjectPermission) => x.objectId === objectId);
+      const objectPerms = state.objectPermissions.value.filter((x: COMSObjectPermission) => x.objectId === objectId);
       const uniqueIds = [...new Set(objectPerms.map((x: COMSObjectPermission) => x.userId))];
       const uniqueUsers: Array<User> = (await userService.searchForUsers({ userId: uniqueIds })).data;
 
@@ -262,7 +272,7 @@ export const usePermissionStore = defineStore('permission', () => {
         });
       });
 
-      mappedObjectToUserPermissions.value = userPermissions;
+      state.mappedObjectToUserPermissions.value = userPermissions;
     }
     catch (error) {
       toast.add({
@@ -280,7 +290,7 @@ export const usePermissionStore = defineStore('permission', () => {
   async function removeBucketUser(bucketId: string, userId: string) {
     try {
       appStore.beginIndeterminateLoading();
-      for (const [, value] of Object.entries(Permissions)) {
+      for (const value of Object.values(Permissions)) {
         await permissionService.bucketDeletePermission(bucketId, { userId, permCode: value });
       }
     } catch (error) {
@@ -296,7 +306,7 @@ export const usePermissionStore = defineStore('permission', () => {
     try {
       appStore.beginIndeterminateLoading();
 
-      for (const [, value] of Object.entries(Permissions)) {
+      for (const value of Object.values(Permissions)) {
         await permissionService.objectDeletePermission(objectId, {
           userId,
           permCode: value,
@@ -315,12 +325,11 @@ export const usePermissionStore = defineStore('permission', () => {
 
 
   return {
+    // State
+    ...(isDebugMode && state),
+
     // Getters
-    getBucketPermissions,
-    getObjectPermissions,
-    getPermissions,
-    getMappedBucketToUserPermissions,
-    getMappedObjectToUserPermissions,
+    ...getters,
 
     // Actions
     addBucketPermission,
@@ -331,8 +340,8 @@ export const usePermissionStore = defineStore('permission', () => {
     deleteObjectPermission,
     fetchBucketPermissions,
     fetchObjectPermissions,
-    getBucketActionAllowed,
-    getObjectActionAllowed,
+    getIsBucketActionAllowed,
+    getIsObjectActionAllowed,
     mapBucketToUserPermissions,
     mapObjectToUserPermissions,
     removeBucketUser,

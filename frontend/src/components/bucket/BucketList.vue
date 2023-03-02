@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
+
 import { BucketConfigForm, BucketSidebar, BucketTable } from '@/components/bucket';
 import { Button, Dialog } from '@/lib/primevue';
 import { useBucketStore, useUserStore } from '@/store';
@@ -11,7 +12,7 @@ import type { Bucket } from '@/types';
 
 // Store
 const bucketStore = useBucketStore();
-const { currentUser } = storeToRefs(useUserStore());
+const { getCurrentUser } = storeToRefs(useUserStore());
 
 // State
 const displayInfo: Ref<Bucket | undefined> = ref(undefined);
@@ -40,7 +41,7 @@ const closeBucketConfig = () => {
 };
 
 onMounted(async () => {
-  await bucketStore.fetchBuckets({ userId: currentUser.value?.userId, objectPerms: true });
+  await bucketStore.fetchBuckets({ userId: getCurrentUser.value?.userId, objectPerms: true });
 });
 </script>
 
@@ -73,11 +74,11 @@ onMounted(async () => {
           />
           <span class="p-dialog-title">{{ BucketConfig.HEADER_NEW_BUCKET }}</span>
         </template>
-        
+
         <h3 class="bcbox-info-dialog-subhead">
           {{ bucketConfigTitle }}
         </h3>
-             
+
         <BucketConfigForm
           :bucket="bucketToUpdate"
           @submit-bucket-config="closeBucketConfig"

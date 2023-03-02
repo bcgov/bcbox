@@ -4,8 +4,8 @@ import {
   ObjectProperties,
   ObjectTag
 } from '@/components/object';
-import { RouteNames } from '@/utils/constants';
 import { Button } from '@/lib/primevue';
+import { RouteNames } from '@/utils/constants';
 
 // Props
 type Props = {

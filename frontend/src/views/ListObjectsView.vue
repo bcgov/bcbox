@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
+
 import ObjectList from '@/components/object/ObjectList.vue';
 import { useBucketStore } from '@/store';
 import { RouteNames } from '@/utils/constants';

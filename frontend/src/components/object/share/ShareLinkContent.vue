@@ -1,10 +1,8 @@
 <script setup lang="ts">
+import QrcodeVue from 'qrcode.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import QrcodeVue from 'qrcode.vue';
-import { useToast } from 'primevue/usetoast';
+import { Button, InputText, useToast } from '@/lib/primevue';
 
 const toast = useToast();
 

@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { ref, watch, unref } from 'vue';
 import { useRoute } from 'vue-router';
+
 import {
   DeleteObjectButton,
   DownloadObjectButton,
@@ -34,7 +35,7 @@ const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const { getObjects } = storeToRefs(objectStore);
-const { currentUser } = storeToRefs(useUserStore());
+const { getCurrentUser } = storeToRefs(useUserStore());
 
 // State
 const permissionsVisible = ref(false);
@@ -149,8 +150,8 @@ watch( selectedObjects, () => {
         <template #body="{ data }">
           <InputSwitch
             v-model="data.public"
-            :disabled="!permissionStore.getObjectActionAllowed(
-              data.id, currentUser?.userId, Permissions.MANAGE, route.query.bucketId as string)"
+            :disabled="!permissionStore.getIsObjectActionAllowed(
+              data.id, getCurrentUser?.userId, Permissions.MANAGE, route.query.bucketId as string)"
             @change="togglePublic(data.id, data.public)"
           />
         </template>
@@ -163,19 +164,19 @@ watch( selectedObjects, () => {
       >
         <template #body="{ data }">
           <ShareObjectButton
-            v-if="permissionStore.getObjectActionAllowed(
-              data.id, currentUser?.userId, Permissions.MANAGE, route.query.bucketId as string)"
+            v-if="permissionStore.getIsObjectActionAllowed(
+              data.id, getCurrentUser?.userId, Permissions.MANAGE, route.query.bucketId as string)"
             :id="data.id"
           />
           <DownloadObjectButton
-            v-if="permissionStore.getObjectActionAllowed(
-              data.id, currentUser?.userId, Permissions.READ, route.query.bucketId as string)"
+            v-if="permissionStore.getIsObjectActionAllowed(
+              data.id, getCurrentUser?.userId, Permissions.READ, route.query.bucketId as string)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />
           <Button
-            v-if="permissionStore.getObjectActionAllowed(
-              data.id, currentUser?.userId, Permissions.MANAGE, route.query.bucketId as string)"
+            v-if="permissionStore.getIsObjectActionAllowed(
+              data.id, getCurrentUser?.userId, Permissions.MANAGE, route.query.bucketId as string)"
             class="p-button-lg p-button-text"
             @click="showPermissions(data.id, metadataStore.getValue(data.id, 'name'))"
           >
@@ -188,8 +189,8 @@ watch( selectedObjects, () => {
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
           <DeleteObjectButton
-            v-if="permissionStore.getObjectActionAllowed(
-              data.id, currentUser?.userId, Permissions.DELETE, route.query.bucketId as string)"
+            v-if="permissionStore.getIsObjectActionAllowed(
+              data.id, getCurrentUser?.userId, Permissions.DELETE, route.query.bucketId as string)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />

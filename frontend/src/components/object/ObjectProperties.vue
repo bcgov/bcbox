@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
+
 import GridRow from '@/components/form/GridRow.vue';
 import { useBucketStore, useMetadataStore, useObjectStore, useUserStore } from '@/store';
 import { RouteNames } from '@/utils/constants';

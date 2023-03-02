@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref, unref } from 'vue';
 
-import { isDebugMode } from './utils';
+import { isDebugMode } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 

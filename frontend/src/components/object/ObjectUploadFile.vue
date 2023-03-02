@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { filesize } from 'filesize';
+
 import { Badge, Button } from '@/lib/primevue';
 
 // Props

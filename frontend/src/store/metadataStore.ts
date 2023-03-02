@@ -1,23 +1,32 @@
 import { defineStore } from 'pinia';
 import { computed, ref, unref } from 'vue';
+
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
 import { useAppStore } from '@/store';
-import { partition } from '@/utils/utils';
+import { isDebugMode, partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { Metadata } from '@/types';
 import type { FetchMetadataOptions } from '@/types';
+
+export type MetadataStoreState = {
+  metadata: Ref<Array<Metadata>>
+}
 
 export const useMetadataStore = defineStore('metadata', () => {
   const appStore = useAppStore();
   const toast = useToast();
 
   // State
-  const metadata: Ref<Array<Metadata>> = ref([]);
+  const state: MetadataStoreState = {
+    metadata: ref([])
+  };
 
   // Getters
-  const getMetadata = computed(() => metadata.value);
+  const getters = {
+    getMetadata: computed(() => unref(state.metadata))
+  };
 
   // Actions
   async function fetchMetadata(params: FetchMetadataOptions = {}) {
@@ -33,10 +42,10 @@ export const useMetadataStore = defineStore('metadata', () => {
           (!Array.isArray(params.objId) && params.objId === x.objectId))
       );
 
-      const [match, difference] = partition(unref(metadata), matches);
+      const [match, difference] = partition(unref(state.metadata), matches);
 
       // Merge and assign
-      metadata.value = difference.concat(response);
+      state.metadata.value = difference.concat(response);
     }
     catch (error) {
       toast.add({ severity: 'error', summary: 'Error fetching metadata', detail: error, life: 3000 });
@@ -47,13 +56,17 @@ export const useMetadataStore = defineStore('metadata', () => {
     }
   }
 
-  const getMetadataByObjectId = (objectId: string) => metadata.value.find((x: Metadata) => x.objectId === objectId);
+  const getMetadataByObjectId = (objectId: string) =>
+    state.metadata.value.find((x: Metadata) => x.objectId === objectId);
   const getValue = (objectId: string, key: string) =>
     getMetadataByObjectId(objectId)?.metadata.find(x => x.key === key)?.value;
 
   return {
+    // State
+    ...(isDebugMode && state),
+
     // Getters
-    getMetadata,
+    ...getters,
 
     // Actions
     getMetadataByObjectId,

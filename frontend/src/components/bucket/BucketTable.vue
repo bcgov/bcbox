@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
+
 import BucketPermission from '@/components/bucket/BucketPermission.vue';
 import { Button, Column, DataTable, Dialog } from '@/lib/primevue';
 import { useAppStore, useBucketStore, usePermissionStore, useUserStore } from '@/store';
@@ -11,9 +12,9 @@ import type { Bucket } from '@/types';
 
 // Store
 const permissionStore = usePermissionStore();
-const { getLoading } = storeToRefs(useAppStore());
+const { getIsLoading } = storeToRefs(useAppStore());
 const { getBuckets } = storeToRefs(useBucketStore());
-const { currentUser } = storeToRefs(useUserStore());
+const { getCurrentUser } = storeToRefs(useUserStore());
 
 // State
 const permissionsVisible: Ref<boolean> = ref(false);
@@ -38,14 +39,14 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
 };
 
 const displayPermissionsIcon = (bucket: Bucket) => {
-  return permissionStore.getBucketActionAllowed(bucket.bucketId, currentUser.value?.userId, Permissions.MANAGE );
+  return permissionStore.getIsBucketActionAllowed(bucket.bucketId, getCurrentUser.value?.userId, Permissions.MANAGE );
 };
 </script>
 
 <template>
   <div>
     <DataTable
-      :loading="getLoading"
+      :loading="getIsLoading"
       :value="getBuckets"
       data-key="bucketId"
       class="p-datatable-sm"
@@ -61,7 +62,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
     >
       <template #empty>
         <div
-          v-if="!getLoading"
+          v-if="!getIsLoading"
           class="flex justify-content-center"
         >
           <h3>There are no buckets associated with your account.</h3>
@@ -142,7 +143,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
       <h3 class="bcbox-info-dialog-subhead">
         {{ permissionBucketName }}
       </h3>
-      
+
       <BucketPermission :bucket-id="permissionsBucketId" />
     </Dialog>
   </div>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form } from 'vee-validate';
 import { object, string } from 'yup';
+
 import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
 import { Button, useToast } from '@/lib/primevue';
@@ -17,7 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
   bucket: undefined
 });
 
-// Emites
+// Emits
 const emit = defineEmits(['cancel-bucket-config', 'submit-bucket-config']);
 
 // Store

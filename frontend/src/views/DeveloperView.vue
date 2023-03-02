@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+
 import CopyToClipboard from '@/components/form/CopyToClipboard.vue';
 import { Button, ProgressSpinner,useToast } from '@/lib/primevue';
-import { useAuthStore, useConfigStore, useUserStore } from '@/store';
+import { useAppStore, useAuthStore, useConfigStore, useUserStore } from '@/store';
 import { ButtonMode } from '@/utils/enums';
 
+// Store
+const userStore = useUserStore();
 const { getAccessToken, getProfile } = storeToRefs(useAuthStore());
 const { getConfig } = storeToRefs(useConfigStore());
-
-const userStore = useUserStore();
-const { loading, idps } = storeToRefs(userStore);
+const { getIsLoading } = storeToRefs(useAppStore());
+const { getIdps } = storeToRefs(userStore);
 
 // Actions
 const toast = useToast();
 
-const getIdps = async () => {
+const getIdpList = async () => {
   try {
     await userStore.listIdps();
   } catch (error) {
@@ -29,14 +31,14 @@ const getIdps = async () => {
     <h3>Temp for testing API call to COMS</h3>
     <Button
       label="Call COMS"
-      :loading="loading"
-      @click="getIdps"
+      :loading="getIsLoading"
+      @click="getIdpList"
     />
-    <div v-if="loading">
+    <div v-if="getIsLoading">
       <ProgressSpinner />
     </div>
     <div v-else>
-      <span v-if="idps.length">{{ idps }}</span>
+      <span v-if="getIdps.length">{{ getIdps }}</span>
     </div>
 
     <h3>Config</h3>

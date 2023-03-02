@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { toRef } from 'vue';
-import Password from 'primevue/password';
 import { useField, ErrorMessage } from 'vee-validate';
+
+import { Password } from '@/lib/primevue';
 
 type Props = {
   name: string;

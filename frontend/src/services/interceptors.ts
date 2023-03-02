@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import { useAuthStore, useConfigStore } from '../store';
 
 /**

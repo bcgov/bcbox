@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { toRef } from 'vue';
-import InputText from 'primevue/inputtext';
 import { useField, ErrorMessage } from 'vee-validate';
+
+import { InputText } from '@/lib/primevue';
 
 // Props
 type Props = {

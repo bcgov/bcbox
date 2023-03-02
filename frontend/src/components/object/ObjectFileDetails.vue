@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch, unref } from 'vue';
 import { useRoute } from 'vue-router';
+
 import {
   DeleteObjectButton,
   DownloadObjectButton,
@@ -26,7 +27,7 @@ const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const route = useRoute();
 const { getObjects } = storeToRefs(objectStore);
-const { currentUser } = storeToRefs(useUserStore());
+const { getCurrentUser } = storeToRefs(useUserStore());
 
 // State
 const permissionsVisible: Ref<boolean> = ref(false);
@@ -43,8 +44,8 @@ const showPermissions = async (objectId: string, objectName?: string) => {
   permissionsObjectName.value = objectName || '';
 };
 
-onMounted(async () => {
-  await permissionStore.fetchBucketPermissions({ userId: currentUser.value?.userId, objectPerms: true });
+onMounted(() => {
+  permissionStore.fetchBucketPermissions({ userId: getCurrentUser.value?.userId, objectPerms: true });
 });
 
 watch( [routeObjId, getObjects], () => {
@@ -72,23 +73,27 @@ watch( [routeObjId, getObjects], () => {
         class="action-buttons"
       >
         <ShareObjectButton
-          v-if="permissionStore.getObjectActionAllowed(routeObjId, currentUser?.userId, Permissions.MANAGE, bucketId)"
+          v-if="permissionStore.getIsObjectActionAllowed(
+            routeObjId, getCurrentUser?.userId, Permissions.MANAGE, bucketId)"
           :id="routeObjId"
         />
         <DownloadObjectButton
-          v-if="permissionStore.getObjectActionAllowed(routeObjId, currentUser?.userId, Permissions.READ, bucketId)"
+          v-if="permissionStore.getIsObjectActionAllowed(
+            routeObjId, getCurrentUser?.userId, Permissions.READ, bucketId)"
           :mode="ButtonMode.ICON"
           :ids="[routeObjId]"
         />
         <Button
-          v-if="permissionStore.getObjectActionAllowed(routeObjId, currentUser?.userId, Permissions.MANAGE, bucketId)"
+          v-if="permissionStore.getIsObjectActionAllowed(
+            routeObjId, getCurrentUser?.userId, Permissions.MANAGE, bucketId)"
           class="p-button-lg p-button-text"
           @click="showPermissions(routeObjId, metadataStore.getValue(routeObjId, 'name'))"
         >
           <font-awesome-icon icon="fa-solid fa-users" />
         </Button>
         <DeleteObjectButton
-          v-if="permissionStore.getObjectActionAllowed(routeObjId, currentUser?.userId, Permissions.DELETE, bucketId)"
+          v-if="permissionStore.getIsObjectActionAllowed(
+            routeObjId, getCurrentUser?.userId, Permissions.DELETE, bucketId)"
           :mode="ButtonMode.ICON"
           :ids="[routeObjId]"
         />

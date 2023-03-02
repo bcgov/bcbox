@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { computed, ref, onMounted } from 'vue';
+
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { ShareLinkContent } from '@/components/object';
 import { Button, Dialog, TabView, TabPanel } from '@/lib/primevue';

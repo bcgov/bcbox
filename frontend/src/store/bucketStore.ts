@@ -1,12 +1,17 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref, unref } from 'vue';
+
 import { useToast } from '@/lib/primevue';
 import { bucketService } from '@/services';
 import { useAppStore, usePermissionStore, useUserStore } from '@/store';
-import { partition } from '@/utils/utils';
+import { isDebugMode, partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketPermissionsOptions } from '@/types';
+
+export type BucketStoreState = {
+  buckets: Ref<Array<Bucket>>
+}
 
 export const useBucketStore = defineStore('bucket', () => {
   const toast = useToast();
@@ -14,13 +19,17 @@ export const useBucketStore = defineStore('bucket', () => {
   // Store
   const appStore = useAppStore();
   const permissionStore = usePermissionStore();
-  const { currentUser } = storeToRefs(useUserStore());
+  const { getCurrentUser } = storeToRefs(useUserStore());
 
   // State
-  const buckets: Ref<Array<Bucket>> = ref([]);
+  const state: BucketStoreState = {
+    buckets: ref([])
+  };
 
   // Getters
-  const getBuckets = computed(() => buckets.value);
+  const getters = {
+    getBuckets: computed(() => unref(state.buckets))
+  };
 
   // Actions
   async function createBucket(bucket: Bucket) {
@@ -37,7 +46,7 @@ export const useBucketStore = defineStore('bucket', () => {
     try {
       appStore.beginIndeterminateLoading();
 
-      if (currentUser.value) {
+      if (getCurrentUser.value) {
         // Get a unique list of bucket IDs the user has access to
         const permResponse = await permissionStore.fetchBucketPermissions(params);
         const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
@@ -51,13 +60,13 @@ export const useBucketStore = defineStore('bucket', () => {
             (!params?.bucketId || x.bucketId === params.bucketId)
           );
 
-          const [match, difference] = partition(unref(buckets), matches);
+          const [match, difference] = partition(unref(state.buckets), matches);
 
           // Merge and assign
-          buckets.value = difference.concat(response);
+          state.buckets.value = difference.concat(response);
         }
         else {
-          buckets.value = response;
+          state.buckets.value = response;
         }
       }
     }
@@ -69,7 +78,9 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  const getBucketById = (bucketId: string) => buckets.value.find((x) => x.bucketId === bucketId);
+  function getBucketById(bucketId: string) {
+    return state.buckets.value.find((x) => x.bucketId === bucketId);
+  }
 
   async function updateBucket(bucketId: string, bucket: Bucket) {
     try {
@@ -82,8 +93,11 @@ export const useBucketStore = defineStore('bucket', () => {
   }
 
   return {
+    // State
+    ...(isDebugMode && state),
+
     // Getters
-    getBuckets,
+    ...getters,
 
     // Actions
     createBucket,

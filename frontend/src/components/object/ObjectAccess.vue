@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
+
 import { usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 

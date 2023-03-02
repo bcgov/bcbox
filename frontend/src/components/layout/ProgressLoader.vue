@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import ProgressBar from 'primevue/progressbar';
 
+import { ProgressBar } from '@/lib/primevue';
 import { useAppStore } from '@/store';
 
+
+// Store
 const appStore = useAppStore();
 const { getLoadingMode, getLoadingValue } = storeToRefs(appStore);
 </script>
