@@ -65,28 +65,23 @@ const comsUrl = computed(() => {
       </li>
     </ul>
 
-    <div v-if="props.obj.public">
-      <TabView>
-        <TabPanel header="BCBox share link">
-          <ShareLinkContent
-            :share-link="bcBoxLink"
-            label="Share Link"
-          />
-        </TabPanel>
-        <TabPanel header="Direct public file link">
-          <ShareLinkContent
-            :share-link="comsUrl"
-            label="Direct Link"
-          />
-        </TabPanel>
-      </TabView>
-    </div>
-    <div v-else>
-      <ShareLinkContent
-        :share-link="bcBoxLink"
-        label="Share Link"
-      />
-    </div>
+    <TabView>
+      <TabPanel header="BCBox share link">
+        <ShareLinkContent
+          :share-link="bcBoxLink"
+          label="Share Link"
+        />
+      </TabPanel>
+      <TabPanel
+        v-if="props.obj.public"
+        header="Direct public file link"
+      >
+        <ShareLinkContent
+          :share-link="comsUrl"
+          label="Direct Link"
+        />
+      </TabPanel>
+    </TabView>
   </Dialog>
 
   <Button
