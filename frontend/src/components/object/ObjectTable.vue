@@ -185,7 +185,7 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
       v-model:visible="permissionsVisible"
       :draggable="false"
       :modal="true"
-      class="bcbox-info-dlg permissions-modal"
+      class="bcbox-info-dialog permissions-modal"
     >
       <!-- eslint-enable vue/no-v-model-argument -->
       <template #header>
@@ -196,7 +196,7 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
         <span class="p-dialog-title">Object Permissions</span>
       </template>
 
-      <h3 class="bcbox-info-dlg-subhead">
+      <h3 class="bcbox-info-dialog-subhead">
         {{ permissionsObjectName }}
       </h3>
 

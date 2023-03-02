@@ -125,7 +125,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
       v-model:visible="permissionsVisible"
       :draggable="false"
       :modal="true"
-      class="bcbox-info-dlg permissions-modal"
+      class="bcbox-info-dialog permissions-modal"
     >
       <!-- eslint-enable vue/no-v-model-argument -->
       <template #header>
@@ -136,7 +136,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
         <span class="p-dialog-title">Bucket Permissions</span>
       </template>
 
-      <h3 class="bcbox-info-dlg-subhead">
+      <h3 class="bcbox-info-dialog-subhead">
         {{ permissionBucketName }}
       </h3>
       

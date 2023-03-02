@@ -54,5 +54,4 @@ plugins:
     rules:
       nesting-depth:
         - 2
-        -
-          max-depth: 5
+        - max-depth: 5

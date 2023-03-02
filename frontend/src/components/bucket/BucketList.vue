@@ -58,7 +58,7 @@ onMounted(() => {
         Configure new bucket
       </Button>
       <Dialog
-        class="bcbox-info-dlg"
+        class="bcbox-info-dialog"
         :visible="displayBucketConfig"
         :style="{ width: '50vw' }"
         :modal="true"
@@ -72,7 +72,7 @@ onMounted(() => {
           <span class="p-dialog-title">{{ BucketConfig.HEADER_NEW_BUCKET }}</span>
         </template>
         
-        <h3 class="bcbox-info-dlg-subhead">
+        <h3 class="bcbox-info-dialog-subhead">
           {{ bucketConfigTitle }}
         </h3>
              

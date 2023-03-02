@@ -41,7 +41,7 @@ const comsUrl = computed(() => {
     header="Share"
     :modal="true"
     :style="{ minWidth: '700px' }"
-    class="bcbox-info-dlg"
+    class="bcbox-info-dialog"
   >
     <template #header>
       <font-awesome-icon
@@ -51,7 +51,7 @@ const comsUrl = computed(() => {
       <span class="p-dialog-title">Share</span>
     </template>
     
-    <h3 class="bcbox-info-dlg-subhead">
+    <h3 class="bcbox-info-dialog-subhead">
       {{ props.obj.name }}
     </h3>
 
