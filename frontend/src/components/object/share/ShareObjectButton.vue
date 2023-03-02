@@ -55,7 +55,6 @@ const comsUrl = computed(() => {
       {{ props.obj.name }}
     </h3>
 
-    <h2>Share</h2>
     <ul class="mb-4">
       <li>
         To share publicly or with a direct file link, you must set the file to
