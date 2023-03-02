@@ -58,24 +58,24 @@ onMounted(() => {
         Configure new bucket
       </Button>
       <Dialog
+        class="bcbox-info-dialog"
         :visible="displayBucketConfig"
-        :style="{width: '50vw'}"
+        :style="{ width: '50vw' }"
         :modal="true"
         @update:visible="closeBucketConfig"
       >
         <template #header>
-          <div class="flex">
-            <font-awesome-icon
-              icon="fas fa-cog"
-              class="pr-3 pt-2"
-              style="font-size: 2rem"
-            />
-            <div>
-              <h1>{{ BucketConfig.HEADER_NEW_BUCKET }}</h1>
-              <h3>{{ bucketConfigTitle }}</h3>
-            </div>
-          </div>
+          <font-awesome-icon
+            icon="fas fa-cog"
+            fixed-width
+          />
+          <span class="p-dialog-title">{{ BucketConfig.HEADER_NEW_BUCKET }}</span>
         </template>
+        
+        <h3 class="bcbox-info-dialog-subhead">
+          {{ bucketConfigTitle }}
+        </h3>
+             
         <BucketConfigForm
           :bucket="bucketToUpdate"
           @submit-bucket-config="closeBucketConfig"

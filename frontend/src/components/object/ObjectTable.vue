@@ -185,22 +185,20 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
       v-model:visible="permissionsVisible"
       :draggable="false"
       :modal="true"
-      class="permissions-modal"
+      class="bcbox-info-dialog permissions-modal"
     >
       <!-- eslint-enable vue/no-v-model-argument -->
       <template #header>
-        <div class="flex">
-          <font-awesome-icon
-            icon="fa-solid fa-users"
-            class="pr-3 pt-2"
-            style="font-size: 2rem"
-          />
-          <div>
-            <h1>Object Permissions</h1>
-            <h3>{{ permissionsObjectName }}</h3>
-          </div>
-        </div>
+        <font-awesome-icon
+          icon="fas fa-users"
+          fixed-width
+        />
+        <span class="p-dialog-title">Object Permissions</span>
       </template>
+
+      <h3 class="bcbox-info-dialog-subhead">
+        {{ permissionsObjectName }}
+      </h3>
 
       <ObjectPermission :object-id="permissionsObjectId" />
     </Dialog>

@@ -51,3 +51,7 @@ plugins:
     enabled: true
   sass-lint:
     enabled: true
+    rules:
+      nesting-depth:
+        - 2
+        - max-depth: 5

@@ -41,21 +41,20 @@ const comsUrl = computed(() => {
     header="Share"
     :modal="true"
     :style="{ minWidth: '700px' }"
+    class="bcbox-info-dialog"
   >
     <template #header>
-      <div class="flex">
-        <font-awesome-icon
-          icon="fa-solid fa-share-alt"
-          class="pr-3 pt-2"
-          style="font-size: 2rem"
-        />
-        <div>
-          <h1>Share</h1>
-          <h3>{{ props.obj.name }}</h3>
-        </div>
-      </div>
+      <font-awesome-icon
+        icon="fa-solid fa-share-alt"
+        fixed-width
+      />
+      <span class="p-dialog-title">Share</span>
     </template>
-    <h2>Share</h2>
+    
+    <h3 class="bcbox-info-dialog-subhead">
+      {{ props.obj.name }}
+    </h3>
+
     <ul class="mb-4">
       <li>
         To share publicly or with a direct file link, you must set the file to
@@ -66,28 +65,23 @@ const comsUrl = computed(() => {
       </li>
     </ul>
 
-    <div v-if="props.obj.public">
-      <TabView>
-        <TabPanel header="BCBox share link">
-          <ShareLinkContent
-            :share-link="bcBoxLink"
-            label="Share Link"
-          />
-        </TabPanel>
-        <TabPanel header="Direct public file link">
-          <ShareLinkContent
-            :share-link="comsUrl"
-            label="Direct Link"
-          />
-        </TabPanel>
-      </TabView>
-    </div>
-    <div v-else>
-      <ShareLinkContent
-        :share-link="bcBoxLink"
-        label="Share Link"
-      />
-    </div>
+    <TabView>
+      <TabPanel header="BCBox share link">
+        <ShareLinkContent
+          :share-link="bcBoxLink"
+          label="Share Link"
+        />
+      </TabPanel>
+      <TabPanel
+        v-if="props.obj.public"
+        header="Direct public file link"
+      >
+        <ShareLinkContent
+          :share-link="comsUrl"
+          label="Direct Link"
+        />
+      </TabPanel>
+    </TabView>
   </Dialog>
 
   <Button
