@@ -23,14 +23,11 @@ import '@/assets/main.scss';
  * @function initializeApp
  * Initializes and mounts the Vue instance
  */
-async function initializeApp(): Promise<void> {
+function initializeApp(): void {
   const app = createApp(App);
   library.add(fas);
 
   app.use(createPinia());
-  await useConfigStore().init();
-  await useAuthStore().init();
-
   app.use(getRouter());
   app.use(PrimeVue);
   app.use(ToastService);

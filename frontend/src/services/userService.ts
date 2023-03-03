@@ -1,5 +1,7 @@
 import { comsAxios } from './interceptors';
 
+import type { AxiosResponse } from 'axios';
+
 const PATH = 'user';
 
 export default {
@@ -7,9 +9,9 @@ export default {
    * @function searchForUsers
    * Returns a list of users based on the provided filtering parameters
    * @param {object} params Object containing the data to filter against
-   * @returns {Promise} An axios response
+   * @returns {Promise<AxiosResponse>} An axios response
    */
-  searchForUsers(params: object) {
+  searchForUsers(params: object): Promise<AxiosResponse> {
     return comsAxios().get(`${PATH}`, { params: params });
   },
 
@@ -18,7 +20,7 @@ export default {
    * Fetch identity providers
    * @returns {Promise} An axios response
    */
-  listIdps() {
+  listIdps(): Promise<AxiosResponse> {
     return comsAxios().get(`${PATH}/idpList`);
   },
 };

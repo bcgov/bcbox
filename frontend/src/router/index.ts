@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import { useAppStore, useAuthStore } from '@/store';
+import { AuthService } from '@/services';
+import { useAppStore } from '@/store';
 import { RouteNames, StorageKey } from '@/utils/constants';
 
 import type { RouteRecordRaw } from 'vue-router';
@@ -21,6 +22,7 @@ const routes: Array<RouteRecordRaw> = [
     name: RouteNames.HOME,
     component: () => import('../views/HomeView.vue')
   },
+  // TODO: Determine if we want modals to have disrete vue-router paths on presentation
   // {
   //   path: '/create',
   //   children: [
@@ -96,6 +98,7 @@ const routes: Array<RouteRecordRaw> = [
       },
     ]
   },
+  // TODO: Determine if we want modals to have disrete vue-router paths on presentation
   // {
   //   path: '/permission',
   //   children: [{}],
@@ -108,17 +111,16 @@ const routes: Array<RouteRecordRaw> = [
 
 export default function getRouter() {
   const appStore = useAppStore();
-  const authStore = useAuthStore();
+  // const navStore = useNavStore(); // Removed for now
+  const authService = new AuthService();
   const router = createRouter({
     history: createWebHistory(),
     routes
   });
 
   router.beforeEach(async (to, _from, next) => {
-    // Removed for now
-    // const { navigate } = useNavStore();
-    // navigate(to);
     appStore.beginDeterminateLoading();
+    // navStore.navigate(to); // Removed for now
 
     // Backend Redirection Handler
     if (to.query?.r) {
@@ -129,8 +131,12 @@ export default function getRouter() {
       });
     }
 
-    if (to.meta.requiresAuth && !authStore.getIsAuthenticated) {
-      router.replace({ name: RouteNames.LOGIN });
+    // Authentication Guard
+    if (to.meta.requiresAuth) {
+      const user = await authService.getUser();
+      if (!user || user.expired) {
+        router.replace({ name: RouteNames.LOGIN });
+      }
     }
 
     next();
