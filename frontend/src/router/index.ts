@@ -19,8 +19,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: RouteNames.HOME,
-    component: () => import('../views/HomeView.vue'),
-    props: createProps
+    component: () => import('../views/HomeView.vue')
   },
   // {
   //   path: '/create',
@@ -35,11 +34,12 @@ const routes: Array<RouteRecordRaw> = [
   // },
   {
     path: '/detail',
+    component: () => import('@/views/GenericView.vue'),
     children: [
       {
         path: 'objects',
         name: RouteNames.DETAIL_OBJECTS,
-        component: () => import('../views/DetailObjectsView.vue'),
+        component: () => import('@/views/detail/DetailObjectsView.vue'),
         meta: { requiresAuth: true },
         props: createProps
       }
@@ -48,46 +48,42 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/developer',
     name: RouteNames.DEVELOPER,
-    component: () => import('../views/DeveloperView.vue'),
-    meta: { requiresAuth: true, breadcrumb: 'Developer' },
-    props: createProps
+    component: () => import('@/views/DeveloperView.vue'),
+    meta: { requiresAuth: true, breadcrumb: 'Developer' }
   },
   {
     path: '/list',
+    component: () => import('@/views/GenericView.vue'),
     children: [
       {
         path: 'buckets',
         name: RouteNames.LIST_BUCKETS,
-        component: () => import('../views/ListBucketsView.vue'),
-        meta: { requiresAuth: true, breadcrumb: 'Buckets' }
+        component: () => import('@/views/list/ListBucketsView.vue'),
+        meta: { requiresAuth: true, breadcrumb: 'Buckets' },
+        props: createProps
       },
       {
         path: 'objects',
         name: RouteNames.LIST_OBJECTS,
-        component: () => import('../views/ListObjectsView.vue'),
-        meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' }
-      },
-      {
-        path: 'detail/object',
-        name: RouteNames.DETAIL_OBJECTS,
-        component: () => import('../views/DetailObjectsView.vue'),
-        meta: { requiresAuth: true }
-      },
-    ],
-    props: createProps
+        component: () => import('@/views/list/ListObjectsView.vue'),
+        meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' },
+        props: createProps
+      }
+    ]
   },
   {
     path: '/oidc',
+    component: () => import('@/views/GenericView.vue'),
     children: [
       {
         path: 'callback',
         name: RouteNames.CALLBACK,
-        component: () => import('../views/OidcCallbackView.vue'),
+        component: () => import('@/views/oidc/OidcCallbackView.vue'),
       },
       {
         path: 'login',
         name: RouteNames.LOGIN,
-        component: () => import('../views/OidcLoginView.vue'),
+        component: () => import('@/views/oidc/OidcLoginView.vue'),
         beforeEnter: () => {
           const entrypoint = `${window.location.pathname}${window.location.search}${window.location.hash}`;
           window.sessionStorage.setItem(StorageKey.AUTH, entrypoint);
@@ -96,7 +92,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'logout',
         name: RouteNames.LOGOUT,
-        component: () => import('../views/OidcLogoutView.vue')
+        component: () => import('@/views/oidc/OidcLogoutView.vue')
       },
     ]
   },
@@ -146,4 +142,3 @@ export default function getRouter() {
 
   return router;
 }
-
