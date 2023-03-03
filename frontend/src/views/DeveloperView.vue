@@ -41,7 +41,13 @@ const getIdpList = async () => {
       <span v-if="getIdps.length">{{ getIdps }}</span>
     </div>
 
-    <h3>Config</h3>
+    <div class="flex mt-3">
+      <h3>Config</h3>
+      <CopyToClipboard
+        :mode="ButtonMode.ICON"
+        :to-copy="JSON.stringify(getConfig)"
+      />
+    </div>
     {{ getConfig }}
 
     <div class="flex mt-3">
@@ -53,7 +59,13 @@ const getIdpList = async () => {
     </div>
     {{ getAccessToken }}
 
-    <h3>Profile</h3>
+    <div class="flex mt-3">
+      <h3>Profile</h3>
+      <CopyToClipboard
+        :mode="ButtonMode.ICON"
+        :to-copy="JSON.stringify(getProfile)"
+      />
+    </div>
     {{ getProfile }}
   </div>
 </template>
