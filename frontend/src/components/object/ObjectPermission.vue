@@ -33,7 +33,7 @@ const removeObjectUser = (userId: string) => {
   permissionStore.removeObjectUser(props.objectId, userId);
 };
 
-const updateObjectPermission = (value: any, userId: string, permCode: string) => {
+const updateObjectPermission = (value: boolean, userId: string, permCode: string) => {
   if (value) {
     permissionStore.addObjectPermission(props.objectId, userId, permCode);
   } else {

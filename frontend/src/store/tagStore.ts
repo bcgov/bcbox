@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, ref, unref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
@@ -7,7 +7,7 @@ import { useAppStore } from '@/store';
 import { isDebugMode, partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-import type { FetchTaggingOptions, Tagging } from '@/types';
+import type { GetObjectTaggingOptions, Tagging } from '@/types';
 
 export type TagStoreState = {
   tagging: Ref<Array<Tagging>>
@@ -24,15 +24,15 @@ export const useTagStore = defineStore('tag', () => {
 
   // Getters
   const getters = {
-    getTagging: computed(() => unref(state.tagging))
+    getTagging: computed(() => state.tagging.value)
   };
 
   // Actions
-  async function fetchTagging(params: FetchTaggingOptions = {}) {
+  async function fetchTagging(params: GetObjectTaggingOptions = {}) {
     try {
       appStore.beginIndeterminateLoading();
 
-      const response = (await objectService.getObjectTagging({ ...params })).data;
+      const response = (await objectService.getObjectTagging(params)).data;
 
       // Remove old values matching search parameters
       const matches = (x: Tagging) => (
@@ -41,7 +41,7 @@ export const useTagStore = defineStore('tag', () => {
           (!Array.isArray(params.objId) && params.objId === x.objectId))
       );
 
-      const [match, difference] = partition(unref(state.tagging), matches);
+      const [match, difference] = partition(state.tagging.value, matches);
 
       // Merge and assign
       state.tagging.value = difference.concat(response);

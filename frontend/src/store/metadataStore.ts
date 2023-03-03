@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, ref, unref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
@@ -7,8 +7,7 @@ import { useAppStore } from '@/store';
 import { isDebugMode, partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-import type { Metadata } from '@/types';
-import type { FetchMetadataOptions } from '@/types';
+import type { GetMetadataOptions, Metadata } from '@/types';
 
 export type MetadataStoreState = {
   metadata: Ref<Array<Metadata>>
@@ -25,15 +24,15 @@ export const useMetadataStore = defineStore('metadata', () => {
 
   // Getters
   const getters = {
-    getMetadata: computed(() => unref(state.metadata))
+    getMetadata: computed(() => state.metadata.value)
   };
 
   // Actions
-  async function fetchMetadata(params: FetchMetadataOptions = {}) {
+  async function fetchMetadata(params: GetMetadataOptions = {}) {
     try {
       appStore.beginIndeterminateLoading();
 
-      const response = (await objectService.getMetadata(null, { ...params })).data;
+      const response = (await objectService.getMetadata(null, params)).data;
 
       // Remove old values matching search parameters
       const matches = (x: Metadata) => (
@@ -42,7 +41,7 @@ export const useMetadataStore = defineStore('metadata', () => {
           (!Array.isArray(params.objId) && params.objId === x.objectId))
       );
 
-      const [match, difference] = partition(unref(state.metadata), matches);
+      const [match, difference] = partition(state.metadata.value, matches);
 
       // Merge and assign
       state.metadata.value = difference.concat(response);

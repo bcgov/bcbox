@@ -1,6 +1,6 @@
 import { comsAxios } from './interceptors';
 
-import type { Bucket } from '@/types';
+import type { Bucket, SearchBucketsOptions } from '@/types';
 
 const BUCKET_PATH = 'bucket';
 
@@ -8,10 +8,10 @@ export default {
   /**
    * @function searchForBuckets
    * Returns a list of buckets
-   * @param {Object} params Optional object containing the data to filter against
+   * @param {SearchBucketsOptions} params Optional object containing the data to filter against
    * @returns {Promise} An axios response
    */
-  searchForBuckets(params?: object) {
+  searchBuckets(params?: SearchBucketsOptions) {
     return comsAxios().get(`${BUCKET_PATH}`, { params: params });
   },
 

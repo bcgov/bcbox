@@ -1,4 +1,4 @@
-export type ListObjectsOptions = {
+export type SearchObjectsOptions = {
   bucketId?: string[];
   objId?: string[];
 

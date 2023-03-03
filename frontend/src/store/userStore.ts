@@ -1,5 +1,5 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { computed, ref, unref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { userService } from '@/services';
 import { useAppStore, useAuthStore, useConfigStore } from '@/store';
@@ -30,9 +30,9 @@ export const useUserStore = defineStore('user', () => {
 
   // Getters
   const getters = {
-    getCurrentUser: computed(() => unref(state.currentUser)),
-    getIdps: computed(() => unref(state.idps)),
-    getUserSearch: computed(() => unref(state.userSearch)),
+    getCurrentUser: computed(() => state.currentUser.value),
+    getIdps: computed(() => state.idps.value),
+    getUserSearch: computed(() => state.userSearch.value),
   };
 
   // Actions

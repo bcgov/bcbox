@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, ref, unref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { ConfigService } from '@/services';
 import { isDebugMode } from '@/utils/utils';
@@ -20,7 +20,7 @@ export const useConfigStore = defineStore('config', () => {
 
   // Getters
   const getters = {
-    getConfig: computed(() => unref(state.config))
+    getConfig: computed(() => state.config.value)
   };
 
   // Actions

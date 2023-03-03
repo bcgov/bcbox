@@ -1,5 +1,5 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { computed, ref, unref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
@@ -7,7 +7,7 @@ import { useAppStore, usePermissionStore, useUserStore } from '@/store';
 import { isDebugMode, partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-import type { COMSObject, COMSObjectPermissionsOptions, ListObjectsOptions } from '@/types';
+import type { COMSObject, ObjectSearchPermissionsOptions } from '@/types';
 
 export type ObjectStoreState = {
   objects: Ref<Array<COMSObject>>;
@@ -30,8 +30,8 @@ export const useObjectStore = defineStore('objectStore', () => {
 
   // Getters
   const getters = {
-    getObjects: computed(() => unref(state.objects)),
-    getSelectedObjects: computed(() => unref(state.selectedObjects))
+    getObjects: computed(() => state.objects.value),
+    getSelectedObjects: computed(() => state.selectedObjects.value)
   };
 
   // Actions
@@ -68,7 +68,7 @@ export const useObjectStore = defineStore('objectStore', () => {
     await objectService.getObject(objectId, versionId);
   }
 
-  async function fetchObjects(params: COMSObjectPermissionsOptions = {}) {
+  async function fetchObjects(params: ObjectSearchPermissionsOptions = {}) {
     try {
       appStore.beginIndeterminateLoading();
 
@@ -79,7 +79,10 @@ export const useObjectStore = defineStore('objectStore', () => {
 
         let response = Array<COMSObject>();
         if (uniqueIds.length) {
-          response = (await objectService.listObjects({ ...params as ListObjectsOptions, objId: uniqueIds })).data;
+          response = (await objectService.searchObjects({
+            bucketId: params.bucketId ? [params.bucketId] : undefined,
+            objId: uniqueIds
+          })).data;
 
           // Remove old values matching search parameters
           const matches = (x: COMSObject) => (
@@ -87,7 +90,7 @@ export const useObjectStore = defineStore('objectStore', () => {
             (!params.bucketId || x.bucketId === params.bucketId)
           );
 
-          const [match, difference] = partition(unref(state.objects), matches);
+          const [match, difference] = partition(state.objects.value, matches);
 
           // Merge and assign
           state.objects.value = difference.concat(response);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref, unref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import {
@@ -32,7 +32,7 @@ const objectInfoId: Ref<string | undefined> = ref(undefined);
 const displayUpload = ref(false);
 
 // Actions
-const showObjectInfo = async (objectId: any) => {
+const showObjectInfo = async (objectId: string | undefined) => {
   objectInfoId.value = objectId;
 };
 
@@ -59,7 +59,7 @@ const closeUpload = () => {
 
 // Download
 const selectedObjectIds = computed(() => {
-  return unref(getSelectedObjects).map((o) => o.id);
+  return getSelectedObjects.value.map((o) => o.id);
 });
 
 onMounted(async () => {

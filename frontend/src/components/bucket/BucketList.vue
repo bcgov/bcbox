@@ -22,7 +22,7 @@ const bucketConfigTitle: Ref<string> = ref(BucketConfig.TITLE_NEW_BUCKET);
 const bucketToUpdate: Ref<Bucket | undefined> = ref(undefined);
 
 // Actions
-const showInfo = async (bucketId: any) => {
+const showInfo = async (bucketId: string) => {
   displayInfo.value = bucketStore.getBucketById(bucketId);
 };
 

@@ -33,7 +33,7 @@ const removeBucketUser = (userId: string) => {
   permissionStore.removeBucketUser(props.bucketId, userId);
 };
 
-const updateBucketPermission = (value: any, userId: string, permCode: string) => {
+const updateBucketPermission = (value: boolean, userId: string, permCode: string) => {
   if (value) {
     permissionStore.addBucketPermission(props.bucketId, userId, permCode);
   } else {

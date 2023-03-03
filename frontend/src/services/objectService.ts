@@ -1,6 +1,6 @@
 import { comsAxios } from './interceptors';
 
-import type { ListObjectsOptions } from '@/types';
+import type { GetMetadataOptions, GetObjectTaggingOptions, SearchObjectsOptions } from '@/types';
 
 const PATH = '/object';
 
@@ -34,7 +34,7 @@ export default {
    * Get an object's metadata
    * @returns {Promise} An axios response
    */
-  getMetadata(headers: any = {}, params: any = {}) {
+  getMetadata(headers: any = {}, params: GetMetadataOptions = {}) {
     // remove objId array if its first element is undefined
     if (params.objId && params.objId[0] === undefined) delete params.objId;
     return comsAxios().get(`${PATH}/metadata`, { headers: headers, params: params });
@@ -45,7 +45,7 @@ export default {
    * Get an objects tags
    * @returns {Promise} An axios response
    */
-  getObjectTagging(params: any = {}) {
+  getObjectTagging(params: GetObjectTaggingOptions = {}) {
     return comsAxios().get(`${PATH}/tagging`, { params: params });
   },
 
@@ -71,11 +71,11 @@ export default {
   },
 
   /**
-   * @function listObjects
+   * @function searchObjects
    * List and search for all objects
    * @returns {Promise} An axios response
    */
-  listObjects(params: ListObjectsOptions = {}) {
+  searchObjects(params: SearchObjectsOptions = {}) {
     // remove objId array if its first element is undefined
     if (params.objId && params.objId[0] === undefined) delete params.objId;
     return comsAxios().get(PATH, { params: params });

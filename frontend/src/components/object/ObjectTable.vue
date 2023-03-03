@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref, watch, unref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import {
@@ -61,7 +61,7 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
 };
 
 watch( selectedObjects, () => {
-  objectStore.setSelectedObjects(unref(selectedObjects));
+  objectStore.setSelectedObjects(selectedObjects.value);
 });
 </script>
 

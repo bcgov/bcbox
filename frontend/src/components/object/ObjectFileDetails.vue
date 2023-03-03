@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch, unref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import {
@@ -49,8 +49,8 @@ onMounted(() => {
 });
 
 watch( [routeObjId, getObjects], () => {
-  metadataStore.fetchMetadata({objId: unref(routeObjId) });
-  obj.value = objectStore.getObjectById(unref(routeObjId));
+  metadataStore.fetchMetadata({objId: routeObjId.value });
+  obj.value = objectStore.getObjectById(routeObjId.value);
   bucketId.value = obj.value?.bucketId || '';
 });
 </script>

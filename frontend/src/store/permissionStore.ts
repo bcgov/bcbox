@@ -1,5 +1,5 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { computed, ref, unref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { permissionService, userService } from '@/services';
@@ -10,9 +10,9 @@ import { isDebugMode, partition } from '@/utils/utils';
 import type { Ref } from 'vue';
 import type {
   BucketPermission,
-  BucketPermissionsOptions,
+  BucketSearchPermissionsOptions,
   COMSObjectPermission,
-  COMSObjectPermissionsOptions,
+  ObjectSearchPermissionsOptions,
   IdentityProvider,
   Permission,
   User,
@@ -44,11 +44,11 @@ export const usePermissionStore = defineStore('permission', () => {
 
   // Getters
   const getters = {
-    getBucketPermissions: computed(() => unref(state.bucketPermissions)),
-    getMappedBucketToUserPermissions: computed(() => unref(state.mappedBucketToUserPermissions)),
-    getMappedObjectToUserPermissions: computed(() => unref(state.mappedObjectToUserPermissions)),
-    getObjectPermissions: computed(() => unref(state.objectPermissions)),
-    getPermissions: computed(() => unref(state.permissions))
+    getBucketPermissions: computed(() => state.bucketPermissions.value),
+    getMappedBucketToUserPermissions: computed(() => state.mappedBucketToUserPermissions.value),
+    getMappedObjectToUserPermissions: computed(() => state.mappedObjectToUserPermissions.value),
+    getObjectPermissions: computed(() => state.objectPermissions.value),
+    getPermissions: computed(() => state.permissions.value)
   };
 
   // Actions
@@ -128,7 +128,7 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  async function fetchBucketPermissions(params: BucketPermissionsOptions = {}) {
+  async function fetchBucketPermissions(params: BucketSearchPermissionsOptions = {}) {
     try {
       const response = (await permissionService.bucketSearchPermissions(params)).data;
       const newPerms: Array<BucketPermission> = response.flatMap((x: any) => x.permissions);
@@ -140,7 +140,7 @@ export const usePermissionStore = defineStore('permission', () => {
         (!params.permCode || x.permCode === params.permCode)
       );
 
-      const [match, difference] = partition(unref(state.bucketPermissions), matches);
+      const [match, difference] = partition(state.bucketPermissions.value, matches);
 
       // Merge and assign
       state.bucketPermissions.value = difference.concat(newPerms);
@@ -156,7 +156,7 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  async function fetchObjectPermissions(params: COMSObjectPermissionsOptions = {}) {
+  async function fetchObjectPermissions(params: ObjectSearchPermissionsOptions = {}) {
     try {
       appStore.beginIndeterminateLoading();
 
@@ -171,7 +171,7 @@ export const usePermissionStore = defineStore('permission', () => {
         (!params.permCode || x.permCode === params.permCode)
       );
 
-      const [match, difference] = partition(unref(state.objectPermissions), matches);
+      const [match, difference] = partition(state.objectPermissions.value, matches);
 
       // Merge and assign
       state.objectPermissions.value = difference.concat(newPerms);

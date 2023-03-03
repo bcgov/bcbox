@@ -1,5 +1,5 @@
 import { defineStore, storeToRefs } from 'pinia';
-import { computed, ref, unref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { bucketService } from '@/services';
@@ -7,7 +7,7 @@ import { useAppStore, usePermissionStore, useUserStore } from '@/store';
 import { isDebugMode, partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-import type { Bucket, BucketPermissionsOptions } from '@/types';
+import type { Bucket, BucketSearchPermissionsOptions } from '@/types';
 
 export type BucketStoreState = {
   buckets: Ref<Array<Bucket>>
@@ -28,7 +28,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
   // Getters
   const getters = {
-    getBuckets: computed(() => unref(state.buckets))
+    getBuckets: computed(() => state.buckets.value)
   };
 
   // Actions
@@ -42,25 +42,25 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  async function fetchBuckets(params?: BucketPermissionsOptions) {
+  async function fetchBuckets(params?: BucketSearchPermissionsOptions) {
     try {
       appStore.beginIndeterminateLoading();
 
       if (getCurrentUser.value) {
         // Get a unique list of bucket IDs the user has access to
         const permResponse = await permissionStore.fetchBucketPermissions(params);
-        const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
+        const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { bucketId: string }) => x.bucketId))];
 
         let response = Array<Bucket>();
         if (uniqueIds.length) {
-          response = (await bucketService.searchForBuckets({ bucketId: uniqueIds })).data;
+          response = (await bucketService.searchBuckets({ bucketId: uniqueIds })).data;
 
           // Remove old values matching search parameters
           const matches = (x: Bucket) => (
             (!params?.bucketId || x.bucketId === params.bucketId)
           );
 
-          const [match, difference] = partition(unref(state.buckets), matches);
+          const [match, difference] = partition(state.buckets.value, matches);
 
           // Merge and assign
           state.buckets.value = difference.concat(response);
