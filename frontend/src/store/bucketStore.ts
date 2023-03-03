@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { useToast } from '@/lib/primevue';
 import { bucketService } from '@/services';
 import { useAppStore, usePermissionStore, useUserStore } from '@/store';
-import { isDebugMode, partition } from '@/utils/utils';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketSearchPermissionsOptions } from '@/types';
@@ -94,7 +94,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
   return {
     // State
-    ...(isDebugMode && state),
+    ...state,
 
     // Getters
     ...getters,
@@ -105,6 +105,6 @@ export const useBucketStore = defineStore('bucket', () => {
     getBucketById,
     updateBucket
   };
-});
+}, { persist: true });
 
 export default useBucketStore;

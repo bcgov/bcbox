@@ -6,11 +6,11 @@ import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 import Tooltip from 'primevue/tooltip';
 import { createPinia } from 'pinia';
+import { createPersistedState } from 'pinia-plugin-persistedstate';
 import { createApp } from 'vue';
 
 import App from '@/App.vue';
 import getRouter from '@/router';
-import { useAuthStore, useConfigStore } from '@/store';
 import { AuthService, ConfigService } from '@/services';
 
 import 'primevue/resources/themes/saga-blue/theme.css';
@@ -24,10 +24,15 @@ import '@/assets/main.scss';
  * Initializes and mounts the Vue instance
  */
 function initializeApp(): void {
-  const app = createApp(App);
   library.add(fas);
 
-  app.use(createPinia());
+  const app = createApp(App);
+  const pinia = createPinia();
+  pinia.use(createPersistedState({
+    key: id => `bcbox.${id}`
+  }));
+
+  app.use(pinia);
   app.use(getRouter());
   app.use(PrimeVue);
   app.use(ToastService);
@@ -41,7 +46,8 @@ function initializeApp(): void {
 /**
  * @function initializeServices
  * Initializes and mounts the service singletons
- * Services must blocking-load in the following order: config, auth, then app.
+ * Services must load in the following order: config, auth, then app.
+ * @param {Function} [next=undefined] Optional callback function
  */
 async function initializeServices(next?: Function): Promise<void> {
   await ConfigService.init();

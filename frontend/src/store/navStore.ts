@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-import { isDebugMode } from '@/utils/utils';
-
 import type { Ref } from 'vue';
 import type { RouteLocationNormalized } from 'vue-router';
 
@@ -53,7 +51,7 @@ export const useNavStore = defineStore('nav', () => {
 
   return {
     // State
-    ...(isDebugMode && state),
+    ...state,
 
     // Getters
     ...getters,

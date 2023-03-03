@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 import { ConfigService } from '@/services';
-import { isDebugMode } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 
@@ -31,8 +30,13 @@ export const useConfigStore = defineStore('config', () => {
   }
 
   return {
-    ...(isDebugMode && state),
+    // State
+    ...state,
+
+    // Getters
     ...getters,
+
+    // Actions
     init
   };
 });

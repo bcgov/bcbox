@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
 import { useAppStore } from '@/store';
-import { isDebugMode, partition } from '@/utils/utils';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { GetMetadataOptions, Metadata } from '@/types';
@@ -62,7 +62,7 @@ export const useMetadataStore = defineStore('metadata', () => {
 
   return {
     // State
-    ...(isDebugMode && state),
+    ...state,
 
     // Getters
     ...getters,
@@ -72,6 +72,6 @@ export const useMetadataStore = defineStore('metadata', () => {
     fetchMetadata,
     getValue
   };
-});
+}, { persist: true });
 
 export default useMetadataStore;

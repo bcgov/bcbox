@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
 import { useAppStore, usePermissionStore, useUserStore } from '@/store';
-import { isDebugMode, partition } from '@/utils/utils';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { COMSObject, ObjectSearchPermissionsOptions } from '@/types';
@@ -129,7 +129,7 @@ export const useObjectStore = defineStore('objectStore', () => {
 
   return {
     // State
-    ...(isDebugMode && state),
+    ...state,
 
     // Getters
     ...getters,
@@ -143,6 +143,6 @@ export const useObjectStore = defineStore('objectStore', () => {
     setSelectedObjects,
     togglePublic
   };
-});
+}, { persist: true });
 
 export default useObjectStore;

@@ -1,17 +1,13 @@
 import { defineStore } from 'pinia';
-import { computed, ref, } from 'vue';
-
-import { isDebugMode } from '@/utils/utils';
+import { computed, ref } from 'vue';
 
 import type { Ref } from 'vue';
-
 export type AppStoreState = {
   loadingCalls: Ref<number>
   loadingInterval: Ref<ReturnType<typeof setTimeout> | undefined>
   loadingMode: Ref<'determinate' | 'indeterminate'>
   loadingValue: Ref<number>
 }
-
 export const useAppStore = defineStore('app', () => {
   // State
   const state: AppStoreState = {
@@ -62,8 +58,13 @@ export const useAppStore = defineStore('app', () => {
   }
 
   return {
-    ...(isDebugMode && state),
+    // State
+    ...state,
+
+    // Getters
     ...getters,
+
+    // Actions
     beginDeterminateLoading,
     beginIndeterminateLoading,
     endDeterminateLoading,

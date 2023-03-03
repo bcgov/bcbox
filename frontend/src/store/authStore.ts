@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 import { AuthService, ConfigService, userService } from '@/services';
-import { isDebugMode } from '@/utils/utils';
 
 import type { IdTokenClaims, User } from 'oidc-client-ts';
 import type { Ref } from 'vue';
@@ -109,8 +108,13 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
-    ...(isDebugMode && state),
+    // State
+    ...state,
+
+    // Getters
     ...getters,
+
+    // Actions
     _registerEvents,
     _updateState,
     init,

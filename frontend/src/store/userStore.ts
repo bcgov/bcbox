@@ -3,7 +3,6 @@ import { computed, ref } from 'vue';
 
 import { userService } from '@/services';
 import { useAppStore, useAuthStore, useConfigStore } from '@/store';
-import { isDebugMode } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { IdentityProvider, User } from '@/types';
@@ -93,7 +92,7 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     // State
-    ...(isDebugMode && state),
+    ...state,
 
     // Getters
     ...getters,
@@ -105,6 +104,6 @@ export const useUserStore = defineStore('user', () => {
     listIdps,
     searchUsers
   };
-});
+}, { persist: true });
 
 export default useUserStore;

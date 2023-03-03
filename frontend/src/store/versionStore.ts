@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-import { isDebugMode } from '@/utils/utils';
-
 import type { Ref } from 'vue';
 
 export type VersionStoreState = {
@@ -21,13 +19,13 @@ export const useVersionStore = defineStore('version', () => {
 
   return {
     // State
-    ...(isDebugMode && state),
+    ...state,
 
     // Getters
     ...getters,
 
     // Actions
   };
-});
+}, { persist: true });
 
 export default useVersionStore;

@@ -5,7 +5,7 @@ import { useToast } from '@/lib/primevue';
 import { permissionService, userService } from '@/services';
 import { useAppStore, useConfigStore } from '@/store';
 import { Permissions } from '@/utils/constants';
-import { isDebugMode, partition } from '@/utils/utils';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type {
@@ -326,7 +326,7 @@ export const usePermissionStore = defineStore('permission', () => {
 
   return {
     // State
-    ...(isDebugMode && state),
+    ...state,
 
     // Getters
     ...getters,
@@ -347,6 +347,6 @@ export const usePermissionStore = defineStore('permission', () => {
     removeBucketUser,
     removeObjectUser,
   };
-});
+}, { persist: true });
 
 export default usePermissionStore;

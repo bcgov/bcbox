@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
 import { useAppStore } from '@/store';
-import { isDebugMode, partition } from '@/utils/utils';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { GetObjectTaggingOptions, Tagging } from '@/types';
@@ -59,7 +59,7 @@ export const useTagStore = defineStore('tag', () => {
 
   return {
     // State
-    ...(isDebugMode && state),
+    ...state,
 
     // Getters
     ...getters,
@@ -68,6 +68,6 @@ export const useTagStore = defineStore('tag', () => {
     fetchTagging,
     getTaggingByObjectId,
   };
-});
+}, { persist: true });
 
 export default useTagStore;
