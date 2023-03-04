@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
-import { useAppStore, usePermissionStore, useUserStore } from '@/store';
+import { useAppStore, usePermissionStore } from '@/store';
 import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
@@ -20,7 +20,6 @@ export const useObjectStore = defineStore('objectStore', () => {
   // Store
   const appStore = useAppStore();
   const permissionStore = usePermissionStore();
-  const { getCurrentUser } = storeToRefs(useUserStore());
 
   // State
   const state: ObjectStoreState = {
@@ -72,32 +71,30 @@ export const useObjectStore = defineStore('objectStore', () => {
     try {
       appStore.beginIndeterminateLoading();
 
-      if (getCurrentUser.value) {
-        // Get a unique list of object IDs the user has access to
-        const permResponse = await permissionStore.fetchObjectPermissions(params);
-        const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))];
+      // Get a unique list of object IDs the user has access to
+      const permResponse = await permissionStore.fetchObjectPermissions(params);
+      const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))];
 
-        let response = Array<COMSObject>();
-        if (uniqueIds.length) {
-          response = (await objectService.searchObjects({
-            bucketId: params.bucketId ? [params.bucketId] : undefined,
-            objId: uniqueIds
-          })).data;
+      let response = Array<COMSObject>();
+      if (uniqueIds.length) {
+        response = (await objectService.searchObjects({
+          bucketId: params.bucketId ? [params.bucketId] : undefined,
+          objId: uniqueIds
+        })).data;
 
-          // Remove old values matching search parameters
-          const matches = (x: COMSObject) => (
-            (!params.objId || x.id === params.objId) &&
-            (!params.bucketId || x.bucketId === params.bucketId)
-          );
+        // Remove old values matching search parameters
+        const matches = (x: COMSObject) => (
+          (!params.objId || x.id === params.objId) &&
+          (!params.bucketId || x.bucketId === params.bucketId)
+        );
 
-          const [match, difference] = partition(state.objects.value, matches);
+        const [match, difference] = partition(state.objects.value, matches);
 
-          // Merge and assign
-          state.objects.value = difference.concat(response);
-        }
-        else {
-          state.objects.value = response;
-        }
+        // Merge and assign
+        state.objects.value = difference.concat(response);
+      }
+      else {
+        state.objects.value = response;
       }
     }
     catch (error) {

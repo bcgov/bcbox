@@ -46,28 +46,26 @@ export const useBucketStore = defineStore('bucket', () => {
     try {
       appStore.beginIndeterminateLoading();
 
-      if (getUserId.value) {
-        // Get a unique list of bucket IDs the user has access to
-        const permResponse = await permissionStore.fetchBucketPermissions(params);
-        const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { bucketId: string }) => x.bucketId))];
+      // Get a unique list of bucket IDs the user has access to
+      const permResponse = await permissionStore.fetchBucketPermissions(params);
+      const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { bucketId: string }) => x.bucketId))];
 
-        let response = Array<Bucket>();
-        if (uniqueIds.length) {
-          response = (await bucketService.searchBuckets({ bucketId: uniqueIds })).data;
+      let response = Array<Bucket>();
+      if (uniqueIds.length) {
+        response = (await bucketService.searchBuckets({ bucketId: uniqueIds })).data;
 
-          // Remove old values matching search parameters
-          const matches = (x: Bucket) => (
-            (!params?.bucketId || x.bucketId === params.bucketId)
-          );
+        // Remove old values matching search parameters
+        const matches = (x: Bucket) => (
+          (!params?.bucketId || x.bucketId === params.bucketId)
+        );
 
-          const [match, difference] = partition(state.buckets.value, matches);
+        const [match, difference] = partition(state.buckets.value, matches);
 
-          // Merge and assign
-          state.buckets.value = difference.concat(response);
-        }
-        else {
-          state.buckets.value = response;
-        }
+        // Merge and assign
+        state.buckets.value = difference.concat(response);
+      }
+      else {
+        state.buckets.value = response;
       }
     }
     catch (error) {

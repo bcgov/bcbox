@@ -4,7 +4,7 @@ import { ref } from 'vue';
 
 import BucketPermission from '@/components/bucket/BucketPermission.vue';
 import { Button, Column, DataTable, Dialog } from '@/lib/primevue';
-import { useAppStore, useBucketStore, usePermissionStore, useUserStore } from '@/store';
+import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -13,8 +13,8 @@ import type { Bucket } from '@/types';
 // Store
 const permissionStore = usePermissionStore();
 const { getIsLoading } = storeToRefs(useAppStore());
+const { getUserId } = storeToRefs(useAuthStore());
 const { getBuckets } = storeToRefs(useBucketStore());
-const { getCurrentUser } = storeToRefs(useUserStore());
 
 // State
 const permissionsVisible: Ref<boolean> = ref(false);
@@ -39,7 +39,7 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
 };
 
 const displayPermissionsIcon = (bucket: Bucket) => {
-  return permissionStore.getIsBucketActionAllowed(bucket.bucketId, getCurrentUser.value?.userId, Permissions.MANAGE );
+  return permissionStore.getIsBucketActionAllowed(bucket.bucketId, getUserId.value, Permissions.MANAGE );
 };
 </script>
 

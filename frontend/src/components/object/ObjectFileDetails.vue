@@ -14,7 +14,7 @@ import {
   ShareObjectButton
 } from '@/components/object';
 import { Button, Dialog } from '@/lib/primevue';
-import { useMetadataStore, useObjectStore, usePermissionStore, useUserStore } from '@/store';
+import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 
@@ -27,7 +27,7 @@ const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const route = useRoute();
 const { getObjects } = storeToRefs(objectStore);
-const { getCurrentUser } = storeToRefs(useUserStore());
+const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const permissionsVisible: Ref<boolean> = ref(false);
@@ -45,7 +45,7 @@ const showPermissions = async (objectId: string, objectName?: string) => {
 };
 
 onMounted(() => {
-  permissionStore.fetchBucketPermissions({ userId: getCurrentUser.value?.userId, objectPerms: true });
+  permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
 });
 
 watch( [routeObjId, getObjects], () => {
@@ -74,18 +74,18 @@ watch( [routeObjId, getObjects], () => {
       >
         <ShareObjectButton
           v-if="permissionStore.getIsObjectActionAllowed(
-            routeObjId, getCurrentUser?.userId, Permissions.MANAGE, bucketId)"
+            routeObjId, getUserId, Permissions.MANAGE, bucketId)"
           :id="routeObjId"
         />
         <DownloadObjectButton
           v-if="permissionStore.getIsObjectActionAllowed(
-            routeObjId, getCurrentUser?.userId, Permissions.READ, bucketId)"
+            routeObjId, getUserId, Permissions.READ, bucketId)"
           :mode="ButtonMode.ICON"
           :ids="[routeObjId]"
         />
         <Button
           v-if="permissionStore.getIsObjectActionAllowed(
-            routeObjId, getCurrentUser?.userId, Permissions.MANAGE, bucketId)"
+            routeObjId, getUserId, Permissions.MANAGE, bucketId)"
           class="p-button-lg p-button-text"
           @click="showPermissions(routeObjId, metadataStore.getValue(routeObjId, 'name'))"
         >
@@ -93,7 +93,7 @@ watch( [routeObjId, getObjects], () => {
         </Button>
         <DeleteObjectButton
           v-if="permissionStore.getIsObjectActionAllowed(
-            routeObjId, getCurrentUser?.userId, Permissions.DELETE, bucketId)"
+            routeObjId, getUserId, Permissions.DELETE, bucketId)"
           :mode="ButtonMode.ICON"
           :ids="[routeObjId]"
         />

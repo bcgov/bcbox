@@ -1,8 +1,8 @@
-import { defineStore, storeToRefs } from 'pinia';
+import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 import { userService } from '@/services';
-import { useAppStore, useAuthStore, useConfigStore } from '@/store';
+import { useAppStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { IdentityProvider, User } from '@/types';
@@ -14,11 +14,8 @@ export type UserStoreState = {
 }
 
 export const useUserStore = defineStore('user', () => {
-  const appStore = useAppStore();
-
   // Store
-  const { getIsAuthenticated, getIdentityId } = useAuthStore();
-  const { getConfig } = storeToRefs(useConfigStore());
+  const appStore = useAppStore();
 
   // State
   const state: UserStoreState = {
@@ -29,34 +26,11 @@ export const useUserStore = defineStore('user', () => {
 
   // Getters
   const getters = {
-    getCurrentUser: computed(() => state.currentUser.value),
     getIdps: computed(() => state.idps.value),
     getUserSearch: computed(() => state.userSearch.value),
   };
 
   // Actions
-  async function init() {
-    await getUser();
-  }
-
-  // Hydrates the logged in users info from the COMS database
-  async function getUser(): Promise<string | void> {
-    if (!state.currentUser.value && getIsAuthenticated) {
-      if (getIdentityId) {
-        await searchUsers({ identityId: getIdentityId });
-
-        if (state.userSearch.value.length) {
-          state.currentUser.value = state.userSearch.value[0];
-          state.currentUser.value.elevatedRights = getConfig.value.idpList.find((idp: any) => {
-            return idp.idp === state.userSearch.value[0].idp;
-          })?.elevatedRights;
-        }
-        return Promise.resolve();
-      }
-    }
-    return Promise.resolve('Not authenticated');
-  }
-
   async function listIdps() {
     try {
       appStore.beginIndeterminateLoading();
@@ -99,8 +73,6 @@ export const useUserStore = defineStore('user', () => {
 
     // Actions
     clearSearch,
-    getUser,
-    init,
     listIdps,
     searchUsers
   };
