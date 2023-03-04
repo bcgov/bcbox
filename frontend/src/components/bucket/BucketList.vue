@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue';
 
 import { BucketConfigForm, BucketSidebar, BucketTable } from '@/components/bucket';
 import { Button, Dialog } from '@/lib/primevue';
-import { useBucketStore, useUserStore } from '@/store';
+import { useAuthStore, useBucketStore } from '@/store';
 import { BucketConfig } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -12,7 +12,7 @@ import type { Bucket } from '@/types';
 
 // Store
 const bucketStore = useBucketStore();
-const { getCurrentUser } = storeToRefs(useUserStore());
+const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const displayInfo: Ref<Bucket | undefined> = ref(undefined);
@@ -41,7 +41,7 @@ const closeBucketConfig = () => {
 };
 
 onMounted(async () => {
-  await bucketStore.fetchBuckets({ userId: getCurrentUser.value?.userId, objectPerms: true });
+  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 });
 </script>
 

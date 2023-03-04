@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { bucketService } from '@/services';
-import { useAppStore, usePermissionStore, useUserStore } from '@/store';
+import { useAppStore, useAuthStore, usePermissionStore, useUserStore } from '@/store';
 import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
@@ -19,7 +19,7 @@ export const useBucketStore = defineStore('bucket', () => {
   // Store
   const appStore = useAppStore();
   const permissionStore = usePermissionStore();
-  const { getCurrentUser } = storeToRefs(useUserStore());
+  const { getUserId } = storeToRefs(useAuthStore());
 
   // State
   const state: BucketStoreState = {
@@ -46,7 +46,7 @@ export const useBucketStore = defineStore('bucket', () => {
     try {
       appStore.beginIndeterminateLoading();
 
-      if (getCurrentUser.value) {
+      if (getUserId.value) {
         // Get a unique list of bucket IDs the user has access to
         const permResponse = await permissionStore.fetchBucketPermissions(params);
         const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { bucketId: string }) => x.bucketId))];

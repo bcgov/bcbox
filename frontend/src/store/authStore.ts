@@ -68,10 +68,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function _updateState() {
     const user = await authService.getUser();
+    const profile = user?.profile;
     const isAuthenticated = !!user && !user.expired;
     const identityId = configService.getConfig().idpList
-      .map((provider: IdentityProvider) => state.profile.value
-        ? state.profile.value[provider.identityKey]
+      .map((provider: IdentityProvider) => profile
+        ? profile[provider.identityKey]
         : undefined)
       .filter((item?: string) => item)[0];
 
@@ -80,7 +81,7 @@ export const useAuthStore = defineStore('auth', () => {
     state.identityId.value = identityId;
     state.idToken.value = user?.id_token;
     state.isAuthenticated.value = isAuthenticated;
-    state.profile.value = user?.profile;
+    state.profile.value = profile;
     state.refreshToken.value = user?.refresh_token;
     state.scope.value = user?.scope;
     state.user.value = user;

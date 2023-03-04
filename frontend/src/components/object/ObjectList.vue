@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
 
 import {
   DeleteObjectButton,
@@ -11,11 +10,19 @@ import {
   ObjectUpload
 } from '@/components/object';
 import { Button } from '@/lib/primevue';
-import { useBucketStore, useMetadataStore, useObjectStore, useUserStore } from '@/store';
+import { useAuthStore, useBucketStore, useMetadataStore, useObjectStore } from '@/store';
 import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
+
+type Props = {
+  bucketId?: string
+};
+
+const props = withDefaults(defineProps<Props>(), {
+  bucketId: undefined
+});
 
 // Store
 const bucketStore = useBucketStore();
@@ -24,8 +31,7 @@ const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 
 const { getObjects, getSelectedObjects } = storeToRefs(objectStore);
-const { getCurrentUser } = storeToRefs(useUserStore());
-const route = useRoute();
+const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const objectInfoId: Ref<string | undefined> = ref(undefined);
@@ -66,8 +72,8 @@ onMounted(async () => {
   // Removed for now
   // updateBreadcrumb();
 
-  await bucketStore.fetchBuckets({ userId: getCurrentUser.value?.userId, objectPerms: true });
-  await objectStore.fetchObjects({ bucketId: route.query.bucketId as string });
+  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+  await objectStore.fetchObjects({ bucketId: props.bucketId });
 });
 
 watch( getObjects, () => {

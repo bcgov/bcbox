@@ -8,7 +8,7 @@ import { RouteNames } from '@/utils/constants';
 import { useBucketStore } from '@/store';
 
 import type { Ref } from 'vue';
-import type { Bucket } from '@/interfaces';
+import type { Bucket } from '@/types';
 
 type Props = {
   bucketId?: string
@@ -53,7 +53,7 @@ onMounted(async () => {
         {{ bucket.bucketName }}
       </router-link>
     </h2>
-    <ObjectList />
+    <ObjectList :bucket-id="props.bucketId" />
   </div>
 </template>
 
