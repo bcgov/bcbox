@@ -17,6 +17,7 @@ export function isDebugMode(): boolean {
  */
 export function partition<T>(
   arr: Array<T>,
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   predicate: (v: T, i: number, ar: Array<T>) => boolean
 ): [Array<T>, Array<T>] {
   return arr.reduce(

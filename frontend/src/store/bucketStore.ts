@@ -1,9 +1,9 @@
-import { defineStore, storeToRefs } from 'pinia';
+import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { bucketService } from '@/services';
-import { useAppStore, useAuthStore, usePermissionStore, useUserStore } from '@/store';
+import { useAppStore, usePermissionStore } from '@/store';
 import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
@@ -19,7 +19,6 @@ export const useBucketStore = defineStore('bucket', () => {
   // Store
   const appStore = useAppStore();
   const permissionStore = usePermissionStore();
-  const { getUserId } = storeToRefs(useAuthStore());
 
   // State
   const state: BucketStoreState = {
@@ -61,7 +60,7 @@ export const useBucketStore = defineStore('bucket', () => {
             (!params?.bucketId || x.bucketId === params.bucketId)
           );
 
-          const [match, difference] = partition(state.buckets.value, matches);
+          const [, difference] = partition(state.buckets.value, matches);
 
           // Merge and assign
           state.buckets.value = difference.concat(response);

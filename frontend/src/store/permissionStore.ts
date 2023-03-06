@@ -142,7 +142,7 @@ export const usePermissionStore = defineStore('permission', () => {
         (!params.permCode || x.permCode === params.permCode)
       );
 
-      const [match, difference] = partition(state.bucketPermissions.value, matches);
+      const [, difference] = partition(state.bucketPermissions.value, matches);
 
       // Merge and assign
       state.bucketPermissions.value = difference.concat(newPerms);
@@ -173,7 +173,7 @@ export const usePermissionStore = defineStore('permission', () => {
         (!params.permCode || x.permCode === params.permCode)
       );
 
-      const [match, difference] = partition(state.objectPermissions.value, matches);
+      const [, difference] = partition(state.objectPermissions.value, matches);
 
       // Merge and assign
       state.objectPermissions.value = difference.concat(newPerms);

@@ -41,7 +41,7 @@ export const useTagStore = defineStore('tag', () => {
           (!Array.isArray(params.objId) && params.objId === x.objectId))
       );
 
-      const [match, difference] = partition(state.tagging.value, matches);
+      const [, difference] = partition(state.tagging.value, matches);
 
       // Merge and assign
       state.tagging.value = difference.concat(response);

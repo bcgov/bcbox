@@ -41,7 +41,7 @@ export const useMetadataStore = defineStore('metadata', () => {
           (!Array.isArray(params.objId) && params.objId === x.objectId))
       );
 
-      const [match, difference] = partition(state.metadata.value, matches);
+      const [, difference] = partition(state.metadata.value, matches);
 
       // Merge and assign
       state.metadata.value = difference.concat(response);

@@ -1,4 +1,4 @@
-import { defineStore, storeToRefs } from 'pinia';
+import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
@@ -100,7 +100,7 @@ export const useObjectStore = defineStore('objectStore', () => {
             (!params.bucketId || x.bucketId === params.bucketId)
           );
 
-          const [match, difference] = partition(state.objects.value, matches);
+          const [, difference] = partition(state.objects.value, matches);
 
           // Merge and assign
           state.objects.value = difference.concat(response);
