@@ -50,10 +50,10 @@ const showInfo = async (id: string) => {
   emit('show-object-info', id);
 };
 
-const showPermissions = async (objectId: string, objectName?: string) => {
+const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = objectName || '';
+  permissionsObjectName.value = metadataStore.getValue(objectId, 'name') || '';
 };
 
 const togglePublic = async (objectId: string, isPublic: boolean) => {
@@ -105,12 +105,8 @@ watch( selectedObjects, () => {
       >
         <template #body="{ data }">
           <div
-            v-if="data.name?.length > 25"
             v-tooltip.bottom="{ value: metadataStore.getValue(data.id, 'name') }"
           >
-            {{ metadataStore.getValue(data.id, 'name') }}
-          </div>
-          <div v-else>
             {{ metadataStore.getValue(data.id, 'name') }}
           </div>
         </template>
@@ -178,7 +174,7 @@ watch( selectedObjects, () => {
             v-if="permissionStore.getIsObjectActionAllowed(
               data.id, getUserId, Permissions.MANAGE, route.query.bucketId as string)"
             class="p-button-lg p-button-text"
-            @click="showPermissions(data.id, metadataStore.getValue(data.id, 'name'))"
+            @click="showPermissions(data.id)"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>

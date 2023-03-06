@@ -38,10 +38,11 @@ export const useObjectStore = defineStore('objectStore', () => {
     try {
       appStore.beginIndeterminateLoading();
       await objectService.createObject(object, bucketId);
-    } catch (error) {
+    }
+    catch (error) {
       toast.add({ severity: 'error', summary: 'Error creating object', detail: error, life: 3000 });
-      throw error;
-    } finally {
+    }
+    finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -54,17 +55,27 @@ export const useObjectStore = defineStore('objectStore', () => {
           await objectService.deleteObject(id);
         })
       );
-    } catch (error) {
+    }
+    catch (error) {
       toast.add({ severity: 'error', summary: 'Error deleting object', detail: error, life: 3000 });
-      throw error;
-    } finally {
+    }
+    finally {
       fetchObjects();
       appStore.endIndeterminateLoading();
     }
   }
 
   async function downloadObject(objectId: string, versionId?: string) {
-    await objectService.getObject(objectId, versionId);
+    try {
+      appStore.beginIndeterminateLoading();
+      await objectService.getObject(objectId, versionId);
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error downloading object', detail: error, life: 3000 });
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
   }
 
   async function fetchObjects(params: ObjectSearchPermissionsOptions = {}) {
@@ -73,40 +84,43 @@ export const useObjectStore = defineStore('objectStore', () => {
 
       // Get a unique list of object IDs the user has access to
       const permResponse = await permissionStore.fetchObjectPermissions(params);
-      const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))];
+      if (permResponse) {
+        const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))];
 
-      let response = Array<COMSObject>();
-      if (uniqueIds.length) {
-        response = (await objectService.searchObjects({
-          bucketId: params.bucketId ? [params.bucketId] : undefined,
-          objId: uniqueIds
-        })).data;
+        let response = Array<COMSObject>();
+        if (uniqueIds.length) {
+          response = (await objectService.searchObjects({
+            bucketId: params.bucketId ? [params.bucketId] : undefined,
+            objId: uniqueIds
+          })).data;
 
-        // Remove old values matching search parameters
-        const matches = (x: COMSObject) => (
-          (!params.objId || x.id === params.objId) &&
-          (!params.bucketId || x.bucketId === params.bucketId)
-        );
+          // Remove old values matching search parameters
+          const matches = (x: COMSObject) => (
+            (!params.objId || x.id === params.objId) &&
+            (!params.bucketId || x.bucketId === params.bucketId)
+          );
 
-        const [match, difference] = partition(state.objects.value, matches);
+          const [match, difference] = partition(state.objects.value, matches);
 
-        // Merge and assign
-        state.objects.value = difference.concat(response);
-      }
-      else {
-        state.objects.value = response;
+          // Merge and assign
+          state.objects.value = difference.concat(response);
+        }
+        else {
+          state.objects.value = response;
+        }
       }
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error downloading object', detail: error, life: 3000 });
-      throw error;
+      toast.add({ severity: 'error', summary: 'Error fetching objects', detail: error, life: 3000 });
     }
     finally {
       appStore.endIndeterminateLoading();
     }
   }
 
-  const getObjectById = (objectId: string) => state.objects.value.find((x) => x.id === objectId);
+  function getObjectById(objectId: string) {
+    return state.objects.value.find((x) => x.id === objectId);
+  }
 
   function setSelectedObjects(selected: Array<COMSObject>) {
     state.selectedObjects.value = selected;
@@ -116,10 +130,11 @@ export const useObjectStore = defineStore('objectStore', () => {
     try {
       appStore.beginIndeterminateLoading();
       await objectService.togglePublic(objectId, isPublic);
-    } catch (error) {
-      console.error(`Toggle public: ${error}`); // eslint-disable-line no-console
-      throw error;
-    } finally {
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error changing public state', detail: error, life: 3000 });
+    }
+    finally {
       appStore.endIndeterminateLoading();
     }
   }

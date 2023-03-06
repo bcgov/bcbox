@@ -16,12 +16,12 @@ onBeforeMount(async () => {
   appStore.endDeterminateLoading();
 });
 
-// Suspense error captured
+// Top level error handler
 onErrorCaptured((e: Error) => {
   const toast = useToast();
   toast.add({
     severity: 'error',
-    summary: 'Error initializing app',
+    summary: 'Error',
     detail: e.message, life: 3000
   });
 });

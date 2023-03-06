@@ -23,7 +23,7 @@ const bucketStore = useBucketStore();
 const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const userStore = useUserStore();
-const { userSearch } = storeToRefs(userStore);
+const { getUserSearch } = storeToRefs(userStore);
 
 // State
 const bucket: Ref<Bucket | undefined> = ref(undefined);
@@ -43,8 +43,8 @@ async function load() {
   bucket.value = bucketStore.getBucketById(object.value?.bucketId as string);
 
   await userStore.searchUsers({userId:[object.value?.createdBy, object.value?.updatedBy]});
-  createdBy.value = userSearch.value.find( x => x.userId === object.value?.createdBy )?.fullName;
-  updatedBy.value = userSearch.value.find( x => x.userId === object.value?.updatedBy )?.fullName;
+  createdBy.value = getUserSearch.value.find( x => x.userId === object.value?.createdBy )?.fullName;
+  updatedBy.value = getUserSearch.value.find( x => x.userId === object.value?.updatedBy )?.fullName;
 }
 
 onMounted(() => {

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
+import { useToast } from '@/lib/primevue';
 import { userService } from '@/services';
 import { useAppStore } from '@/store';
 
@@ -14,6 +15,8 @@ export type UserStoreState = {
 }
 
 export const useUserStore = defineStore('user', () => {
+  const toast = useToast();
+
   // Store
   const appStore = useAppStore();
 
@@ -35,11 +38,11 @@ export const useUserStore = defineStore('user', () => {
     try {
       appStore.beginIndeterminateLoading();
       state.idps.value = (await userService.listIdps()).data;
-    } catch (error) {
-      console.error(`listIdps error: ${error}`); // eslint-disable-line no-console
-      // So that a caller can action it
-      throw error;
-    } finally {
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error fetching IDPs', detail: error, life: 3000 });
+    }
+    finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -51,11 +54,11 @@ export const useUserStore = defineStore('user', () => {
 
       // Filter out any user without an IDP
       state.userSearch.value = response.filter((x: User) => x.identityId !== null);
-    } catch (error) {
-      console.error(`searchUsers error: ${error}`); // eslint-disable-line no-console
-      // So that a caller can action it
-      throw error;
-    } finally {
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error searching users', detail: error, life: 3000 });
+    }
+    finally {
       appStore.endIndeterminateLoading();
     }
   }

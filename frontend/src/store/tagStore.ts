@@ -48,7 +48,6 @@ export const useTagStore = defineStore('tag', () => {
     }
     catch (error) {
       toast.add({ severity: 'error', summary: 'Error fetching tags', detail: error, life: 3000 });
-      throw error;
     }
     finally {
       appStore.endIndeterminateLoading();

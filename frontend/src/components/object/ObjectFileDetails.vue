@@ -38,10 +38,10 @@ const obj: Ref<COMSObject | undefined> = ref(undefined);
 const bucketId: Ref<string> = ref('');
 
 // Actions
-const showPermissions = async (objectId: string, objectName?: string) => {
+const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = objectName || '';
+  permissionsObjectName.value = metadataStore.getValue(objectId, 'name') || '';
 };
 
 onMounted(() => {
@@ -87,7 +87,7 @@ watch( [routeObjId, getObjects], () => {
           v-if="permissionStore.getIsObjectActionAllowed(
             routeObjId, getUserId, Permissions.MANAGE, bucketId)"
           class="p-button-lg p-button-text"
-          @click="showPermissions(routeObjId, metadataStore.getValue(routeObjId, 'name'))"
+          @click="showPermissions(routeObjId)"
         >
           <font-awesome-icon icon="fa-solid fa-users" />
         </Button>

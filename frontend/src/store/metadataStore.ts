@@ -48,17 +48,19 @@ export const useMetadataStore = defineStore('metadata', () => {
     }
     catch (error) {
       toast.add({ severity: 'error', summary: 'Error fetching metadata', detail: error, life: 3000 });
-      throw error;
     }
     finally {
       appStore.endIndeterminateLoading();
     }
   }
 
-  const getMetadataByObjectId = (objectId: string) =>
-    state.metadata.value.find((x: Metadata) => x.objectId === objectId);
-  const getValue = (objectId: string, key: string) =>
-    getMetadataByObjectId(objectId)?.metadata.find(x => x.key === key)?.value;
+  function getMetadataByObjectId(objectId: string) {
+    return state.metadata.value.find((x: Metadata) => x.objectId === objectId);
+  }
+
+  function getValue(objectId: string, key: string) {
+    return getMetadataByObjectId(objectId)?.metadata.find(x => x.key === key)?.value;
+  }
 
   return {
     // State
@@ -68,8 +70,8 @@ export const useMetadataStore = defineStore('metadata', () => {
     ...getters,
 
     // Actions
-    getMetadataByObjectId,
     fetchMetadata,
+    getMetadataByObjectId,
     getValue
   };
 }, { persist: true });

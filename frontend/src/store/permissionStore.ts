@@ -70,7 +70,8 @@ export const usePermissionStore = defineStore('permission', () => {
   function addBucketUser(user: UserPermissions) {
     try {
       getters.getMappedBucketToUserPermissions.value.push(user);
-    } catch (error) {
+    }
+    catch (error) {
       toast.add({ severity: 'error', summary: 'Error adding bucket user', detail: error, life: 3000 });
     }
   }
@@ -93,7 +94,8 @@ export const usePermissionStore = defineStore('permission', () => {
   function addObjectUser(user: UserPermissions) {
     try {
       getters.getMappedObjectToUserPermissions.value.push(user);
-    } catch (error) {
+    }
+    catch (error) {
       toast.add({ severity: 'error', summary: 'Error adding object user', detail: error, life: 3000 });
     }
   }
@@ -187,19 +189,19 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  const getIsBucketActionAllowed = (bucketId: string, userId?: string, permCode?: string) => {
+  function getIsBucketActionAllowed(bucketId: string, userId?: string, permCode?: string) {
     return state.bucketPermissions.value.some((x: BucketPermission) =>
       x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
-  };
+  }
 
-  const getIsObjectActionAllowed = (objectId: string, userId?: string, permCode?: string, bucketId?: string) => {
+  function getIsObjectActionAllowed(objectId: string, userId?: string, permCode?: string, bucketId?: string) {
     const bucketPerm = state.bucketPermissions.value.some((x: BucketPermission) =>
       x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
     const objectPerm = state.objectPermissions.value.some((x: COMSObjectPermission) =>
       x.objectId === objectId && x.userId === userId && x.permCode === permCode);
 
     return bucketPerm || objectPerm;
-  };
+  }
 
   async function mapBucketToUserPermissions(bucketId: string) {
     try {
@@ -293,9 +295,11 @@ export const usePermissionStore = defineStore('permission', () => {
       for (const value of Object.values(Permissions)) {
         await permissionService.bucketDeletePermission(bucketId, { userId, permCode: value });
       }
-    } catch (error) {
+    }
+    catch (error) {
       toast.add({ severity: 'error', summary: 'Error removing bucket user', detail: error, life: 3000 });
-    } finally {
+    }
+    finally {
       await fetchBucketPermissions();
       await mapBucketToUserPermissions(bucketId);
       appStore.endIndeterminateLoading();
