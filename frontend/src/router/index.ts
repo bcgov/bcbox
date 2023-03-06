@@ -107,6 +107,11 @@ const routes: Array<RouteRecordRaw> = [
   //   path: '/update',
   //   children: [{}],
   // },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/NotFound.vue'),
+  }
 ];
 
 export default function getRouter() {
