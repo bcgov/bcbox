@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue';
 
 import { BucketConfigForm, BucketSidebar, BucketTable } from '@/components/bucket';
 import { Button, Dialog } from '@/lib/primevue';
-import { useAuthStore, useBucketStore } from '@/store';
+import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { BucketConfig } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -53,6 +53,7 @@ onMounted(async () => {
     </div>
     <div>
       <Button
+        v-if="usePermissionStore().getUserHasElevatedRights()"
         label="Primary"
         class="p-button-outlined mt-4"
         @click="showBucketConfig()"
