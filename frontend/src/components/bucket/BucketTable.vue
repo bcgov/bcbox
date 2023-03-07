@@ -21,11 +21,11 @@ const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsBucketId: Ref<string> = ref('');
 const permissionBucketName: Ref<string> = ref('');
 
-const emit = defineEmits(['show-bucket-config', 'show-info']);
+const emit = defineEmits(['show-bucket-config', 'show-sidebar-info']);
 
 // Functions
-const showInfo = async (id: number) => {
-  emit('show-info', id);
+const showSidebarInfo = async (id: number) => {
+  emit('show-sidebar-info', id);
 };
 
 const showBucketConfig = async (bucket: Bucket) => {
@@ -116,7 +116,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
           </Button>
           <Button
             class="p-button-lg p-button-rounded p-button-text"
-            @click="showInfo(data.bucketId)"
+            @click="showSidebarInfo(data.bucketId)"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>

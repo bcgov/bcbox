@@ -5,17 +5,17 @@ import type { Bucket } from '@/types';
 
 // Props
 type Props = {
-  displayInfo: Bucket
+  sidebarInfo: Bucket
 };
 
 const props = withDefaults(defineProps<Props>(), {});
 
 // Emits
-const emit = defineEmits(['close-info']);
+const emit = defineEmits(['close-sidebar-info']);
 
 // Actions
-const closeInfo = async () => {
-  emit('close-info');
+const closeSidebarInfo = async () => {
+  emit('close-sidebar-info');
 };
 </script>
 
@@ -31,7 +31,7 @@ const closeInfo = async () => {
     <div class="col-fixed align-items-center">
       <Button
         class="p-button-lg p-button-rounded p-button-text black"
-        @click="closeInfo"
+        @click="closeSidebarInfo"
       >
         <font-awesome-icon icon="fa-solid fa-xmark" />
       </Button>
@@ -46,13 +46,13 @@ const closeInfo = async () => {
         Bucket Name:
       </div>
       <div class="col-9">
-        {{ props.displayInfo?.bucketName }}
+        {{ props.sidebarInfo?.bucketName }}
       </div>
       <div class="col-3">
         Bucket ID:
       </div>
       <div class="col-9">
-        {{ props.displayInfo?.bucketId }}
+        {{ props.sidebarInfo?.bucketId }}
       </div>
     </div>
     <div class="grid">

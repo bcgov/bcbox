@@ -15,19 +15,19 @@ const bucketStore = useBucketStore();
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
-const displayInfo: Ref<Bucket | undefined> = ref(undefined);
+const sidebarInfo: Ref<Bucket | undefined> = ref(undefined);
 
 const displayBucketConfig: Ref<boolean> = ref(false);
 const bucketConfigTitle: Ref<string> = ref(BucketConfig.TITLE_NEW_BUCKET);
 const bucketToUpdate: Ref<Bucket | undefined> = ref(undefined);
 
 // Actions
-const showInfo = async (bucketId: string) => {
-  displayInfo.value = bucketStore.getBucketById(bucketId);
+const showSidebarInfo = async (bucketId: string) => {
+  sidebarInfo.value = bucketStore.getBucketById(bucketId);
 };
 
-const closeInfo = () => {
-  displayInfo.value = undefined;
+const closeSidebarInfo = () => {
+  sidebarInfo.value = undefined;
 };
 
 const showBucketConfig = (bucket?: Bucket) => {
@@ -89,18 +89,18 @@ onMounted(async () => {
     <div class="flex mt-7">
       <div class="flex-grow-1">
         <BucketTable
-          @show-info="showInfo"
+          @show-sidebar-info="showSidebarInfo"
           @show-bucket-config="showBucketConfig"
         />
       </div>
       <div
-        v-if="displayInfo"
+        v-if="sidebarInfo"
         class="flex-shrink-0 ml-3"
         style="max-width: 33%; min-width: 33%"
       >
         <BucketSidebar
-          :display-info="displayInfo"
-          @close-info="closeInfo"
+          :sidebar-info="sidebarInfo"
+          @close-sidebar-info="closeSidebarInfo"
         />
       </div>
     </div>
