@@ -3,13 +3,13 @@ import { useToast } from 'primevue/usetoast';
 import { onErrorCaptured, onMounted, ref } from 'vue';
 
 import ObjectList from '@/components/object/ObjectList.vue';
-import { RouteNames } from '@/utils/constants';
-
 import { useBucketStore } from '@/store';
+import { RouteNames } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { Bucket } from '@/types';
 
+// Props
 type Props = {
   bucketId?: string
 };
@@ -18,10 +18,13 @@ const props = withDefaults(defineProps<Props>(), {
   bucketId: undefined
 });
 
+// Store
 const bucketStore = useBucketStore();
 
+// State
 const bucket: Ref< Bucket | undefined > = ref(undefined);
 
+// ACtions
 async function getBucketName() {
   bucket.value = props.bucketId ? await bucketStore.getBucketById(props.bucketId) : undefined;
 }

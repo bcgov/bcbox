@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
 
 import {
   DeleteObjectButton,
@@ -21,11 +20,17 @@ import { ButtonMode } from '@/utils/enums';
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
 
+// Props
+type Props = {
+  objId: string
+};
+
+const props = withDefaults(defineProps<Props>(), {});
+
 // Store
 const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
-const route = useRoute();
 const { getObjects } = storeToRefs(objectStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
@@ -33,7 +38,6 @@ const { getUserId } = storeToRefs(useAuthStore());
 const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsObjectId: Ref<string> = ref('');
 const permissionsObjectName: Ref<string> = ref('');
-const routeObjId: Ref<string> = ref(route.query.objId as string);
 const obj: Ref<COMSObject | undefined> = ref(undefined);
 const bucketId: Ref<string> = ref('');
 
@@ -48,9 +52,9 @@ onMounted(() => {
   permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
 });
 
-watch( [routeObjId, getObjects], () => {
-  metadataStore.fetchMetadata({objId: routeObjId.value });
-  obj.value = objectStore.getObjectById(routeObjId.value);
+watch( [props, getObjects], () => {
+  metadataStore.fetchMetadata({objId: props.objId });
+  obj.value = objectStore.getObjectById(props.objId);
   bucketId.value = obj.value?.bucketId || '';
 });
 </script>
@@ -74,43 +78,43 @@ watch( [routeObjId, getObjects], () => {
       >
         <ShareObjectButton
           v-if="permissionStore.getIsObjectActionAllowed(
-            routeObjId, getUserId, Permissions.MANAGE, bucketId)"
-          :id="routeObjId"
+            props.objId, getUserId, Permissions.MANAGE, bucketId)"
+          :id="props.objId"
         />
         <DownloadObjectButton
           v-if="permissionStore.getIsObjectActionAllowed(
-            routeObjId, getUserId, Permissions.READ, bucketId)"
+            props.objId, getUserId, Permissions.READ, bucketId)"
           :mode="ButtonMode.ICON"
-          :ids="[routeObjId]"
+          :ids="[props.objId]"
         />
         <Button
           v-if="permissionStore.getIsObjectActionAllowed(
-            routeObjId, getUserId, Permissions.MANAGE, bucketId)"
+            props.objId, getUserId, Permissions.MANAGE, bucketId)"
           class="p-button-lg p-button-text"
-          @click="showPermissions(routeObjId)"
+          @click="showPermissions(props.objId)"
         >
           <font-awesome-icon icon="fa-solid fa-users" />
         </Button>
         <DeleteObjectButton
           v-if="permissionStore.getIsObjectActionAllowed(
-            routeObjId, getUserId, Permissions.DELETE, bucketId)"
+            props.objId, getUserId, Permissions.DELETE, bucketId)"
           :mode="ButtonMode.ICON"
-          :ids="[routeObjId]"
+          :ids="[props.objId]"
         />
       </div>
     </div>
 
     <div class="pl-2">
       <ObjectProperties
-        :object-info-id="routeObjId"
+        :object-info-id="props.objId"
         :full-view="true"
       />
-      <ObjectAccess :object-info-id="routeObjId" />
+      <ObjectAccess :object-info-id="props.objId" />
       <ObjectMetadata
-        :object-info-id="routeObjId"
+        :object-info-id="props.objId"
         :full-view="true"
       />
-      <ObjectTag :object-info-id="routeObjId" />
+      <ObjectTag :object-info-id="props.objId" />
     </div>
   </div>
 

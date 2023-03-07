@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { useRoute } from 'vue-router';
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
 import { Button, FileUpload, useToast } from '@/lib/primevue';
 import { useObjectStore } from '@/store';
@@ -10,10 +9,13 @@ import type { Ref } from 'vue';
 
 // Props
 type Props = {
-  closeCallback: Function,
+  bucketId?: string;
+  closeCallback: Function;
 };
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  bucketId: undefined
+});
 
 // Store
 const objectStore = useObjectStore();
@@ -24,7 +26,6 @@ const successfulFiles: Ref<Array<File>> = ref([]);
 const failedFiles: Ref<Array<File>> = ref([]);
 
 // Actions
-const route = useRoute();
 const toast = useToast();
 
 const onSelectedFiles = (event: any) => {
@@ -32,7 +33,7 @@ const onSelectedFiles = (event: any) => {
 };
 
 const onUpload = async (event: any) => {
-  const bucketId = route.query.bucketId?.toString();
+  const bucketId = props.bucketId?.toString();
 
   if (bucketId) {
     // Reset file arrays before upload

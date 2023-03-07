@@ -56,7 +56,7 @@ const closeUpload = () => {
 
 // const updateBreadcrumb = async () => {
 //   try {
-//     const bucket = await bucketStore.getBucketInfo(route.query.bucketId as string);
+//     const bucket = await bucketStore.getBucketInfo(props.bucketId as string);
 //     navStore.replace('__listObjectsDynamic', bucket?.bucketName ?? 'Unknown bucket');
 //   } catch (error: any) {
 //     toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: error, life: 5000 });
@@ -90,6 +90,7 @@ watch( getObjects, () => {
       class="mb-4"
     >
       <ObjectUpload
+        :bucket-id="props.bucketId"
         :close-callback="closeUpload"
       />
     </div>
@@ -117,6 +118,7 @@ watch( getObjects, () => {
     <div class="flex mt-4">
       <div class="flex-grow-1">
         <ObjectTable
+          :bucket-id="props.bucketId"
           :object-info-id="objectInfoId"
           @show-object-info="showObjectInfo"
         />
