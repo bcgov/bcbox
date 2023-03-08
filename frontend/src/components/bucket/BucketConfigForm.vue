@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { Form } from 'vee-validate';
 import { object, string } from 'yup';
 
 import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
 import { Button, useToast } from '@/lib/primevue';
-import { useBucketStore } from '@/store';
+import { useAuthStore, useBucketStore } from '@/store';
 
 import type { Bucket } from '@/types';
 
@@ -23,7 +24,7 @@ const emit = defineEmits(['cancel-bucket-config', 'submit-bucket-config']);
 
 // Store
 const bucketStore = useBucketStore();
-const toast = useToast();
+const { getUserId } = storeToRefs(useAuthStore());
 
 // Default form values
 const initialValues = {
@@ -46,8 +47,9 @@ const schema = object({
 });
 
 // Actions
-const onSubmit = async (values: any) => {
+const toast = useToast();
 
+const onSubmit = async (values: any) => {
   try {
     const formBucket = {
       bucketName: values.bucketName,
@@ -64,7 +66,7 @@ const onSubmit = async (values: any) => {
       await bucketStore.updateBucket(props.bucket?.bucketId, formBucket) :
       await bucketStore.createBucket(formBucket);
 
-    await bucketStore.fetchBuckets();
+    await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
     emit('submit-bucket-config');
 
     toast.add(
