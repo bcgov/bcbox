@@ -1,53 +1,49 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
-import Checkbox from 'primevue/checkbox';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
+import { onMounted, ref } from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import ObjectPermissionAddUser from '@/components/object/ObjectPermissionAddUser.vue';
-import { useToaster } from '@/composables/useToaster';
-import { useObjectStore } from '@/store';
+import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
+import { usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 
 // Props
-const props = defineProps<{
+type Props = {
   objectId: string;
-}>();
+};
+
+const props = withDefaults(defineProps<Props>(), {});
+
+// Store
+const permissionStore = usePermissionStore();
+const { getMappedObjectToUserPermissions } = storeToRefs(permissionStore);
 
 // State
 const showSearchUsers: Ref<boolean> = ref(false);
 
-const objectStore = useObjectStore();
-const { loading, selectedObjectPermissions } = storeToRefs(useObjectStore());
-
-onMounted(() => {
-  fetchPermissions();
-});
-
+// Actions
 const cancelSearchUsers = () => {
   showSearchUsers.value = false;
 };
 
-const fetchPermissions = () => {
-  useToaster(() => objectStore.getObjectPermissions(props.objectId), { summary: 'Unable to load permissions.' });
+const removeObjectUser = (userId: string) => {
+  permissionStore.removeObjectUser(props.objectId, userId);
 };
 
-const updateObjectPermission = (value: any, userId: string, permCode: string) => {
+const updateObjectPermission = (value: boolean, userId: string, permCode: string) => {
   if (value) {
-    objectStore.addObjectPermission(props.objectId, userId, permCode);
+    permissionStore.addObjectPermission(props.objectId, userId, permCode);
   } else {
-    objectStore.deleteObjectPermission(props.objectId, userId, permCode);
+    permissionStore.deleteObjectPermission(props.objectId, userId, permCode);
   }
 };
 
-const removeObjectUser = async (userId: string) => {
-  await objectStore.removeObjectUser(props.objectId, userId);
-  fetchPermissions();
-};
+onMounted(() => {
+  permissionStore.mapObjectToUserPermissions(props.objectId);
+});
 </script>
 
 <template>
@@ -70,8 +66,7 @@ const removeObjectUser = async (userId: string) => {
     </div>
 
     <DataTable
-      :loading="loading"
-      :value="selectedObjectPermissions"
+      :value="getMappedObjectToUserPermissions"
       data-key="userId"
       class="p-datatable-sm"
       striped-rows

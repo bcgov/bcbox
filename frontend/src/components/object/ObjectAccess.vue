@@ -1,28 +1,37 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useUserStore } from '@/store';
+import { onMounted, ref, watch } from 'vue';
+
+import { usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { Permission } from '@/interfaces';
+import type { COMSObjectPermission } from '@/types';
 
+// Props
+type Props = {
+  objectInfoId: string;
+};
+
+const props = withDefaults(defineProps<Props>(), {});
+
+// Store
+const permissionStore = usePermissionStore();
 const userStore = useUserStore();
+
+const { getObjectPermissions } = storeToRefs(permissionStore);
 const { userSearch } = storeToRefs(userStore);
 
-const props = defineProps({
-  objectInfo: {
-    type: Object,
-    default: undefined
-  }
-});
-
+// State
 const managedBy: Ref<string | undefined> = ref();
 
-async function getUserData() {
-  const uniqueIds = [...new Set(props.objectInfo?.permissions
-    .filter( (x: Permission) => x.permCode === Permissions.MANAGE )
-    .map( (x: Permission) => x.userId) )];
+// Actions
+async function load() {
+  await permissionStore.fetchObjectPermissions({objId: props.objectInfoId});
+
+  const uniqueIds = [...new Set(getObjectPermissions.value
+    .filter( (x: COMSObjectPermission) => x.objectId === props.objectInfoId && x.permCode === Permissions.MANAGE )
+    .map( (x: COMSObjectPermission) => x.userId) )];
 
   await userStore.searchUsers({userId: uniqueIds} );
 
@@ -30,11 +39,11 @@ async function getUserData() {
 }
 
 onMounted(() => {
-  getUserData();
+  load();
 });
 
 watch( props, () => {
-  getUserData();
+  load();
 });
 </script>
 

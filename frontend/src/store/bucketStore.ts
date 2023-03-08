@@ -1,200 +1,111 @@
-import { ref, isProxy, toRaw } from 'vue';
-import { defineStore, storeToRefs } from 'pinia';
-import { useToast } from 'primevue/usetoast';
+import { defineStore } from 'pinia';
+import { computed, ref } from 'vue';
 
-import { bucketService, permissionService, userService } from '@/services';
-import { useConfigStore, useUserStore } from '@/store';
-import { Permissions } from '@/utils/constants';
+import { useToast } from '@/lib/primevue';
+import { bucketService } from '@/services';
+import { useAppStore, usePermissionStore } from '@/store';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-import type { Bucket, IdentityProvider, Permission, User, UserPermissions } from '@/interfaces';
+import type { Bucket, BucketSearchPermissionsOptions } from '@/types';
+
+export type BucketStoreState = {
+  buckets: Ref<Array<Bucket>>
+}
 
 export const useBucketStore = defineStore('bucket', () => {
-  const { getConfig } = useConfigStore();
-  const { currentUser } = storeToRefs(useUserStore());
   const toast = useToast();
 
+  // Store
+  const appStore = useAppStore();
+  const permissionStore = usePermissionStore();
+
   // State
-  const loading: Ref<boolean> = ref(false);
-  const buckets: Ref<Array<Bucket>> = ref([]);
-  const permissions: Ref<Array<UserPermissions>> = ref([]);
-  const selectedBucketPermissionsForUser: Ref<Array<Permission>> = ref([]);
+  const state: BucketStoreState = {
+    buckets: ref([])
+  };
+
+  // Getters
+  const getters = {
+    getBuckets: computed(() => state.buckets.value)
+  };
 
   // Actions
-  async function load() {
-    try {
-      loading.value = true;
-
-      if (currentUser.value) {
-        const permResponse = (await permissionService.bucketSearchPermissions({
-          userId: currentUser.value.userId,
-          objectPerms: true
-        })).data;
-        const uniqueIds = [...new Set(permResponse.map((x: { bucketId: string }) => x.bucketId))];
-        let response = Array<Bucket>();
-        if (uniqueIds.length) {
-          response = (await bucketService.searchForBuckets({ bucketId: uniqueIds })).data;
-          response.forEach((x: Bucket) => {
-            x.userPermissions = permResponse.find((p: any) => p.bucketId === x.bucketId)?.permissions;
-          });
-        }
-        buckets.value = response;
-      }
-    } finally {
-      loading.value = false;
-    }
-  }
-
-  async function getBucketInfo(bucketId: string) {
-    if (!buckets.value.length) {
-      await load();
-    }
-    let bucket = buckets.value.find((x) => x.bucketId === bucketId);
-    if (isProxy(bucket)) {
-      bucket = toRaw(bucket);
-    }
-
-    // TODO: Get unique list of users with management positions on the bucket
-
-    return bucket;
-  }
-
-  // Get the set of permissions for a bucket
-  async function getBucketPermissions(bucketId: string) {
-    try {
-      loading.value = true;
-
-      const searchPerms = (await permissionService.bucketSearchPermissions({ bucketId })).data;
-
-      if (searchPerms[0]) {
-        const perms = searchPerms[0].permissions;
-
-        const uniqueIds = [...new Set(perms.map((x: Permission) => x.userId))];
-        const uniqueUsers: Array<User> = (await userService.searchForUsers({ userId: uniqueIds })).data;
-
-        const hasPermission = (userId: string, permission: string) => {
-          return perms.some((perm: any) => perm.userId === userId && perm.permCode === permission);
-        };
-
-        const userPermissions: UserPermissions[] = [];
-        uniqueUsers.forEach((user: User) => {
-          const idp = getConfig.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
-
-          userPermissions.push({
-            userId: user.userId,
-            idpName: idp?.name,
-            elevatedRights: idp?.elevatedRights,
-            fullName: user.fullName,
-            create: hasPermission(user.userId, Permissions.CREATE),
-            read: hasPermission(user.userId, Permissions.READ),
-            update: hasPermission(user.userId, Permissions.UPDATE),
-            delete: hasPermission(user.userId, Permissions.DELETE),
-            manage: hasPermission(user.userId, Permissions.MANAGE),
-          });
-        });
-
-        permissions.value = userPermissions;
-      }
-    } finally {
-      loading.value = false;
-    }
-  }
-
-  // Get a user's bucket permissions
-  async function getBucketPermissionsForUser(bucketId: string) {
-    try {
-      loading.value = true;
-
-      if (currentUser.value) {
-        const bucketPerms =
-          (await permissionService.bucketSearchPermissions({ bucketId, userId: currentUser.value.userId })).data;
-        if (bucketPerms && bucketPerms[0] && bucketPerms[0].permissions) {
-          selectedBucketPermissionsForUser.value = bucketPerms[0].permissions;
-        }
-      }
-    } finally {
-      loading.value = false;
-    }
-  }
-
-  async function addBucketPermission(bucketId: string, userId: string, permCode: string) {
-    try {
-      loading.value = true;
-      await permissionService.bucketAddPermissions(bucketId, [{ userId, permCode }]);
-    }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error updating permission', detail: error, life: 3000 });
-    }
-    finally {
-      await getBucketPermissions(bucketId);
-      loading.value = false;
-    }
-  }
-
-  async function deleteBucketPermission(bucketId: string, userId: string, permCode: string) {
-    try {
-      loading.value = true;
-      await permissionService.bucketDeletePermission(bucketId, { userId, permCode });
-    }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error updating permission', detail: error, life: 3000 });
-    }
-    finally {
-      await getBucketPermissions(bucketId);
-      loading.value = false;
-    }
-  }
-
-  async function removeBucketUser(bucketId: string, userId: string) {
-    try {
-      loading.value = true;
-
-      for (const [, value] of Object.entries(Permissions)) {
-        await permissionService.bucketDeletePermission(bucketId, { userId, permCode: value });
-      }
-    } catch (error) {
-      toast.add({ severity: 'error', summary: 'Error removing user permission', detail: error, life: 3000 });
-    } finally {
-      await getBucketPermissions(bucketId);
-      loading.value = false;
-    }
-  }
-
   async function createBucket(bucket: Bucket) {
     try {
-      loading.value = true;
+      appStore.beginIndeterminateLoading();
 
       return (await bucketService.createBucket(bucket)).data;
-    } finally {
-      loading.value = false;
     }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
+  async function fetchBuckets(params?: BucketSearchPermissionsOptions) {
+    try {
+      appStore.beginIndeterminateLoading();
+
+      // Get a unique list of bucket IDs the user has access to
+      const permResponse = await permissionStore.fetchBucketPermissions(params);
+      if (permResponse) {
+        const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { bucketId: string }) => x.bucketId))];
+
+        let response = Array<Bucket>();
+        if (uniqueIds.length) {
+          response = (await bucketService.searchBuckets({ bucketId: uniqueIds })).data;
+
+          // Remove old values matching search parameters
+          const matches = (x: Bucket) => (
+            (!params?.bucketId || x.bucketId === params.bucketId)
+          );
+
+          const [, difference] = partition(state.buckets.value, matches);
+
+          // Merge and assign
+          state.buckets.value = difference.concat(response);
+        }
+        else {
+          state.buckets.value = response;
+        }
+      }
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error fetching buckets', detail: error, life: 3000 });
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
+  function getBucketById(bucketId: string) {
+    return state.buckets.value.find((x) => x.bucketId === bucketId);
   }
 
   async function updateBucket(bucketId: string, bucket: Bucket) {
     try {
-      loading.value = true;
+      appStore.beginIndeterminateLoading();
 
       return (await bucketService.updateBucket(bucketId, bucket)).data;
-    } finally {
-      loading.value = false;
+    }
+    finally {
+      appStore.endIndeterminateLoading();
     }
   }
 
   return {
-    loading,
-    load,
-    getBucketInfo,
-    getBucketPermissions,
-    getBucketPermissionsForUser,
-    addBucketPermission,
-    deleteBucketPermission,
-    removeBucketUser,
+    // State
+    ...state,
+
+    // Getters
+    ...getters,
+
+    // Actions
     createBucket,
-    updateBucket,
-    buckets,
-    permissions,
-    selectedBucketPermissionsForUser
+    fetchBuckets,
+    getBucketById,
+    updateBucket
   };
-});
+}, { persist: true });
 
 export default useBucketStore;

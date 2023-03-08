@@ -1,9 +1,1 @@
-export type { Bucket } from './Bucket';
-export type { COMSObject } from './COMSObject';
-export type { IdentityProvider } from './IdentityProvider';
-export type { Metadata } from './Metadata';
-export type { Tagging } from './Tagging';
-export type { Permission } from './Permission';
-export type { Tag } from './Tag';
-export type { User } from './User';
-export type { UserPermissions } from './UserPermissions';
+export type { IAudit } from './IAudit';

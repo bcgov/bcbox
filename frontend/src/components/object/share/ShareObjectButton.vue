@@ -1,37 +1,43 @@
 <script setup lang="ts">
-import { computed, ref, type PropType } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { storeToRefs } from 'pinia';
+import { computed, ref, onMounted } from 'vue';
 
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { ShareLinkContent } from '@/components/object';
+import { Button, Dialog, TabView, TabPanel } from '@/lib/primevue';
+import { useConfigStore, useMetadataStore, useObjectStore } from '@/store';
 
-import ShareLinkContent from './ShareLinkContent.vue';
-import { useConfigStore } from '@/store';
-
-import type { COMSObject } from '@/interfaces';
-
-const { getConfig } = storeToRefs(useConfigStore());
+import type { Ref } from 'vue';
+import type { COMSObject } from '@/types';
 
 // Props
-const props = defineProps({
-  obj: {
-    type: Object as PropType<COMSObject>,
-    required: true,
-  },
-});
+type Props = {
+  id: string;
+};
+
+const props = withDefaults(defineProps<Props>(), {});
+
+// Store
+const metadataStore = useMetadataStore();
+const objectStore = useObjectStore();
+const { getConfig } = storeToRefs(useConfigStore());
+
+// State
+const obj: Ref<COMSObject | undefined> = ref(undefined);
 
 // Dialog
 const displayShareDialog = ref(false);
 
 // Share link
 const bcBoxLink = computed(() => {
-  return `${window.location.origin}/list/detail/object?objId=${props.obj.id}`;
+  return `${window.location.origin}/list/detail/object?objId=${props.id}`;
 });
 const comsUrl = computed(() => {
-  return `${getConfig.value.coms?.apiPath}/object/${props.obj.id}`;
+  return `${getConfig.value.coms?.apiPath}/object/${props.id}`;
+});
+
+onMounted( () => {
+  obj.value = objectStore.getObjectById(props.id);
 });
 </script>
 
@@ -50,9 +56,9 @@ const comsUrl = computed(() => {
       />
       <span class="p-dialog-title">Share</span>
     </template>
-    
+
     <h3 class="bcbox-info-dialog-subhead">
-      {{ props.obj.name }}
+      {{ metadataStore.getValue(id, 'name') }}
     </h3>
 
     <ul class="mb-4">
@@ -73,7 +79,7 @@ const comsUrl = computed(() => {
         />
       </TabPanel>
       <TabPanel
-        v-if="props.obj.public"
+        v-if="obj?.public"
         header="Direct public file link"
       >
         <ShareLinkContent

@@ -1,27 +1,31 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-import Dialog from 'primevue/dialog';
 import { ref } from 'vue';
 
-import BucketPermission from './BucketPermission.vue';
-import { useBucketStore } from '@/store';
+import BucketPermission from '@/components/bucket/BucketPermission.vue';
+import { Button, Column, DataTable, Dialog } from '@/lib/primevue';
+import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 
-import type { Bucket, Permission } from '@/interfaces';
+import type { Ref } from 'vue';
+import type { Bucket } from '@/types';
 
-const { loading, buckets } = storeToRefs(useBucketStore());
+// Store
+const permissionStore = usePermissionStore();
+const { getIsLoading } = storeToRefs(useAppStore());
+const { getUserId } = storeToRefs(useAuthStore());
+const { getBuckets } = storeToRefs(useBucketStore());
 
-const permissionsVisible = ref(false);
-const permissionsBucketId = ref('');
-const permissionBucketName = ref('');
+// State
+const permissionsVisible: Ref<boolean> = ref(false);
+const permissionsBucketId: Ref<string> = ref('');
+const permissionBucketName: Ref<string> = ref('');
 
-const emit = defineEmits(['show-bucket-config', 'show-info']);
+const emit = defineEmits(['show-bucket-config', 'show-sidebar-info']);
 
-const showInfo = async (id: number) => {
-  emit('show-info', id);
+// Functions
+const showSidebarInfo = async (id: number) => {
+  emit('show-sidebar-info', id);
 };
 
 const showBucketConfig = async (bucket: Bucket) => {
@@ -35,15 +39,15 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
 };
 
 const displayPermissionsIcon = (bucket: Bucket) => {
-  return bucket.userPermissions?.find( (x: Permission) => x.permCode === Permissions.MANAGE);
+  return permissionStore.getIsBucketActionAllowed(bucket.bucketId, getUserId.value, Permissions.MANAGE );
 };
 </script>
 
 <template>
   <div>
     <DataTable
-      :loading="loading"
-      :value="buckets"
+      :loading="getIsLoading"
+      :value="getBuckets"
       data-key="bucketId"
       class="p-datatable-sm"
       striped-rows
@@ -58,7 +62,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
     >
       <template #empty>
         <div
-          v-if="!loading"
+          v-if="!getIsLoading"
           class="flex justify-content-center"
         >
           <h3>There are no buckets associated with your account.</h3>
@@ -112,7 +116,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
           </Button>
           <Button
             class="p-button-lg p-button-rounded p-button-text"
-            @click="showInfo(data.bucketId)"
+            @click="showSidebarInfo(data.bucketId)"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
@@ -139,7 +143,7 @@ const displayPermissionsIcon = (bucket: Bucket) => {
       <h3 class="bcbox-info-dialog-subhead">
         {{ permissionBucketName }}
       </h3>
-      
+
       <BucketPermission :bucket-id="permissionsBucketId" />
     </Dialog>
   </div>

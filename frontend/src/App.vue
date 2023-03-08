@@ -1,31 +1,27 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import ConfirmDialog from 'primevue/confirmdialog';
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
 import { onBeforeMount, onErrorCaptured } from 'vue';
 import { RouterView } from 'vue-router';
-
 import { AppLayout, Navbar, ProgressLoader } from '@/components/layout';
-import { useAppStore, useAuthStore, useUserStore } from '@/store';
+import { ConfirmDialog, Toast, useToast }from '@/lib/primevue';
+import { useAppStore, useAuthStore, useConfigStore } from '@/store';
 
 const appStore = useAppStore();
 const { getIsLoading } = storeToRefs(appStore);
 
 onBeforeMount(async () => {
   appStore.beginDeterminateLoading();
+  await useConfigStore().init();
   await useAuthStore().init();
-  // TODO: Do we actually need userStore mounting for all pages?
-  await useUserStore().init();
   appStore.endDeterminateLoading();
 });
 
-// Suspense error captured
+// Top level error handler
 onErrorCaptured((e: Error) => {
   const toast = useToast();
   toast.add({
     severity: 'error',
-    summary: 'Error initializing app',
+    summary: 'Error',
     detail: e.message, life: 3000
   });
 });

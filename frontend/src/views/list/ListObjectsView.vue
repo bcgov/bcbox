@@ -1,32 +1,42 @@
 <script setup lang="ts">
 import { useToast } from 'primevue/usetoast';
-import { ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { onErrorCaptured, onMounted, ref } from 'vue';
 
 import ObjectList from '@/components/object/ObjectList.vue';
+import { useBucketStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
-import { useBucketStore } from '@/store';
-
 import type { Ref } from 'vue';
-import type { Bucket } from '@/interfaces';
+import type { Bucket } from '@/types';
 
-const bucketStore = useBucketStore();
-const route = useRoute();
-const toast = useToast();
-
-const bucket: Ref< Bucket | undefined > = ref(undefined);
-
-const getBucketName = async () => {
-  try {
-    bucket.value = await bucketStore.getBucketInfo(route.query.bucketId as string);
-  } catch (error: any) {
-    toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: error, life: 5000 });
-  }
+// Props
+type Props = {
+  bucketId?: string
 };
 
-getBucketName();
+const props = withDefaults(defineProps<Props>(), {
+  bucketId: undefined
+});
 
+// Store
+const bucketStore = useBucketStore();
+
+// State
+const bucket: Ref< Bucket | undefined > = ref(undefined);
+
+// Actions
+async function getBucketName() {
+  bucket.value = props.bucketId ? await bucketStore.getBucketById(props.bucketId) : undefined;
+}
+
+onErrorCaptured((e: Error) => {
+  const toast = useToast();
+  toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: e.message, life: 5000 });
+});
+
+onMounted(async () => {
+  await getBucketName();
+});
 </script>
 
 <template>
@@ -46,7 +56,7 @@ getBucketName();
         {{ bucket.bucketName }}
       </router-link>
     </h2>
-    <ObjectList />
+    <ObjectList :bucket-id="props.bucketId" />
   </div>
 </template>
 

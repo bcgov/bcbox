@@ -1,30 +1,34 @@
 import axios from 'axios';
-import { useAuthStore, useConfigStore } from '../store';
+
+import { AuthService, ConfigService } from './index';
+
+import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
 /**
  * @function comsAxios
  * Returns an Axios instance for the COMS API
- * @param {integer} [timeout=10000] Number of milliseconds before timing out the request
- * @returns {object} An axios instance
+ * @param {number} [timeout=10000] Number of milliseconds before timing out the request
+ * @returns {AxiosInstance} An axios instance
  */
-export function comsAxios(timeout = 10000) {
-  const { getConfig } = useConfigStore();
+export function comsAxios(timeout: number = 10000): AxiosInstance {
+  const configService = new ConfigService();
   const axiosOptions = {
     timeout: timeout,
-    baseURL: getConfig.coms.apiPath,
+    baseURL: configService.getConfig().coms.apiPath,
   };
 
   const instance = axios.create(axiosOptions);
 
   instance.interceptors.request.use(
-    (cfg: any) => {
-      const { getIsAuthenticated, getAccessToken } = useAuthStore();
-      if (getIsAuthenticated) {
-        cfg.headers.Authorization = `Bearer ${getAccessToken}`;
+    async (cfg: InternalAxiosRequestConfig) => {
+      const authService = new AuthService();
+      const user = await authService.getUser();
+      if (!!user && !user.expired) {
+        cfg.headers.Authorization = `Bearer ${user.access_token}`;
       }
       return Promise.resolve(cfg);
     },
-    (error) => {
+    (error: Error) => {
       return Promise.reject(error);
     }
   );

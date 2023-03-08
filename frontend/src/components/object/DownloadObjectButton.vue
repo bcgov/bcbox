@@ -1,33 +1,31 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
+import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
 
-import { ButtonMode } from '@/interfaces/common/enums';
+import { Button, Dialog } from '@/lib/primevue';
 import { useObjectStore } from '@/store';
-
-const objectStore = useObjectStore();
+import { ButtonMode } from '@/utils/enums';
 
 // Props
-const props = defineProps({
-  mode: {
-    type: String as PropType<ButtonMode>,
-    required: true,
-  },
-  ids: {
-    type: Array<string>,
-    required: true,
-  },
-});
+type Props = {
+  mode: ButtonMode;
+  ids: Array<string>;
+};
 
-// Download the object(s)
+const props = withDefaults(defineProps<Props>(), {});
+
+// Store
+const objectStore = useObjectStore();
+
+// State
 const displayNoFileDlg = ref(false);
+
+// Actions
 const download = () => {
   if (props.ids.length) {
     // For now we are looping the supplied IDs (if multiple selected) until there is a batching feature
     props.ids.forEach((i) => {
-      objectStore.getObject(i, undefined);
+      objectStore.downloadObject(i, undefined);
     });
   } else {
     displayNoFileDlg.value = true;
@@ -52,7 +50,7 @@ const download = () => {
   </Dialog>
 
   <Button
-    v-if="mode === ButtonMode.ICON"
+    v-if="props.mode === ButtonMode.ICON"
     class="p-button-lg p-button-text"
     @click="download()"
   >

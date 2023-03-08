@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import { useAppStore, useAuthStore } from '@/store';
+import { AuthService } from '@/services';
+import { useAppStore } from '@/store';
 import { RouteNames, StorageKey } from '@/utils/constants';
 
 import type { RouteRecordRaw } from 'vue-router';
@@ -19,9 +20,9 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: RouteNames.HOME,
-    component: () => import('../views/HomeView.vue'),
-    props: createProps
+    component: () => import('../views/HomeView.vue')
   },
+  // TODO: Determine if we want modals to have disrete vue-router paths on presentation
   // {
   //   path: '/create',
   //   children: [
@@ -35,11 +36,12 @@ const routes: Array<RouteRecordRaw> = [
   // },
   {
     path: '/detail',
+    component: () => import('@/views/GenericView.vue'),
     children: [
       {
         path: 'objects',
         name: RouteNames.DETAIL_OBJECTS,
-        component: () => import('../views/DetailObjectsView.vue'),
+        component: () => import('@/views/detail/DetailObjectsView.vue'),
         meta: { requiresAuth: true },
         props: createProps
       }
@@ -48,46 +50,42 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/developer',
     name: RouteNames.DEVELOPER,
-    component: () => import('../views/DeveloperView.vue'),
-    meta: { requiresAuth: true, breadcrumb: 'Developer' },
-    props: createProps
+    component: () => import('@/views/DeveloperView.vue'),
+    meta: { requiresAuth: true, breadcrumb: 'Developer' }
   },
   {
     path: '/list',
+    component: () => import('@/views/GenericView.vue'),
     children: [
       {
         path: 'buckets',
         name: RouteNames.LIST_BUCKETS,
-        component: () => import('../views/ListBucketsView.vue'),
-        meta: { requiresAuth: true, breadcrumb: 'Buckets' }
+        component: () => import('@/views/list/ListBucketsView.vue'),
+        meta: { requiresAuth: true, breadcrumb: 'Buckets' },
+        props: createProps
       },
       {
         path: 'objects',
         name: RouteNames.LIST_OBJECTS,
-        component: () => import('../views/ListObjectsView.vue'),
-        meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' }
-      },
-      {
-        path: 'detail/object',
-        name: RouteNames.DETAIL_OBJECTS,
-        component: () => import('../views/DetailObjectsView.vue'),
-        meta: { requiresAuth: true }
-      },
-    ],
-    props: createProps
+        component: () => import('@/views/list/ListObjectsView.vue'),
+        meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' },
+        props: createProps
+      }
+    ]
   },
   {
     path: '/oidc',
+    component: () => import('@/views/GenericView.vue'),
     children: [
       {
         path: 'callback',
         name: RouteNames.CALLBACK,
-        component: () => import('../views/OidcCallbackView.vue'),
+        component: () => import('@/views/oidc/OidcCallbackView.vue'),
       },
       {
         path: 'login',
         name: RouteNames.LOGIN,
-        component: () => import('../views/OidcLoginView.vue'),
+        component: () => import('@/views/oidc/OidcLoginView.vue'),
         beforeEnter: () => {
           const entrypoint = `${window.location.pathname}${window.location.search}${window.location.hash}`;
           window.sessionStorage.setItem(StorageKey.AUTH, entrypoint);
@@ -96,10 +94,11 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'logout',
         name: RouteNames.LOGOUT,
-        component: () => import('../views/OidcLogoutView.vue')
+        component: () => import('@/views/oidc/OidcLogoutView.vue')
       },
     ]
   },
+  // TODO: Determine if we want modals to have disrete vue-router paths on presentation
   // {
   //   path: '/permission',
   //   children: [{}],
@@ -108,21 +107,25 @@ const routes: Array<RouteRecordRaw> = [
   //   path: '/update',
   //   children: [{}],
   // },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/NotFound.vue'),
+  }
 ];
 
 export default function getRouter() {
   const appStore = useAppStore();
-  const authStore = useAuthStore();
+  // const navStore = useNavStore(); // Removed for now
+  const authService = new AuthService();
   const router = createRouter({
     history: createWebHistory(),
     routes
   });
 
   router.beforeEach(async (to, _from, next) => {
-    // Removed for now
-    // const { navigate } = useNavStore();
-    // navigate(to);
     appStore.beginDeterminateLoading();
+    // navStore.navigate(to); // Removed for now
 
     // Backend Redirection Handler
     if (to.query?.r) {
@@ -133,8 +136,12 @@ export default function getRouter() {
       });
     }
 
-    if (to.meta.requiresAuth && !authStore.getIsAuthenticated) {
-      router.replace({ name: RouteNames.LOGIN });
+    // Authentication Guard
+    if (to.meta.requiresAuth) {
+      const user = await authService.getUser();
+      if (!user || user.expired) {
+        router.replace({ name: RouteNames.LOGIN });
+      }
     }
 
     next();
@@ -146,4 +153,3 @@ export default function getRouter() {
 
   return router;
 }
-

@@ -2,19 +2,19 @@
 import { storeToRefs } from 'pinia';
 
 import SearchUsers from '@/components/form/SearchUsers.vue';
-import { useConfigStore, useObjectStore } from '@/store';
+import { useConfigStore, usePermissionStore } from '@/store';
 
-import type { User } from '@/interfaces';
+import type { User } from '@/types';
 
 // Store
 const { getConfig } = storeToRefs(useConfigStore());
-const { selectedObjectPermissions } = storeToRefs(useObjectStore());
+const permissionStore = usePermissionStore();
 
-// Functions
+// Actions
 const onAdd = (selectedUser: User) => {
   const idp = getConfig.value.idpList.find((idp: any) => idp.idp === selectedUser?.idp);
 
-  selectedObjectPermissions.value.push({
+  permissionStore.addObjectUser({
     userId: selectedUser.userId,
     idpName: idp?.name,
     elevatedRights: idp?.elevatedRights,
@@ -30,7 +30,7 @@ const onAdd = (selectedUser: User) => {
 
 <template>
   <SearchUsers
-    :permissions="selectedObjectPermissions"
+    :permissions="permissionStore.getMappedObjectToUserPermissions"
     @add-user="onAdd"
   />
 </template>

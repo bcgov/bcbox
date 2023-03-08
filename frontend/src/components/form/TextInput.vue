@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import { toRef } from 'vue';
-import InputText from 'primevue/inputtext';
 import { useField, ErrorMessage } from 'vee-validate';
 
-const props = defineProps({
-  name: { type: String, required: true },
-  label: { type: String, default: '' },
-  placeholder: { type: String, default: '' },
+import { InputText } from '@/lib/primevue';
+
+// Props
+type Props = {
+  name: string;
+  label?: string;
+  placeholder?: string;
+};
+
+const props = withDefaults(defineProps<Props>(), {
+  type: 'text',
+  label: '',
+  placeholder: ''
 });
 
 const { errorMessage, value } = useField<string>(toRef(props, 'name'));

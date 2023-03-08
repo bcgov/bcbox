@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
-import ProgressSpinner from 'primevue/progressspinner';
-import { useToast } from 'primevue/usetoast';
 
-import { useAuthStore, useConfigStore, useUserStore } from '@/store';
+import CopyToClipboard from '@/components/form/CopyToClipboard.vue';
+import { Button, ProgressSpinner,useToast } from '@/lib/primevue';
+import { useAppStore, useAuthStore, useConfigStore, useUserStore } from '@/store';
+import { ButtonMode } from '@/utils/enums';
 
+// Store
+const userStore = useUserStore();
 const { getAccessToken, getProfile } = storeToRefs(useAuthStore());
 const { getConfig } = storeToRefs(useConfigStore());
+const { getIsLoading } = storeToRefs(useAppStore());
+const { getIdps } = storeToRefs(userStore);
 
-const userStore = useUserStore();
-const { loading, idps } = storeToRefs(userStore);
-
+// Actions
 const toast = useToast();
 
-const getIdps = async () => {
+const getIdpList = async () => {
   try {
     await userStore.listIdps();
   } catch (error) {
@@ -29,23 +31,41 @@ const getIdps = async () => {
     <h3>Temp for testing API call to COMS</h3>
     <Button
       label="Call COMS"
-      :loading="loading"
-      @click="getIdps"
+      :loading="getIsLoading"
+      @click="getIdpList"
     />
-    <div v-if="loading">
+    <div v-if="getIsLoading">
       <ProgressSpinner />
     </div>
     <div v-else>
-      <span v-if="idps.length">{{ idps }}</span>
+      <span v-if="getIdps.length">{{ getIdps }}</span>
     </div>
 
-    <h3>Config</h3>
+    <div class="flex mt-3">
+      <h3>Config</h3>
+      <CopyToClipboard
+        :mode="ButtonMode.ICON"
+        :to-copy="JSON.stringify(getConfig)"
+      />
+    </div>
     {{ getConfig }}
 
-    <h3>Token</h3>
+    <div class="flex mt-3">
+      <h3>Token</h3>
+      <CopyToClipboard
+        :mode="ButtonMode.ICON"
+        :to-copy="getAccessToken"
+      />
+    </div>
     {{ getAccessToken }}
 
-    <h3>Profile</h3>
+    <div class="flex mt-3">
+      <h3>Profile</h3>
+      <CopyToClipboard
+        :mode="ButtonMode.ICON"
+        :to-copy="JSON.stringify(getProfile)"
+      />
+    </div>
     {{ getProfile }}
   </div>
 </template>

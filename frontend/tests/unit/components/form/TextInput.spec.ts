@@ -1,7 +1,5 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import TextInput from '@/components/form/TextInput.vue';
-import { validateRequired } from '@/utils/formValidators';
-import { ValidationMessages } from '@/utils/constants';
 
 describe('TextInput.vue', () => {
   it('renders', async () => {
@@ -20,8 +18,7 @@ describe('TextInput.vue', () => {
   it.skip('validates', async () => {
     const wrapper = mount(TextInput, {
       props: {
-        name: 'test',
-        rules: validateRequired,
+        name: 'test'
       },
     });
 
@@ -29,6 +26,5 @@ describe('TextInput.vue', () => {
     await wrapper.find('input[name="test"]').trigger('blur');
     await flushPromises();
     expect(wrapper.find('span').isVisible()).toBe(true);
-    expect(await wrapper.find('span').text()).toBe(ValidationMessages.REQUIRED);
   });
 });

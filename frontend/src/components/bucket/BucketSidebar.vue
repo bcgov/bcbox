@@ -1,17 +1,21 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
+import { Button } from '@/lib/primevue';
 
-defineProps({
-  displayInfo: {
-    type: Object,
-    default: undefined
-  }
-});
+import type { Bucket } from '@/types';
 
-const emit = defineEmits(['close-info']);
+// Props
+type Props = {
+  sidebarInfo: Bucket
+};
 
-const closeInfo = async () => {
-  emit('close-info');
+const props = withDefaults(defineProps<Props>(), {});
+
+// Emits
+const emit = defineEmits(['close-sidebar-info']);
+
+// Actions
+const closeSidebarInfo = async () => {
+  emit('close-sidebar-info');
 };
 </script>
 
@@ -27,7 +31,7 @@ const closeInfo = async () => {
     <div class="col-fixed align-items-center">
       <Button
         class="p-button-lg p-button-rounded p-button-text black"
-        @click="closeInfo"
+        @click="closeSidebarInfo"
       >
         <font-awesome-icon icon="fa-solid fa-xmark" />
       </Button>
@@ -42,13 +46,13 @@ const closeInfo = async () => {
         Bucket Name:
       </div>
       <div class="col-9">
-        {{ displayInfo?.bucketName }}
+        {{ props.sidebarInfo?.bucketName }}
       </div>
       <div class="col-3">
         Bucket ID:
       </div>
       <div class="col-9">
-        {{ displayInfo?.bucketId }}
+        {{ props.sidebarInfo?.bucketId }}
       </div>
     </div>
     <div class="grid">
@@ -59,7 +63,7 @@ const closeInfo = async () => {
         Managed by:
       </div>
       <div class="col-9">
-        {{ displayInfo?.managedBy }}
+        {{ '' }}
       </div>
     </div>
   </div>

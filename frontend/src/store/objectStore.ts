@@ -1,264 +1,160 @@
-import { ref, isProxy, toRaw } from 'vue';
-import { defineStore, storeToRefs } from 'pinia';
-import { useToast } from 'primevue/usetoast';
+import { defineStore } from 'pinia';
+import { computed, ref } from 'vue';
 
-import { objectService, permissionService, userService } from '@/services';
-import { useBucketStore, useConfigStore, useUserStore } from '@/store';
-import { Permissions } from '@/utils/constants';
+import { useToast } from '@/lib/primevue';
+import { objectService } from '@/services';
+import { useAppStore, usePermissionStore } from '@/store';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-import type {
-  COMSObject, IdentityProvider, Metadata, Permission, Tagging, Tag, User, UserPermissions
-} from '@/interfaces';
+import type { COMSObject, ObjectSearchPermissionsOptions } from '@/types';
+
+export type ObjectStoreState = {
+  objects: Ref<Array<COMSObject>>;
+  selectedObjects: Ref<Array<COMSObject>>; // All selected table row items
+}
 
 export const useObjectStore = defineStore('objectStore', () => {
-  const { selectedBucketPermissionsForUser } = storeToRefs(useBucketStore());
-  const { getConfig } = useConfigStore();
-  const { currentUser } = storeToRefs(useUserStore());
   const toast = useToast();
 
+  // Store
+  const appStore = useAppStore();
+  const permissionStore = usePermissionStore();
+
   // State
-  const loading: Ref<boolean> = ref(false);
-  const objectList: Ref<Array<COMSObject>> = ref([]);
-  const selectedObject: Ref<COMSObject | null> = ref(null);
-  const selectedObjectPermissions: Ref<Array<UserPermissions>> = ref([]);
-  const multiSelectedObjects: Ref<Array<COMSObject>> = ref([]); // All selected table row items
+  const state: ObjectStoreState = {
+    objects: ref([]),
+    selectedObjects: ref([]),
+  };
+
+  // Getters
+  const getters = {
+    getObjects: computed(() => state.objects.value),
+    getSelectedObjects: computed(() => state.selectedObjects.value)
+  };
 
   // Actions
-  function getObjectInfo(objectId: string) {
-    let object = objectList.value.find((x) => x.id === objectId);
-    if (isProxy(object)) {
-      object = toRaw(object);
-    }
-
-    // TODO: Get unique list of users with management positions on the bucket
-
-    return object;
-  }
-
   async function createObject(object: any, bucketId?: string) {
     try {
-      loading.value = true;
+      appStore.beginIndeterminateLoading();
       await objectService.createObject(object, bucketId);
-    } catch (error) {
-      console.error(`Error uploading: ${error}`); // eslint-disable-line no-console
-      throw error;
-    } finally {
-      loading.value = false;
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error creating object', detail: error, life: 3000 });
+    }
+    finally {
+      appStore.endIndeterminateLoading();
     }
   }
 
-  async function deleteObjectList(objectIds: Array<string>) {
+  async function deleteObjects(objectIds: Array<string>) {
     try {
-      loading.value = true;
+      appStore.beginIndeterminateLoading();
       await Promise.all(
         objectIds.map(async (id) => {
           await objectService.deleteObject(id);
         })
       );
-    } catch (error) {
-      console.error(`Error deleting ${objectIds}: ${error}`); // eslint-disable-line no-console
-      throw error;
-    } finally {
-      loading.value = false;
-
-      // Refresh the table after
-      listObjects();
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error deleting object', detail: error, life: 3000 });
+    }
+    finally {
+      fetchObjects();
+      appStore.endIndeterminateLoading();
     }
   }
 
-  async function listObjects(params: any = {}) {
+  async function downloadObject(objectId: string, versionId?: string) {
     try {
-      loading.value = true;
-      objectList.value = [];
+      appStore.beginIndeterminateLoading();
+      await objectService.getObject(objectId, versionId);
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error downloading object', detail: error, life: 3000 });
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
 
-      // Checks for a users object permissions within the bucket
-      // Obtains a unique set of object IDs, searches for the objects and their associated metadata
-      if (currentUser.value) {
-        const permResponse = (await permissionService.objectSearchPermissions({
-          userId: currentUser.value.userId,
-          bucketId: params.bucketId ?? undefined,
-          objId: params.objId ?? undefined,
-          bucketPerms: true,
-          permCode: [Permissions.READ, Permissions.UPDATE, Permissions.DELETE, Permissions.MANAGE]
-        })).data;
+  async function fetchObjects(params: ObjectSearchPermissionsOptions = {}) {
+    try {
+      appStore.beginIndeterminateLoading();
 
-        const uniqueIds = [...new Set(permResponse.map((x: { objectId: string }) => x.objectId))];
+      // Get a unique list of object IDs the user has access to
+      const permResponse = await permissionStore.fetchObjectPermissions(params);
+      if (permResponse) {
+        const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))];
 
-        let objects = null;
+        let response = Array<COMSObject>();
         if (uniqueIds.length) {
-          objects = (await objectService.listObjects({ objId: uniqueIds, ...params })).data;
-          const metadataResponse = (await objectService.getMetadata(null, { objId: uniqueIds })).data;
-          const taggingResponse = (await objectService.getObjectTagging({ objId: uniqueIds })).data;
+          response = (await objectService.searchObjects({
+            bucketId: params.bucketId ? [params.bucketId] : undefined,
+            objId: uniqueIds
+          })).data;
 
-          objects.forEach(async (obj: any) => {
-            const metadata = metadataResponse.find((x: Metadata) => x.objectId === obj.id);
+          // Remove old values matching search parameters
+          const matches = (x: COMSObject) => (
+            (!params.objId || x.id === params.objId) &&
+            (!params.bucketId || x.bucketId === params.bucketId)
+          );
 
-            if (metadata) {
-              obj.metadata = metadata;
-              obj.metadata.metadata.sort(
-                (metadata1: any, metadata2: any) =>
-                  metadata1.key < metadata2.key ? -1 : metadata1.key > metadata2.key ? 1 : 0
-              );
-              obj.name = metadata.metadata.find((x: { key: string }) => x.key === 'name')?.value;
-            }
+          const [, difference] = partition(state.objects.value, matches);
 
-            if (taggingResponse) {
-              obj.tag = taggingResponse.find((x: Tagging) => x.objectId === obj.id);
-              obj.tag.tagset.sort(
-                (tag1: Tag, tag2: Tag) => tag1.key < tag2.key ? -1 : tag1.key > tag2.key ? 1 : 0
-              );
-            }
-
-            // Add the permissions to each object list item
-            obj.permissions = permResponse
-              .find((p: { objectId: string, permission: UserPermissions }) => p.objectId === obj.id).permissions;
-          });
+          // Merge and assign
+          state.objects.value = difference.concat(response);
         }
-        objectList.value = objects;
-      }
-    } catch (error) {
-      console.error(`Error obtaining object list: ${error}`); // eslint-disable-line no-console
-      throw error;
-    } finally {
-      loading.value = false;
-    }
-  }
-
-  async function getObject(objectId: string, versionId?: string) {
-    await objectService.getObject(objectId, versionId);
-  }
-
-  async function getObjectPermissions(objectId: string) {
-    try {
-      loading.value = true;
-
-      const objPerms = (
-        await permissionService.objectGetPermissions(objectId)
-      ).data;
-
-      if (objPerms.length) {
-        // Get the user records for the unique user IDs in the perms
-        const uniqueIds = [...new Set(objPerms.map((x: any) => x.userId))].join(',');
-        const uniqueUsers = (await userService.searchForUsers({ userId: uniqueIds })).data;
-
-        const hasPermission = (userId: string, permission: string) => {
-          return objPerms.some((perm: any) => perm.userId === userId && perm.permCode === permission);
-        };
-
-        const userPermissions: UserPermissions[] = [];
-        uniqueUsers.forEach((user: User) => {
-          const idp = getConfig.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
-
-          userPermissions.push({
-            userId: user.userId,
-            fullName: user.fullName,
-            idpName: idp?.name,
-            read: hasPermission(user.userId, Permissions.READ),
-            update: hasPermission(user.userId, Permissions.UPDATE),
-            delete: hasPermission(user.userId, Permissions.DELETE),
-            manage: hasPermission(user.userId, Permissions.MANAGE),
-          });
-        });
-
-        selectedObjectPermissions.value = userPermissions;
-      } else {
-        selectedObjectPermissions.value = [];
-      }
-    }
-    finally {
-      loading.value = false;
-    }
-  }
-
-  async function addObjectPermission(bucketId: string, userId: string, permCode: string) {
-    try {
-      loading.value = true;
-      await objectService.addPermissions(bucketId, [{ userId, permCode }]);
-    }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error updating permission', detail: error, life: 3000 });
-    }
-    finally {
-      await getObjectPermissions(bucketId);
-      loading.value = false;
-    }
-  }
-
-  async function deleteObjectPermission(bucketId: string, userId: string, permCode: string) {
-    try {
-      loading.value = true;
-      await objectService.deletePermission(bucketId, { userId, permCode });
-    }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error updating permission', detail: error, life: 3000 });
-    }
-    finally {
-      await getObjectPermissions(bucketId);
-      loading.value = false;
-    }
-  }
-
-  async function removeObjectUser(bucketId: string, userId: string) {
-    try {
-      loading.value = true;
-
-      for (const [, value] of Object.entries(Permissions)) {
-        await objectService.deletePermission(bucketId, {
-          userId,
-          permCode: value,
-        });
+        else {
+          state.objects.value = response;
+        }
       }
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error updating permission', detail: error, life: 3000 });
+      toast.add({ severity: 'error', summary: 'Error fetching objects', detail: error, life: 3000 });
     }
     finally {
-      await getObjectPermissions(bucketId);
-      loading.value = false;
+      appStore.endIndeterminateLoading();
     }
   }
 
-  // Permission guards for the buttons
-  function isActionAllowed(objectPermissions: Permission[], perm: string, userId?: string) {
-    // If you have the specified permission on the bucket
-    // OR if you have the specified permission on the object
-    return (
-      selectedBucketPermissionsForUser.value.some((bp) => bp.permCode === perm)
-      ||
-      objectPermissions.some((op) => op.permCode === perm && op.userId === userId)
-    );
+  function getObjectById(objectId: string) {
+    return state.objects.value.find((x) => x.id === objectId);
+  }
+
+  function setSelectedObjects(selected: Array<COMSObject>) {
+    state.selectedObjects.value = selected;
   }
 
   async function togglePublic(objectId: string, isPublic: boolean) {
     try {
-      loading.value = true;
+      appStore.beginIndeterminateLoading();
       await objectService.togglePublic(objectId, isPublic);
-    } catch (error) {
-      toast.add({ severity: 'error', summary: 'Error updating public', detail: error, life: 3000 });
-    } finally {
-      loading.value = false;
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error changing public state', detail: error, life: 3000 });
+    }
+    finally {
+      appStore.endIndeterminateLoading();
     }
   }
 
   return {
-    loading,
-    multiSelectedObjects,
-    objectList,
-    selectedObject,
-    selectedObjectPermissions,
+    // State
+    ...state,
+
+    // Getters
+    ...getters,
+
+    // Actions
     createObject,
-    deleteObjectList,
-    getObjectInfo,
-    getObject,
-    listObjects,
-    getObjectPermissions,
-    addObjectPermission,
-    deleteObjectPermission,
-    removeObjectUser,
-    isActionAllowed,
+    deleteObjects,
+    downloadObject,
+    fetchObjects,
+    getObjectById,
+    setSelectedObjects,
     togglePublic
   };
-});
+}, { persist: true });
 
 export default useObjectStore;

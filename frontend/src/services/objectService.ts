@@ -1,11 +1,10 @@
 import { comsAxios } from './interceptors';
+
+import type { GetMetadataOptions, GetObjectTaggingOptions, SearchObjectsOptions } from '@/types';
+
 const PATH = '/object';
-const OBJECT_PERMISSION_PATH = 'permission/object';
 
 export default {
-  // ------------------------------------------------------------
-  // Object
-  // ------------------------------------------------------------
   /**
    * @function createObject
    * Post an object
@@ -35,7 +34,7 @@ export default {
    * Get an object's metadata
    * @returns {Promise} An axios response
    */
-  getMetadata(headers: any = {}, params: any = {}) {
+  getMetadata(headers: any = {}, params: GetMetadataOptions = {}) {
     // remove objId array if its first element is undefined
     if (params.objId && params.objId[0] === undefined) delete params.objId;
     return comsAxios().get(`${PATH}/metadata`, { headers: headers, params: params });
@@ -46,7 +45,7 @@ export default {
    * Get an objects tags
    * @returns {Promise} An axios response
    */
-  getObjectTagging(params: any = {}) {
+  getObjectTagging(params: GetObjectTaggingOptions = {}) {
     return comsAxios().get(`${PATH}/tagging`, { params: params });
   },
 
@@ -72,11 +71,11 @@ export default {
   },
 
   /**
-   * @function listObjects
+   * @function searchObjects
    * List and search for all objects
    * @returns {Promise} An axios response
    */
-  listObjects(params: any = {}) {
+  searchObjects(params: SearchObjectsOptions = {}) {
     // remove objId array if its first element is undefined
     if (params.objId && params.objId[0] === undefined) delete params.objId;
     return comsAxios().get(PATH, { params: params });
@@ -118,28 +117,4 @@ export default {
     fd.append('file', object);
     return comsAxios().post(`${PATH}/${objectId}`, fd, config);
   },
-
-
-  /**
-   * @function addPermissions
-   * Adds the given permissions to the object
-   * @param {string} objectId ID of the object to add permissions to
-   * @param {Array<Object>} data Array containing permissions to add
-   * @returns {Promise} An axios response
-   */
-  addPermissions(objectId: string, data: Array<Object>) {
-    return comsAxios().put(`${OBJECT_PERMISSION_PATH}/${objectId}`, data);
-  },
-
-  /**
- * @function deletePermission
- * Deletes the given permission from the object
- * @param {string} objectId ID of the object to remove permissions from
- * @param {Object} params Object containing the permission to remove
- * @returns {Promise} An axios response
- */
-  deletePermission(objectId: string, params: Object) {
-    return comsAxios().delete(`${OBJECT_PERMISSION_PATH}/${objectId}`, { params: params });
-  },
-  // -----------------------------------------------------/object
 };

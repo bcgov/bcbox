@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { toRef } from 'vue';
-import Password from 'primevue/password';
 import { useField, ErrorMessage } from 'vee-validate';
 
-const props = defineProps({
-  name: { type: String, required: true },
-  type: { type: String, default: 'text' },
-  label: { type: String, default: '' },
-  placeholder: { type: String, default: '' },
+import { Password } from '@/lib/primevue';
+
+type Props = {
+  name: string;
+  type?: string;
+  label?: string;
+  placeholder?: string;
+};
+
+const props = withDefaults(defineProps<Props>(), {
+  type: 'text',
+  label: '',
+  placeholder: ''
 });
 
 const { errorMessage, value } = useField<string>(toRef(props, 'name'));
@@ -15,19 +22,19 @@ const { errorMessage, value } = useField<string>(toRef(props, 'name'));
 
 <template>
   <div class="field">
-    <label :for="name">{{ label }}</label>
+    <label :for="props.name">{{ props.label }}</label>
     <Password
       v-model="value"
-      :aria-describedby="`${name}-help`"
-      :name="name"
-      :type="type"
-      :placeholder="placeholder"
+      :aria-describedby="`${props.name}-help`"
+      :name="props.name"
+      :type="props.type"
+      :placeholder="props.placeholder"
       :class="{ 'p-invalid': errorMessage }"
       :feedback="false"
       toggle-mask
     />
     <ErrorMessage
-      :name="name"
+      :name="props.name"
     />
   </div>
 </template>

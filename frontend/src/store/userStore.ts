@@ -1,77 +1,84 @@
-import { ref } from 'vue';
 import { defineStore } from 'pinia';
+import { computed, ref } from 'vue';
+
+import { useToast } from '@/lib/primevue';
 import { userService } from '@/services';
-import { useAuthStore, useConfigStore } from '@/store';
+import { useAppStore } from '@/store';
 
 import type { Ref } from 'vue';
-import type { IdentityProvider, User } from '@/interfaces';
+import type { IdentityProvider, User } from '@/types';
+
+export type UserStoreState = {
+  currentUser: Ref<User | null>;
+  idps: Ref<Array<IdentityProvider>>;
+  userSearch: Ref<Array<User>>;
+}
 
 export const useUserStore = defineStore('user', () => {
-  const { getIsAuthenticated, getIdentityId } = useAuthStore();
-  const { getConfig } = useConfigStore();
+  const toast = useToast();
+
+  // Store
+  const appStore = useAppStore();
 
   // State
-  const currentUser: Ref<User | null> = ref(null);
-  const idps: Ref<Array<IdentityProvider>> = ref([]);
-  const loading: Ref<boolean> = ref(false);
-  const userSearch: Ref<Array<User>> = ref([]);
+  const state: UserStoreState = {
+    currentUser: ref(null),
+    idps: ref([]),
+    userSearch: ref([]),
+  };
 
-  async function init() {
-    await getUser();
-  }
+  // Getters
+  const getters = {
+    getIdps: computed(() => state.idps.value),
+    getUserSearch: computed(() => state.userSearch.value),
+  };
 
-  // Hydrates the logged in users info from the COMS database
-  async function getUser(): Promise<string | void> {
-    if (!currentUser.value && getIsAuthenticated) {
-      if (getIdentityId) {
-        await searchUsers({ identityId: getIdentityId });
-
-        if (userSearch.value.length) {
-          currentUser.value = userSearch.value[0];
-          currentUser.value.elevatedRights = getConfig.idpList.find((idp: any) => {
-            return idp.idp === userSearch.value[0].idp;
-          })?.elevatedRights;
-        }
-        return Promise.resolve();
-      }
-    }
-    return Promise.resolve('Not authenticated');
-  }
-
+  // Actions
   async function listIdps() {
     try {
-      loading.value = true;
-      idps.value = (await userService.listIdps()).data;
-    } catch (error) {
-      console.error(`listIdps error: ${error}`); // eslint-disable-line no-console
-      // So that a caller can action it
-      throw error;
-    } finally {
-      loading.value = false;
+      appStore.beginIndeterminateLoading();
+      state.idps.value = (await userService.listIdps()).data;
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error fetching IDPs', detail: error, life: 3000 });
+    }
+    finally {
+      appStore.endIndeterminateLoading();
     }
   }
 
-  async function searchUsers(params: Object) {
+  async function searchUsers(params: object) {
     try {
-      loading.value = true;
+      appStore.beginIndeterminateLoading();
       const response = (await userService.searchForUsers(params)).data;
 
       // Filter out any user without an IDP
-      userSearch.value = response.filter((x: User) => x.identityId !== null);
-    } catch (error) {
-      console.error(`searchUsers error: ${error}`); // eslint-disable-line no-console
-      // So that a caller can action it
-      throw error;
-    } finally {
-      loading.value = false;
+      state.userSearch.value = response.filter((x: User) => x.identityId !== null);
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error searching users', detail: error, life: 3000 });
+    }
+    finally {
+      appStore.endIndeterminateLoading();
     }
   }
 
   function clearSearch() {
-    userSearch.value = [];
+    state.userSearch.value = [];
   }
 
-  return { idps, loading, currentUser, userSearch, clearSearch, getUser, init, listIdps, searchUsers };
-});
+  return {
+    // State
+    ...state,
+
+    // Getters
+    ...getters,
+
+    // Actions
+    clearSearch,
+    listIdps,
+    searchUsers
+  };
+}, { persist: true });
 
 export default useUserStore;

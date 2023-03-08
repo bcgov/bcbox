@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
-
-import Button from 'primevue/button';
-import { useToast } from 'primevue/usetoast';
+import { computed, onMounted, ref, watch } from 'vue';
 
 import {
   DeleteObjectButton,
@@ -13,25 +9,41 @@ import {
   ObjectTable,
   ObjectUpload
 } from '@/components/object';
-import { ButtonMode } from '@/interfaces/common/enums';
-import { useBucketStore, useObjectStore } from '@/store';
+import { Button } from '@/lib/primevue';
+import { useAuthStore, useBucketStore, useMetadataStore, useObjectStore } from '@/store';
+import { ButtonMode } from '@/utils/enums';
 
-const bucketStore = useBucketStore();
-//const navStore = useNavStore();
-const objectStore = useObjectStore();
-const { multiSelectedObjects } = storeToRefs(objectStore);
-const route = useRoute();
-const toast = useToast();
+import type { Ref } from 'vue';
+import type { COMSObject } from '@/types';
 
-const displayInfo: any = ref(null);
-const displayUpload = ref(false);
-
-const showInfo = async (objId: any) => {
-  displayInfo.value = await objectStore.getObjectInfo(objId);
+type Props = {
+  bucketId?: string
 };
 
-const closeInfo = () => {
-  displayInfo.value = null;
+const props = withDefaults(defineProps<Props>(), {
+  bucketId: undefined
+});
+
+// Store
+const bucketStore = useBucketStore();
+const metadataStore = useMetadataStore();
+//const navStore = useNavStore();
+const objectStore = useObjectStore();
+
+const { getObjects, getSelectedObjects } = storeToRefs(objectStore);
+const { getUserId } = storeToRefs(useAuthStore());
+
+// State
+const objectInfoId: Ref<string | undefined> = ref(undefined);
+const displayUpload = ref(false);
+
+// Actions
+const showObjectInfo = async (objectId: string | undefined) => {
+  objectInfoId.value = objectId;
+};
+
+const closeObjectInfo = () => {
+  objectInfoId.value = undefined;
 };
 
 const showUpload = () => {
@@ -42,20 +54,9 @@ const closeUpload = () => {
   displayUpload.value = false;
 };
 
-const listObjects = async () => {
-  try {
-    await Promise.all([
-      bucketStore.getBucketPermissionsForUser(route.query.bucketId?.toString() || ''),
-      objectStore.listObjects({ bucketId: route.query.bucketId })
-    ]);
-  } catch (error: any) {
-    toast.add({ severity: 'error', summary: 'Unable to load Objects.', detail: error, life: 5000 });
-  }
-};
-
 // const updateBreadcrumb = async () => {
 //   try {
-//     const bucket = await bucketStore.getBucketInfo(route.query.bucketId as string);
+//     const bucket = await bucketStore.getBucketInfo(props.bucketId as string);
 //     navStore.replace('__listObjectsDynamic', bucket?.bucketName ?? 'Unknown bucket');
 //   } catch (error: any) {
 //     toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: error, life: 5000 });
@@ -63,16 +64,23 @@ const listObjects = async () => {
 // };
 
 // Download
-const multiSelectedObjectIds = computed(() => {
-  return multiSelectedObjects.value.map((o) => o.id);
+const selectedObjectIds = computed(() => {
+  return getSelectedObjects.value.map((o) => o.id);
 });
 
-// Get the user's list of objects
-onMounted(() => {
+onMounted(async () => {
   // Removed for now
   // updateBreadcrumb();
-  listObjects();
+
+  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+  await objectStore.fetchObjects({ bucketId: props.bucketId });
 });
+
+watch( getObjects, () => {
+  // Watch for object changes to get associated metadata
+  metadataStore.fetchMetadata({objId: getObjects.value.map( (x: COMSObject) => x.id )});
+});
+
 </script>
 
 <template>
@@ -82,6 +90,7 @@ onMounted(() => {
       class="mb-4"
     >
       <ObjectUpload
+        :bucket-id="props.bucketId"
         :close-callback="closeUpload"
       />
     </div>
@@ -98,30 +107,30 @@ onMounted(() => {
       </Button>
       <DownloadObjectButton
         :mode="ButtonMode.BUTTON"
-        :ids="multiSelectedObjectIds"
+        :ids="selectedObjectIds"
       />
       <DeleteObjectButton
-        class="ml-2"
         :mode="ButtonMode.BUTTON"
-        :ids="multiSelectedObjectIds"
+        :ids="selectedObjectIds"
       />
     </div>
 
     <div class="flex mt-4">
       <div class="flex-grow-1">
         <ObjectTable
-          :display-info="displayInfo"
-          @show-info="showInfo"
+          :bucket-id="props.bucketId"
+          :object-info-id="objectInfoId"
+          @show-object-info="showObjectInfo"
         />
       </div>
       <div
-        v-if="displayInfo"
+        v-if="objectInfoId"
         class="flex-shrink-0 ml-3"
         style="max-width: 33%; min-width: 33%"
       >
         <ObjectSidebar
-          :display-info="displayInfo"
-          @close-info="closeInfo"
+          :object-info-id="objectInfoId"
+          @close-object-info="closeObjectInfo"
         />
       </div>
     </div>

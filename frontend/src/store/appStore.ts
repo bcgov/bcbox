@@ -1,17 +1,13 @@
 import { defineStore } from 'pinia';
-import { computed, ref, unref } from 'vue';
-
-import { isDebugMode } from './utils';
+import { computed, ref } from 'vue';
 
 import type { Ref } from 'vue';
-
 export type AppStoreState = {
   loadingCalls: Ref<number>
   loadingInterval: Ref<ReturnType<typeof setTimeout> | undefined>
   loadingMode: Ref<'determinate' | 'indeterminate'>
   loadingValue: Ref<number>
 }
-
 export const useAppStore = defineStore('app', () => {
   // State
   const state: AppStoreState = {
@@ -23,10 +19,10 @@ export const useAppStore = defineStore('app', () => {
 
   // Getters
   const getters = {
-    getIsLoading: computed(() => unref(state.loadingCalls) > 0),
-    getLoadingCalls: computed(() => unref(state.loadingCalls)),
-    getLoadingMode: computed(() => unref(state.loadingMode)),
-    getLoadingValue: computed(() => unref(state.loadingValue)),
+    getIsLoading: computed(() => state.loadingCalls.value > 0),
+    getLoadingCalls: computed(() => state.loadingCalls.value),
+    getLoadingMode: computed(() => state.loadingMode.value),
+    getLoadingValue: computed(() => state.loadingValue.value),
   };
 
   // Actions
@@ -49,7 +45,7 @@ export const useAppStore = defineStore('app', () => {
   function endDeterminateLoading() {
     state.loadingValue.value = 100;
     setTimeout(() => {
-      clearInterval(unref(state.loadingInterval));
+      clearInterval(state.loadingInterval.value);
       state.loadingInterval.value = undefined;
       --state.loadingCalls.value;
     }, 300);
@@ -62,8 +58,13 @@ export const useAppStore = defineStore('app', () => {
   }
 
   return {
-    ...(isDebugMode && state),
+    // State
+    ...state,
+
+    // Getters
     ...getters,
+
+    // Actions
     beginDeterminateLoading,
     beginIndeterminateLoading,
     endDeterminateLoading,

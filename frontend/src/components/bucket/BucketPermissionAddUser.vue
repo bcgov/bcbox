@@ -2,19 +2,19 @@
 import { storeToRefs } from 'pinia';
 
 import SearchUsers from '@/components/form/SearchUsers.vue';
-import { useBucketStore, useConfigStore } from '@/store';
+import { useConfigStore, usePermissionStore } from '@/store';
 
-import type { User } from '@/interfaces';
+import type { User } from '@/types';
 
 // Store
-const { getConfig } = useConfigStore();
-const { permissions } = storeToRefs(useBucketStore());
+const { getConfig } = storeToRefs(useConfigStore());
+const permissionStore = usePermissionStore();
 
-// Functions
+// Actions
 const onAdd = (selectedUser: User) => {
   const idp = getConfig.value.idpList.find((idp: any) => idp.idp === selectedUser?.idp);
 
-  permissions.value.push({
+  permissionStore.addBucketUser({
     userId: selectedUser.userId,
     idpName: idp?.name,
     elevatedRights: idp?.elevatedRights,
@@ -30,7 +30,7 @@ const onAdd = (selectedUser: User) => {
 
 <template>
   <SearchUsers
-    :permissions="permissions"
+    :permissions="permissionStore.getMappedBucketToUserPermissions"
     @add-user="onAdd"
   />
 </template>

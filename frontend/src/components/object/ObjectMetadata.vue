@@ -1,11 +1,41 @@
 <script setup lang="ts">
-import Column from 'primevue/column';
-import DataTable from 'primevue/datatable';
-import type { Metadata } from '@/interfaces';
+import { onMounted, ref, watch } from 'vue';
 
-defineProps<{
-  objectMetadata: Metadata;
-}>();
+import { Column, DataTable } from '@/lib/primevue';
+import { useMetadataStore } from '@/store';
+
+import type { Ref } from 'vue';
+import type { Metadata } from '@/types';
+
+// Props
+type Props = {
+  objectInfoId: string;
+  fullView: boolean;
+};
+
+const props = withDefaults(defineProps<Props>(), {});
+
+// Store
+const metadataStore = useMetadataStore();
+
+// State
+const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
+
+// Actions
+async function load() {
+  if( props.fullView ) {
+    await metadataStore.fetchMetadata({objId: props.objectInfoId});
+  }
+  objectMetadata.value = metadataStore.getMetadataByObjectId(props.objectInfoId);
+}
+
+onMounted(() => {
+  load();
+});
+
+watch( props, () => {
+  load();
+});
 </script>
 
 <template>

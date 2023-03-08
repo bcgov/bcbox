@@ -1,25 +1,20 @@
 <script setup lang="ts">
+import QrcodeVue from 'qrcode.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import QrcodeVue from 'qrcode.vue';
-import { useToast } from 'primevue/usetoast';
+import { Button, InputText, useToast } from '@/lib/primevue';
 
 const toast = useToast();
 
 // Props
-const props = defineProps({
-  label: {
-    type: String,
-    required: true,
-  },
-  shareLink: {
-    type: String,
-    required: true,
-  },
-});
+type Props = {
+  label: string;
+  shareLink: string;
+};
 
+const props = withDefaults(defineProps<Props>(), {});
+
+// Actions
 const copyLinkToClipboard = () => {
   navigator.clipboard.writeText(props.shareLink);
   toast.add({

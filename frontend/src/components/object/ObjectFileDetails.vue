@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import ProgressSpinner from 'primevue/progressspinner';
-import { useToast } from 'primevue/usetoast';
+import { onMounted, ref, watch } from 'vue';
 
 import {
   DeleteObjectButton,
@@ -17,47 +12,50 @@ import {
   ObjectTag,
   ShareObjectButton
 } from '@/components/object';
-
-import { useObjectStore, useUserStore } from '@/store';
+import { Button, Dialog } from '@/lib/primevue';
+import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
+import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
-import type { COMSObject } from '@/interfaces';
-import { ButtonMode } from '@/interfaces/common/enums';
+import type { COMSObject } from '@/types';
 
+// Props
+type Props = {
+  objId: string
+};
+
+const props = withDefaults(defineProps<Props>(), {});
+
+// Store
+const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
-const toast = useToast();
-const route = useRoute();
+const permissionStore = usePermissionStore();
+const { getObjects } = storeToRefs(objectStore);
+const { getUserId } = storeToRefs(useAuthStore());
 
-const { loading, objectList } = storeToRefs(objectStore);
-const { currentUser } = storeToRefs(useUserStore());
-
-const objectInfo: Ref<COMSObject> = ref({} as COMSObject);
-
+// State
 const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsObjectId: Ref<string> = ref('');
 const permissionsObjectName: Ref<string> = ref('');
+const obj: Ref<COMSObject | undefined> = ref(undefined);
+const bucketId: Ref<string> = ref('');
 
-const getObjectInfo = async (objId: string) => {
-  try {
-    await objectStore.listObjects({ objId });
-    if(!objectInfo.value || !objectList.value[0]) {
-      throw Error(`Object ${objId} not found or you do not have access`);
-    }
-    objectInfo.value = objectList.value[0];
-  } catch (error: any) {
-    toast.add({ severity: 'error', summary: 'Unable to load Object.', detail: error, life: 5000 });
-  }
-};
-
-const showPermissions = async (objectId: string, objectName: string) => {
+// Actions
+const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = objectName;
+  permissionsObjectName.value = metadataStore.getValue(objectId, 'name') || '';
 };
 
 onMounted(() => {
-  getObjectInfo(route.query.objId as string);
+  permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
+});
+
+watch( [props, getObjects], () => {
+  metadataStore.fetchMetadata({objId: props.objId });
+  obj.value = objectStore.getObjectById(props.objId);
+  bucketId.value = obj.value?.bucketId || '';
 });
 </script>
 
@@ -75,43 +73,48 @@ onMounted(() => {
       </div>
 
       <div
-        v-if="!loading && objectInfo.permissions"
+        v-if="obj"
         class="action-buttons"
       >
         <ShareObjectButton
-          v-if="objectStore.isActionAllowed(objectInfo.permissions, Permissions.MANAGE, currentUser?.userId)"
-          :obj="objectInfo"
+          v-if="permissionStore.getIsObjectActionAllowed(
+            props.objId, getUserId, Permissions.MANAGE, bucketId)"
+          :id="props.objId"
         />
         <DownloadObjectButton
-          v-if="objectStore.isActionAllowed(objectInfo.permissions, Permissions.READ, currentUser?.userId)"
+          v-if="permissionStore.getIsObjectActionAllowed(
+            props.objId, getUserId, Permissions.READ, bucketId)"
           :mode="ButtonMode.ICON"
-          :ids="[objectInfo.id]"
+          :ids="[props.objId]"
         />
         <Button
-          v-if="objectStore.isActionAllowed(objectInfo.permissions, Permissions.MANAGE, currentUser?.userId)"
+          v-if="permissionStore.getIsObjectActionAllowed(
+            props.objId, getUserId, Permissions.MANAGE, bucketId)"
           class="p-button-lg p-button-text"
-          @click="showPermissions(objectInfo.id, objectInfo.name)"
+          @click="showPermissions(props.objId)"
         >
           <font-awesome-icon icon="fa-solid fa-users" />
         </Button>
         <DeleteObjectButton
-          v-if="objectStore.isActionAllowed(objectInfo.permissions, Permissions.DELETE, currentUser?.userId)"
+          v-if="permissionStore.getIsObjectActionAllowed(
+            props.objId, getUserId, Permissions.DELETE, bucketId)"
           :mode="ButtonMode.ICON"
-          :ids="[objectInfo.id]"
+          :ids="[props.objId]"
         />
       </div>
     </div>
 
-    <ProgressSpinner v-if="loading" />
-
-    <div
-      v-else
-      class="pl-2"
-    >
-      <ObjectProperties :object-info="objectInfo" />
-      <ObjectAccess :object-info="objectInfo" />
-      <ObjectMetadata :object-metadata="objectInfo.metadata" />
-      <ObjectTag :object-tag="objectInfo.tag" />
+    <div class="pl-2">
+      <ObjectProperties
+        :object-info-id="props.objId"
+        :full-view="true"
+      />
+      <ObjectAccess :object-info-id="props.objId" />
+      <ObjectMetadata
+        :object-info-id="props.objId"
+        :full-view="true"
+      />
+      <ObjectTag :object-info-id="props.objId" />
     </div>
   </div>
 

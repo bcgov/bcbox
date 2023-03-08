@@ -1,32 +1,27 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue';
+import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import { useConfirm } from 'primevue/useconfirm';
-import { useToast } from 'primevue/usetoast';
 
-import { ButtonMode } from '@/interfaces/common/enums';
+import { Button, Dialog, useConfirm, useToast } from '@/lib/primevue';
 import { useObjectStore } from '@/store/objectStore';
+import { ButtonMode } from '@/utils/enums';
 
+// Props
+type Props = {
+  mode: ButtonMode;
+  ids: Array<string>;
+};
+
+const props = withDefaults(defineProps<Props>(), {});
+
+// State
+const displayNoFileDialog = ref(false);
+
+// Actions
 const confirm = useConfirm();
 const objectStore = useObjectStore();
 const toast = useToast();
 
-// Props
-const props = defineProps({
-  mode: {
-    type: String as PropType<ButtonMode>,
-    required: true,
-  },
-  ids: {
-    type: Array<string>,
-    required: true,
-  },
-});
-
-// Deletion
-const displayNoFileDialog = ref(false);
 const confirmDelete = () => {
   if (props.ids.length) {
     const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} files` : 'this file';
@@ -37,7 +32,7 @@ const confirmDelete = () => {
       rejectLabel: 'Cancel',
       accept: async () => {
         try {
-          await objectStore.deleteObjectList(props.ids);
+          await objectStore.deleteObjects(props.ids);
         } catch (error) {
           toast.add({ severity: 'error', summary: 'Error deleting one or more files', detail: error, life: 3000 });
         }
@@ -69,7 +64,7 @@ const confirmDelete = () => {
   </Dialog>
 
   <Button
-    v-if="mode === ButtonMode.ICON"
+    v-if="props.mode === ButtonMode.ICON"
     class="p-button-lg p-button-text p-button-danger"
     @click="confirmDelete()"
   >

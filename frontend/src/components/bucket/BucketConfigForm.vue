@@ -1,22 +1,31 @@
 <script setup lang="ts">
-import Button from 'primevue/button';
 import { Form } from 'vee-validate';
 import { object, string } from 'yup';
-import { useToast } from 'primevue/usetoast';
+
 import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
+import { Button, useToast } from '@/lib/primevue';
 import { useBucketStore } from '@/store';
-import type { Bucket } from '@/interfaces';
 
-const props = defineProps<{
+import type { Bucket } from '@/types';
+
+// Props
+type Props = {
   bucket?: Bucket;
-}>();
+};
 
+const props = withDefaults(defineProps<Props>(), {
+  bucket: undefined
+});
+
+// Emits
+const emit = defineEmits(['cancel-bucket-config', 'submit-bucket-config']);
+
+// Store
 const bucketStore = useBucketStore();
 const toast = useToast();
 
-const emit = defineEmits(['cancel-bucket-config', 'submit-bucket-config']);
-
+// Default form values
 const initialValues = {
   bucketName: props.bucket?.bucketName,
   bucket: props.bucket?.bucket,
@@ -26,6 +35,7 @@ const initialValues = {
   key: props.bucket?.key
 };
 
+// Form validation schema
 const schema = object({
   bucketName: string().max(255).required().label('Bucket name'),
   bucket: string().max(255).required().label('Bucket'),
@@ -35,6 +45,7 @@ const schema = object({
   key: string().max(255).required().label('Key'),
 });
 
+// Actions
 const onSubmit = async (values: any) => {
 
   try {
@@ -50,10 +61,10 @@ const onSubmit = async (values: any) => {
     } as Bucket;
 
     props.bucket ?
-      await bucketStore.updateBucket(props.bucket!.bucketId, formBucket) :
+      await bucketStore.updateBucket(props.bucket?.bucketId, formBucket) :
       await bucketStore.createBucket(formBucket);
 
-    await bucketStore.load();
+    await bucketStore.fetchBuckets();
     emit('submit-bucket-config');
 
     toast.add(
