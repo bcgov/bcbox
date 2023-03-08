@@ -57,7 +57,7 @@ export default {
    */
   getObject(objectId: string, versionId?: string) {
     // Running in 'url' download mode only, could add options for other modes if needed
-    comsAxios()
+    return comsAxios()
       .get(`${PATH}/${objectId}`, {
         params: {
           versionId: versionId,

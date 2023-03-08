@@ -43,6 +43,7 @@ const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
 const permissionsObjectName = ref('');
 const selectedObjects: Ref<Array<COMSObject>> = ref([]);
+const tableData: Ref<Array<COMSObject>> = ref([]);
 
 // Actions
 const showInfo = async (id: string) => {
@@ -59,6 +60,11 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
   await objectStore.togglePublic(objectId, isPublic);
 };
 
+watch( getObjects, () => {
+  // Filter object cache to this specific bucket
+  tableData.value = getObjects.value.filter( (x: COMSObject) => x.bucketId === props.bucketId );
+});
+
 watch( selectedObjects, () => {
   objectStore.setSelectedObjects(selectedObjects.value);
 });
@@ -68,7 +74,7 @@ watch( selectedObjects, () => {
   <div>
     <DataTable
       v-model:selection="selectedObjects"
-      :value="getObjects"
+      :value="tableData"
       data-key="id"
       class="p-datatable-sm"
       striped-rows

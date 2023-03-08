@@ -14,7 +14,7 @@ export type ObjectStoreState = {
   selectedObjects: Ref<Array<COMSObject>>; // All selected table row items
 }
 
-export const useObjectStore = defineStore('objectStore', () => {
+export const useObjectStore = defineStore('object', () => {
   const toast = useToast();
 
   // Store
@@ -91,7 +91,12 @@ export const useObjectStore = defineStore('objectStore', () => {
         if (uniqueIds.length) {
           response = (await objectService.searchObjects({
             bucketId: params.bucketId ? [params.bucketId] : undefined,
-            objId: uniqueIds
+            objId: uniqueIds,
+
+            // Added to allow deletion of objects before versioning implementation
+            // TODO: Verify if needed after versioning implemented
+            deleteMarker: false,
+            latest: true
           })).data;
 
           // Remove old values matching search parameters
