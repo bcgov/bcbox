@@ -3,7 +3,7 @@ export type SearchObjectsOptions = {
   objId?: string[];
   name?: string,
   path?: string,
-  mimeTyp?: string,
+  mimeType?: string,
   //tagset: type.tagset(),
   public?: boolean,
   active?: boolean,

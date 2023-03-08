@@ -53,7 +53,7 @@ const showInfo = async (id: string) => {
 const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = metadataStore.getValue(objectId, 'name') || '';
+  permissionsObjectName.value = metadataStore.findValue(objectId, 'name') || '';
 };
 
 const togglePublic = async (objectId: string, isPublic: boolean) => {
@@ -110,9 +110,9 @@ watch( selectedObjects, () => {
       >
         <template #body="{ data }">
           <div
-            v-tooltip.bottom="{ value: metadataStore.getValue(data.id, 'name') }"
+            v-tooltip.bottom="{ value: metadataStore.findValue(data.id, 'name') }"
           >
-            {{ metadataStore.getValue(data.id, 'name') }}
+            {{ metadataStore.findValue(data.id, 'name') }}
           </div>
         </template>
       </Column>
@@ -151,7 +151,7 @@ watch( selectedObjects, () => {
         <template #body="{ data }">
           <InputSwitch
             v-model="data.public"
-            :disabled="!permissionStore.getIsObjectActionAllowed(
+            :disabled="!permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
             @change="togglePublic(data.id, data.public)"
           />
@@ -165,18 +165,18 @@ watch( selectedObjects, () => {
       >
         <template #body="{ data }">
           <ShareObjectButton
-            v-if="permissionStore.getIsObjectActionAllowed(
+            v-if="permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
             :id="data.id"
           />
           <DownloadObjectButton
-            v-if="permissionStore.getIsObjectActionAllowed(
+            v-if="permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.READ, props.bucketId as string)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />
           <Button
-            v-if="permissionStore.getIsObjectActionAllowed(
+            v-if="permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
             class="p-button-lg p-button-text"
             @click="showPermissions(data.id)"
@@ -190,7 +190,7 @@ watch( selectedObjects, () => {
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
           <DeleteObjectButton
-            v-if="permissionStore.getIsObjectActionAllowed(
+            v-if="permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.DELETE, props.bucketId as string)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"

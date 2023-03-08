@@ -38,11 +38,11 @@ async function load() {
     await objectStore.fetchObjects({objId: props.objectInfoId});
     await metadataStore.fetchMetadata({objId: props.objectInfoId});
   }
-  object.value = objectStore.getObjectById(props.objectInfoId);
-  objectMetadata.value = metadataStore.getMetadataByObjectId(object.value?.id as string);
-  bucket.value = bucketStore.getBucketById(object.value?.bucketId as string);
+  object.value = objectStore.findObjectById(props.objectInfoId);
+  objectMetadata.value = metadataStore.findMetadataByObjectId(object.value?.id as string);
+  bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
 
-  await userStore.searchUsers({userId:[object.value?.createdBy, object.value?.updatedBy]});
+  await userStore.fetchUsers({userId:[object.value?.createdBy, object.value?.updatedBy]});
   createdBy.value = getUserSearch.value.find( x => x.userId === object.value?.createdBy )?.fullName;
   updatedBy.value = getUserSearch.value.find( x => x.userId === object.value?.updatedBy )?.fullName;
 }

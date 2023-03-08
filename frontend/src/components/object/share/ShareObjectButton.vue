@@ -37,7 +37,7 @@ const comsUrl = computed(() => {
 });
 
 onMounted( () => {
-  obj.value = objectStore.getObjectById(props.id);
+  obj.value = objectStore.findObjectById(props.id);
 });
 </script>
 
@@ -58,7 +58,7 @@ onMounted( () => {
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
-      {{ metadataStore.getValue(id, 'name') }}
+      {{ metadataStore.findValue(id, 'name') }}
     </h3>
 
     <ul class="mb-4">

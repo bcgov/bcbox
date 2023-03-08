@@ -72,12 +72,12 @@ const onInput = async (event: any) => {
   if( selectedIDP.value?.idp ) {
     if( selectedIDP.value.searchable ) {
       if( input.length >= 3 ) {
-        await userStore.searchUsers({ idp: selectedIDP.value.idp, search: input });
+        await userStore.fetchUsers({ idp: selectedIDP.value.idp, search: input });
       }
     }
     else {
       if( input.match( Regex.EMAIL ) ) {
-        await userStore.searchUsers({ idp: selectedIDP.value.idp, email: input });
+        await userStore.fetchUsers({ idp: selectedIDP.value.idp, email: input });
       }
     }
   }

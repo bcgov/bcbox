@@ -104,7 +104,7 @@ watch( getObjects, () => {
     </div>
     <div>
       <Button
-        v-if="permissionStore.getIsBucketActionAllowed(props.bucketId as string, getUserId, Permissions.CREATE )"
+        v-if="permissionStore.isBucketActionAllowed(props.bucketId as string, getUserId, Permissions.CREATE )"
         class="mr-2"
         :disabled="displayUpload"
         @click="showUpload"

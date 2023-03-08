@@ -190,12 +190,12 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  function getIsBucketActionAllowed(bucketId: string, userId?: string, permCode?: string) {
+  function isBucketActionAllowed(bucketId: string, userId?: string, permCode?: string) {
     return state.bucketPermissions.value.some((x: BucketPermission) =>
       x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
   }
 
-  function getIsObjectActionAllowed(objectId: string, userId?: string, permCode?: string, bucketId?: string) {
+  function isObjectActionAllowed(objectId: string, userId?: string, permCode?: string, bucketId?: string) {
     const bucketPerm = state.bucketPermissions.value.some((x: BucketPermission) =>
       x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
     const objectPerm = state.objectPermissions.value.some((x: COMSObjectPermission) =>
@@ -204,11 +204,11 @@ export const usePermissionStore = defineStore('permission', () => {
     return bucketPerm || objectPerm;
   }
 
-  function getUserHasElevatedRights() {
+  function isUserElevatedRights() {
     const idp = getConfig.value.idpList.find(
       (provider: IdentityProvider) => provider.idp === getProfile.value?.identity_provider);
 
-    return idp ? idp.elevatedRights : false;
+    return !!(idp?.elevatedRights);
   }
 
   async function mapBucketToUserPermissions(bucketId: string) {
@@ -352,9 +352,9 @@ export const usePermissionStore = defineStore('permission', () => {
     deleteObjectPermission,
     fetchBucketPermissions,
     fetchObjectPermissions,
-    getIsBucketActionAllowed,
-    getIsObjectActionAllowed,
-    getUserHasElevatedRights,
+    isBucketActionAllowed,
+    isObjectActionAllowed,
+    isUserElevatedRights,
     mapBucketToUserPermissions,
     mapObjectToUserPermissions,
     removeBucketUser,

@@ -123,7 +123,7 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  function getObjectById(objectId: string) {
+  function findObjectById(objectId: string) {
     return state.objects.value.find((x) => x.id === objectId);
   }
 
@@ -156,7 +156,7 @@ export const useObjectStore = defineStore('object', () => {
     deleteObjects,
     downloadObject,
     fetchObjects,
-    getObjectById,
+    findObjectById,
     setSelectedObjects,
     togglePublic
   };

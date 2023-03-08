@@ -26,7 +26,7 @@ const bucket: Ref< Bucket | undefined > = ref(undefined);
 
 // Actions
 async function getBucketName() {
-  bucket.value = props.bucketId ? await bucketStore.getBucketById(props.bucketId) : undefined;
+  bucket.value = props.bucketId ? await bucketStore.findBucketById(props.bucketId) : undefined;
 }
 
 onErrorCaptured((e: Error) => {
