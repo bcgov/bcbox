@@ -57,7 +57,7 @@ onMounted(async () => {
         {{ getConfig?.notifications?.homeBanner }}
       </Message>
     </div>
-    <div>
+    <div class="flex justify-content-end">
       <Button
         v-if="usePermissionStore().isUserElevatedRights()"
         label="Primary"
@@ -93,7 +93,7 @@ onMounted(async () => {
         />
       </Dialog>
     </div>
-    <div class="flex mt-7">
+    <div class="flex">
       <div class="flex-grow-1">
         <BucketTable
           @show-sidebar-info="showSidebarInfo"
@@ -124,7 +124,6 @@ h3 {
 }
 
 button {
-  float: right;
   text-indent: 10px;
 }
 </style>
