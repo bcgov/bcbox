@@ -6,6 +6,7 @@ config:
     FRONTEND_COMS_APIPATH: https://coms-prod-master.apps.silver.devops.gov.bc.ca/api/v1
     FRONTEND_OIDC_AUTHORITY: https://loginproxy.gov.bc.ca/auth/realms/standard
     FRONTEND_OIDC_CLIENTID: bc-box-4555
+    FRONTEND_NOTIFICATION_HOME_BANNER: This is the ALPHA version of BCBox. Uploaded files may not persist and may be deleted from the COMS database as we continue development. Please do not upload personal or private information. Thank you for your understanding as we work to improve BCBox
     SERVER_APIPATH: /api/v1
     SERVER_BODYLIMIT: 30mb
     # SERVER_LOGFILE: ~

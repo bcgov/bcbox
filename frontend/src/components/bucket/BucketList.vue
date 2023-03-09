@@ -3,8 +3,8 @@ import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
 
 import { BucketConfigForm, BucketSidebar, BucketTable } from '@/components/bucket';
-import { Button, Dialog } from '@/lib/primevue';
-import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
+import { Button, Dialog, Message } from '@/lib/primevue';
+import { useAuthStore, useBucketStore, useConfigStore, usePermissionStore } from '@/store';
 import { BucketConfig } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -13,6 +13,7 @@ import type { Bucket } from '@/types';
 // Store
 const bucketStore = useBucketStore();
 const { getUserId } = storeToRefs(useAuthStore());
+const { getConfig } = storeToRefs(useConfigStore());
 
 // State
 const sidebarInfo: Ref<Bucket | undefined> = ref(undefined);
@@ -49,6 +50,12 @@ onMounted(async () => {
     <div>
       <h1>Select a bucket</h1>
       <h3>Buckets are containers for storing objects.</h3>
+      <Message
+        v-if="getConfig?.notifications?.homeBanner"
+        severity="warn"
+      >
+        {{ getConfig?.notifications?.homeBanner }}
+      </Message>
     </div>
     <div>
       <Button

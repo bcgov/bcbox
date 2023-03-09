@@ -7,6 +7,9 @@
     "oidc": {
       "authority": "FRONTEND_OIDC_AUTHORITY",
       "clientId": "FRONTEND_OIDC_CLIENTID"
+    },
+    "notifications": {
+      "homeBanner": "FRONTEND_NOTIFICATION_HOME_BANNER"
     }
   },
   "server": {
