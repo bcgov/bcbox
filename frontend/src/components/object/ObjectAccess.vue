@@ -33,7 +33,7 @@ async function load() {
     .filter( (x: COMSObjectPermission) => x.objectId === props.objectInfoId && x.permCode === Permissions.MANAGE )
     .map( (x: COMSObjectPermission) => x.userId) )];
 
-  await userStore.searchUsers({userId: uniqueIds} );
+  await userStore.fetchUsers({userId: uniqueIds} );
 
   managedBy.value = userSearch.value.map( x => x.fullName ).join( ', ');
 }

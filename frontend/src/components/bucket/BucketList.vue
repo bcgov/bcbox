@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue';
 
 import { BucketConfigForm, BucketSidebar, BucketTable } from '@/components/bucket';
 import { Button, Dialog } from '@/lib/primevue';
-import { useAuthStore, useBucketStore } from '@/store';
+import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { BucketConfig } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -16,14 +16,13 @@ const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const sidebarInfo: Ref<Bucket | undefined> = ref(undefined);
-
 const displayBucketConfig: Ref<boolean> = ref(false);
 const bucketConfigTitle: Ref<string> = ref(BucketConfig.TITLE_NEW_BUCKET);
 const bucketToUpdate: Ref<Bucket | undefined> = ref(undefined);
 
 // Actions
 const showSidebarInfo = async (bucketId: string) => {
-  sidebarInfo.value = bucketStore.getBucketById(bucketId);
+  sidebarInfo.value = bucketStore.findBucketById(bucketId);
 };
 
 const closeSidebarInfo = () => {
@@ -53,6 +52,7 @@ onMounted(async () => {
     </div>
     <div>
       <Button
+        v-if="usePermissionStore().isUserElevatedRights()"
         label="Primary"
         class="p-button-outlined mt-4"
         @click="showBucketConfig()"

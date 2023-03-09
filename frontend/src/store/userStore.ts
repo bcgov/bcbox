@@ -34,20 +34,7 @@ export const useUserStore = defineStore('user', () => {
   };
 
   // Actions
-  async function listIdps() {
-    try {
-      appStore.beginIndeterminateLoading();
-      state.idps.value = (await userService.listIdps()).data;
-    }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching IDPs', detail: error, life: 3000 });
-    }
-    finally {
-      appStore.endIndeterminateLoading();
-    }
-  }
-
-  async function searchUsers(params: object) {
+  async function fetchUsers(params: object) {
     try {
       appStore.beginIndeterminateLoading();
       const response = (await userService.searchForUsers(params)).data;
@@ -76,8 +63,7 @@ export const useUserStore = defineStore('user', () => {
 
     // Actions
     clearSearch,
-    listIdps,
-    searchUsers
+    fetchUsers
   };
 }, { persist: true });
 

@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { permissionService, userService } from '@/services';
-import { useAppStore, useConfigStore } from '@/store';
+import { useAppStore, useAuthStore, useConfigStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { partition } from '@/utils/utils';
 
@@ -30,6 +30,7 @@ export type PermissionStoreState = {
 export const usePermissionStore = defineStore('permission', () => {
   // Store
   const appStore = useAppStore();
+  const { getProfile } = storeToRefs(useAuthStore());
   const { getConfig } = storeToRefs(useConfigStore());
   const toast = useToast();
 
@@ -189,18 +190,25 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  function getIsBucketActionAllowed(bucketId: string, userId?: string, permCode?: string) {
+  function isBucketActionAllowed(bucketId: string, userId?: string, permCode?: string) {
     return state.bucketPermissions.value.some((x: BucketPermission) =>
       x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
   }
 
-  function getIsObjectActionAllowed(objectId: string, userId?: string, permCode?: string, bucketId?: string) {
+  function isObjectActionAllowed(objectId: string, userId?: string, permCode?: string, bucketId?: string) {
     const bucketPerm = state.bucketPermissions.value.some((x: BucketPermission) =>
       x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
     const objectPerm = state.objectPermissions.value.some((x: COMSObjectPermission) =>
       x.objectId === objectId && x.userId === userId && x.permCode === permCode);
 
     return bucketPerm || objectPerm;
+  }
+
+  function isUserElevatedRights() {
+    const idp = getConfig.value.idpList.find(
+      (provider: IdentityProvider) => provider.idp === getProfile.value?.identity_provider);
+
+    return !!(idp?.elevatedRights);
   }
 
   async function mapBucketToUserPermissions(bucketId: string) {
@@ -344,8 +352,9 @@ export const usePermissionStore = defineStore('permission', () => {
     deleteObjectPermission,
     fetchBucketPermissions,
     fetchObjectPermissions,
-    getIsBucketActionAllowed,
-    getIsObjectActionAllowed,
+    isBucketActionAllowed,
+    isObjectActionAllowed,
+    isUserElevatedRights,
     mapBucketToUserPermissions,
     mapObjectToUserPermissions,
     removeBucketUser,

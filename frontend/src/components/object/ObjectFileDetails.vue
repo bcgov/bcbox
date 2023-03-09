@@ -45,7 +45,7 @@ const bucketId: Ref<string> = ref('');
 const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = metadataStore.getValue(objectId, 'name') || '';
+  permissionsObjectName.value = metadataStore.findValue(objectId, 'name') || '';
 };
 
 onMounted(() => {
@@ -54,7 +54,7 @@ onMounted(() => {
 
 watch( [props, getObjects], () => {
   metadataStore.fetchMetadata({objId: props.objId });
-  obj.value = objectStore.getObjectById(props.objId);
+  obj.value = objectStore.findObjectById(props.objId);
   bucketId.value = obj.value?.bucketId || '';
 });
 </script>
@@ -77,18 +77,18 @@ watch( [props, getObjects], () => {
         class="action-buttons"
       >
         <ShareObjectButton
-          v-if="permissionStore.getIsObjectActionAllowed(
+          v-if="permissionStore.isObjectActionAllowed(
             props.objId, getUserId, Permissions.MANAGE, bucketId)"
           :id="props.objId"
         />
         <DownloadObjectButton
-          v-if="permissionStore.getIsObjectActionAllowed(
+          v-if="permissionStore.isObjectActionAllowed(
             props.objId, getUserId, Permissions.READ, bucketId)"
           :mode="ButtonMode.ICON"
           :ids="[props.objId]"
         />
         <Button
-          v-if="permissionStore.getIsObjectActionAllowed(
+          v-if="permissionStore.isObjectActionAllowed(
             props.objId, getUserId, Permissions.MANAGE, bucketId)"
           class="p-button-lg p-button-text"
           @click="showPermissions(props.objId)"
@@ -96,7 +96,7 @@ watch( [props, getObjects], () => {
           <font-awesome-icon icon="fa-solid fa-users" />
         </Button>
         <DeleteObjectButton
-          v-if="permissionStore.getIsObjectActionAllowed(
+          v-if="permissionStore.isObjectActionAllowed(
             props.objId, getUserId, Permissions.DELETE, bucketId)"
           :mode="ButtonMode.ICON"
           :ids="[props.objId]"

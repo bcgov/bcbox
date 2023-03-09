@@ -43,6 +43,7 @@ const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
 const permissionsObjectName = ref('');
 const selectedObjects: Ref<Array<COMSObject>> = ref([]);
+const tableData: Ref<Array<COMSObject>> = ref([]);
 
 // Actions
 const showInfo = async (id: string) => {
@@ -52,12 +53,17 @@ const showInfo = async (id: string) => {
 const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = metadataStore.getValue(objectId, 'name') || '';
+  permissionsObjectName.value = metadataStore.findValue(objectId, 'name') || '';
 };
 
 const togglePublic = async (objectId: string, isPublic: boolean) => {
   await objectStore.togglePublic(objectId, isPublic);
 };
+
+watch( getObjects, () => {
+  // Filter object cache to this specific bucket
+  tableData.value = getObjects.value.filter( (x: COMSObject) => x.bucketId === props.bucketId );
+});
 
 watch( selectedObjects, () => {
   objectStore.setSelectedObjects(selectedObjects.value);
@@ -68,7 +74,7 @@ watch( selectedObjects, () => {
   <div>
     <DataTable
       v-model:selection="selectedObjects"
-      :value="getObjects"
+      :value="tableData"
       data-key="id"
       class="p-datatable-sm"
       striped-rows
@@ -104,9 +110,9 @@ watch( selectedObjects, () => {
       >
         <template #body="{ data }">
           <div
-            v-tooltip.bottom="{ value: metadataStore.getValue(data.id, 'name') }"
+            v-tooltip.bottom="{ value: metadataStore.findValue(data.id, 'name') }"
           >
-            {{ metadataStore.getValue(data.id, 'name') }}
+            {{ metadataStore.findValue(data.id, 'name') }}
           </div>
         </template>
       </Column>
@@ -145,7 +151,7 @@ watch( selectedObjects, () => {
         <template #body="{ data }">
           <InputSwitch
             v-model="data.public"
-            :disabled="!permissionStore.getIsObjectActionAllowed(
+            :disabled="!permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
             @change="togglePublic(data.id, data.public)"
           />
@@ -159,18 +165,18 @@ watch( selectedObjects, () => {
       >
         <template #body="{ data }">
           <ShareObjectButton
-            v-if="permissionStore.getIsObjectActionAllowed(
+            v-if="permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
             :id="data.id"
           />
           <DownloadObjectButton
-            v-if="permissionStore.getIsObjectActionAllowed(
+            v-if="permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.READ, props.bucketId as string)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />
           <Button
-            v-if="permissionStore.getIsObjectActionAllowed(
+            v-if="permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
             class="p-button-lg p-button-text"
             @click="showPermissions(data.id)"
@@ -184,7 +190,7 @@ watch( selectedObjects, () => {
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
           <DeleteObjectButton
-            v-if="permissionStore.getIsObjectActionAllowed(
+            v-if="permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.DELETE, props.bucketId as string)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"

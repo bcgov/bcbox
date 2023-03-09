@@ -23,7 +23,7 @@ const objectTagging: Ref<Tagging | undefined> = ref(undefined);
 // Actions
 async function load() {
   await tagStore.fetchTagging({objId: props.objectInfoId});
-  objectTagging.value = tagStore.getTaggingByObjectId(props.objectInfoId);
+  objectTagging.value = tagStore.findTaggingByObjectId(props.objectInfoId);
 }
 
 onMounted(() => {

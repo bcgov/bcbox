@@ -54,7 +54,7 @@ export const useTagStore = defineStore('tag', () => {
     }
   }
 
-  const getTaggingByObjectId = (objectId: string) => state.tagging.value.find((x: Tagging) => x.objectId === objectId);
+  const findTaggingByObjectId = (objectId: string) => state.tagging.value.find((x: Tagging) => x.objectId === objectId);
 
   return {
     // State
@@ -65,7 +65,7 @@ export const useTagStore = defineStore('tag', () => {
 
     // Actions
     fetchTagging,
-    getTaggingByObjectId,
+    findTaggingByObjectId,
   };
 }, { persist: true });
 

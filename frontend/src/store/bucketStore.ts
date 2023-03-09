@@ -78,7 +78,7 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  function getBucketById(bucketId: string) {
+  function findBucketById(bucketId: string) {
     return state.buckets.value.find((x) => x.bucketId === bucketId);
   }
 
@@ -103,7 +103,7 @@ export const useBucketStore = defineStore('bucket', () => {
     // Actions
     createBucket,
     fetchBuckets,
-    getBucketById,
+    findBucketById,
     updateBucket
   };
 }, { persist: true });

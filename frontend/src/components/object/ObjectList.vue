@@ -10,7 +10,14 @@ import {
   ObjectUpload
 } from '@/components/object';
 import { Button } from '@/lib/primevue';
-import { useAuthStore, useBucketStore, useMetadataStore, useObjectStore } from '@/store';
+import {
+  useAuthStore,
+  useBucketStore,
+  useMetadataStore,
+  useObjectStore,
+  usePermissionStore
+} from '@/store';
+import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
@@ -29,6 +36,7 @@ const bucketStore = useBucketStore();
 const metadataStore = useMetadataStore();
 //const navStore = useNavStore();
 const objectStore = useObjectStore();
+const permissionStore = usePermissionStore();
 
 const { getObjects, getSelectedObjects } = storeToRefs(objectStore);
 const { getUserId } = storeToRefs(useAuthStore());
@@ -96,6 +104,7 @@ watch( getObjects, () => {
     </div>
     <div>
       <Button
+        v-if="permissionStore.isBucketActionAllowed(props.bucketId as string, getUserId, Permissions.CREATE )"
         class="mr-2"
         :disabled="displayUpload"
         @click="showUpload"

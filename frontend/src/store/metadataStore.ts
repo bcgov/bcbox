@@ -54,12 +54,12 @@ export const useMetadataStore = defineStore('metadata', () => {
     }
   }
 
-  function getMetadataByObjectId(objectId: string) {
+  function findMetadataByObjectId(objectId: string) {
     return state.metadata.value.find((x: Metadata) => x.objectId === objectId);
   }
 
-  function getValue(objectId: string, key: string) {
-    return getMetadataByObjectId(objectId)?.metadata.find(x => x.key === key)?.value;
+  function findValue(objectId: string, key: string) {
+    return findMetadataByObjectId(objectId)?.metadata.find(x => x.key === key)?.value;
   }
 
   return {
@@ -71,8 +71,8 @@ export const useMetadataStore = defineStore('metadata', () => {
 
     // Actions
     fetchMetadata,
-    getMetadataByObjectId,
-    getValue
+    findMetadataByObjectId,
+    findValue
   };
 }, { persist: true });
 

@@ -26,7 +26,7 @@ async function load() {
   if( props.fullView ) {
     await metadataStore.fetchMetadata({objId: props.objectInfoId});
   }
-  objectMetadata.value = metadataStore.getMetadataByObjectId(props.objectInfoId);
+  objectMetadata.value = metadataStore.findMetadataByObjectId(props.objectInfoId);
 }
 
 onMounted(() => {
