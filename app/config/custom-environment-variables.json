@@ -4,6 +4,7 @@
     "coms": {
       "apiPath": "FRONTEND_COMS_APIPATH"
     },
+    "notificationBanner": "FRONTEND_NOTIFICATION_BANNER",
     "oidc": {
       "authority": "FRONTEND_OIDC_AUTHORITY",
       "clientId": "FRONTEND_OIDC_CLIENTID"

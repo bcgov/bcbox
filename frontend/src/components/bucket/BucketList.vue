@@ -3,8 +3,8 @@ import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
 
 import { BucketConfigForm, BucketSidebar, BucketTable } from '@/components/bucket';
-import { Button, Dialog } from '@/lib/primevue';
-import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
+import { Button, Dialog, Message } from '@/lib/primevue';
+import { useAuthStore, useBucketStore, useConfigStore, usePermissionStore } from '@/store';
 import { BucketConfig } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -13,6 +13,7 @@ import type { Bucket } from '@/types';
 // Store
 const bucketStore = useBucketStore();
 const { getUserId } = storeToRefs(useAuthStore());
+const { getConfig } = storeToRefs(useConfigStore());
 
 // State
 const sidebarInfo: Ref<Bucket | undefined> = ref(undefined);
@@ -49,8 +50,14 @@ onMounted(async () => {
     <div>
       <h1>Select a bucket</h1>
       <h3>Buckets are containers for storing objects.</h3>
+      <Message
+        v-if="getConfig?.notificationBanner"
+        severity="warn"
+      >
+        {{ getConfig?.notificationBanner }}
+      </Message>
     </div>
-    <div>
+    <div class="flex justify-content-end">
       <Button
         v-if="usePermissionStore().isUserElevatedRights()"
         label="Primary"
@@ -86,7 +93,7 @@ onMounted(async () => {
         />
       </Dialog>
     </div>
-    <div class="flex mt-7">
+    <div class="flex">
       <div class="flex-grow-1">
         <BucketTable
           @show-sidebar-info="showSidebarInfo"
@@ -117,7 +124,6 @@ h3 {
 }
 
 button {
-  float: right;
   text-indent: 10px;
 }
 </style>
