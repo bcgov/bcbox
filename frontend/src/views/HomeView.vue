@@ -11,10 +11,10 @@ const { getConfig } = storeToRefs(useConfigStore());
 
 <template>
   <Message
-    v-if="getConfig?.notifications?.homeBanner"
+    v-if="getConfig?.notificationBanner"
     severity="warn"
   >
-    {{ getConfig?.notifications?.homeBanner }}
+    {{ getConfig?.notificationBanner }}
   </Message>
 
   <h3 v-if="!getIsAuthenticated">

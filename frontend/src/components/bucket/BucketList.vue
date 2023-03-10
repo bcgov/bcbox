@@ -51,10 +51,10 @@ onMounted(async () => {
       <h1>Select a bucket</h1>
       <h3>Buckets are containers for storing objects.</h3>
       <Message
-        v-if="getConfig?.notifications?.homeBanner"
+        v-if="getConfig?.notificationBanner"
         severity="warn"
       >
-        {{ getConfig?.notifications?.homeBanner }}
+        {{ getConfig?.notificationBanner }}
       </Message>
     </div>
     <div class="flex justify-content-end">
