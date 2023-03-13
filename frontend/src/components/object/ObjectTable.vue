@@ -166,7 +166,7 @@ watch( selectedObjects, () => {
         <template #body="{ data }">
           <ShareObjectButton
             v-if="permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
+              data.id, getUserId, Permissions.READ, props.bucketId as string)"
             :id="data.id"
           />
           <DownloadObjectButton

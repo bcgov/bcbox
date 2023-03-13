@@ -42,7 +42,6 @@ const routes: Array<RouteRecordRaw> = [
         path: 'objects',
         name: RouteNames.DETAIL_OBJECTS,
         component: () => import('@/views/detail/DetailObjectsView.vue'),
-        meta: { requiresAuth: true },
         props: createProps
       }
     ]
@@ -107,6 +106,11 @@ const routes: Array<RouteRecordRaw> = [
   //   path: '/update',
   //   children: [{}],
   // },
+  {
+    path: '/forbidden',
+    name: RouteNames.FORBIDDEN,
+    component: () => import('@/views/Forbidden.vue'),
+  },
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',

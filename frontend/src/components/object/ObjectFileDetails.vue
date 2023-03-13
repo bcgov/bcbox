@@ -78,8 +78,8 @@ watch( [props, getObjects], () => {
       >
         <ShareObjectButton
           v-if="permissionStore.isObjectActionAllowed(
-            props.objectId, getUserId, Permissions.MANAGE, bucketId)"
-          :id="props.objectId"
+            props.objId, getUserId, Permissions.READ, bucketId)"
+          :id="props.objId"
         />
         <DownloadObjectButton
           v-if="permissionStore.isObjectActionAllowed(

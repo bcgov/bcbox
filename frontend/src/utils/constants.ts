@@ -22,6 +22,7 @@ export const RouteNames = Object.freeze({
   CREATE_BUCKET: 'createBucket',
   DETAIL_OBJECTS: 'detailObjects',
   DEVELOPER: 'developer',
+  FORBIDDEN: 'forbidden',
   HOME: 'home',
   LIST_BUCKETS: 'listBuckets',
   LIST_OBJECTS: 'listObjects',
