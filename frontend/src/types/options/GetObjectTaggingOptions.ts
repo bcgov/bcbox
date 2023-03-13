@@ -1,3 +1,3 @@
 export type GetObjectTaggingOptions = {
-  objId?: string | string[];
+  objectId?: string | string[];
 }

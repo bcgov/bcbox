@@ -169,7 +169,7 @@ export const usePermissionStore = defineStore('permission', () => {
 
       // Remove old values matching search parameters
       const matches = (x: COMSObjectPermission) => (
-        (!params.objId || x.id === params.objId) &&
+        (!params.objectId || x.id === params.objectId) &&
         (!params.userId || x.userId === params.userId) &&
         (!params.permCode || x.permCode === params.permCode)
       );

@@ -86,7 +86,7 @@ onMounted(async () => {
 
 watch( getObjects, () => {
   // Watch for object changes to get associated metadata
-  metadataStore.fetchMetadata({objId: getObjects.value.map( (x: COMSObject) => x.id )});
+  metadataStore.fetchMetadata({objectId: getObjects.value.map( (x: COMSObject) => x.id )});
 });
 
 </script>

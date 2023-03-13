@@ -1,6 +1,6 @@
 export type SearchObjectsOptions = {
   bucketId?: string[];
-  objId?: string[];
+  objectId?: string[];
   name?: string,
   path?: string,
   mimeType?: string,

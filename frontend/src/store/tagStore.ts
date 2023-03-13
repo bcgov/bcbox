@@ -36,9 +36,9 @@ export const useTagStore = defineStore('tag', () => {
 
       // Remove old values matching search parameters
       const matches = (x: Tagging) => (
-        (!params.objId ||
-          (Array.isArray(params.objId) && params.objId.some((y: string) => x.objectId === y)) ||
-          (!Array.isArray(params.objId) && params.objId === x.objectId))
+        (!params.objectId ||
+          (Array.isArray(params.objectId) && params.objectId.some((y: string) => x.objectId === y)) ||
+          (!Array.isArray(params.objectId) && params.objectId === x.objectId))
       );
 
       const [, difference] = partition(state.tagging.value, matches);

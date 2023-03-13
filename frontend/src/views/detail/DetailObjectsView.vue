@@ -3,7 +3,7 @@ import ObjectFileDetails from '@/components/object/ObjectFileDetails.vue';
 
 // Props
 type Props = {
-  objId: string
+  objectId: string
 };
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -11,8 +11,8 @@ const props = withDefaults(defineProps<Props>(), {});
 
 <template>
   <ObjectFileDetails
-    v-if="objId"
-    :obj-id="props.objId"
+    v-if="objectId"
+    :obj-id="props.objectId"
   />
   <div v-else>
     <h3>No object provided</h3>

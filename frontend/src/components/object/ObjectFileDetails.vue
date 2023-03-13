@@ -22,7 +22,7 @@ import type { COMSObject } from '@/types';
 
 // Props
 type Props = {
-  objId: string
+  objectId: string
 };
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -53,8 +53,8 @@ onMounted(() => {
 });
 
 watch( [props, getObjects], () => {
-  metadataStore.fetchMetadata({objId: props.objId });
-  obj.value = objectStore.findObjectById(props.objId);
+  metadataStore.fetchMetadata({objectId: props.objectId });
+  obj.value = objectStore.findObjectById(props.objectId);
   bucketId.value = obj.value?.bucketId || '';
 });
 </script>
@@ -78,43 +78,43 @@ watch( [props, getObjects], () => {
       >
         <ShareObjectButton
           v-if="permissionStore.isObjectActionAllowed(
-            props.objId, getUserId, Permissions.MANAGE, bucketId)"
-          :id="props.objId"
+            props.objectId, getUserId, Permissions.MANAGE, bucketId)"
+          :id="props.objectId"
         />
         <DownloadObjectButton
           v-if="permissionStore.isObjectActionAllowed(
-            props.objId, getUserId, Permissions.READ, bucketId)"
+            props.objectId, getUserId, Permissions.READ, bucketId)"
           :mode="ButtonMode.ICON"
-          :ids="[props.objId]"
+          :ids="[props.objectId]"
         />
         <Button
           v-if="permissionStore.isObjectActionAllowed(
-            props.objId, getUserId, Permissions.MANAGE, bucketId)"
+            props.objectId, getUserId, Permissions.MANAGE, bucketId)"
           class="p-button-lg p-button-text"
-          @click="showPermissions(props.objId)"
+          @click="showPermissions(props.objectId)"
         >
           <font-awesome-icon icon="fa-solid fa-users" />
         </Button>
         <DeleteObjectButton
           v-if="permissionStore.isObjectActionAllowed(
-            props.objId, getUserId, Permissions.DELETE, bucketId)"
+            props.objectId, getUserId, Permissions.DELETE, bucketId)"
           :mode="ButtonMode.ICON"
-          :ids="[props.objId]"
+          :ids="[props.objectId]"
         />
       </div>
     </div>
 
     <div class="pl-2">
       <ObjectProperties
-        :object-info-id="props.objId"
+        :object-info-id="props.objectId"
         :full-view="true"
       />
-      <ObjectAccess :object-info-id="props.objId" />
+      <ObjectAccess :object-info-id="props.objectId" />
       <ObjectMetadata
-        :object-info-id="props.objId"
+        :object-info-id="props.objectId"
         :full-view="true"
       />
-      <ObjectTag :object-info-id="props.objId" />
+      <ObjectTag :object-info-id="props.objectId" />
     </div>
   </div>
 

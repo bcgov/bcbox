@@ -91,7 +91,7 @@ export const useObjectStore = defineStore('object', () => {
         if (uniqueIds.length) {
           response = (await objectService.searchObjects({
             bucketId: params.bucketId ? [params.bucketId] : undefined,
-            objId: uniqueIds,
+            objectId: uniqueIds,
 
             // Added to allow deletion of objects before versioning implementation
             // TODO: Verify if needed after versioning implemented
@@ -101,7 +101,7 @@ export const useObjectStore = defineStore('object', () => {
 
           // Remove old values matching search parameters
           const matches = (x: COMSObject) => (
-            (!params.objId || x.id === params.objId) &&
+            (!params.objectId || x.id === params.objectId) &&
             (!params.bucketId || x.bucketId === params.bucketId)
           );
 

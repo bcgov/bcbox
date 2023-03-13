@@ -30,7 +30,7 @@ const displayShareDialog = ref(false);
 
 // Share link
 const bcBoxLink = computed(() => {
-  return `${window.location.origin}/list/detail/object?objId=${props.id}`;
+  return `${window.location.origin}/list/detail/object?objectId=${props.id}`;
 });
 const comsUrl = computed(() => {
   return `${getConfig.value.coms?.apiPath}/object/${props.id}`;
