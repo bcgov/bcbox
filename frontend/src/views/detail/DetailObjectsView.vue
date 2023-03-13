@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<Props>(), {});
 <template>
   <ObjectFileDetails
     v-if="objectId"
-    :obj-id="props.objectId"
+    :object-id="props.objectId"
   />
   <div v-else>
     <h3>No object provided</h3>
