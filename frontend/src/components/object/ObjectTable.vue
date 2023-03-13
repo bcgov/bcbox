@@ -17,6 +17,10 @@ import { formatDateLong } from '@/utils/formatters';
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
 
+type COMSObjectDataSource = {
+  name?: string;
+} & COMSObject;
+
 // Props
 type Props = {
   bucketId?: string;
@@ -43,7 +47,7 @@ const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
 const permissionsObjectName = ref('');
 const selectedObjects: Ref<Array<COMSObject>> = ref([]);
-const tableData: Ref<Array<COMSObject>> = ref([]);
+const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
 
 // Actions
 const showInfo = async (id: string) => {
@@ -62,7 +66,16 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
 
 watch( getObjects, () => {
   // Filter object cache to this specific bucket
-  tableData.value = getObjects.value.filter( (x: COMSObject) => x.bucketId === props.bucketId );
+  const objs: Array<COMSObjectDataSource> = getObjects.value
+    .filter( (x: COMSObject) => x.bucketId === props.bucketId ) as COMSObjectDataSource[];
+
+  // Apply metadata
+  objs.forEach( (x: COMSObjectDataSource) => {
+    x.name = metadataStore.findValue(x.id, 'name');
+  });
+
+  // Set table source
+  tableData.value = objs;
 });
 
 watch( selectedObjects, () => {

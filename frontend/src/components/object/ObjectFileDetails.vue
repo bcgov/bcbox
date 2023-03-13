@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, onBeforeMount, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 import {
   DeleteObjectButton,
@@ -14,7 +15,7 @@ import {
 } from '@/components/object';
 import { Button, Dialog } from '@/lib/primevue';
 import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
-import { Permissions } from '@/utils/constants';
+import { Permissions, RouteNames } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
@@ -42,11 +43,30 @@ const obj: Ref<COMSObject | undefined> = ref(undefined);
 const bucketId: Ref<string> = ref('');
 
 // Actions
+const router = useRouter();
+
 const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
   permissionsObjectName.value = metadataStore.findValue(objectId, 'name') || '';
 };
+
+onBeforeMount( async () => {
+  if( props.objectId ) {
+    const head = await objectStore.headObject(props.objectId);
+    let isPublic = head?.status === 204;
+
+    await permissionStore.fetchBucketPermissions({userId: getUserId.value});
+    await objectStore.fetchObjects({objectId: props.objectId, userId: getUserId.value});
+    const obj = objectStore.findObjectById(props.objectId);
+    const bucketId = obj?.bucketId;
+
+    if( !isPublic &&
+          ( !obj || !permissionStore.isObjectActionAllowed(obj.id, getUserId.value, Permissions.READ, bucketId) ) ) {
+      router.replace({ name: RouteNames.FORBIDDEN });
+    }
+  }
+});
 
 onMounted(() => {
   permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
@@ -78,8 +98,8 @@ watch( [props, getObjects], () => {
       >
         <ShareObjectButton
           v-if="permissionStore.isObjectActionAllowed(
-            props.objId, getUserId, Permissions.READ, bucketId)"
-          :id="props.objId"
+            props.objectId, getUserId, Permissions.READ, bucketId)"
+          :id="props.objectId"
         />
         <DownloadObjectButton
           v-if="permissionStore.isObjectActionAllowed(
