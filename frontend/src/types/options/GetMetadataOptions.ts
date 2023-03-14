@@ -1,3 +1,3 @@
 export type GetMetadataOptions = {
-  objId?: string | string[];
+  objectId?: string | Array<string>;
 }

@@ -35,8 +35,8 @@ export default {
    * @returns {Promise} An axios response
    */
   getMetadata(headers: any = {}, params: GetMetadataOptions = {}) {
-    // remove objId array if its first element is undefined
-    if (params.objId && params.objId[0] === undefined) delete params.objId;
+    // remove objectId array if its first element is undefined
+    if (params.objectId && params.objectId[0] === undefined) delete params.objectId;
     return comsAxios().get(`${PATH}/metadata`, { headers: headers, params: params });
   },
 
@@ -76,8 +76,8 @@ export default {
    * @returns {Promise} An axios response
    */
   searchObjects(params: SearchObjectsOptions = {}) {
-    // remove objId array if its first element is undefined
-    if (params.objId && params.objId[0] === undefined) delete params.objId;
+    // remove objectId array if its first element is undefined
+    if (params.objectId && params.objectId[0] === undefined) delete params.objectId;
     return comsAxios().get(PATH, { params: params });
   },
 

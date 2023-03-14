@@ -35,8 +35,8 @@ const updatedBy: Ref<string | undefined> = ref(undefined);
 // Actions
 async function load() {
   if( props.fullView ) {
-    await objectStore.fetchObjects({objId: props.objectInfoId});
-    await metadataStore.fetchMetadata({objId: props.objectInfoId});
+    await objectStore.fetchObjects({objectId: props.objectInfoId});
+    await metadataStore.fetchMetadata({objectId: props.objectInfoId});
   }
   object.value = objectStore.findObjectById(props.objectInfoId);
   objectMetadata.value = metadataStore.findMetadataByObjectId(object.value?.id as string);

@@ -1,7 +1,7 @@
 export type ObjectSearchPermissionsOptions = {
   bucketId?: string;
   bucketPerms?: boolean;
-  objId?: string;
+  objectId?: string;
   permCode?: string;
   userId?: string;
 }

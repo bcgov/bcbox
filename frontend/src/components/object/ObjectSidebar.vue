@@ -55,7 +55,7 @@ const closeObjectInfo = async () => {
       <router-link
         v-slot="{ navigate }"
         custom
-        :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objId: props.objectInfoId } }"
+        :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objectId: props.objectInfoId } }"
       >
         <Button
           label="Primary"
