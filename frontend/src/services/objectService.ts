@@ -71,6 +71,16 @@ export default {
   },
 
   /**
+   * @function headObject
+   * Get an object details (head call)
+   * @param objectId The id for the object to get
+   * @returns {Promise} An axios response
+   */
+  headObject(objectId: string) {
+    return comsAxios().head(`${PATH}/${objectId}`);
+  },
+
+  /**
    * @function searchObjects
    * List and search for all objects
    * @returns {Promise} An axios response
@@ -79,16 +89,6 @@ export default {
     // remove objectId array if its first element is undefined
     if (params.objectId && params.objectId[0] === undefined) delete params.objectId;
     return comsAxios().get(PATH, { params: params });
-  },
-
-  /**
-   * @function readObject
-   * Get an object details (head call)
-   * @param objectId The id for the object to get
-   * @returns {Promise} An axios response
-   */
-  readObject(objectId: string) {
-    return comsAxios().head(`${PATH}/${objectId}`);
   },
 
   /**

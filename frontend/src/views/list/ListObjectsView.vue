@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { useToast } from 'primevue/usetoast';
-import { onErrorCaptured, onMounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { onBeforeMount, onErrorCaptured, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-import ObjectList from '@/components/object/ObjectList.vue';
-import { useBucketStore } from '@/store';
+import { ObjectList } from '@/components/object';
+import { useToast } from '@/lib/primevue';
+import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { Bucket } from '@/types';
+import type { Bucket, BucketPermission } from '@/types';
 
 // Props
 type Props = {
@@ -20,8 +22,12 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const bucketStore = useBucketStore();
+const permissionStore = usePermissionStore();
+const { getBucketPermissions } = storeToRefs(permissionStore);
+const { getUserId } = storeToRefs(useAuthStore());
 
 // State
+const ready: Ref<boolean> = ref(false);
 const bucket: Ref< Bucket | undefined > = ref(undefined);
 
 // Actions
@@ -34,13 +40,27 @@ onErrorCaptured((e: Error) => {
   toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: e.message, life: 5000 });
 });
 
-onMounted(async () => {
-  await getBucketName();
+onBeforeMount( async () => {
+  const router = useRouter();
+
+  await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
+  if( !getBucketPermissions.value.some( (x: BucketPermission) =>
+    x.bucketId === props.bucketId && x.userId === getUserId.value ) ) {
+
+    router.replace({ name: RouteNames.FORBIDDEN });
+  }
+  else {
+    ready.value = true;
+  }
+});
+
+onMounted( () => {
+  getBucketName();
 });
 </script>
 
 <template>
-  <div>
+  <div v-if="ready">
     <h1>
       Files
     </h1>

@@ -84,6 +84,7 @@ export const useObjectStore = defineStore('object', () => {
 
       // Get a unique list of object IDs the user has access to
       const permResponse = await permissionStore.fetchObjectPermissions(params);
+
       if (permResponse) {
         const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))];
 
@@ -127,6 +128,21 @@ export const useObjectStore = defineStore('object', () => {
     return state.objects.value.find((x) => x.id === objectId);
   }
 
+  async function headObject(objectId: string) {
+    try {
+      appStore.beginIndeterminateLoading();
+
+      // Return full response as data will always be No Content
+      return (await objectService.headObject(objectId));
+    }
+    catch (error) {
+      toast.add({ severity: 'error', summary: 'Error fetching head', detail: error, life: 3000 });
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   function setSelectedObjects(selected: Array<COMSObject>) {
     state.selectedObjects.value = selected;
   }
@@ -157,6 +173,7 @@ export const useObjectStore = defineStore('object', () => {
     downloadObject,
     fetchObjects,
     findObjectById,
+    headObject,
     setSelectedObjects,
     togglePublic
   };
