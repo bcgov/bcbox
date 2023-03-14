@@ -33,7 +33,7 @@ onBeforeMount( async () => {
   }
 
   if( !isPublic && !getIsAuthenticated.value ) {
-    router.replace({ name: RouteNames.LOGIN });
+    router.push({ name: RouteNames.LOGIN });
   }
   else {
     ready.value = true;

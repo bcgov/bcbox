@@ -54,7 +54,7 @@ onBeforeMount( async () => {
   }
 });
 
-onMounted(async () => {
+onMounted( () => {
   getBucketName();
 });
 </script>

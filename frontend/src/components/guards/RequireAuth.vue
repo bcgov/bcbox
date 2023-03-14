@@ -15,11 +15,11 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
 const ready: Ref<boolean> = ref(false);
 
 // Actions
-onBeforeMount( async () => {
-  const router = useRouter();
+const router = useRouter();
 
+onBeforeMount( async () => {
   if( !getIsAuthenticated.value ) {
-    router.replace({ name: RouteNames.LOGIN });
+    router.push({ name: RouteNames.LOGIN });
   }
   else {
     ready.value = true;
