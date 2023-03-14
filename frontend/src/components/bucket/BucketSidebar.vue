@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { Button } from '@/lib/primevue';
+import { storeToRefs } from 'pinia';
+import { onMounted, ref, Ref } from 'vue';
+
+import { usePermissionStore, useUserStore } from '@/store';
+import { Permissions } from '@/utils/constants';
 
 import type { Bucket } from '@/types';
+import type { BucketPermission } from '@/types';
 
 // Props
 type Props = {
@@ -10,6 +16,16 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {});
 
+//Store
+const permissionStore = usePermissionStore();
+const userStore = useUserStore();
+
+const { getBucketPermissions } = storeToRefs(permissionStore);
+const { userSearch } = storeToRefs(userStore);
+
+// State
+const managedBy: Ref<string | undefined> = ref();
+
 // Emits
 const emit = defineEmits(['close-sidebar-info']);
 
@@ -17,6 +33,24 @@ const emit = defineEmits(['close-sidebar-info']);
 const closeSidebarInfo = async () => {
   emit('close-sidebar-info');
 };
+
+// Actions
+async function load() {
+  await permissionStore.fetchBucketPermissions({bucketId: props.sidebarInfo.bucketId});
+
+  const uniqueIds = [...new Set(getBucketPermissions.value
+    .filter( (x: BucketPermission) => x.bucketId === props.sidebarInfo.bucketId && x.permCode === Permissions.MANAGE )
+    .map( (x: BucketPermission) => x.userId) )];
+
+  if(uniqueIds.length) {
+    await userStore.fetchUsers({userId: uniqueIds} );
+    managedBy.value = userSearch.value.map( x => x.fullName ).join( ', ');
+  }
+}
+
+onMounted(() => {
+  load();
+});
 </script>
 
 <template>
@@ -63,7 +97,7 @@ const closeSidebarInfo = async () => {
         Managed by:
       </div>
       <div class="col-9">
-        {{ '' }}
+        {{ managedBy }}
       </div>
     </div>
   </div>
