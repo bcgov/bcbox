@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import {
@@ -56,20 +56,17 @@ onBeforeMount( async () => {
     const head = await objectStore.headObject(props.objectId);
     let isPublic = head?.status === 204;
 
-    await permissionStore.fetchBucketPermissions({userId: getUserId.value});
-    await objectStore.fetchObjects({objectId: props.objectId, userId: getUserId.value});
-    const obj = objectStore.findObjectById(props.objectId);
-    const bucketId = obj?.bucketId;
+    await permissionStore.fetchBucketPermissions({userId: getUserId.value, objectPerms: true});
+    await objectStore.fetchObjects({objectId: props.objectId});
+    obj.value = objectStore.findObjectById(props.objectId);
+    const bucketId = obj.value?.bucketId;
 
     if( !isPublic &&
-          ( !obj || !permissionStore.isObjectActionAllowed(obj.id, getUserId.value, Permissions.READ, bucketId) ) ) {
+      ( !obj.value ||
+        !permissionStore.isObjectActionAllowed(obj.value.id, getUserId.value, Permissions.READ, bucketId) ) ) {
       router.replace({ name: RouteNames.FORBIDDEN });
     }
   }
-});
-
-onMounted(() => {
-  permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
 });
 
 watch( [props, getObjects], () => {
@@ -80,7 +77,7 @@ watch( [props, getObjects], () => {
 </script>
 
 <template>
-  <div>
+  <div v-if="obj">
     <div class="flex justify-content-start">
       <div class="flex col align-items-center pl-0">
         <font-awesome-icon
@@ -93,7 +90,6 @@ watch( [props, getObjects], () => {
       </div>
 
       <div
-        v-if="obj"
         class="action-buttons"
       >
         <ShareObjectButton
