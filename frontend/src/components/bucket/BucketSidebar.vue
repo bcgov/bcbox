@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Button } from '@/lib/primevue';
-import { storeToRefs } from 'pinia';
 import { onMounted, ref, Ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
-import { usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
+import { usePermissionStore, useUserStore } from '@/store';
 
 import type { Bucket } from '@/types';
 import type { BucketPermission } from '@/types';
