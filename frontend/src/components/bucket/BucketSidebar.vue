@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onBeforeMount, ref, Ref, watch } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 
-import { Permissions } from '@/utils/constants';
 import { Button } from '@/lib/primevue';
 import { usePermissionStore, useUserStore } from '@/store';
+import { Permissions } from '@/utils/constants';
 
+import type { Ref } from 'vue';
 import type { Bucket, BucketPermission } from '@/types';
 
 // Props
