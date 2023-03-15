@@ -123,9 +123,9 @@ watch( selectedObjects, () => {
       >
         <template #body="{ data }">
           <div
-            v-tooltip.bottom="{ value: metadataStore.findValue(data.id, 'name') }"
+            v-tooltip.bottom="{ value: data.name }"
           >
-            {{ metadataStore.findValue(data.id, 'name') }}
+            {{ data.name }}
           </div>
         </template>
       </Column>

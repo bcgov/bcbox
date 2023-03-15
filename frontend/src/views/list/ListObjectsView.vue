@@ -72,16 +72,8 @@ onMounted( () => {
         icon="fa-solid fa-box-open"
         class="mr-1"
       />
-      <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucket.bucketId } }">
-        {{ bucket.bucketName }}
-      </router-link>
+      {{ bucket.bucketName }}
     </h2>
     <ObjectList :bucket-id="props.bucketId" />
   </div>
 </template>
-
-<style scoped>
-h1 {
-  font-weight: bold;
-}
-</style>
