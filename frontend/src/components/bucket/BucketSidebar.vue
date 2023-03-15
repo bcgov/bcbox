@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { Button } from '@/lib/primevue';
 import { onMounted, ref, Ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
+import { Button } from '@/lib/primevue';
 import { Permissions } from '@/utils/constants';
 import { usePermissionStore, useUserStore } from '@/store';
 
-import type { Bucket } from '@/types';
-import type { BucketPermission } from '@/types';
+import type { Bucket, BucketPermission } from '@/types';
 
 // Props
 type Props = {
@@ -16,7 +15,10 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {});
 
-//Store
+// Emits
+const emit = defineEmits(['close-sidebar-info']);
+
+// Store
 const permissionStore = usePermissionStore();
 const userStore = useUserStore();
 
@@ -26,15 +28,11 @@ const { userSearch } = storeToRefs(userStore);
 // State
 const managedBy: Ref<string | undefined> = ref();
 
-// Emits
-const emit = defineEmits(['close-sidebar-info']);
-
 // Actions
 const closeSidebarInfo = async () => {
   emit('close-sidebar-info');
 };
 
-// Actions
 async function load() {
   await permissionStore.fetchBucketPermissions({bucketId: props.sidebarInfo.bucketId});
 
