@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
+import { onBeforeMount, ref, Ref, watch } from 'vue';
 
-import { Button } from '@/lib/primevue';
 import { Permissions } from '@/utils/constants';
+import { Button } from '@/lib/primevue';
 import { usePermissionStore, useUserStore } from '@/store';
 
 import type { Bucket, BucketPermission } from '@/types';
@@ -46,7 +46,7 @@ async function load() {
   }
 }
 
-onMounted(() => {
+onBeforeMount(() => {
   load();
 });
 
