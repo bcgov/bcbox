@@ -60,7 +60,8 @@ const download = () => {
   </Button>
   <Button
     v-else
-    class="p-button-outlined mr-2"
+    class="mr-2"
+    outlined
     :disabled="props.disabled"
     @click="download()"
   >

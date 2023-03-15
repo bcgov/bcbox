@@ -38,7 +38,6 @@ async function load() {
   bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
 
   if( props.fullView ) {
-    await metadataStore.fetchMetadata({objectId: props.objectInfoId});
     objectMetadata.value = metadataStore.findMetadataByObjectId(object.value?.id as string);
 
     await userStore.fetchUsers({userId:[object.value?.createdBy, object.value?.updatedBy]});

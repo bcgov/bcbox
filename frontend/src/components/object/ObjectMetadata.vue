@@ -23,9 +23,6 @@ const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
 
 // Actions
 async function load() {
-  if( props.fullView ) {
-    await metadataStore.fetchMetadata({objectId: props.objectInfoId});
-  }
   objectMetadata.value = metadataStore.findMetadataByObjectId(props.objectInfoId);
 }
 
