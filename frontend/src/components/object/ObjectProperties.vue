@@ -34,17 +34,17 @@ const updatedBy: Ref<string | undefined> = ref(undefined);
 
 // Actions
 async function load() {
-  if( props.fullView ) {
-    await objectStore.fetchObjects({objectId: props.objectInfoId});
-    await metadataStore.fetchMetadata({objectId: props.objectInfoId});
-  }
   object.value = objectStore.findObjectById(props.objectInfoId);
-  objectMetadata.value = metadataStore.findMetadataByObjectId(object.value?.id as string);
   bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
 
-  await userStore.fetchUsers({userId:[object.value?.createdBy, object.value?.updatedBy]});
-  createdBy.value = getUserSearch.value.find( x => x.userId === object.value?.createdBy )?.fullName;
-  updatedBy.value = getUserSearch.value.find( x => x.userId === object.value?.updatedBy )?.fullName;
+  if( props.fullView ) {
+    await metadataStore.fetchMetadata({objectId: props.objectInfoId});
+    objectMetadata.value = metadataStore.findMetadataByObjectId(object.value?.id as string);
+
+    await userStore.fetchUsers({userId:[object.value?.createdBy, object.value?.updatedBy]});
+    createdBy.value = getUserSearch.value.find( x => x.userId === object.value?.createdBy )?.fullName;
+    updatedBy.value = getUserSearch.value.find( x => x.userId === object.value?.updatedBy )?.fullName;
+  }
 }
 
 onMounted(() => {
