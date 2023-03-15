@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, Ref } from 'vue';
+import { onMounted, ref, Ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { Button } from '@/lib/primevue';
@@ -47,6 +47,10 @@ async function load() {
 }
 
 onMounted(() => {
+  load();
+});
+
+watch( props, () => {
   load();
 });
 </script>
