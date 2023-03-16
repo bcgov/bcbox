@@ -8,7 +8,7 @@ import { ButtonMode } from '@/utils/enums';
 
 // Props
 type Props = {
-  disabled: boolean;
+  disabled?: boolean;
   ids: Array<string>;
   mode: ButtonMode;
 };
