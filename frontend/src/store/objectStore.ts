@@ -29,7 +29,6 @@ export const useObjectStore = defineStore('object', () => {
 
   // Getters
   const getters = {
-    getIsUploadOpen: computed(() => state.isUploadOpen.value),
     getObjects: computed(() => state.objects.value),
     getSelectedObjects: computed(() => state.selectedObjects.value)
   };
