@@ -10,7 +10,6 @@ import type { Metadata } from '@/types';
 // Props
 type Props = {
   objectInfoId: string;
-  fullView: boolean;
 };
 
 const props = withDefaults(defineProps<Props>(), {});

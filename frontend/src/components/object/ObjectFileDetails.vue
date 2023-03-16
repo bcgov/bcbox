@@ -130,7 +130,6 @@ watch( [props, getObjects], () => {
       <ObjectAccess :object-info-id="props.objectId" />
       <ObjectMetadata
         :object-info-id="props.objectId"
-        :full-view="true"
       />
       <ObjectTag :object-info-id="props.objectId" />
     </div>

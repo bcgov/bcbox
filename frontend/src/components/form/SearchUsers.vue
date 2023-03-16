@@ -15,6 +15,9 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {});
 
+// Emits
+const emit = defineEmits(['add-user', 'cancel-search-users']);
+
 // Store
 const userStore = useUserStore();
 const { getConfig } = storeToRefs(useConfigStore());
@@ -26,9 +29,6 @@ const selectedUser: Ref<User | null> = ref(null);
 const selectedUserIsInvalid: Ref<boolean> = ref(false);
 const userSearchInput: Ref<string | undefined> = ref('');
 const userSearchPlaceholder: Ref<string | undefined> = ref('');
-
-// Emits
-const emit = defineEmits(['add-user', 'cancel-search-users']);
 
 // Actions
 const getUserDropdownLabel = (option: User) => {
@@ -73,10 +73,16 @@ const onInput = async (event: any) => {
       if( input.length >= 3 ) {
         await userStore.fetchUsers({ idp: selectedIDP.value.idp, search: input });
       }
+      else {
+        userStore.clearSearch();
+      }
     }
     else {
       if( input.match( Regex.EMAIL ) ) {
         await userStore.fetchUsers({ idp: selectedIDP.value.idp, email: input });
+      }
+      else {
+        userStore.clearSearch();
       }
     }
   }

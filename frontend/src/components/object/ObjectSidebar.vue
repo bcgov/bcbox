@@ -59,7 +59,6 @@ watch( props, () => {
     />
     <ObjectMetadata
       :object-info-id="props.objectInfoId"
-      :full-view="false"
     />
     <ObjectTag :object-info-id="props.objectInfoId" />
     <div class="col-9">
