@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
@@ -14,12 +15,15 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {});
 
+// Store
+const objectStore = useObjectStore();
+
 // State
 const displayNoFileDialog = ref(false);
+const { getIsUploadOpen } = storeToRefs(objectStore);
 
 // Actions
 const confirm = useConfirm();
-const objectStore = useObjectStore();
 const toast = useToast();
 
 const confirmDelete = () => {
@@ -73,6 +77,7 @@ const confirmDelete = () => {
   <Button
     v-else
     class="p-button-outlined p-button-danger"
+    :disabled="getIsUploadOpen"
     @click="confirmDelete()"
   >
     <font-awesome-icon

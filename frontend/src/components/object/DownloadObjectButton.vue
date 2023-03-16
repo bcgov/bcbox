@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
@@ -19,6 +20,7 @@ const objectStore = useObjectStore();
 
 // State
 const displayNoFileDlg = ref(false);
+const { getIsUploadOpen } = storeToRefs(objectStore);
 
 // Actions
 const download = () => {
@@ -59,6 +61,7 @@ const download = () => {
   <Button
     v-else
     class="p-button-outlined mr-2"
+    :disabled="getIsUploadOpen"
     @click="download()"
   >
     <font-awesome-icon
