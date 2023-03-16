@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, Ref, watch } from 'vue';
+import { isProxy, onMounted, ref, Ref, watch } from 'vue';
 
 import { Button, Dropdown, RadioButton } from '@/lib/primevue';
 import { useConfigStore, useUserStore } from '@/store';
@@ -53,18 +53,17 @@ const onCancel = () => {
 };
 
 const onChange = (event: any) => {
-  // Duplicate user check
-  if( !props.permissions.some(perm => perm.userId === event.value?.userId) ) {
+  if(isProxy(event.value)) {
+    // Duplicate user check
+    if( !props.permissions.some(perm => perm.userId === event.value?.userId) ) {
     // Set state
-    selectedUser.value = event.value;
-  }
-  else {
+      selectedUser.value = event.value;
+    }
+    else {
     // Invalid
-    selectedUserIsInvalid.value = true;
+      selectedUserIsInvalid.value = true;
+    }
   }
-
-  // Keeps the search input as the email instead of swapping to the username
-  userSearchInput.value = event.value?.email;
 };
 
 const onInput = async (event: any) => {
@@ -140,7 +139,7 @@ onMounted(() => {
       v-model="userSearchInput"
       :options="userSearch"
       :option-label="(option) => getUserDropdownLabel(option)"
-      :editable="true"
+      editable
       :placeholder="userSearchPlaceholder"
       class="mt-1 mb-4"
       :class="selectedUserIsInvalid ? 'p-invalid' : ''"
