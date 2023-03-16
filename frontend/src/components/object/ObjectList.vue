@@ -38,11 +38,11 @@ const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 
-const { getIsUploadOpen, getObjects, getSelectedObjects } =
-  storeToRefs(objectStore);
+const { getObjects, getSelectedObjects } = storeToRefs(objectStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
+const displayUpload = ref(false);
 const objectInfoId: Ref<string | undefined> = ref(undefined);
 
 // Actions
@@ -55,11 +55,11 @@ const closeObjectInfo = () => {
 };
 
 const showUpload = () => {
-  objectStore.setIsUploadOpen(true);
+  displayUpload.value = true;
 };
 
 const closeUpload = () => {
-  objectStore.setIsUploadOpen(false);
+  displayUpload.value = false;
 };
 
 // const updateBreadcrumb = async () => {
@@ -94,7 +94,7 @@ watch( getObjects, () => {
 <template>
   <div>
     <div
-      v-if="getIsUploadOpen"
+      v-if="displayUpload"
       class="mb-4"
     >
       <ObjectUpload
@@ -106,7 +106,7 @@ watch( getObjects, () => {
       <Button
         v-if="permissionStore.isBucketActionAllowed(props.bucketId as string, getUserId, Permissions.CREATE )"
         class="mr-2"
-        :disabled="getIsUploadOpen"
+        :disabled="displayUpload"
         @click="showUpload"
       >
         <font-awesome-icon
@@ -115,18 +115,20 @@ watch( getObjects, () => {
         /> Upload
       </Button>
       <DownloadObjectButton
-        :mode="ButtonMode.BUTTON"
+        :disabled="displayUpload"
         :ids="selectedObjectIds"
+        :mode="ButtonMode.BUTTON"
       />
       <DeleteObjectButton
-        :mode="ButtonMode.BUTTON"
+        :disabled="displayUpload"
         :ids="selectedObjectIds"
+        :mode="ButtonMode.BUTTON"
       />
     </div>
 
     <div
       class="flex mt-4"
-      :class="{ 'disable-overlay': getIsUploadOpen }"
+      :class="{ 'disable-overlay': displayUpload }"
     >
       <div class="flex-grow-1">
         <ObjectTable

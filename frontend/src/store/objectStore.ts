@@ -10,7 +10,6 @@ import type { Ref } from 'vue';
 import type { COMSObject, ObjectSearchPermissionsOptions } from '@/types';
 
 export type ObjectStoreState = {
-  isUploadOpen: Ref<boolean>;
   objects: Ref<Array<COMSObject>>;
   selectedObjects: Ref<Array<COMSObject>>; // All selected table row items
 }
@@ -24,7 +23,6 @@ export const useObjectStore = defineStore('object', () => {
 
   // State
   const state: ObjectStoreState = {
-    isUploadOpen: ref(false),
     objects: ref([]),
     selectedObjects: ref([]),
   };
@@ -146,10 +144,6 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  function setIsUploadOpen(isUploadOpen: boolean) {
-    state.isUploadOpen.value = isUploadOpen;
-  }
-
   function setSelectedObjects(selected: Array<COMSObject>) {
     state.selectedObjects.value = selected;
   }
@@ -181,7 +175,6 @@ export const useObjectStore = defineStore('object', () => {
     fetchObjects,
     findObjectById,
     headObject,
-    setIsUploadOpen,
     setSelectedObjects,
     togglePublic
   };

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
@@ -9,8 +8,9 @@ import { ButtonMode } from '@/utils/enums';
 
 // Props
 type Props = {
-  mode: ButtonMode;
+  disabled: boolean;
   ids: Array<string>;
+  mode: ButtonMode;
 };
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -20,7 +20,6 @@ const objectStore = useObjectStore();
 
 // State
 const displayNoFileDlg = ref(false);
-const { getIsUploadOpen } = storeToRefs(objectStore);
 
 // Actions
 const download = () => {
@@ -54,6 +53,7 @@ const download = () => {
   <Button
     v-if="props.mode === ButtonMode.ICON"
     class="p-button-lg p-button-text"
+    :disabled="props.disabled"
     @click="download()"
   >
     <font-awesome-icon icon="fa-solid fa-download" />
@@ -61,7 +61,7 @@ const download = () => {
   <Button
     v-else
     class="p-button-outlined mr-2"
-    :disabled="getIsUploadOpen"
+    :disabled="props.disabled"
     @click="download()"
   >
     <font-awesome-icon
