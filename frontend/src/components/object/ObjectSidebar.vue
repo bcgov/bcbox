@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { watch } from 'vue';
+
 import {
   ObjectMetadata,
   ObjectProperties,
   ObjectTag
 } from '@/components/object';
 import { Button } from '@/lib/primevue';
+import { useTagStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 // Props
@@ -17,10 +20,17 @@ const props = withDefaults(defineProps<Props>(), {});
 // Emits
 const emit = defineEmits(['close-object-info']);
 
+// Store
+const tagStore = useTagStore();
+
 // Actions
 const closeObjectInfo = async () => {
   emit('close-object-info');
 };
+
+watch( props, () => {
+  tagStore.fetchTagging({objectId: props.objectInfoId});
+}, { immediate: true });
 </script>
 
 <template>
@@ -32,13 +42,14 @@ const closeObjectInfo = async () => {
       />
       <h1>File details</h1>
     </div>
-    <div class="col-fixed align-items-center">
+    <div>
       <Button
-        class="p-button-lg p-button-rounded p-button-text black"
+        class="black"
+        icon="pi pi-times"
+        text
+        rounded
         @click="closeObjectInfo"
-      >
-        <font-awesome-icon icon="fa-solid fa-xmark" />
-      </Button>
+      />
     </div>
   </div>
   <div class="pl-2">
@@ -48,7 +59,6 @@ const closeObjectInfo = async () => {
     />
     <ObjectMetadata
       :object-info-id="props.objectInfoId"
-      :full-view="false"
     />
     <ObjectTag :object-info-id="props.objectInfoId" />
     <div class="col-9">

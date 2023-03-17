@@ -14,7 +14,7 @@ import {
   ShareObjectButton
 } from '@/components/object';
 import { Button, Dialog } from '@/lib/primevue';
-import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
+import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore, useTagStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 
@@ -32,6 +32,7 @@ const props = withDefaults(defineProps<Props>(), {});
 const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
+const tagStore = useTagStore();
 const { getObjects } = storeToRefs(objectStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
@@ -71,6 +72,7 @@ onBeforeMount( async () => {
 
 watch( [props, getObjects], () => {
   metadataStore.fetchMetadata({objectId: props.objectId });
+  tagStore.fetchTagging({objectId: props.objectId });
   obj.value = objectStore.findObjectById(props.objectId);
   bucketId.value = obj.value?.bucketId || '';
 });
@@ -128,7 +130,6 @@ watch( [props, getObjects], () => {
       <ObjectAccess :object-info-id="props.objectId" />
       <ObjectMetadata
         :object-info-id="props.objectId"
-        :full-view="true"
       />
       <ObjectTag :object-info-id="props.objectId" />
     </div>

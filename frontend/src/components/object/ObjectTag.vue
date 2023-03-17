@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 
 import { Button } from '@/lib/primevue';
@@ -16,13 +17,13 @@ const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const tagStore = useTagStore();
+const { getTagging } = storeToRefs(tagStore);
 
 // State
 const objectTagging: Ref<Tagging | undefined> = ref(undefined);
 
 // Actions
 async function load() {
-  await tagStore.fetchTagging({objectId: props.objectInfoId});
   objectTagging.value = tagStore.findTaggingByObjectId(props.objectInfoId);
 }
 
@@ -30,14 +31,14 @@ onMounted(() => {
   load();
 });
 
-watch( props, () => {
+watch( [props, getTagging], () => {
   load();
 });
 </script>
 
 <template>
   <div
-    v-if="objectTagging?.tagset"
+    v-if="objectTagging?.tagset.length"
     class="grid"
   >
     <div class="col-12">

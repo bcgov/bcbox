@@ -23,7 +23,6 @@ const props = withDefaults(defineProps<Props>(), {
 // Store
 const bucketStore = useBucketStore();
 const permissionStore = usePermissionStore();
-const { getBucketPermissions } = storeToRefs(permissionStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
@@ -43,10 +42,8 @@ onErrorCaptured((e: Error) => {
 onBeforeMount( async () => {
   const router = useRouter();
 
-  await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
-  if( !getBucketPermissions.value.some( (x: BucketPermission) =>
-    x.bucketId === props.bucketId && x.userId === getUserId.value ) ) {
-
+  const permResponse = await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
+  if( !permResponse.some( (x: BucketPermission) => x.bucketId === props.bucketId ) ) {
     router.replace({ name: RouteNames.FORBIDDEN });
   }
   else {
