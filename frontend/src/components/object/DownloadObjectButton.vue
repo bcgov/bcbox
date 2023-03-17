@@ -8,8 +8,9 @@ import { ButtonMode } from '@/utils/enums';
 
 // Props
 type Props = {
-  mode: ButtonMode;
+  disabled?: boolean;
   ids: Array<string>;
+  mode: ButtonMode;
 };
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -52,6 +53,7 @@ const download = () => {
   <Button
     v-if="props.mode === ButtonMode.ICON"
     class="p-button-lg p-button-text"
+    :disabled="props.disabled"
     @click="download()"
   >
     <font-awesome-icon icon="fa-solid fa-download" />
@@ -59,6 +61,7 @@ const download = () => {
   <Button
     v-else
     class="p-button-outlined mr-2"
+    :disabled="props.disabled"
     @click="download()"
   >
     <font-awesome-icon

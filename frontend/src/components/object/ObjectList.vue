@@ -42,8 +42,8 @@ const { getObjects, getSelectedObjects } = storeToRefs(objectStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
-const objectInfoId: Ref<string | undefined> = ref(undefined);
 const displayUpload = ref(false);
+const objectInfoId: Ref<string | undefined> = ref(undefined);
 
 // Actions
 const showObjectInfo = async (objectId: string | undefined) => {
@@ -115,16 +115,21 @@ watch( getObjects, () => {
         /> Upload
       </Button>
       <DownloadObjectButton
-        :mode="ButtonMode.BUTTON"
+        :disabled="displayUpload"
         :ids="selectedObjectIds"
+        :mode="ButtonMode.BUTTON"
       />
       <DeleteObjectButton
-        :mode="ButtonMode.BUTTON"
+        :disabled="displayUpload"
         :ids="selectedObjectIds"
+        :mode="ButtonMode.BUTTON"
       />
     </div>
 
-    <div class="flex mt-4">
+    <div
+      class="flex mt-4"
+      :class="{ 'disable-overlay': displayUpload }"
+    >
       <div class="flex-grow-1">
         <ObjectTable
           :bucket-id="props.bucketId"
@@ -146,4 +151,9 @@ watch( getObjects, () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.disable-overlay {
+  pointer-events: none;
+  opacity: 0.4;
+}
+</style>
