@@ -6,6 +6,7 @@ import { Button, Dropdown, RadioButton } from '@/lib/primevue';
 import { useConfigStore, useUserStore } from '@/store';
 import { Regex } from '@/utils/constants';
 
+import type { IChangeEvent, IInputEvent } from '@/interfaces';
 import type { IdentityProvider, User, UserPermissions } from '@/types';
 
 // Props
@@ -24,9 +25,9 @@ const { getConfig } = storeToRefs(useConfigStore());
 const { userSearch } = storeToRefs(useUserStore());
 
 // State
+const invalidSelectedUser: Ref<boolean> = ref(false);
 const selectedIDP: Ref<IdentityProvider | null> = ref(null);
 const selectedUser: Ref<User | null> = ref(null);
-const selectedUserIsInvalid: Ref<boolean> = ref(false);
 const userSearchInput: Ref<string | undefined> = ref('');
 const userSearchPlaceholder: Ref<string | undefined> = ref('');
 
@@ -52,38 +53,32 @@ const onCancel = () => {
   emit('cancel-search-users');
 };
 
-const onChange = (event: any) => {
+const onChange = (event: IChangeEvent) => {
   if(isProxy(event.value)) {
+    const user: User = event.value as User;
+
     // Duplicate user check
-    if( !props.permissions.some(perm => perm.userId === event.value?.userId) ) {
-    // Set state
-      selectedUser.value = event.value;
+    if( !props.permissions.some(perm => perm.userId === user.userId) ) {
+      selectedUser.value = user;
+      invalidSelectedUser.value = false;
     }
     else {
-    // Invalid
-      selectedUserIsInvalid.value = true;
+      invalidSelectedUser.value = true;
     }
   }
 };
 
-const onInput = async (event: any) => {
+const onInput = (event: IInputEvent) => {
   const input: string = event.target.value;
   if( selectedIDP.value?.idp ) {
-    if( selectedIDP.value.searchable ) {
-      if( input.length >= 3 ) {
-        await userStore.fetchUsers({ idp: selectedIDP.value.idp, search: input });
-      }
-      else {
-        userStore.clearSearch();
-      }
+    if( selectedIDP.value.searchable && input.length >= 3  ) {
+      userStore.fetchUsers({ idp: selectedIDP.value.idp, search: input });
+    }
+    else if( input.match( Regex.EMAIL ) ) {
+      userStore.fetchUsers({ idp: selectedIDP.value.idp, email: input });
     }
     else {
-      if( input.match( Regex.EMAIL ) ) {
-        await userStore.fetchUsers({ idp: selectedIDP.value.idp, email: input });
-      }
-      else {
-        userStore.clearSearch();
-      }
+      userStore.clearSearch();
     }
   }
 };
@@ -92,7 +87,7 @@ const onReset = () => {
   userStore.clearSearch();
 
   selectedUser.value = null;
-  selectedUserIsInvalid.value = false;
+  invalidSelectedUser.value = false;
   userSearchInput.value = '';
 };
 
@@ -148,7 +143,7 @@ onMounted(() => {
       editable
       :placeholder="userSearchPlaceholder"
       class="mt-1 mb-4"
-      :class="selectedUserIsInvalid ? 'p-invalid' : ''"
+      :class="invalidSelectedUser ? 'p-invalid' : ''"
       @input="onInput"
       @change="onChange"
     />
