@@ -63,13 +63,13 @@ onMounted( () => {
     </h1>
     <h2
       v-if="bucket"
-      class="pb-3"
+      class="mb-3 flex overflow-hidden"
     >
       <font-awesome-icon
         icon="fa-solid fa-box-open"
-        class="mr-1"
+        class="mr-2 mt-2"
       />
-      {{ bucket.bucketName }}
+      <span class="wrap-block w-11">{{ bucket.bucketName }}</span>
     </h2>
     <ObjectList :bucket-id="props.bucketId" />
   </div>

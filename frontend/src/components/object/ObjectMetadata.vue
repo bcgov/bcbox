@@ -22,40 +22,50 @@ const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
 
 // Actions
 async function load() {
-  objectMetadata.value = metadataStore.findMetadataByObjectId(props.objectInfoId);
+  objectMetadata.value = metadataStore.findMetadataByObjectId(
+    props.objectInfoId
+  );
 }
 
 onMounted(() => {
   load();
 });
 
-watch( props, () => {
+watch(props, () => {
   load();
 });
 </script>
 
 <template>
-  <div class="grid">
+  <div class="grid details-grid grid-nogutter mb-2">
     <div class="col-12">
-      <h2 class="font-bold">
-        Metadata
-      </h2>
+      <h2 class="font-bold">Metadata</h2>
     </div>
     <div>
       <DataTable
         v-if="objectMetadata"
         :value="objectMetadata.metadata"
-        striped-rows
         responsive-layout="scroll"
       >
-        <Column
-          field="key"
-          header="Key"
-        />
+        <Column field="key" header="Key">
+          <template #body="{ data }">
+            <div >
+              {{ data.key }}:
+            </div>
+          </template>
+        </Column>
+
         <Column
           field="value"
           header="Value"
-        />
+          class="overflow-hidden details-value-column"
+        >
+          <template #body="{ data }">
+            <div class="wrap-block">
+              {{ data.value }}
+            </div>
+          </template>
+        </Column>
       </DataTable>
     </div>
   </div>

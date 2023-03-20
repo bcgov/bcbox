@@ -11,7 +11,7 @@ import type { Bucket, BucketPermission } from '@/types';
 
 // Props
 type Props = {
-  sidebarInfo: Bucket
+  sidebarInfo: Bucket;
 };
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -35,15 +35,25 @@ const closeSidebarInfo = async () => {
 };
 
 async function load() {
-  await permissionStore.fetchBucketPermissions({bucketId: props.sidebarInfo.bucketId});
+  await permissionStore.fetchBucketPermissions({
+    bucketId: props.sidebarInfo.bucketId,
+  });
 
-  const uniqueIds = [...new Set(getBucketPermissions.value
-    .filter( (x: BucketPermission) => x.bucketId === props.sidebarInfo.bucketId && x.permCode === Permissions.MANAGE )
-    .map( (x: BucketPermission) => x.userId) )];
+  const uniqueIds = [
+    ...new Set(
+      getBucketPermissions.value
+        .filter(
+          (x: BucketPermission) =>
+            x.bucketId === props.sidebarInfo.bucketId &&
+            x.permCode === Permissions.MANAGE
+        )
+        .map((x: BucketPermission) => x.userId)
+    ),
+  ];
 
-  if(uniqueIds.length) {
-    await userStore.fetchUsers({userId: uniqueIds} );
-    managedBy.value = userSearch.value.map( x => x.fullName ).join( ', ');
+  if (uniqueIds.length) {
+    await userStore.fetchUsers({ userId: uniqueIds });
+    managedBy.value = userSearch.value.map((x) => x.fullName).join(', ');
   }
 }
 
@@ -51,7 +61,7 @@ onBeforeMount(() => {
   load();
 });
 
-watch( props, () => {
+watch(props, () => {
   load();
 });
 </script>
@@ -74,33 +84,35 @@ watch( props, () => {
       </Button>
     </div>
   </div>
-  <div class="pl-2">
-    <div class="grid">
+
+  <div class="pl-2 sidebar">
+    <div class="grid details-grid grid-nogutter">
       <div class="col-12">
-        <h2>Properties</h2>
+        <h2 class="font-bold">Properties</h2>
       </div>
-      <div class="col-3">
-        Bucket Name:
+      <div class="grid overflow-hidden">
+        <div class="col-fixed">Bucket Name:</div>
+        <div class="col wrap-block w-6">
+          {{ props.sidebarInfo?.bucketName }}
+        </div>
       </div>
-      <div class="col-9">
-        {{ props.sidebarInfo?.bucketName }}
-      </div>
-      <div class="col-3">
-        Bucket ID:
-      </div>
-      <div class="col-9">
-        {{ props.sidebarInfo?.bucketId }}
+      <div class="grid">
+        <div class="col-fixed">Bucket ID:</div>
+        <div class="col">
+          {{ props.sidebarInfo?.bucketId }}
+        </div>
       </div>
     </div>
-    <div class="grid">
+
+    <div class="grid details-grid grid-nogutter">
       <div class="col-12">
-        <h2>Access</h2>
+        <h2 class="font-bold">Access</h2>
       </div>
-      <div class="col-3">
-        Managed by:
-      </div>
-      <div class="col-9">
-        {{ managedBy }}
+      <div class="grid">
+        <div class="col-fixed">Managed by:</div>
+        <div class="col">
+          {{ managedBy }}
+        </div>
       </div>
     </div>
   </div>

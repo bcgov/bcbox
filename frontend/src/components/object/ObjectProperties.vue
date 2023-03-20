@@ -56,14 +56,15 @@ watch( props, () => {
 </script>
 
 <template>
-  <div class="grid">
-    <div class="col-12">
-      <h2 class="font-bold">
-        Properties
-      </h2>
+  <div class="grid details-grid grid-nogutter mb-2">
+      <div class="col-12">
+        <h2 class="font-bold">
+          Properties
+        </h2>
     </div>
 
     <GridRow
+      class=" overflow-hidden"
       label="Name"
       :value="objectMetadata?.metadata.find(x => x.key === 'name')?.value"
     />
