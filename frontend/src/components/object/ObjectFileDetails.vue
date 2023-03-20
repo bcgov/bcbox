@@ -118,6 +118,7 @@ watch( [props, getObjects], () => {
             props.objectId, getUserId, Permissions.DELETE, bucketId)"
           :mode="ButtonMode.ICON"
           :ids="[props.objectId]"
+          :callback="() => router.push({ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucketId } })"
         />
       </div>
     </div>
