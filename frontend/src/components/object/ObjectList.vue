@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import {
   DeleteObjectButton,
@@ -13,7 +13,6 @@ import { Button } from '@/lib/primevue';
 import {
   useAuthStore,
   useBucketStore,
-  useMetadataStore,
   useObjectStore,
   usePermissionStore
 } from '@/store';
@@ -21,7 +20,6 @@ import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
-import type { COMSObject } from '@/types';
 
 type Props = {
   bucketId?: string
@@ -33,12 +31,11 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const bucketStore = useBucketStore();
-const metadataStore = useMetadataStore();
 //const navStore = useNavStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 
-const { getObjects, getSelectedObjects } = storeToRefs(objectStore);
+const { getSelectedObjects } = storeToRefs(objectStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
@@ -82,11 +79,6 @@ onMounted(async () => {
 
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
   await objectStore.fetchObjects({ bucketId: props.bucketId });
-});
-
-watch( getObjects, () => {
-  // Watch for object changes to get associated metadata
-  metadataStore.fetchMetadata({objectId: getObjects.value.map( (x: COMSObject) => x.id )});
 });
 
 </script>

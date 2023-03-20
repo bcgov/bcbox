@@ -1,0 +1,53 @@
+---
+bcgov_pubcode_version: 1
+data_management_roles:
+  data_custodian: Fraser Marshall
+  product_owner: Sharolyn Hurley
+product_external_dependencies:
+  common_components:
+    - Common-Object-Management-Service
+  identity_authorization:
+    - IDIR
+    - BceId
+    - Business-BceId
+product_information:
+  ministry:
+    - Water, Land and Resource Stewardship
+  product_acronym: BCBox
+  product_description: >-
+    BCBox is a hosted user interface that serves as a common
+    front-end consumer of the hosted COMS API and can be used as a simple
+    dropbox to allow file sharing and permission management using S3.
+  product_name: BCBox
+  product_status: maturing
+  product_urls:
+    - https://bcbox-test-master.apps.silver.devops.gov.bc.ca/
+  program_area: >-
+    Natural Resource Information and Digital Services - Development and Digital
+    Services
+product_technology_information:
+  backend_frameworks:
+    - name: Express
+      version: 4.18.2
+  backend_languages_version:
+    - name: JavaScript
+      version: ecmaVersion 11 / es2020
+  ci_cd_tools:
+    - GitHub-Actions
+    - Helm
+  frontend_frameworks:
+    - name: Vue
+      version: 3.2.47
+    - name: Other
+      version: Pinia 2.0.32
+    - name: Other
+      version: Primevue (3.23.0)
+    - name: Other
+      version: oidc-client-ts (2.2.1)
+  frontend_languages:
+    - name: TypeScript
+      version: 4.8.4
+    - name: JavaScript
+      version: ecmaVersion 11 / es2020
+  hosting_platforms:
+    - Private-Cloud-Openshift

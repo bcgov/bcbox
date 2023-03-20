@@ -64,18 +64,18 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
   await objectStore.togglePublic(objectId, isPublic);
 };
 
-watch( getObjects, () => {
+watch( getObjects, async () => {
   // Filter object cache to this specific bucket
   const objs: Array<COMSObjectDataSource> = getObjects.value
     .filter( (x: COMSObject) => x.bucketId === props.bucketId ) as COMSObjectDataSource[];
 
-  // Apply metadata
-  objs.forEach( (x: COMSObjectDataSource) => {
-    x.name = metadataStore.findValue(x.id, 'name');
-  });
+  // update metadata store
+  await metadataStore.fetchMetadata({objectId: objs.map( (x: COMSObject) => x.id )});
 
-  // Set table source
-  tableData.value = objs;
+  tableData.value = objs.map( (x: COMSObjectDataSource) => {
+    x.name = metadataStore.findValue(x.id, 'name');
+    return x;
+  });
 });
 
 watch( selectedObjects, () => {
