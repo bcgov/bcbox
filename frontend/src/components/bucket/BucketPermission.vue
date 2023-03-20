@@ -4,11 +4,13 @@ import { onMounted, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import BucketPermissionAddUser from '@/components/bucket/BucketPermissionAddUser.vue';
+import { useAlert } from '@/composables/useAlert';
 import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
 import { usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
+import type { UserPermissions } from '@/types';
 
 // Props
 type Props = {
@@ -25,19 +27,40 @@ const { getMappedBucketToUserPermissions } = storeToRefs(permissionStore);
 const showSearchUsers: Ref<boolean> = ref(false);
 
 // Actions
+const removeManageAlert = useAlert('Warning', 'Cannot remove last user with MANAGE permission.');
+
 const cancelSearchUsers = () => {
   showSearchUsers.value = false;
 };
 
 const removeBucketUser = (userId: string) => {
-  permissionStore.removeBucketUser(props.bucketId, userId);
+  const managers = getMappedBucketToUserPermissions.value.filter( (x: UserPermissions) => x.manage );
+  if( managers.length === 1 && managers[0].userId === userId ) {
+    removeManageAlert.show();
+  }
+  else {
+    permissionStore.removeBucketUser(props.bucketId, userId);
+  }
 };
 
 const updateBucketPermission = (value: boolean, userId: string, permCode: string) => {
   if (value) {
     permissionStore.addBucketPermission(props.bucketId, userId, permCode);
   } else {
-    permissionStore.deleteBucketPermission(props.bucketId, userId, permCode);
+    const managers = getMappedBucketToUserPermissions.value.filter( (x: UserPermissions) => x.manage );
+
+    // Disallow removable of final MANAGE permission
+    if( permCode === Permissions.MANAGE && !managers.length ) {
+      removeManageAlert.show();
+
+      // Set the value back as clicking will automatically change it
+      const perm: UserPermissions = getMappedBucketToUserPermissions.value
+        .find( (x: UserPermissions) => x.userId === userId ) as UserPermissions;
+      perm.manage = true;
+    }
+    else {
+      permissionStore.deleteBucketPermission(props.bucketId, userId, permCode);
+    }
   }
 };
 
