@@ -7,8 +7,8 @@ import { InputText } from '@/lib/primevue';
 // Props
 type Props = {
   helptext?: string;
-  name: string;
   label?: string;
+  name: string;
   placeholder?: string;
 };
 

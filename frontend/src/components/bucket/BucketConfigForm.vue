@@ -105,38 +105,38 @@ const onCancel = () => {
       <TextInput
         name="bucketName"
         label="Bucket name *"
-        placeholder="nr-costcontainment-dev"
-        helptext="The name used for the bucket in BCBox's interface."
+        placeholder="My Documents"
+        helptext="Your custom display name for the bucket."
       />
       <TextInput
         name="bucket"
         label="Bucket *"
         placeholder="bucket0123456789"
-        helptext="A unique identifier for a bucket."
+        helptext="Your storage provider's bucket identifier."
       />
       <TextInput
         name="endpoint"
         label="Endpoint *"
-        placeholder="https://exampleendpoint.gov.bc.ca/"
-        helptext="The URL that specifies how to access the bucket."
+        placeholder="https://example.com/"
+        helptext="The URL of the object storage server."
       />
       <Password
         name="accessKeyId"
-        label="Access key identifier / User ID *"
-        placeholder="AKIAIOSFODNN7EXAMPLE"
-        helptext="A public identifier used to access the bucket. Also known as User ID."
+        label="Access key identifier / Username *"
+        placeholder="username"
+        helptext="User/Account identifier or username."
       />
       <Password
         name="secretAccessKey"
         label="Secret access key *"
-        placeholder="wjairXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-        helptext="A private key used to authenticate and authorize access to a bucket."
+        placeholder="password"
+        helptext="A password used to access the bucket."
       />
       <TextInput
         name="key"
         label="Key"
-        placeholder="folder/"
-        helptext="A path prefix within a bucket. The path will be created if it doesn't already exist."
+        placeholder="directory"
+        helptext="An optional path prefix within a bucket. The path will be created if it doesn't already exist."
       />
       <Button
         class="mt-2"
@@ -148,7 +148,8 @@ const onCancel = () => {
       <Button
         class="p-button-text mt-2"
         label="Cancel"
-        icon="pi pi-times"
+        icon="pi pi
+        -times"
         @click="onCancel"
       />
     </Form>

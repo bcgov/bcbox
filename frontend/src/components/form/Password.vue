@@ -6,10 +6,10 @@ import { Password } from '@/lib/primevue';
 
 type Props = {
   helptext?: string;
-  name: string;
-  type?: string;
   label?: string;
+  name: string;
   placeholder?: string;
+  type?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
