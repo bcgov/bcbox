@@ -46,17 +46,19 @@ watch( props, () => {
 </script>
 
 <template>
-  <div class="grid">
+  <div class="grid details-grid grid-nogutter mb-2">
     <div class="col-12">
       <h2 class="font-bold">
         Access
       </h2>
     </div>
-    <div class="col-3">
-      Managed by:
-    </div>
-    <div class="col-9">
-      {{ managedBy }}
+    <div class="grid">
+      <div class="col-fixed">
+        Managed by:
+      </div>
+      <div class="col">
+        {{ managedBy }}
+      </div>
     </div>
   </div>
 </template>

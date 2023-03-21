@@ -122,7 +122,7 @@ watch( [props, getObjects], () => {
       </div>
     </div>
 
-    <div class="pl-2">
+    <div>
       <ObjectProperties
         :object-info-id="props.objectId"
         :full-view="true"
@@ -158,9 +158,3 @@ watch( [props, getObjects], () => {
     <ObjectPermission :object-id="permissionsObjectId" />
   </Dialog>
 </template>
-
-<style lang="scss" scoped>
-:deep(.grid) {
-  width: 33% !important;
-}
-</style>

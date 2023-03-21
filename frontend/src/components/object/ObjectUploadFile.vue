@@ -27,8 +27,8 @@ const props = withDefaults(defineProps<Props>(), {});
         :src="file.objectURL"
         width="50"
       />
-      <div>
-        <span>{{ file.name }}</span>
+      <div class="flex-grow-1 overflow-hidden">
+        <span class="wrap-block">{{ file.name }}</span>
         <div>
           <span class="pr-2">{{ filesize(file.size) }}</span>
           <Badge

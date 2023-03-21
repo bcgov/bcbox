@@ -39,7 +39,7 @@ watch( [props, getTagging], () => {
 <template>
   <div
     v-if="objectTagging?.tagset.length"
-    class="grid"
+    class="grid details-grid grid-nogutter mb-2"
   >
     <div class="col-12">
       <h2 class="font-bold">

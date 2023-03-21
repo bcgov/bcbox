@@ -13,26 +13,17 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <div
-    v-if="props.value && props.label"
-    class="col-3"
-  >
-    {{ label }}:
-  </div>
-  <div
-    v-if="props.value && props.link"
-    class="col-9"
-  >
-    <router-link
-      :to="props.link"
-    >
-      {{ props.value }}
-    </router-link>
-  </div>
-  <div
-    v-if="props.value && !props.link"
-    class="col-9"
-  >
-    {{ props.value }}
+  <div class="col-12">
+    <div class="grid">
+      <div v-if="props.value && props.label" class="col-fixed">{{ label }}:</div>
+      <div v-if="props.value && props.link" class="col wrap-block w-9">
+        <router-link :to="props.link">
+          {{ props.value }}
+        </router-link>
+      </div>
+      <div v-if="props.value && !props.link" class="col wrap-block w-9">
+        {{ props.value }}
+      </div>
+    </div>
   </div>
 </template>

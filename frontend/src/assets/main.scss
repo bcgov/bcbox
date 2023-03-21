@@ -29,7 +29,33 @@
   width: 800px;
 }
 
-// Info/settings dialog modals
+// -------- layout
+
+// details page / sidebar
+.details-grid {
+  h2 { margin-bottom: 1rem; }
+  .col-fixed { width: 150px; }  // label column
+  // make datatable look like grid
+  .p-datatable {
+    thead th{ padding-top: 0; }
+    td { padding: 0.5rem; }
+    th:first-child,
+    td:first-child { padding-left: 0; }
+  }
+}
+.details-value-column { width: 40rem; }
+.sidebar .details-value-column { width: 20rem; }
+// eof details page / sidebar
+
+// wrap text
+.wrap-block{
+  display: inline-block;
+  overflow-wrap: break-word;
+  width: 100%;
+}
+td .wrap-block{ width: inherit; }
+
+// --------- Info/settings dialog modals
 .bcbox-info-dialog {
   &.p-dialog {
     .p-dialog-header {
@@ -53,6 +79,7 @@
       font-weight: normal;
       margin-bottom: 1.5rem;
       padding-left: 3.1rem;
+      @extend .wrap-block;
     }
   }
 }

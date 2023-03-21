@@ -35,7 +35,7 @@ watch( props, () => {
 
 <template>
   <div class="flex justify-content-start">
-    <div class="flex col align-items-center pl-0">
+    <div class="flex col align-items-center">
       <font-awesome-icon
         icon="fa-solid fa-circle-info"
         style="font-size: 2rem"
@@ -52,7 +52,7 @@ watch( props, () => {
       />
     </div>
   </div>
-  <div class="pl-2">
+  <div class="pl-2 sidebar">
     <ObjectProperties
       :object-info-id="props.objectInfoId"
       :full-view="false"
@@ -61,7 +61,7 @@ watch( props, () => {
       :object-info-id="props.objectInfoId"
     />
     <ObjectTag :object-info-id="props.objectInfoId" />
-    <div class="col-9">
+    <div class="col-12 pl-0">
       <router-link
         v-slot="{ navigate }"
         custom
