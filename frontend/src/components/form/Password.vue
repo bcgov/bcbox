@@ -6,12 +6,14 @@ import { Password } from '@/lib/primevue';
 
 type Props = {
   name: string;
+  helptext?: string;
   type?: string;
   label?: string;
   placeholder?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
+  helptext: '',
   type: 'text',
   label: '',
   placeholder: ''
@@ -33,6 +35,7 @@ const { errorMessage, value } = useField<string>(toRef(props, 'name'));
       :feedback="false"
       toggle-mask
     />
+    <small id="`${name}-help`">{{ helptext }}</small>
     <ErrorMessage
       :name="props.name"
     />

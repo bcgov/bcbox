@@ -43,7 +43,7 @@ const schema = object({
   endpoint: string().max(255).required().label('Endpoint'),
   accessKeyId: string().max(255).required().label('Access Key ID'),
   secretAccessKey: string().max(255).required().label('Secret Access Key'),
-  key: string().max(255).required().label('Key'),
+  key: string().max(255).label('Key'),
 });
 
 // Actions
@@ -104,27 +104,39 @@ const onCancel = () => {
     >
       <TextInput
         name="bucketName"
-        label="Bucket name (what other users will see)"
+        label="Bucket name *"
+        placeholder="nr-costcontainment-dev"
+        helptext="The name used for the bucket in BCBox's interface."
       />
       <TextInput
         name="bucket"
-        label="Bucket"
+        label="Bucket *"
+        placeholder="bucket0123456789"
+        helptext="A unique identifier for a bucket."
       />
       <TextInput
         name="endpoint"
-        label="Endpoint"
+        label="Endpoint *"
+        placeholder="https://exampleendpoint.gov.bc.ca/"
+        helptext="The URL that specifies how to access the bucket."
       />
       <Password
         name="accessKeyId"
-        label="Access key Identifier"
+        label="Access key identifier / User ID *"
+        placeholder="AKIAIOSFODNN7EXAMPLE"
+        helptext="A public identifier used to access the bucket. Also known as User ID."
       />
       <Password
         name="secretAccessKey"
-        label="Secret access key"
+        label="Secret access key *"
+        placeholder="wjairXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+        helptext="A private key used to authenticate and authorize access to a bucket."
       />
       <TextInput
         name="key"
         label="Key"
+        placeholder="folder/"
+        helptext="A path prefix within a bucket. The path will be created if it doesn't already exist."
       />
       <Button
         class="mt-2"

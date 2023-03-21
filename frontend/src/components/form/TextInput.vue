@@ -7,11 +7,13 @@ import { InputText } from '@/lib/primevue';
 // Props
 type Props = {
   name: string;
+  helptext?: string;
   label?: string;
   placeholder?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
+  helptext: '',
   type: 'text',
   label: '',
   placeholder: ''
@@ -30,6 +32,7 @@ const { errorMessage, value } = useField<string>(toRef(props, 'name'));
       :placeholder="placeholder"
       :class="{ 'p-invalid': errorMessage }"
     />
+    <small id="`${name}-help`">{{ helptext }}</small>
     <ErrorMessage
       :name="name"
     />
