@@ -43,7 +43,7 @@ const schema = object({
   endpoint: string().max(255).required().label('Endpoint'),
   accessKeyId: string().max(255).required().label('Access Key ID'),
   secretAccessKey: string().max(255).required().label('Secret Access Key'),
-  key: string().max(255).label('Key'),
+  key: string().max(255).label('Key')
 });
 
 // Actions
