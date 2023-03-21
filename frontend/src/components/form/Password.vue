@@ -5,8 +5,8 @@ import { useField, ErrorMessage } from 'vee-validate';
 import { Password } from '@/lib/primevue';
 
 type Props = {
-  name: string;
   helptext?: string;
+  name: string;
   type?: string;
   label?: string;
   placeholder?: string;
