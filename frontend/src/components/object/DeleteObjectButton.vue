@@ -11,12 +11,13 @@ type Props = {
   disabled?: boolean;
   ids: Array<string>;
   mode: ButtonMode;
-  callback?: Function;
 };
 
-const props = withDefaults(defineProps<Props>(), {
-  callback: () => {}
-});
+const props = withDefaults(defineProps<Props>(), {});
+
+// Emits
+const emit = defineEmits(['on-deleted-success', 'on-deleted-error']);
+
 
 // Store
 const objectStore = useObjectStore();
@@ -39,9 +40,10 @@ const confirmDelete = () => {
       accept: async () => {
         try {
           await objectStore.deleteObjects(props.ids);
-          props.callback();
+          emit('on-deleted-success');
         } catch (error) {
           toast.add({ severity: 'error', summary: 'Error deleting one or more files', detail: error, life: 3000 });
+          emit('on-deleted-error');
         }
       },
       reject: () => {
