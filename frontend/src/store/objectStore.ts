@@ -34,10 +34,10 @@ export const useObjectStore = defineStore('object', () => {
   };
 
   // Actions
-  async function createObject(object: any, bucketId?: string) {
+  async function createObject(object: any, bucketId?: string, timeout?: number) {
     try {
       appStore.beginIndeterminateLoading();
-      await objectService.createObject(object, bucketId);
+      await objectService.createObject(object, bucketId, timeout);
     }
     catch (error) {
       toast.add({ severity: 'error', summary: 'Error creating object', detail: error, life: 3000 });

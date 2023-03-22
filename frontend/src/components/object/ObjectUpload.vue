@@ -44,7 +44,8 @@ const onUpload = async (event: any) => {
     await Promise.allSettled(
       event.files.map(async (file: File) => {
         try {
-          await objectStore.createObject(file, bucketId);
+          //infinite timeout for big files upload to avoid timeout error
+          await objectStore.createObject(file, bucketId, 0);
           successfulFiles.value.push(file);
         } catch (error) {
           toast.add({ severity: 'error', summary: 'Error', detail: `Failed to upload file ${file.name}`, life: 3000 });

@@ -10,14 +10,14 @@ export default {
    * Post an object
    * @returns {Promise} An axios response
    */
-  createObject(object: any, bucketId?: string) {
+  createObject(object: any, bucketId?: string, timeout?: number) {
     const config = {
       headers: { 'Content-Type': 'multipart/form-data' },
       params: { bucketId: bucketId },
     };
     const fd = new FormData();
     fd.append('file', object);
-    return comsAxios(0).post(PATH, fd, config);
+    return comsAxios(timeout).post(PATH, fd, config);
   },
 
   /**
