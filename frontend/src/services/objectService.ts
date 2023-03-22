@@ -17,7 +17,7 @@ export default {
     };
     const fd = new FormData();
     fd.append('file', object);
-    return comsAxios().post(PATH, fd, config);
+    return comsAxios(0).post(PATH, fd, config);
   },
 
   /**
