@@ -58,7 +58,7 @@ const onSubmit = async (values: any) => {
       accessKeyId: values.accessKeyId !== 'REDACTED' ? values.accessKeyId : undefined,
       secretAccessKey:
         values.secretAccessKey !== 'REDACTED' ? values.secretAccessKey : undefined,
-      key: values.key.trim() ? values.key : '/',
+      key: values.key ? values.key : '/',
       active: true
     } as Bucket;
 

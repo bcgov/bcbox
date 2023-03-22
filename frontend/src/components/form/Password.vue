@@ -26,7 +26,7 @@ const { errorMessage, value } = useField<string>(toRef(props, 'name'));
   <div class="field">
     <label :for="props.name">{{ props.label }}</label>
     <Password
-      v-model="value"
+      v-model.trim="value"
       :aria-describedby="`${props.name}-help`"
       :name="props.name"
       :type="props.type"
