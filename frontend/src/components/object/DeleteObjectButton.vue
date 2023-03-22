@@ -15,6 +15,10 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {});
 
+// Emits
+const emit = defineEmits(['on-deleted-success', 'on-deleted-error']);
+
+
 // Store
 const objectStore = useObjectStore();
 
@@ -36,8 +40,10 @@ const confirmDelete = () => {
       accept: async () => {
         try {
           await objectStore.deleteObjects(props.ids);
+          emit('on-deleted-success');
         } catch (error) {
           toast.add({ severity: 'error', summary: 'Error deleting one or more files', detail: error, life: 3000 });
+          emit('on-deleted-error');
         }
       },
       reject: () => {

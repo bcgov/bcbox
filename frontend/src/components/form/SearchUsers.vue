@@ -65,12 +65,20 @@ const onChange = (event: IChangeEvent) => {
     else {
       invalidSelectedUser.value = true;
     }
+
+    // Keeps the search input as the email
+    userSearchInput.value = user.email;
   }
 };
 
 const onInput = (event: IInputEvent) => {
   const input: string = event.target.value;
   if( selectedIDP.value?.idp ) {
+
+    // Reset selection on any input change
+    selectedUser.value = null;
+    invalidSelectedUser.value = false;
+
     if( selectedIDP.value.searchable && input.length >= 3  ) {
       userStore.fetchUsers({ idp: selectedIDP.value.idp, search: input });
     }
