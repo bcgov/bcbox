@@ -43,7 +43,7 @@ const schema = object({
   endpoint: string().max(255).required().label('Endpoint'),
   accessKeyId: string().max(255).required().label('Access Key ID'),
   secretAccessKey: string().max(255).required().label('Secret Access Key'),
-  key: string().max(255).required().label('Key'),
+  key: string().max(255).label('Key')
 });
 
 // Actions
@@ -58,7 +58,7 @@ const onSubmit = async (values: any) => {
       accessKeyId: values.accessKeyId !== 'REDACTED' ? values.accessKeyId : undefined,
       secretAccessKey:
         values.secretAccessKey !== 'REDACTED' ? values.secretAccessKey : undefined,
-      key: values.key,
+      key: values.key ? values.key : '/',
       active: true
     } as Bucket;
 
@@ -104,27 +104,39 @@ const onCancel = () => {
     >
       <TextInput
         name="bucketName"
-        label="Bucket name (what other users will see)"
+        label="Bucket name *"
+        placeholder="My Documents"
+        helptext="Your custom display name for the bucket."
       />
       <TextInput
         name="bucket"
-        label="Bucket"
+        label="Bucket *"
+        placeholder="bucket0123456789"
+        helptext="Your storage provider's bucket identifier."
       />
       <TextInput
         name="endpoint"
-        label="Endpoint"
+        label="Endpoint *"
+        placeholder="https://example.com/"
+        helptext="The URL of the object storage server."
       />
       <Password
         name="accessKeyId"
-        label="Access key Identifier"
+        label="Access key identifier / Username *"
+        placeholder="username"
+        helptext="User/Account identifier or username."
       />
       <Password
         name="secretAccessKey"
-        label="Secret access key"
+        label="Secret access key *"
+        placeholder="password"
+        helptext="A password used to access the bucket."
       />
       <TextInput
         name="key"
         label="Key"
+        placeholder="directory"
+        helptext="An optional path prefix within a bucket. The path will be created if it doesn't already exist."
       />
       <Button
         class="mt-2"
@@ -136,7 +148,8 @@ const onCancel = () => {
       <Button
         class="p-button-text mt-2"
         label="Cancel"
-        icon="pi pi-times"
+        icon="pi pi
+        -times"
         @click="onCancel"
       />
     </Form>
