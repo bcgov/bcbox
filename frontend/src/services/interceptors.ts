@@ -6,7 +6,7 @@ import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } fr
 
 /**
  * @function comsAxios
-Returns an Axios instance for the COMS API
+ * Returns an Axios instance for the COMS API
  * @param {AxiosRequestConfig} options Axios request config options
  * @returns {AxiosInstance} An axios instance
  */
