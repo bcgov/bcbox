@@ -6,6 +6,7 @@ import { objectService } from '@/services';
 import { useAppStore, usePermissionStore } from '@/store';
 import { partition } from '@/utils/utils';
 
+import type { AxiosRequestConfig } from 'axios';
 import type { Ref } from 'vue';
 import type { COMSObject, ObjectSearchPermissionsOptions } from '@/types';
 
@@ -34,10 +35,10 @@ export const useObjectStore = defineStore('object', () => {
   };
 
   // Actions
-  async function createObject(object: any, bucketId?: string) {
+  async function createObject(object: any, bucketId?: string, axiosOptions?: AxiosRequestConfig) {
     try {
       appStore.beginIndeterminateLoading();
-      await objectService.createObject(object, bucketId);
+      await objectService.createObject(object, bucketId, axiosOptions);
     }
     catch (error) {
       toast.add({ severity: 'error', summary: 'Error creating object', detail: error, life: 3000 });
