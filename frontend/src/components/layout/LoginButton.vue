@@ -23,16 +23,22 @@ function logout() {
 <template>
   <Button
     v-if="!getIsAuthenticated"
-    primary
+    outlined
     @click="login()"
   >
     Log in
   </Button>
   <Button
     v-else
-    primary
+    outlined
     @click="logout()"
   >
     Log out
   </Button>
 </template>
+
+<style scoped>
+button {
+  color: white !important;
+}
+</style>
