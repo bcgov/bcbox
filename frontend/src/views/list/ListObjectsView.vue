@@ -74,3 +74,9 @@ onMounted( () => {
     <ObjectList :bucket-id="props.bucketId" />
   </div>
 </template>
+
+<style scoped lang="scss">
+h2 svg{
+  color: $bcbox-icon-primary;
+}
+</style>

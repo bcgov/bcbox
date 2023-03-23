@@ -35,7 +35,7 @@ watch( props, () => {
 
 <template>
   <div class="flex justify-content-start">
-    <div class="flex col align-items-center">
+    <div class="flex col align-items-center heading">
       <font-awesome-icon
         icon="fa-solid fa-circle-info"
         style="font-size: 2rem"
@@ -97,5 +97,8 @@ h2 {
 button {
   margin-top: 15px;
   text-indent: 10px;
+}
+.heading svg{
+  color: $bcbox-icon-primary;
 }
 </style>

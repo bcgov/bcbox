@@ -92,7 +92,7 @@ watch( [props, getObjects], () => {
 <template>
   <div v-if="obj">
     <div class="flex justify-content-start">
-      <div class="flex col align-items-center pl-0">
+      <div class="flex col align-items-center pl-0 heading">
         <font-awesome-icon
           icon="fa-solid fa-circle-info"
           style="font-size: 2rem"
@@ -170,3 +170,9 @@ watch( [props, getObjects], () => {
     <ObjectPermission :object-id="permissionsObjectId" />
   </Dialog>
 </template>
+
+<style scoped lang="scss">
+.heading svg{
+  color: $bcbox-icon-primary;
+}
+</style>
