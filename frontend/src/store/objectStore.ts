@@ -6,9 +6,9 @@ import { objectService } from '@/services';
 import { useAppStore, usePermissionStore } from '@/store';
 import { partition } from '@/utils/utils';
 
+import type { AxiosRequestConfig } from 'axios';
 import type { Ref } from 'vue';
 import type { COMSObject, ObjectSearchPermissionsOptions } from '@/types';
-import type { AxiosRequestConfig } from 'axios';
 
 export type ObjectStoreState = {
   objects: Ref<Array<COMSObject>>;

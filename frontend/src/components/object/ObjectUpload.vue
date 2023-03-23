@@ -44,7 +44,7 @@ const onUpload = async (event: any) => {
     await Promise.allSettled(
       event.files.map(async (file: File) => {
         try {
-          //infinite timeout for big files upload to avoid timeout error
+          // Infinite timeout for big files upload to avoid timeout error
           await objectStore.createObject(file, bucketId, { timeout: 0 });
           successfulFiles.value.push(file);
         } catch (error) {
