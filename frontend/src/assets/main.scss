@@ -7,6 +7,14 @@
   font-weight: normal;
 }
 
+a, a:visited {
+  color: $bcbox-link-text;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .truncate {
   max-width: 1px;
   white-space: nowrap;
