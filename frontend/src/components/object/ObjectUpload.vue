@@ -5,6 +5,7 @@ import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
 import { Button, FileUpload, useToast } from '@/lib/primevue';
 import { useObjectStore } from '@/store';
 
+import type { AxiosRequestConfig } from 'axios';
 import type { Ref } from 'vue';
 
 // Props
@@ -45,7 +46,8 @@ const onUpload = async (event: any) => {
       event.files.map(async (file: File) => {
         try {
           //infinite timeout for big files upload to avoid timeout error
-          await objectStore.createObject(file, bucketId, 0);
+          const axiousOptions: AxiosRequestConfig = { timeout: 0 };
+          await objectStore.createObject(file, bucketId, axiousOptions);
           successfulFiles.value.push(file);
         } catch (error) {
           toast.add({ severity: 'error', summary: 'Error', detail: `Failed to upload file ${file.name}`, life: 3000 });

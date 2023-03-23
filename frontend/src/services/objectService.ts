@@ -1,5 +1,6 @@
 import { comsAxios } from './interceptors';
 
+import type { AxiosRequestConfig } from 'axios';
 import type { GetMetadataOptions, GetObjectTaggingOptions, SearchObjectsOptions } from '@/types';
 
 const PATH = '/object';
@@ -10,14 +11,14 @@ export default {
    * Post an object
    * @returns {Promise} An axios response
    */
-  createObject(object: any, bucketId?: string, timeout?: number) {
+  createObject(object: any, bucketId?: string, axiosOptions?: AxiosRequestConfig) {
     const config = {
       headers: { 'Content-Type': 'multipart/form-data' },
       params: { bucketId: bucketId },
     };
     const fd = new FormData();
     fd.append('file', object);
-    return comsAxios(timeout).post(PATH, fd, config);
+    return comsAxios(axiosOptions).post(PATH, fd, config);
   },
 
   /**

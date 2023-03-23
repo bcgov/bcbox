@@ -2,22 +2,20 @@ import axios from 'axios';
 
 import { AuthService, ConfigService } from './index';
 
-import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 
 /**
  * @function comsAxios
- * Returns an Axios instance for the COMS API
- * @param {number} [timeout=10000] Number of milliseconds before timing out the request
+Returns an Axios instance for the COMS API
+ * @param {AxiosRequestConfig} options Axios request config options
  * @returns {AxiosInstance} An axios instance
  */
-export function comsAxios(timeout: number = 10000): AxiosInstance {
-  const configService = new ConfigService();
-  const axiosOptions = {
-    timeout: timeout,
-    baseURL: configService.getConfig().coms.apiPath,
-  };
-
-  const instance = axios.create(axiosOptions);
+export function comsAxios(options: AxiosRequestConfig = {}): AxiosInstance {
+  const instance = axios.create({
+    baseURL: new ConfigService().getConfig().coms.apiPath,
+    timeout: 10000,
+    ...options
+  });
 
   instance.interceptors.request.use(
     async (cfg: InternalAxiosRequestConfig) => {
