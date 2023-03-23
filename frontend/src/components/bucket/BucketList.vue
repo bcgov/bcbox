@@ -119,10 +119,6 @@ h1 {
   font-weight: bold;
 }
 
-h3 {
-  font-weight: bold;
-}
-
 button {
   text-indent: 10px;
 }
