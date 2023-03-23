@@ -39,7 +39,9 @@ watch(props, () => {
 <template>
   <div class="grid details-grid grid-nogutter mb-2">
     <div class="col-12">
-      <h2 class="font-bold">Metadata</h2>
+      <h2 class="font-bold">
+        Metadata
+      </h2>
     </div>
     <div>
       <DataTable
@@ -47,9 +49,12 @@ watch(props, () => {
         :value="objectMetadata.metadata"
         responsive-layout="scroll"
       >
-        <Column field="key" header="Key">
+        <Column
+          field="key"
+          header="Key"
+        >
           <template #body="{ data }">
-            <div >
+            <div>
               {{ data.key }}:
             </div>
           </template>
