@@ -1,5 +1,3 @@
-@import "./variables.scss";
-
 .header-center .p-column-header-content {
   justify-content: center;
 }
@@ -18,16 +16,21 @@
     background-color: transparent !important;
   }
 
-  &.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
-    background-color: #f2f2f2;
+  &.p-datatable-striped .p-datatable-tbody > tr {
+    &:nth-child(even) {
+      background-color: $bcbox-table-stripe-background;
+    }
   }
 
-  tbody tr {
-    &.p-highlight {
-      background: $bcbox-highlight-background !important;
-    }
-    &:focus {
-      outline: none !important;
+  tbody {
+    tr {
+      &.p-highlight {
+        background: $bcbox-highlight-background !important;
+      }
+
+      &:focus {
+        outline: none !important;
+      }
     }
   }
 

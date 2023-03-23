@@ -7,11 +7,13 @@
   font-weight: normal;
 }
 
-a, a:visited {
+a,
+a:visited {
   color: $bcbox-link-text;
-  text-decoration: none;
+  text-decoration: underline;
   &:hover {
-    text-decoration: underline;
+    color: $bcbox-link-text-hover;
+    text-decoration: none;
   }
 }
 
