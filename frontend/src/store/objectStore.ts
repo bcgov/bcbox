@@ -1,9 +1,9 @@
-import { defineStore } from 'pinia';
+import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
-import { useAppStore, usePermissionStore } from '@/store';
+import { useAppStore, useAuthStore, usePermissionStore } from '@/store';
 import { partition } from '@/utils/utils';
 
 import type { AxiosRequestConfig } from 'axios';
@@ -21,6 +21,7 @@ export const useObjectStore = defineStore('object', () => {
   // Store
   const appStore = useAppStore();
   const permissionStore = usePermissionStore();
+  const { getUserId } = storeToRefs(useAuthStore());
 
   // State
   const state: ObjectStoreState = {
@@ -49,6 +50,8 @@ export const useObjectStore = defineStore('object', () => {
   }
 
   async function deleteObjects(objectIds: Array<string>) {
+    const bucketId = findObjectById(objectIds[0])?.bucketId;
+
     try {
       appStore.beginIndeterminateLoading();
       await Promise.all(
@@ -61,7 +64,7 @@ export const useObjectStore = defineStore('object', () => {
       toast.add({ severity: 'error', summary: 'Error deleting object', detail: error, life: 3000 });
     }
     finally {
-      fetchObjects();
+      fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
       appStore.endIndeterminateLoading();
     }
   }

@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
 import { Button, FileUpload, useToast } from '@/lib/primevue';
-import { useObjectStore } from '@/store';
+import { useAuthStore, useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
 
@@ -19,6 +20,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const objectStore = useObjectStore();
+const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const pendingFiles: Ref<Array<File>> = ref([]);
@@ -58,7 +60,7 @@ const onUpload = async (event: any) => {
     pendingFiles.value = [];
 
     // Update object store
-    await objectStore.fetchObjects({ bucketId: bucketId });
+    await objectStore.fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
   } else {
     toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to acquire bucket ID', life: 3000 });
   }

@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { watch } from 'vue';
-
 import {
   ObjectMetadata,
   ObjectProperties,
   ObjectTag
 } from '@/components/object';
 import { Button } from '@/lib/primevue';
-import { useTagStore } from '@/store';
-import { RouteNames } from '@/utils/constants';
+import { useAuthStore, useObjectStore, usePermissionStore, useTagStore } from '@/store';
+import { Permissions, RouteNames } from '@/utils/constants';
 
 // Props
 type Props = {
@@ -21,7 +21,10 @@ const props = withDefaults(defineProps<Props>(), {});
 const emit = defineEmits(['close-object-info']);
 
 // Store
+const objectStore = useObjectStore();
+const permissionStore = usePermissionStore();
 const tagStore = useTagStore();
+const { getUserId } = storeToRefs(useAuthStore());
 
 // Actions
 const closeObjectInfo = async () => {
@@ -29,7 +32,12 @@ const closeObjectInfo = async () => {
 };
 
 watch( props, () => {
-  tagStore.fetchTagging({objectId: props.objectInfoId});
+  const obj = objectStore.findObjectById(props.objectInfoId);
+  if( obj &&
+     (obj.public || permissionStore.isObjectActionAllowed(obj.id, getUserId.value, Permissions.READ, obj.bucketId)))
+  {
+    tagStore.fetchTagging({objectId: props.objectInfoId});
+  }
 }, { immediate: true });
 </script>
 

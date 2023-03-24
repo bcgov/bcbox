@@ -69,7 +69,7 @@ onBeforeMount( async () => {
     let isPublic = head?.status === 204;
 
     await permissionStore.fetchBucketPermissions({userId: getUserId.value, objectPerms: true});
-    await objectStore.fetchObjects({objectId: props.objectId});
+    await objectStore.fetchObjects({objectId: props.objectId, userId: getUserId.value, bucketPerms: true});
     obj.value = objectStore.findObjectById(props.objectId);
     const bucketId = obj.value?.bucketId;
 
@@ -106,13 +106,11 @@ watch( [props, getObjects], () => {
         class="action-buttons"
       >
         <ShareObjectButton
-          v-if="permissionStore.isObjectActionAllowed(
-            props.objectId, getUserId, Permissions.READ, bucketId)"
           :id="props.objectId"
         />
         <DownloadObjectButton
           v-if="permissionStore.isObjectActionAllowed(
-            props.objectId, getUserId, Permissions.READ, bucketId)"
+            props.objectId, getUserId, Permissions.READ, bucketId) || obj.public"
           :mode="ButtonMode.ICON"
           :ids="[props.objectId]"
         />

@@ -37,10 +37,6 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
   permissionsBucketId.value = bucketId;
   permissionBucketName.value = bucketName;
 };
-
-const checkUserManageBucket = (bucket: Bucket) => {
-  return permissionStore.isBucketActionAllowed(bucket.bucketId, getUserId.value, Permissions.MANAGE );
-};
 </script>
 
 <template>
@@ -104,20 +100,21 @@ const checkUserManageBucket = (bucket: Bucket) => {
       >
         <template #body="{ data }">
           <Button
-            v-if="checkUserManageBucket(data)"
+            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.UPDATE )"
             class="p-button-lg p-button-text"
             @click="showBucketConfig(data)"
           >
             <font-awesome-icon icon="fas fa-cog" />
           </Button>
           <Button
-            v-if="checkUserManageBucket(data)"
+            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.MANAGE )"
             class="p-button-lg p-button-text"
             @click="showPermissions(data.bucketId, data.bucketName)"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
           <Button
+            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.READ )"
             class="p-button-lg p-button-rounded p-button-text"
             @click="showSidebarInfo(data.bucketId)"
           >

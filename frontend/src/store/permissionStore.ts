@@ -81,6 +81,11 @@ export const usePermissionStore = defineStore('permission', () => {
     try {
       appStore.beginIndeterminateLoading();
       await permissionService.objectAddPermissions(objectId, [{ userId, permCode }]);
+
+      const forceToggleReadOn: Array<string> = [Permissions.UPDATE, Permissions.DELETE, Permissions.MANAGE];
+      if (forceToggleReadOn.some((x: string) => x === permCode)) {
+        await permissionService.objectAddPermissions(objectId, [{ userId, permCode: Permissions.READ }]);
+      }
     }
     catch (error) {
       toast.add({ severity: 'error', summary: 'Error adding object permission', detail: error, life: 3000 });
@@ -120,6 +125,11 @@ export const usePermissionStore = defineStore('permission', () => {
     try {
       appStore.beginIndeterminateLoading();
       await permissionService.objectDeletePermission(objectId, { userId, permCode });
+
+      if (permCode === Permissions.READ) {
+        const forceToggleOnRead: Array<string> = [Permissions.UPDATE, Permissions.DELETE, Permissions.MANAGE];
+        await permissionService.objectDeletePermission(objectId, { userId, permCode: forceToggleOnRead });
+      }
     }
     catch (error) {
       toast.add({ severity: 'error', summary: 'Error deleting object permission', detail: error, life: 3000 });
@@ -195,9 +205,14 @@ export const usePermissionStore = defineStore('permission', () => {
       x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
   }
 
-  function isObjectActionAllowed(objectId: string, userId?: string, permCode?: string, bucketId?: string) {
-    const bucketPerm = state.bucketPermissions.value.some((x: BucketPermission) =>
-      x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
+  function isObjectActionAllowed(objectId: string, userId?: string, permCode?: string,
+    bucketId?: string, implicit: boolean = false) {
+    let bucketPerm = false;
+    if (implicit) {
+      bucketPerm = state.bucketPermissions.value.some((x: BucketPermission) =>
+        x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
+    }
+
     const objectPerm = state.objectPermissions.value.some((x: COMSObjectPermission) =>
       x.objectId === objectId && x.userId === userId && x.permCode === permCode);
 

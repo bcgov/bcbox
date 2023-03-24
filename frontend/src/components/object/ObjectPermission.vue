@@ -46,7 +46,8 @@ const removeObjectUser = (userId: string) => {
 const updateObjectPermission = (value: boolean, userId: string, permCode: string) => {
   if (value) {
     permissionStore.addObjectPermission(props.objectId, userId, permCode);
-  } else {
+  }
+  else {
     const managers = getMappedObjectToUserPermissions.value.filter( (x: UserPermissions) => x.manage );
 
     // Disallow removable of final MANAGE permission

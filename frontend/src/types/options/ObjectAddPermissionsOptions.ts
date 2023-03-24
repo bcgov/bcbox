@@ -1,4 +1,4 @@
 export type ObjectAddPermissionsOptions = {
   userId: string;
-  permCode: string;
+  permCode: string | string[];
 }

@@ -50,6 +50,8 @@ const selectedObjects: Ref<Array<COMSObject>> = ref([]);
 const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
 
 // Actions
+const toast = useToast();
+
 const formatShortUuid = (uuid: string) => {
   return uuid?.slice(0,8) ?? uuid;
 };
@@ -68,13 +70,30 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
   await objectStore.togglePublic(objectId, isPublic);
 };
 
+function onDeletedSuccess() {
+  toast.add({
+    severity: 'success',
+    summary: 'Success',
+    detail: 'File deleted',
+    life: 3000
+  });
+}
+
 watch( getObjects, async () => {
   // Filter object cache to this specific bucket
   const objs: Array<COMSObjectDataSource> = getObjects.value
     .filter( (x: COMSObject) => x.bucketId === props.bucketId ) as COMSObjectDataSource[];
 
-  // update metadata store
-  await metadataStore.fetchMetadata({objectId: objs.map( (x: COMSObject) => x.id )});
+  // Update metadata store with metadata user has access to
+  const objIds: Array<string> = [];
+  objs.forEach( (x: COMSObject) => {
+    if( x.public ||  permissionStore.isObjectActionAllowed(
+      x.id, getUserId.value, Permissions.READ, props.bucketId as string))
+    {
+      objIds.push(x.id);
+    }
+  });
+  await metadataStore.fetchMetadata({objectId: objIds});
 
   tableData.value = objs.map( (x: COMSObjectDataSource) => {
     x.name = metadataStore.findValue(x.id, 'name');
@@ -194,7 +213,7 @@ const filters = ref({
           <InputSwitch
             v-model="data.public"
             :disabled="!permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
+              data.id, getUserId, Permissions.MANAGE, props.bucketId as string, true)"
             @change="togglePublic(data.id, data.public)"
           />
         </template>
@@ -207,25 +226,25 @@ const filters = ref({
       >
         <template #body="{ data }">
           <ShareObjectButton
-            v-if="permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.READ, props.bucketId as string)"
             :id="data.id"
           />
           <DownloadObjectButton
             v-if="permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.READ, props.bucketId as string)"
+              data.id, getUserId, Permissions.READ, props.bucketId as string) || data.public"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />
           <Button
             v-if="permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
+              data.id, getUserId, Permissions.MANAGE, props.bucketId as string, true)"
             class="p-button-lg p-button-text"
             @click="showPermissions(data.id)"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
           <Button
+            v-if="permissionStore.isObjectActionAllowed(
+              data.id, getUserId, Permissions.READ, props.bucketId as string) || data.public"
             class="p-button-lg p-button-rounded p-button-text"
             @click="showInfo(data.id)"
           >
@@ -236,6 +255,7 @@ const filters = ref({
               data.id, getUserId, Permissions.DELETE, props.bucketId as string)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
+            @on-deleted-success="onDeletedSuccess"
           />
         </template>
       </Column>
