@@ -61,6 +61,8 @@ const showInfo = async (id: string) => {
 };
 
 const showPermissions = async (objectId: string) => {
+  await permissionStore.fetchObjectPermissions({objectId});
+
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
   permissionsObjectName.value = metadataStore.findValue(objectId, 'name') || '';
@@ -213,7 +215,7 @@ const filters = ref({
           <InputSwitch
             v-model="data.public"
             :disabled="!permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.MANAGE, props.bucketId as string, true)"
+              data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
             @change="togglePublic(data.id, data.public)"
           />
         </template>
@@ -236,7 +238,7 @@ const filters = ref({
           />
           <Button
             v-if="permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.MANAGE, props.bucketId as string, true)"
+              data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
             class="p-button-lg p-button-text"
             @click="showPermissions(data.id)"
           >

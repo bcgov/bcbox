@@ -90,7 +90,9 @@ export const useObjectStore = defineStore('object', () => {
       const permResponse = await permissionStore.fetchObjectPermissions(params);
 
       if (permResponse) {
-        const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))];
+        const uniqueIds: Array<string> = [
+          ...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))
+        ];
 
         let response = Array<COMSObject>();
         if (uniqueIds.length) {

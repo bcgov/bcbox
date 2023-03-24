@@ -205,13 +205,9 @@ export const usePermissionStore = defineStore('permission', () => {
       x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
   }
 
-  function isObjectActionAllowed(objectId: string, userId?: string, permCode?: string,
-    bucketId?: string, implicit: boolean = false) {
-    let bucketPerm = false;
-    if (implicit) {
-      bucketPerm = state.bucketPermissions.value.some((x: BucketPermission) =>
-        x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
-    }
+  function isObjectActionAllowed(objectId: string, userId?: string, permCode?: string, bucketId?: string) {
+    const bucketPerm = state.bucketPermissions.value.some((x: BucketPermission) =>
+      x.bucketId === bucketId && x.userId === userId && x.permCode === permCode);
 
     const objectPerm = state.objectPermissions.value.some((x: COMSObjectPermission) =>
       x.objectId === objectId && x.userId === userId && x.permCode === permCode);
@@ -272,8 +268,11 @@ export const usePermissionStore = defineStore('permission', () => {
   async function mapObjectToUserPermissions(objectId: string) {
     try {
       appStore.beginIndeterminateLoading();
+      console.log(objectId);
       const objectPerms = state.objectPermissions.value.filter((x: COMSObjectPermission) => x.objectId === objectId);
+      console.log(objectPerms);
       const uniqueIds = [...new Set(objectPerms.map((x: COMSObjectPermission) => x.userId))];
+      console.log(uniqueIds);
       const uniqueUsers: Array<User> = (await userService.searchForUsers({ userId: uniqueIds })).data;
 
       const hasPermission = (userId: string, permission: string) => {

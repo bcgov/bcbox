@@ -1,5 +1,5 @@
 export type SearchBucketsOptions = {
-  bucketId?: string[];
+  bucketId?: Array<string>;
   bucketName?: string;
   key?: string;
   active?: boolean;

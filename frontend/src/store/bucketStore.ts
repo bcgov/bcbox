@@ -49,7 +49,9 @@ export const useBucketStore = defineStore('bucket', () => {
       // Get a unique list of bucket IDs the user has access to
       const permResponse = await permissionStore.fetchBucketPermissions(params);
       if (permResponse) {
-        const uniqueIds: string[] = [...new Set<string>(permResponse.map((x: { bucketId: string }) => x.bucketId))];
+        const uniqueIds: Array<string> = [
+          ...new Set<string>(permResponse.map((x: { bucketId: string }) => x.bucketId))
+        ];
 
         let response = Array<Bucket>();
         if (uniqueIds.length) {

@@ -1,4 +1,4 @@
 export type ObjectDeletePermissionsOptions = {
   userId?: string;
-  permCode?: string | string[];
+  permCode?: string | Array<string>;
 }
