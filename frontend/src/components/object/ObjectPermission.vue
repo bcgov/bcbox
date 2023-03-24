@@ -175,7 +175,7 @@ onMounted(() => {
         <template #body="{ data }">
           <Button
             class="p-button-lg p-button-text"
-            style="color: red"
+            severity="danger"
             @click="removeObjectUser(data.userId)"
           >
             <font-awesome-icon icon="fa-solid fa-user-xmark" />

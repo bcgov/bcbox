@@ -154,6 +154,6 @@ const checkUserManageBucket = (bucket: Bucket) => {
 
 <style scoped lang="scss">
 .row-head {
-  color: $bcbox-icon-primary;
+  color: $bcbox-primary;
 }
 </style>

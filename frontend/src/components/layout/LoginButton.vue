@@ -23,6 +23,7 @@ function logout() {
 <template>
   <Button
     v-if="!getIsAuthenticated"
+    severity="secondary"
     outlined
     @click="login()"
   >
@@ -30,6 +31,7 @@ function logout() {
   </Button>
   <Button
     v-else
+    severity="secondary"
     outlined
     @click="logout()"
   >

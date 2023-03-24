@@ -99,6 +99,6 @@ button {
   text-indent: 10px;
 }
 .heading svg{
-  color: $bcbox-icon-primary;
+  color: $bcbox-primary;
 }
 </style>

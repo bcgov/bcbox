@@ -77,6 +77,6 @@ onMounted( () => {
 
 <style scoped lang="scss">
 h2 svg{
-  color: $bcbox-icon-primary;
+  color: $bcbox-primary;
 }
 </style>

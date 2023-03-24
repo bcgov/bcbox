@@ -173,6 +173,6 @@ watch( [props, getObjects], () => {
 
 <style scoped lang="scss">
 .heading svg{
-  color: $bcbox-icon-primary;
+  color: $bcbox-primary;
 }
 </style>
