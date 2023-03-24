@@ -7,6 +7,16 @@
   font-weight: normal;
 }
 
+a,
+a:visited {
+  color: $bcbox-link-text;
+  text-decoration: underline;
+  &:hover {
+    color: $bcbox-link-text-hover;
+    text-decoration: none;
+  }
+}
+
 .truncate {
   max-width: 1px;
   white-space: nowrap;
@@ -62,7 +72,7 @@ td .wrap-block{ width: inherit; }
       padding-bottom: 0;
 
       .svg-inline--fa {
-        color: $bcbox-icon-primary;
+        color: $bcbox-primary;
         font-size: 1.8rem;
         padding-right: .75rem;
         padding-top: .15rem;

@@ -16,6 +16,35 @@
     background-color: transparent !important;
   }
 
+  &.p-datatable-striped .p-datatable-tbody > tr {
+    &:nth-child(even) {
+      background-color: $bcbox-table-stripe-background;
+    }
+  }
+
+  tbody {
+    tr {
+      &.p-highlight {
+        background: $bcbox-highlight-background !important;
+      }
+
+      &:focus {
+        outline: none !important;
+      }
+    }
+  }
+
+  .p-checkbox {
+    .p-checkbox-box.p-highlight {
+      background-color: $bcbox-primary;
+      border-color: $bcbox-primary !important;
+
+      &:hover {
+        background-color: darken($bcbox-primary, 20%) !important;
+      }
+    }
+  }
+
   .p-column-title {
     font-weight: bold;
   }
@@ -27,5 +56,57 @@
   .action-buttons .p-button.p-button-lg {
     padding: 0;
     margin-left: 1rem;
+  }
+}
+
+// Primary color overrides for buttons and action items (checkboxes etc)
+// Note this could be eventually replaced by a custom themeing (which has JUST been introduced in Primevue)
+// once it is more settled implementation-wise
+.p-button {
+  &:not(
+    .p-button-secondary,
+    .p-button-success,
+    .p-button-info,
+    .p-button-warning,
+    .p-button-help,
+    .p-button-danger
+    ) {
+    color: $bcbox-primary !important;
+
+    &:not(.p-button-outlined, .p-button-text) {
+      background-color: $bcbox-primary;
+      border-color: $bcbox-primary;
+      color: $bcbox-outline-on-primary !important;
+    }
+  }
+}
+
+.p-checkbox,
+.p-radiobutton {
+  &.p-checkbox-checked,
+  &.p-radiobutton-checked {
+    .p-checkbox-box,
+    .p-radiobutton-box {
+      background-color: $bcbox-primary;
+      border-color: $bcbox-primary !important;
+
+      &:hover {
+        background-color: darken($bcbox-primary, 20%) !important;
+      }
+    }
+  }
+}
+
+.p-inputswitch.p-inputswitch-checked {
+  .p-inputswitch-slider {
+    background-color: $bcbox-primary;
+  }
+
+  &:not(.p-disabled) {
+    &:hover {
+      .p-inputswitch-slider {
+        background-color: darken($bcbox-primary, 10%) !important;
+      }
+    }
   }
 }

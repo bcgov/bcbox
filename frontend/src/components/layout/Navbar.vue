@@ -86,7 +86,6 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
           }
         }
         & ~ li {
-          border-left: 1px solid #9b9b9b;
           margin-left: -0.6rem;
         }
       }

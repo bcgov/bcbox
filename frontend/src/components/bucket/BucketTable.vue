@@ -70,7 +70,9 @@ const checkUserManageBucket = (bucket: Bucket) => {
       </template>
       <Column header-style="width: 1%">
         <template #body>
-          <font-awesome-icon icon="fa-solid fa-box-open" />
+          <span class="row-head">
+            <font-awesome-icon icon="fa-solid fa-box-open" />
+          </span>
         </template>
       </Column>
       <Column
@@ -149,3 +151,9 @@ const checkUserManageBucket = (bucket: Bucket) => {
     </Dialog>
   </div>
 </template>
+
+<style scoped lang="scss">
+.row-head {
+  color: $bcbox-primary;
+}
+</style>

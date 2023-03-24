@@ -57,10 +57,10 @@ watch( props, () => {
 
 <template>
   <div class="grid details-grid grid-nogutter mb-2">
-      <div class="col-12">
-        <h2 class="font-bold">
-          Properties
-        </h2>
+    <div class="col-12">
+      <h2 class="font-bold">
+        Properties
+      </h2>
     </div>
 
     <GridRow

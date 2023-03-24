@@ -29,7 +29,10 @@ const { getConfig } = storeToRefs(useConfigStore());
         :to-copy="getAccessToken"
       />
     </div>
-    {{ getAccessToken }}
+
+    <div class="wrap-block">
+      {{ getAccessToken }}
+    </div>
 
     <div class="flex mt-3">
       <h3>Profile</h3>
