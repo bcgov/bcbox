@@ -4,27 +4,30 @@ import { storeToRefs } from 'pinia';
 import { ProgressBar } from '@/lib/primevue';
 import { useAppStore } from '@/store';
 
-
 // Store
 const appStore = useAppStore();
 const { getLoadingMode, getLoadingValue } = storeToRefs(appStore);
 </script>
 
 <template>
-  <ProgressBar
-    :mode="getLoadingMode"
-    :show-value="false"
-    :value="getLoadingValue"
-  />
+  <div class="app-loader">
+    <ProgressBar
+      :mode="getLoadingMode"
+      :show-value="false"
+      :value="getLoadingValue"
+    />
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.p-progressbar {
-  left: 0;
-  height: 0.1rem;
-  pointer-events: none;
-  position: sticky;
-  top: 0;
-  z-index: 1031
+.app-loader {
+  position: fixed;
+  width: 100%;
+  z-index: 999;
+
+  .p-progressbar {
+    height: 0.15rem;
+    pointer-events: none;
+  }
 }
 </style>
