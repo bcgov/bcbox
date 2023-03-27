@@ -72,12 +72,6 @@ onMounted( () => {
     </ul>
 
     <TabView>
-      <TabPanel header="BCBox share link">
-        <ShareLinkContent
-          :share-link="bcBoxLink"
-          label="Share Link"
-        />
-      </TabPanel>
       <TabPanel
         v-if="obj?.public"
         header="Direct public file link"
@@ -85,6 +79,16 @@ onMounted( () => {
         <ShareLinkContent
           :share-link="comsUrl"
           label="Direct Link"
+        />
+      </TabPanel>
+      <!-- Disable for public until unauthed File Details page works -->
+      <TabPanel
+        header="BCBox share link"
+        :disabled="obj?.public"
+      >
+        <ShareLinkContent
+          :share-link="bcBoxLink"
+          label="Share Link"
         />
       </TabPanel>
     </TabView>

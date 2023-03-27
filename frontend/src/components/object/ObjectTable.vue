@@ -133,7 +133,6 @@ watch( selectedObjects, () => {
         field="id"
         :sortable="true"
         header="Object ID"
-        body-class="truncate"
       >
         <template #body="{ data }">
           <div
