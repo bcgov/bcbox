@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { FilterMatchMode } from 'primevue/api';
 import { ref, watch } from 'vue';
 
 import {
@@ -8,7 +9,7 @@ import {
   ObjectPermission,
   ShareObjectButton
 } from '@/components/object';
-import { Button, Column, DataTable, Dialog, InputSwitch } from '@/lib/primevue';
+import { Button, Column, DataTable, Dialog, InputText, InputSwitch } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
@@ -81,12 +82,20 @@ watch( getObjects, async () => {
 watch( selectedObjects, () => {
   objectStore.setSelectedObjects(selectedObjects.value);
 });
+
+// Datatable filter(s)
+const filters = ref({
+  // Need this till PrimeVue gets it together to un-break this again
+  // @ts-ignore
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS } 
+});
 </script>
 
 <template>
   <div>
     <DataTable
       v-model:selection="selectedObjects"
+      v-model:filters="filters"
       :value="tableData"
       data-key="id"
       class="p-datatable-sm"
@@ -99,7 +108,28 @@ watch( selectedObjects, () => {
       :rows-per-page-options="[10, 20, 50]"
       sort-field="name"
       :sort-order="1"
+      :global-filter-fields="['name']"
     >
+      <template #header>
+        <div class="flex justify-content-end">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search" />
+            <InputText
+              v-model="filters['global'].value"
+              placeholder="Search File Names"
+            />
+          </span>
+          
+          <Button
+            class="ml-2"
+            icon="pi pi-refresh"
+            outlined
+            rounded
+            aria-label="Filter"
+            @click="objectStore.fetchObjects({ bucketId: props.bucketId })"
+          />
+        </div>
+      </template>
       <template #empty>
         <div
           v-if="!useAppStore().getIsLoading"
