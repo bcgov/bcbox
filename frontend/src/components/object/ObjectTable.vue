@@ -12,7 +12,7 @@ import { Button, Column, DataTable, Dialog, InputSwitch } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
-import { formatDateLong } from '@/utils/formatters';
+import { formatDateLong, formatShortUuid } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
@@ -137,13 +137,9 @@ watch( selectedObjects, () => {
       >
         <template #body="{ data }">
           <div
-            v-if="data.id?.length > 15"
             v-tooltip.bottom="{ value: data.id }"
           >
-            {{ data.id }}
-          </div>
-          <div v-else>
-            {{ data.id }}
+            {{ formatShortUuid(data.id) }}
           </div>
         </template>
       </Column>

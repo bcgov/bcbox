@@ -37,3 +37,13 @@ export function toKebabCase(str: string | null) {
   const strs = str && str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g);
   return strs ? strs.join('-').toLocaleLowerCase() : '';
 }
+
+/**
+ * @function formatShortUuid
+ * Converts a UUID identifier to just show the first 8 characters 
+ * @param {String} value A typical UUID used from COMS
+ * @returns {String} The first 8 chars
+ */
+export function formatShortUuid(uuid: string) {
+  return uuid ? uuid.slice(0,8) : uuid;
+}
