@@ -268,11 +268,8 @@ export const usePermissionStore = defineStore('permission', () => {
   async function mapObjectToUserPermissions(objectId: string) {
     try {
       appStore.beginIndeterminateLoading();
-      console.log(objectId);
       const objectPerms = state.objectPermissions.value.filter((x: COMSObjectPermission) => x.objectId === objectId);
-      console.log(objectPerms);
       const uniqueIds = [...new Set(objectPerms.map((x: COMSObjectPermission) => x.userId))];
-      console.log(uniqueIds);
       const uniqueUsers: Array<User> = (await userService.searchForUsers({ userId: uniqueIds })).data;
 
       const hasPermission = (userId: string, permission: string) => {
