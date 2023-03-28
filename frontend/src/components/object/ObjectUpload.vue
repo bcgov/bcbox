@@ -128,7 +128,7 @@ const noFilesChosen = (files?: Array<File>): boolean => !files?.length;
           class="border-2 border-dashed border-circle p-5 text-7xl text-400 border-400"
         />
         <p class="mt-4 mb-0">
-          Drag and drop files here to upload.
+          Drag and drop files here to select for upload. Then click "Start upload".
         </p>
       </div>
       <ObjectUploadFile
