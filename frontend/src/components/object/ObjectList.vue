@@ -9,7 +9,7 @@ import {
   ObjectTable,
   ObjectUpload
 } from '@/components/object';
-import { Button } from '@/lib/primevue';
+import { Button, useToast } from '@/lib/primevue';
 import {
   useAuthStore,
   useBucketStore,
@@ -21,6 +21,7 @@ import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
 
+// Props
 type Props = {
   bucketId?: string
 };
@@ -42,7 +43,13 @@ const { getUserId } = storeToRefs(useAuthStore());
 const displayUpload = ref(false);
 const objectInfoId: Ref<string | undefined> = ref(undefined);
 
+const selectedObjectIds = computed(() => {
+  return getSelectedObjects.value.map((o) => o.id);
+});
+
 // Actions
+const toast = useToast();
+
 const showObjectInfo = async (objectId: string | undefined) => {
   objectInfoId.value = objectId;
 };
@@ -68,17 +75,22 @@ const closeUpload = () => {
 //   }
 // };
 
-// Download
-const selectedObjectIds = computed(() => {
-  return getSelectedObjects.value.map((o) => o.id);
-});
+function onDeletedSuccess() {
+  toast.add({
+    severity: 'success',
+    summary: 'Success',
+    detail: 'File(s) deleted',
+    life: 3000
+  });
+}
 
 onMounted(async () => {
   // Removed for now
   // updateBreadcrumb();
 
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
-  await objectStore.fetchObjects({ bucketId: props.bucketId });
+  // TODO: userId+bucketPerms bringing back deleted files??
+  await objectStore.fetchObjects({ bucketId: props.bucketId, userId: getUserId.value, bucketPerms: true });
 });
 
 </script>
@@ -96,7 +108,7 @@ onMounted(async () => {
     </div>
     <div>
       <Button
-        v-if="permissionStore.isBucketActionAllowed(props.bucketId as string, getUserId, Permissions.CREATE )"
+        v-if="permissionStore.isBucketActionAllowed(props.bucketId as string, getUserId, Permissions.CREATE)"
         class="mr-2"
         :disabled="displayUpload"
         @click="showUpload"
@@ -115,6 +127,7 @@ onMounted(async () => {
         :disabled="displayUpload"
         :ids="selectedObjectIds"
         :mode="ButtonMode.BUTTON"
+        @on-deleted-success="onDeletedSuccess"
       />
     </div>
 
