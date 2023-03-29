@@ -8,7 +8,7 @@ import {
   ObjectPermission,
   ShareObjectButton
 } from '@/components/object';
-import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch } from '@/lib/primevue';
+import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch, useToast } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
@@ -112,7 +112,7 @@ const filters = ref({
   // Need this till PrimeVue gets it together to un-break this again
   // TODO: Revisit with PrimeVue 2.37+
   // @ts-ignore
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS } 
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
 </script>
 
@@ -144,7 +144,7 @@ const filters = ref({
               placeholder="Search File Names"
             />
           </span>
-          
+
           <Button
             class="ml-2"
             icon="pi pi-refresh"
