@@ -50,6 +50,10 @@ const selectedObjects: Ref<Array<COMSObject>> = ref([]);
 const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
 
 // Actions
+const formatShortUuid = (uuid: string) => {
+  return uuid?.slice(0,8) ?? uuid;
+};
+
 const showInfo = async (id: string) => {
   emit('show-object-info', id);
 };
@@ -163,17 +167,12 @@ const filters = ref({
         field="id"
         :sortable="true"
         header="Object ID"
-        body-class="truncate"
       >
         <template #body="{ data }">
           <div
-            v-if="data.id?.length > 15"
             v-tooltip.bottom="{ value: data.id }"
           >
-            {{ data.id }}
-          </div>
-          <div v-else>
-            {{ data.id }}
+            {{ formatShortUuid(data.id) }}
           </div>
         </template>
       </Column>
