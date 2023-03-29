@@ -109,8 +109,8 @@ watch( [props, getObjects], () => {
           :id="props.objectId"
         />
         <DownloadObjectButton
-          v-if="permissionStore.isObjectActionAllowed(
-            props.objectId, getUserId, Permissions.READ, bucketId) || obj.public"
+          v-if="obj.public || permissionStore.isObjectActionAllowed(
+            props.objectId, getUserId, Permissions.READ, bucketId)"
           :mode="ButtonMode.ICON"
           :ids="[props.objectId]"
         />

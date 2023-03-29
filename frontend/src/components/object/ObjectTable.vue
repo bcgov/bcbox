@@ -89,7 +89,7 @@ watch( getObjects, async () => {
   // Update metadata store with metadata user has access to
   const objIds: Array<string> = [];
   objs.forEach( (x: COMSObject) => {
-    if( x.public ||  permissionStore.isObjectActionAllowed(
+    if( x.public || permissionStore.isObjectActionAllowed(
       x.id, getUserId.value, Permissions.READ, props.bucketId as string))
     {
       objIds.push(x.id);
@@ -231,8 +231,8 @@ const filters = ref({
             :id="data.id"
           />
           <DownloadObjectButton
-            v-if="permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.READ, props.bucketId as string) || data.public"
+            v-if="data.public || permissionStore.isObjectActionAllowed(
+              data.id, getUserId, Permissions.READ, props.bucketId as string)"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />
@@ -245,8 +245,8 @@ const filters = ref({
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
           <Button
-            v-if="permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.READ, props.bucketId as string) || data.public"
+            v-if="data.public || permissionStore.isObjectActionAllowed(
+              data.id, getUserId, Permissions.READ, props.bucketId as string)"
             class="p-button-lg p-button-rounded p-button-text"
             @click="showInfo(data.id)"
           >
