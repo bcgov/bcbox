@@ -12,7 +12,7 @@ import { Button, Column, DataTable, Dialog, InputSwitch } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
-import { formatDateLong, formatShortUuid } from '@/utils/formatters';
+import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
@@ -50,6 +50,10 @@ const selectedObjects: Ref<Array<COMSObject>> = ref([]);
 const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
 
 // Actions
+const formatShortUuid = (uuid: string) => {
+  return uuid?.slice(0,8) ?? uuid;
+};
+
 const showInfo = async (id: string) => {
   emit('show-object-info', id);
 };
