@@ -1,4 +1,5 @@
 // Add imports as needed
+export { FilterMatchMode } from 'primevue/api';
 export { default as Badge } from 'primevue/badge';
 export { default as Button } from 'primevue/button';
 export { default as Checkbox } from 'primevue/checkbox';

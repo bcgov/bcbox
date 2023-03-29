@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { FilterMatchMode } from 'primevue/api';
 import { ref, watch } from 'vue';
 
 import {
@@ -9,7 +8,7 @@ import {
   ObjectPermission,
   ShareObjectButton
 } from '@/components/object';
-import { Button, Column, DataTable, Dialog, InputText, InputSwitch } from '@/lib/primevue';
+import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
@@ -86,6 +85,7 @@ watch( selectedObjects, () => {
 // Datatable filter(s)
 const filters = ref({
   // Need this till PrimeVue gets it together to un-break this again
+  // TODO: Revisit with PrimeVue 2.37+
   // @ts-ignore
   global: { value: null, matchMode: FilterMatchMode.CONTAINS } 
 });
