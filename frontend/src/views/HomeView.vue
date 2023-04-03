@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Message } from '@/lib/primevue';
 import { storeToRefs } from 'pinia';
-import { useRouter } from 'vue-router';
 
 import { Button } from '@/lib/primevue';
 import { useAuthStore, useConfigStore } from '@/store';
@@ -10,17 +9,6 @@ import { RouteNames } from '@/utils/constants';
 // Store
 const { getIsAuthenticated } = storeToRefs(useAuthStore());
 const { getConfig } = storeToRefs(useConfigStore());
-
-// Actions
-const router = useRouter();
-
-function login() {
-  router.push({ name: RouteNames.LOGIN });
-}
-
-function goToBuckets() {
-  router.push({ name: RouteNames.LIST_BUCKETS });
-}
 </script>
 
 <template>
@@ -45,20 +33,14 @@ function goToBuckets() {
       </p>
     </div>
     <div class="flex justify-content-center mb-5">
-      <h3 v-if="!getIsAuthenticated">
-        <Button
-          @click="login()"
-        >
-          Log in to get started
+      <router-link
+        :to="{ name: RouteNames.LIST_BUCKETS }"
+        class="no-underline"
+      >
+        <Button>
+          {{ getIsAuthenticated ? 'Go to My Buckets' : 'Log in to get started' }}
         </Button>
-      </h3>
-      <h3 v-else>
-        <Button
-          @click="goToBuckets()"
-        >
-          Go to My Buckets
-        </Button>
-      </h3>
+      </router-link>
     </div>
     <div class="flex justify-content-center mb-8">
       <img
@@ -156,20 +138,14 @@ function goToBuckets() {
       </ul>
     </div>
     <div class="flex justify-content-center mb-8">
-      <h3 v-if="!getIsAuthenticated">
-        <Button
-          @click="login()"
-        >
-          Log in to get started
+      <router-link
+        :to="{ name: RouteNames.LIST_BUCKETS }"
+        class="no-underline"
+      >
+        <Button>
+          {{ getIsAuthenticated ? 'Go to My Buckets' : 'Log in to get started' }}
         </Button>
-      </h3>
-      <h3 v-else>
-        <Button
-          @click="goToBuckets()"
-        >
-          Go to My Buckets
-        </Button>
-      </h3>
+      </router-link>
     </div>
     <div class="flex justify-content-center mb-5">
       <h1 class="font-bold">
