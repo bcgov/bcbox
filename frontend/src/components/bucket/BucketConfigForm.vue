@@ -27,7 +27,7 @@ const bucketStore = useBucketStore();
 const { getUserId } = storeToRefs(useAuthStore());
 
 // Default form values
-const initialValues = {
+const initialValues: any = {
   bucketName: props.bucket?.bucketName,
   bucket: props.bucket?.bucket,
   endpoint: props.bucket?.endpoint,
@@ -50,17 +50,34 @@ const schema = object({
 const toast = useToast();
 
 const onSubmit = async (values: any) => {
+
+  const differential = (left: any, right: any) => {
+    let diff: any = {};
+    for (const [key, value] of Object.entries(left)) {
+      if(!Object.prototype.hasOwnProperty.call(right, key) ||
+        (Object.prototype.hasOwnProperty.call(right, key) && right[key] !== value)) {
+        diff[key] = value;
+      }
+    }
+
+    return diff;
+  };
+
   try {
     const formBucket = {
       bucketName: values.bucketName,
       bucket: values.bucket,
       endpoint: values.endpoint,
-      accessKeyId: values.accessKeyId !== 'REDACTED' ? values.accessKeyId : undefined,
-      secretAccessKey:
-        values.secretAccessKey !== 'REDACTED' ? values.secretAccessKey : undefined,
+      accessKeyId: values.accessKeyId,
+      secretAccessKey: values.secretAccessKey,
       key: values.key ? values.key : '/',
-      active: true
     } as Bucket;
+
+    const d = differential(formBucket, initialValues);
+    console.log(values);
+    console.log(d);
+    return;
+
 
     props.bucket ?
       await bucketStore.updateBucket(props.bucket?.bucketId, formBucket) :
@@ -106,37 +123,37 @@ const onCancel = () => {
         name="bucketName"
         label="Bucket name *"
         placeholder="My Documents"
-        helptext="Your custom display name for the bucket."
+        help-text="Your custom display name for the bucket."
       />
       <TextInput
         name="bucket"
         label="Bucket *"
         placeholder="bucket0123456789"
-        helptext="Your storage provider's bucket identifier."
+        help-text="Your storage provider's bucket identifier."
       />
       <TextInput
         name="endpoint"
         label="Endpoint *"
         placeholder="https://example.com/"
-        helptext="The URL of the object storage server."
+        help-text="The URL of the object storage server."
       />
       <Password
         name="accessKeyId"
         label="Access key identifier / Username *"
         placeholder="username"
-        helptext="User/Account identifier or username."
+        help-text="User/Account identifier or username."
       />
       <Password
         name="secretAccessKey"
         label="Secret access key *"
         placeholder="password"
-        helptext="A password used to access the bucket."
+        help-text="A password used to access the bucket."
       />
       <TextInput
         name="key"
         label="Key"
         placeholder="directory"
-        helptext="An optional path prefix within a bucket. The path will be created if it doesn't already exist."
+        help-text="An optional path prefix within a bucket. The path will be created if it doesn't already exist."
       />
       <Button
         class="mt-2"
@@ -148,8 +165,7 @@ const onCancel = () => {
       <Button
         class="p-button-text mt-2"
         label="Cancel"
-        icon="pi pi
-        -times"
+        icon="pi pi-times"
         @click="onCancel"
       />
     </Form>
