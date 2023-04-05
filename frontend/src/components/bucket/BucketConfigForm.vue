@@ -7,8 +7,18 @@ import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
 import { Button, useToast } from '@/lib/primevue';
 import { useAuthStore, useBucketStore } from '@/store';
+import { differential } from '@/utils/utils';
 
 import type { Bucket } from '@/types';
+
+export type BucketForm = {
+  accessKeyId?: string;
+  bucket?: string;
+  bucketName?: string;
+  endpoint?: string;
+  key?: string;
+  secretAccessKey?: string;
+};
 
 // Props
 type Props = {
@@ -27,23 +37,23 @@ const bucketStore = useBucketStore();
 const { getUserId } = storeToRefs(useAuthStore());
 
 // Default form values
-const initialValues = {
-  bucketName: props.bucket?.bucketName,
-  bucket: props.bucket?.bucket,
-  endpoint: props.bucket?.endpoint,
+const initialValues: BucketForm = {
   accessKeyId: props.bucket?.accessKeyId,
-  secretAccessKey: props.bucket?.secretAccessKey,
-  key: props.bucket?.key
+  bucket: props.bucket?.bucket,
+  bucketName: props.bucket?.bucketName,
+  endpoint: props.bucket?.endpoint,
+  key: props.bucket?.key,
+  secretAccessKey: props.bucket?.secretAccessKey
 };
 
 // Form validation schema
 const schema = object({
-  bucketName: string().max(255).required().label('Bucket name'),
-  bucket: string().max(255).required().label('Bucket'),
-  endpoint: string().max(255).required().label('Endpoint'),
   accessKeyId: string().max(255).required().label('Access Key ID'),
-  secretAccessKey: string().max(255).required().label('Secret Access Key'),
-  key: string().max(255).label('Key')
+  bucket: string().max(255).required().label('Bucket'),
+  bucketName: string().max(255).required().label('Bucket name'),
+  endpoint: string().max(255).required().label('Endpoint'),
+  key: string().max(255).label('Key'),
+  secretAccessKey: string().max(255).required().label('Secret Access Key')
 });
 
 // Actions
@@ -52,18 +62,16 @@ const toast = useToast();
 const onSubmit = async (values: any) => {
   try {
     const formBucket = {
-      bucketName: values.bucketName,
+      accessKeyId: values.accessKeyId,
       bucket: values.bucket,
+      bucketName: values.bucketName,
       endpoint: values.endpoint,
-      accessKeyId: values.accessKeyId !== 'REDACTED' ? values.accessKeyId : undefined,
-      secretAccessKey:
-        values.secretAccessKey !== 'REDACTED' ? values.secretAccessKey : undefined,
       key: values.key ? values.key : '/',
-      active: true
+      secretAccessKey: values.secretAccessKey,
     } as Bucket;
 
     props.bucket ?
-      await bucketStore.updateBucket(props.bucket?.bucketId, formBucket) :
+      await bucketStore.updateBucket(props.bucket?.bucketId, differential(formBucket, initialValues)) :
       await bucketStore.createBucket(formBucket);
 
     await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
@@ -106,37 +114,37 @@ const onCancel = () => {
         name="bucketName"
         label="Bucket name *"
         placeholder="My Documents"
-        helptext="Your custom display name for the bucket."
+        help-text="Your custom display name for the bucket."
       />
       <TextInput
         name="bucket"
         label="Bucket *"
         placeholder="bucket0123456789"
-        helptext="Your storage provider's bucket identifier."
+        help-text="Your storage provider's bucket identifier."
       />
       <TextInput
         name="endpoint"
         label="Endpoint *"
         placeholder="https://example.com/"
-        helptext="The URL of the object storage server."
+        help-text="The URL of the object storage server."
       />
       <Password
         name="accessKeyId"
         label="Access key identifier / Username *"
         placeholder="username"
-        helptext="User/Account identifier or username."
+        help-text="User/Account identifier or username."
       />
       <Password
         name="secretAccessKey"
         label="Secret access key *"
         placeholder="password"
-        helptext="A password used to access the bucket."
+        help-text="A password used to access the bucket."
       />
       <TextInput
         name="key"
         label="Key"
         placeholder="directory"
-        helptext="An optional path prefix within a bucket. The path will be created if it doesn't already exist."
+        help-text="An optional path prefix within a bucket. The path will be created if it doesn't already exist."
       />
       <Button
         class="mt-2"
@@ -148,8 +156,7 @@ const onCancel = () => {
       <Button
         class="p-button-text mt-2"
         label="Cancel"
-        icon="pi pi
-        -times"
+        icon="pi pi-times"
         @click="onCancel"
       />
     </Form>
