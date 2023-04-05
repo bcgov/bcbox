@@ -12,5 +12,3 @@ export { default as ObjectTable } from './ObjectTable.vue';
 export { default as ObjectTag } from './ObjectTag.vue';
 export { default as ObjectUpload } from './ObjectUpload.vue';
 export { default as ObjectUploadFile } from './ObjectUploadFile.vue';
-export { default as ShareLinkContent } from './share/ShareLinkContent.vue';
-export { default as ShareObjectButton } from './share/ShareObjectButton.vue';
