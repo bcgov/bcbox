@@ -11,6 +11,15 @@ import { differential } from '@/utils/utils';
 
 import type { Bucket } from '@/types';
 
+export type BucketForm = {
+  accessKeyId?: string;
+  bucket?: string;
+  bucketName?: string;
+  endpoint?: string;
+  key?: string;
+  secretAccessKey?: string;
+};
+
 // Props
 type Props = {
   bucket?: Bucket;
@@ -28,23 +37,23 @@ const bucketStore = useBucketStore();
 const { getUserId } = storeToRefs(useAuthStore());
 
 // Default form values
-const initialValues: any = {
-  bucketName: props.bucket?.bucketName,
-  bucket: props.bucket?.bucket,
-  endpoint: props.bucket?.endpoint,
+const initialValues: BucketForm = {
   accessKeyId: props.bucket?.accessKeyId,
-  secretAccessKey: props.bucket?.secretAccessKey,
-  key: props.bucket?.key
+  bucket: props.bucket?.bucket,
+  bucketName: props.bucket?.bucketName,
+  endpoint: props.bucket?.endpoint,
+  key: props.bucket?.key,
+  secretAccessKey: props.bucket?.secretAccessKey
 };
 
 // Form validation schema
 const schema = object({
-  bucketName: string().max(255).required().label('Bucket name'),
-  bucket: string().max(255).required().label('Bucket'),
-  endpoint: string().max(255).required().label('Endpoint'),
   accessKeyId: string().max(255).required().label('Access Key ID'),
-  secretAccessKey: string().max(255).required().label('Secret Access Key'),
-  key: string().max(255).label('Key')
+  bucket: string().max(255).required().label('Bucket'),
+  bucketName: string().max(255).required().label('Bucket name'),
+  endpoint: string().max(255).required().label('Endpoint'),
+  key: string().max(255).label('Key'),
+  secretAccessKey: string().max(255).required().label('Secret Access Key')
 });
 
 // Actions
@@ -53,12 +62,12 @@ const toast = useToast();
 const onSubmit = async (values: any) => {
   try {
     const formBucket = {
-      bucketName: values.bucketName,
-      bucket: values.bucket,
-      endpoint: values.endpoint,
       accessKeyId: values.accessKeyId,
-      secretAccessKey: values.secretAccessKey,
+      bucket: values.bucket,
+      bucketName: values.bucketName,
+      endpoint: values.endpoint,
       key: values.key ? values.key : '/',
+      secretAccessKey: values.secretAccessKey,
     } as Bucket;
 
     props.bucket ?

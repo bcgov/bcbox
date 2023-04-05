@@ -5,16 +5,10 @@
  * @param {object} comparer The object to be compared against
  * @returns {object} Object containing the non-matching key/value pairs in the source object
  */
-export function differential(source: any, comparer: any) {
-  const diff: any = {};
-  for (const [key, value] of Object.entries(source)) {
-    if (!Object.prototype.hasOwnProperty.call(comparer, key) ||
-      (Object.prototype.hasOwnProperty.call(comparer, key) && comparer[key] !== value)) {
-      diff[key] = value;
-    }
-  }
-
-  return diff;
+export function differential(source: any, comparer: any): any {
+  return Object.fromEntries(Object.entries(source)
+    .filter(([key, value]) => comparer[key] !== value)
+  );
 }
 
 /**

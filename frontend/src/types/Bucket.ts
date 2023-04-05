@@ -1,13 +1,13 @@
 import type { IAudit } from '@/interfaces';
 
 export type Bucket = {
-  bucketId: string;
-  bucketName: string;
+  active: boolean;
   accessKeyId: string;
   bucket: string;
+  bucketId: string;
+  bucketName: string;
   endpoint: string;
   key: string;
-  secretAccessKey: string;
   region: string;
-  active: boolean;
+  secretAccessKey: string;
 } & IAudit;
