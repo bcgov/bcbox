@@ -1,4 +1,23 @@
 /**
+ * @function differential
+ * Create a key/value differential from source against comparer
+ * @param {object} source Source object
+ * @param {object} comparer The object to be compared against
+ * @returns {object} Object containing the non-matching key/value pairs in the source object
+ */
+export function differential(source: any, comparer: any) {
+  const diff: any = {};
+  for (const [key, value] of Object.entries(source)) {
+    if (!Object.prototype.hasOwnProperty.call(comparer, key) ||
+      (Object.prototype.hasOwnProperty.call(comparer, key) && comparer[key] !== value)) {
+      diff[key] = value;
+    }
+  }
+
+  return diff;
+}
+
+/**
  * @function isDebugMode
  * Checks if the app is currently running in debug mode
  * @returns {boolean} True if in debug, false otherwise

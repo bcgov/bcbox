@@ -7,6 +7,7 @@ import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
 import { Button, useToast } from '@/lib/primevue';
 import { useAuthStore, useBucketStore } from '@/store';
+import { differential } from '@/utils/utils';
 
 import type { Bucket } from '@/types';
 
@@ -50,19 +51,6 @@ const schema = object({
 const toast = useToast();
 
 const onSubmit = async (values: any) => {
-
-  const differential = (left: any, right: any) => {
-    let diff: any = {};
-    for (const [key, value] of Object.entries(left)) {
-      if(!Object.prototype.hasOwnProperty.call(right, key) ||
-        (Object.prototype.hasOwnProperty.call(right, key) && right[key] !== value)) {
-        diff[key] = value;
-      }
-    }
-
-    return diff;
-  };
-
   try {
     const formBucket = {
       bucketName: values.bucketName,
@@ -73,14 +61,8 @@ const onSubmit = async (values: any) => {
       key: values.key ? values.key : '/',
     } as Bucket;
 
-    const d = differential(formBucket, initialValues);
-    console.log(values);
-    console.log(d);
-    return;
-
-
     props.bucket ?
-      await bucketStore.updateBucket(props.bucket?.bucketId, formBucket) :
+      await bucketStore.updateBucket(props.bucket?.bucketId, differential(formBucket, initialValues)) :
       await bucketStore.createBucket(formBucket);
 
     await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
