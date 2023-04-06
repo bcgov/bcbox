@@ -5,9 +5,9 @@ import { ref, watch } from 'vue';
 import {
   DeleteObjectButton,
   DownloadObjectButton,
-  ObjectPermission,
-  ShareObjectButton
+  ObjectPermission
 } from '@/components/object';
+import { ShareObjectButton } from '@/components/object/share';
 import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch, useToast } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';

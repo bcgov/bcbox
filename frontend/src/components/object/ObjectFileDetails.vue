@@ -10,9 +10,9 @@ import {
   ObjectMetadata,
   ObjectPermission,
   ObjectProperties,
-  ObjectTag,
-  ShareObjectButton
+  ObjectTag
 } from '@/components/object';
+import { ShareObjectButton } from '@/components/object/share';
 import { Button, Dialog, useToast } from '@/lib/primevue';
 import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore, useTagStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';

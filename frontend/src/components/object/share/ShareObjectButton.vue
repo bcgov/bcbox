@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 import { computed, ref, onMounted } from 'vue';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { ShareLinkContent } from '@/components/object';
+import ShareLinkContent from '@/components/object/share/ShareLinkContent.vue';
 import { Button, Dialog, TabView, TabPanel } from '@/lib/primevue';
 import { useConfigStore, useMetadataStore, useObjectStore } from '@/store';
 
