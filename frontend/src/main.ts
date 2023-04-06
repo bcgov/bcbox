@@ -13,6 +13,7 @@ import App from '@/App.vue';
 import getRouter from '@/router';
 import { AuthService, ConfigService } from '@/services';
 
+import '@bcgov/bc-sans/css/BCSans.css';
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';

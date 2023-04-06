@@ -24,6 +24,7 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@bcgov/bc-sans": "^1.0.1",
     "@fortawesome/fontawesome-svg-core": "^6.3.0",
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
