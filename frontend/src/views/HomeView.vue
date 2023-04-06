@@ -29,7 +29,7 @@ const { getConfig } = storeToRefs(useConfigStore());
       <p class="text-xl text-center">
         This website uses the <a href="https://bcgov.github.io/common-service-showcase/services/coms.html">Common Object Management Service</a> so
         <a href="https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/id-services/idir">IDIR</a> and <a href="https://www.bceid.ca/">BCeID</a>
-        users can <br /> upload and share files with each other.
+        users can <br /> upload and share files.
       </p>
     </div>
     <div class="flex justify-content-center mb-5">
@@ -58,7 +58,7 @@ const { getConfig } = storeToRefs(useConfigStore());
         </div>
         <div class="flex align-items-left">
           <p class="text-xl">
-            With BCBox, you can use low-cost object storage for your files, <br />
+            With BCBox, you can use low-cost object storage for your files,
             images and documents.
           </p>
         </div>
@@ -82,7 +82,7 @@ const { getConfig } = storeToRefs(useConfigStore());
         <div class="flex align-items-left">
           <p class="text-xl">
             You can assign custom permissions to other users through IDIR or BCeID authentication.<br /><br />
-            You can also choose to share files with public links.
+            IDIR users can also choose to share files with public links.
             Contact your organization's privacy and security teams to see if this fits your intended use.
             Make sure you don't upload personal or private information without the consent of your Ministry
             Privacy Officer.
@@ -188,3 +188,9 @@ const { getConfig } = storeToRefs(useConfigStore());
     </div>
   </div>
 </template>
+
+<style scoped>
+img {
+  max-width: 100%;
+}
+</style>
