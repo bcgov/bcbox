@@ -10,13 +10,15 @@ type Props = {
   label?: string;
   name: string;
   placeholder?: string;
+  disabled?: boolean;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   helpText: '',
   type: 'text',
   label: '',
-  placeholder: ''
+  placeholder: '',
+  disabled: false
 });
 
 const { errorMessage, value } = useField<string>(toRef(props, 'name'));
@@ -31,6 +33,7 @@ const { errorMessage, value } = useField<string>(toRef(props, 'name'));
       :name="name"
       :placeholder="placeholder"
       :class="{ 'p-invalid': errorMessage }"
+      :disabled="disabled"
     />
     <small id="`${name}-help`">{{ helpText }}</small>
     <ErrorMessage
