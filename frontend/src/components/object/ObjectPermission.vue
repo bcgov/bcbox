@@ -50,14 +50,21 @@ const updateObjectPermission = (value: boolean, userId: string, permCode: string
   else {
     const managers = getMappedObjectToUserPermissions.value.filter( (x: UserPermissions) => x.manage );
 
+    const userPerms: UserPermissions = getMappedObjectToUserPermissions.value
+      .find( (x: UserPermissions) => x.userId === userId ) as UserPermissions;
+
+    // When READ is unticked check if they are the last remaining user with MANAGE
+    const lastManager = () => permCode === Permissions.READ && managers.length === 1 && userPerms.manage;
+
+    // Due to 2-way binding we check if there are no managers left when MANAGE is unticked
+    const noManagers = () => permCode === Permissions.MANAGE && !managers.length;
+
     // Disallow removable of final MANAGE permission
-    if( permCode === Permissions.MANAGE && !managers.length ) {
+    if( lastManager() || noManagers() ) {
       removeManageAlert.show();
 
-      // Set the value back as clicking will automatically change it
-      const perm: UserPermissions = getMappedObjectToUserPermissions.value
-        .find( (x: UserPermissions) => x.userId === userId ) as UserPermissions;
-      perm.manage = true;
+      if( permCode === Permissions.READ ) userPerms.read = true;
+      if( permCode === Permissions.MANAGE ) userPerms.manage = true;
     }
     else {
       permissionStore.deleteObjectPermission(props.objectId, userId, permCode);
