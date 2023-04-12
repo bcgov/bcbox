@@ -86,7 +86,6 @@ const onSubmit = async (values: any) => {
       }
     );
   } catch (error: any) {
-    emit('cancel-bucket-config');
     toast.add(
       {
         severity: 'error',
@@ -145,6 +144,7 @@ const onCancel = () => {
         label="Key"
         placeholder="directory"
         help-text="An optional path prefix within a bucket. The path will be created if it doesn't already exist."
+        :disabled="!!props.bucket"
       />
       <Button
         class="mt-2"
