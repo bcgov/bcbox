@@ -11,7 +11,6 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
 
 <template>
   <nav
-    v-if="getIsAuthenticated"
     class="navigation-main"
   >
     <Toolbar>
@@ -22,15 +21,19 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
               Home
             </router-link>
           </li>
-          <li class="mr-2">
+          <li
+            v-if="getIsAuthenticated"
+            class="mr-2"
+          >
             <router-link :to="{ name: RouteNames.LIST_BUCKETS }">
               My Buckets
             </router-link>
           </li>
           <li class="mr-2">
-            <router-link :to="{ name: RouteNames.DEVELOPER }">
-              Developer
-            </router-link>
+            <a
+              target="_blank"
+              href="https://github.com/bcgov/bcbox/wiki"
+            >Help</a>
           </li>
         </ol>
       </template>

@@ -108,7 +108,10 @@ const { getConfig } = storeToRefs(useConfigStore());
       style="height: 32px"
     >
       <p class="text-xl">
-        We continue to expand the features of BCBox. Stay tuned for documentation on our wiki.<br /><br />
+        We continue to expand the features of BCBox. Stay tuned for documentation on our <a
+          target="_blank"
+          href="https://github.com/bcgov/bcbox/wiki"
+        >wiki</a>.<br /><br />
       </p>
     </div>
     <div class="flex justify-content-center mb-8 text-xl">
