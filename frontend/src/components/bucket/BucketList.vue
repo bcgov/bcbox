@@ -86,6 +86,10 @@ onMounted(async () => {
           {{ bucketConfigTitle }}
         </h3>
 
+        <Message severity="warn">
+          {{ BucketConfig.NOTICE_NEW_BUCKET }}
+        </Message>
+
         <BucketConfigForm
           :bucket="bucketToUpdate"
           @submit-bucket-config="closeBucketConfig"
