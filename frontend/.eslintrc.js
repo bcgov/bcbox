@@ -6,7 +6,7 @@ module.exports = {
   env: {
     browser: true,
     es2020: true,
-    jest: true,
+    vi: true
   },
   extends: [
     '@vue/eslint-config-typescript',

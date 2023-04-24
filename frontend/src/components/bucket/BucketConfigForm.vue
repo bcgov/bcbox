@@ -114,6 +114,7 @@ const onCancel = () => {
         label="Bucket name *"
         placeholder="My Documents"
         help-text="Your custom display name for the bucket."
+        autofocus
       />
       <TextInput
         name="bucket"
@@ -151,7 +152,6 @@ const onCancel = () => {
         label="Apply"
         type="submit"
         icon="pi pi-check"
-        autofocus
       />
       <Button
         class="p-button-text mt-2"

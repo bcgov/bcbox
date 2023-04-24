@@ -15,8 +15,6 @@ export type UserStoreState = {
 }
 
 export const useUserStore = defineStore('user', () => {
-  const toast = useToast();
-
   // Store
   const appStore = useAppStore();
 
@@ -40,10 +38,10 @@ export const useUserStore = defineStore('user', () => {
       const response = (await userService.searchForUsers(params)).data;
 
       // Filter out any user without an IDP
-      state.userSearch.value = response.filter((x: User) => x.identityId !== null);
+      state.userSearch.value = response.filter((x: User) => !!x.identityId);
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error searching users', detail: error, life: 3000 });
+      useToast().add({ severity: 'error', summary: 'Error searching users', detail: error, life: 3000 });
     }
     finally {
       appStore.endIndeterminateLoading();

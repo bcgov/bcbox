@@ -35,7 +35,7 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'happy-dom',
+    environment: 'jsdom',
     include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx,vue}'],
     exclude: [...configDefaults.exclude, 'packages/template/*'],
     coverage: {
