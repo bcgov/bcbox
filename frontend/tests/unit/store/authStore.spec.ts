@@ -1,9 +1,11 @@
 import { setActivePinia, createPinia } from 'pinia';
-import { useAuthStore } from '@/store';
-import { AuthService } from '@/services';
+import { beforeEach, describe, it } from 'vitest';
+
+// import { useAuthStore } from '@/store';
+// import { AuthService } from '@/services';
 
 describe.skip('Auth Store', () => {
-  const noop = () => { };
+  //const noop = () => { };
 
   beforeEach(() => {
     // Creates a fresh pinia and make it active so it's automatically picked
@@ -13,11 +15,11 @@ describe.skip('Auth Store', () => {
   });
 
   it('_registerEvents', () => {
-    const p = AuthService.prototype;
-    const o = p.getOidcSettings;
-    const oo = o();
-    const store = useAuthStore();
-    //const userManager = AuthService.getUserManager();
+    // const p = AuthService.prototype;
+    // const o = p.getOidcSettings;
+    // const oo = o();
+    // const store = useAuthStore();
+    // const userManager = AuthService.getUserManager();
 
     // const addAccessTokenExpiredSpy = jest.spyOn(userManager.events, 'addAccessTokenExpired');
     // const addAccessTokenExpiringSpy = jest.spyOn(userManager.events, 'addAccessTokenExpiring');

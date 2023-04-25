@@ -1,4 +1,5 @@
 import { setActivePinia, createPinia } from 'pinia';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as primevue from '@/lib/primevue';
 import { objectService } from '@/services';
@@ -50,14 +51,6 @@ describe('Config Store', () => {
     it('does not change state on error', async () => {
       const appStore = useAppStore();
       const tagStore = useTagStore();
-
-      const tag: Tagging = {
-        tagset: [
-          { key: 'foo', value: 'bar' },
-          { key: 'baz', value: 'bam' }
-        ],
-        objectId: '000'
-      };
 
       const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
       const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');

@@ -15,7 +15,7 @@
     "preview": "vite preview",
     "prebuild": "npm run lint",
     "prelint": "npm run typecheck",
-    "foobasr": "npm run lint",
+    "pretest": "npm run lint",
     "purge": "rimraf node_modules",
     "rebuild": "npm run clean && npm run build",
     "reinstall": "npm run purge && npm install",

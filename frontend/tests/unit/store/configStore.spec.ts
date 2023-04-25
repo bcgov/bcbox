@@ -1,4 +1,5 @@
 import { setActivePinia, createPinia } from 'pinia';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ConfigService } from '@/services';
 import { useConfigStore } from '@/store';
@@ -30,7 +31,8 @@ describe('Config Store', () => {
       const configStore = useConfigStore();
 
       const configServiceInitSpy = vi.spyOn(ConfigService, 'init');
-      const configServiceGetConfigSpy = vi.spyOn(configService, 'getConfig').mockReturnValueOnce(sessionStorage.getItem(StorageKey.CONFIG));
+      const configServiceGetConfigSpy = vi.spyOn(configService, 'getConfig')
+        .mockReturnValueOnce(sessionStorage.getItem(StorageKey.CONFIG));
 
       await configStore.init();
 

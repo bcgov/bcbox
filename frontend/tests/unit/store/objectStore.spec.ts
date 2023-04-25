@@ -1,4 +1,5 @@
 import { setActivePinia, createPinia } from 'pinia';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as primevue from '@/lib/primevue';
 import { objectService } from '@/services';
@@ -187,7 +188,12 @@ describe('Object Store', () => {
       expect(fetchObjectPermissionsSpy).toHaveBeenCalledTimes(1);
       expect(fetchObjectPermissionsSpy).toBeCalledWith({ bucketId: '000', userId: '123', bucketPerms: true });
       expect(searchObjectsSpy).toHaveBeenCalledTimes(1);
-      expect(searchObjectsSpy).toBeCalledWith({ bucketId: ['000'], objectId: ['000'], deleteMarker: false, latest: true });
+      expect(searchObjectsSpy).toBeCalledWith({
+        bucketId: ['000'],
+        objectId: ['000'],
+        deleteMarker: false,
+        latest: true
+      });
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(objectStore.getObjects).toStrictEqual([obj]);
     });
@@ -216,7 +222,12 @@ describe('Object Store', () => {
       expect(fetchObjectPermissionsSpy).toHaveBeenCalledTimes(1);
       expect(fetchObjectPermissionsSpy).toBeCalledWith({ bucketId: '000', userId: '123', bucketPerms: true });
       expect(searchObjectsSpy).toHaveBeenCalledTimes(1);
-      expect(searchObjectsSpy).toBeCalledWith({ bucketId: ['000'], objectId: ['000'], deleteMarker: false, latest: true });
+      expect(searchObjectsSpy).toBeCalledWith({
+        bucketId: ['000'],
+        objectId: ['000'],
+        deleteMarker: false,
+        latest: true
+      });
       expect(useToastSpy).toHaveBeenCalledTimes(1);
       expect(mockAdd).toHaveBeenCalledTimes(1);
       expect(mockAdd).toHaveBeenCalledWith(expect.anything());

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { toKebabCase } from '@/utils/formatters';
 
 describe('formatters.ts toKebabCase', () => {
