@@ -5,7 +5,7 @@ export type User = {
   email: string;
   firstName: string;
   fullName: string;
-  identityId: string;
+  identityId: string | null;
   idp: string;
   lastName: string;
   userId: string;

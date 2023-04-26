@@ -5,13 +5,21 @@ module.exports = {
   root: true,
   env: {
     browser: true,
-    es2020: true,
-    jest: true,
+    es2020: true
   },
   extends: [
     '@vue/eslint-config-typescript',
     'eslint:recommended',
-    'plugin:vue/vue3-recommended',
+    'plugin:vitest-globals/recommended',
+    'plugin:vue/vue3-recommended'
+  ],
+  overrides: [
+    {
+      files: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx,vue}'],
+      env: {
+        'vitest-globals/env': true
+      }
+    }
   ],
   parserOptions: {
     ecmaVersion: 11,

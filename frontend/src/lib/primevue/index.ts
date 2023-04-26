@@ -22,4 +22,5 @@ export { default as Toast } from 'primevue/toast';
 export { default as Toolbar } from 'primevue/toolbar';
 
 export { useConfirm } from 'primevue/useconfirm';
-export { useToast } from 'primevue/usetoast';
+
+export { useToast } from './useToast';

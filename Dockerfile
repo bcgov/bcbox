@@ -17,7 +17,7 @@ WORKDIR /tmp/src/app
 RUN chown -R 1001:0 /tmp/src/app
 
 USER 1001
-RUN npm ci --production
+RUN npm ci --omit=dev
 
 #
 # Build the frontend
