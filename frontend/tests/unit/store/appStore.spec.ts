@@ -1,47 +1,49 @@
 import { setActivePinia, createPinia } from 'pinia';
-import { beforeEach, describe, expect, it } from 'vitest';
 
 import { useAppStore } from '@/store';
 
+import type { StoreGeneric } from 'pinia';
+
+beforeEach(() => {
+  setActivePinia(createPinia());
+  vi.clearAllMocks();
+});
+
 describe('App Store', () => {
+
+  let appStore: StoreGeneric;
+
   beforeEach(() => {
-    // Creates a fresh pinia and make it active so it's automatically picked
-    // up by any useStore() call without having to pass it to it:
-    // `useStore(pinia)`
-    setActivePinia(createPinia());
+    appStore = useAppStore();
   });
 
   it('beginDeterminateLoading', () => {
-    const store = useAppStore();
-    store.beginDeterminateLoading();
-    expect(store.getLoadingValue).toBe(0);
-    expect(store.getLoadingCalls).toBe(1);
-    expect(store.getLoadingMode).toBe('determinate');
-    expect(store.getIsLoading).toBeTruthy();
+    appStore.beginDeterminateLoading();
+    expect(appStore.getLoadingValue).toBe(0);
+    expect(appStore.getLoadingCalls).toBe(1);
+    expect(appStore.getLoadingMode).toBe('determinate');
+    expect(appStore.getIsLoading).toBeTruthy();
   });
 
   it('beginIndeterminateLoading', () => {
-    const store = useAppStore();
-    store.beginIndeterminateLoading();
-    expect(store.getLoadingCalls).toBe(1);
-    expect(store.getLoadingMode).toBe('indeterminate');
-    expect(store.getIsLoading).toBeTruthy();
+    appStore.beginIndeterminateLoading();
+    expect(appStore.getLoadingCalls).toBe(1);
+    expect(appStore.getLoadingMode).toBe('indeterminate');
+    expect(appStore.getIsLoading).toBeTruthy();
   });
 
   it('endDeterminateLoading', () => {
-    const store = useAppStore();
-    store.endDeterminateLoading();
-    expect(store.getLoadingValue).toBe(100);
+    appStore.endDeterminateLoading();
+    expect(appStore.getLoadingValue).toBe(100);
     setTimeout(() => {
-      expect(store.getLoadingCalls).toBe(-1);
+      expect(appStore.getLoadingCalls).toBe(-1);
     }, 300);
   });
 
   it('endIndeterminateLoading', () => {
-    const store = useAppStore();
-    store.endIndeterminateLoading();
+    appStore.endIndeterminateLoading();
     setTimeout(() => {
-      expect(store.getLoadingCalls).toBe(-1);
+      expect(appStore.getLoadingCalls).toBe(-1);
     }, 300);
   });
 });

@@ -1,10 +1,11 @@
 import { setActivePinia, createPinia } from 'pinia';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as primevue from '@/lib/primevue';
 import { userService } from '@/services';
 import { useAppStore, useUserStore } from '@/store';
 
+import type { StoreGeneric } from 'pinia';
+import type { SpyInstance } from 'vitest';
 import type { User } from '@/types';
 
 const user: User = {
@@ -20,12 +21,26 @@ const user: User = {
   elevatedRights: true,
 };
 
+const noIdUser: User = {
+  active: true,
+  email: 'foo@bar.com',
+  firstName: 'foo',
+  fullName: 'foo bar',
+  identityId: null,
+  idp: '',
+  lastName: 'bar',
+  userId: '000',
+  username: 'foobar',
+  elevatedRights: true,
+};
+
 const mockAdd = vi.fn();
-const useToastSpy = vi.spyOn(primevue, 'useToast').mockImplementation(() => ({ add: mockAdd }));
+const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 beforeEach(() => {
   setActivePinia(createPinia());
   vi.clearAllMocks();
+  useToastSpy.mockImplementation(() => ({ add: mockAdd }));
 });
 
 afterEach(() => {
@@ -34,15 +49,27 @@ afterEach(() => {
 
 describe('User Store', () => {
 
+  let appStore: StoreGeneric;
+  let userStore: StoreGeneric;
+
+  let beginIndeterminateLoadingSpy: SpyInstance;
+  let endIndeterminateLoadingSpy: SpyInstance;
+
+  let searchForUsersSpy: SpyInstance;
+
+  beforeEach(() => {
+    appStore = useAppStore();
+    userStore = useUserStore();
+
+    beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
+    endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
+
+    searchForUsersSpy = vi.spyOn(userService, 'searchForUsers');
+  });
+
   describe('fetchUsers', () => {
     it('sets the state from the search results', async () => {
-      const appStore = useAppStore();
-      const userStore = useUserStore();
-
-      const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
-      const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
-      const searchForUsersSpy = vi.spyOn(userService, 'searchForUsers')
-        .mockReturnValueOnce({ data: [user] } as any);
+      searchForUsersSpy.mockReturnValueOnce({ data: [user] } as any);
 
       await userStore.fetchUsers({ lastName: 'bar' });
 
@@ -54,26 +81,7 @@ describe('User Store', () => {
     });
 
     it('filters out users without an IDP', async () => {
-      const appStore = useAppStore();
-      const userStore = useUserStore();
-
-      const noIdUser: User = {
-        active: true,
-        email: 'foo@bar.com',
-        firstName: 'foo',
-        fullName: 'foo bar',
-        identityId: null,
-        idp: '',
-        lastName: 'bar',
-        userId: '000',
-        username: 'foobar',
-        elevatedRights: true,
-      };
-
-      const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
-      const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
-      const searchForUsersSpy = vi.spyOn(userService, 'searchForUsers')
-        .mockReturnValueOnce({ data: [noIdUser] } as any);
+      searchForUsersSpy.mockReturnValueOnce({ data: [noIdUser] } as any);
 
       await userStore.fetchUsers({ lastName: 'bar' });
 
@@ -85,15 +93,9 @@ describe('User Store', () => {
     });
 
     it('displays toast on error', async () => {
-      const appStore = useAppStore();
-      const userStore = useUserStore();
-
-      const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
-      const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
-      const searchForUsersSpy = vi.spyOn(userService, 'searchForUsers')
-        .mockImplementationOnce(() => {
-          throw new Error();
-        });
+      searchForUsersSpy.mockImplementationOnce(() => {
+        throw new Error();
+      });
 
       await userStore.fetchUsers({ lastName: 'bar' });
 
@@ -111,7 +113,6 @@ describe('User Store', () => {
 
   describe('clearSearch', () => {
     it('empties the search state', async () => {
-      const userStore = useUserStore();
       userStore.userSearch = [user];
 
       expect(userStore.getUserSearch).toStrictEqual([user]);

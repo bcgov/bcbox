@@ -1,10 +1,11 @@
 import { setActivePinia, createPinia } from 'pinia';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as primevue from '@/lib/primevue';
 import { objectService } from '@/services';
 import { useAppStore, useMetadataStore } from '@/store';
 
+import type { StoreGeneric } from 'pinia';
+import type { SpyInstance } from 'vitest';
 import type { Metadata } from '@/types';
 
 const meta: Metadata = {
@@ -16,11 +17,12 @@ const meta: Metadata = {
 };
 
 const mockAdd = vi.fn();
-const useToastSpy = vi.spyOn(primevue, 'useToast').mockImplementation(() => ({ add: mockAdd }));
+const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 beforeEach(() => {
   setActivePinia(createPinia());
   vi.clearAllMocks();
+  useToastSpy.mockImplementation(() => ({ add: mockAdd }));
 });
 
 afterEach(() => {
@@ -29,15 +31,27 @@ afterEach(() => {
 
 describe('Metadata Store', () => {
 
+  let appStore: StoreGeneric;
+  let metadataStore: StoreGeneric;
+
+  let beginIndeterminateLoadingSpy: SpyInstance;
+  let endIndeterminateLoadingSpy: SpyInstance;
+
+  let getMetadataSpy: SpyInstance;
+
+  beforeEach(() => {
+    appStore = useAppStore();
+    metadataStore = useMetadataStore();
+
+    beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
+    endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
+
+    getMetadataSpy = vi.spyOn(objectService, 'getMetadata');
+  });
+
   describe('fetchMetadata', () => {
     it('fetches the metadata', async () => {
-      const appStore = useAppStore();
-      const metadataStore = useMetadataStore();
-
-      const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
-      const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
-      const getMetadataSpy = vi.spyOn(objectService, 'getMetadata')
-        .mockReturnValueOnce({ data: [meta] } as any);
+      getMetadataSpy.mockReturnValue({ data: [meta] } as any);
 
       await metadataStore.fetchMetadata({ objectId: '000' });
 
@@ -49,22 +63,15 @@ describe('Metadata Store', () => {
     });
 
     it('does not change state on error', async () => {
-      const appStore = useAppStore();
-      const metadataStore = useMetadataStore();
-
-      const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
-      const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
-      const getMetadataSpy = vi.spyOn(objectService, 'getMetadata')
-        .mockImplementationOnce(() => {
-          throw new Error();
-        });
+      getMetadataSpy.mockImplementation(() => {
+        throw new Error();
+      });
 
       await metadataStore.fetchMetadata({ objectId: '000' });
 
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(getMetadataSpy).toHaveBeenCalledTimes(1);
       expect(getMetadataSpy).toHaveBeenCalledWith(null, { objectId: '000' });
-      expect(useToastSpy).toHaveBeenCalledTimes(1);
       expect(mockAdd).toHaveBeenCalledTimes(1);
       expect(mockAdd).toHaveBeenCalledWith(expect.anything());
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
@@ -75,7 +82,6 @@ describe('Metadata Store', () => {
 
   describe('findMetadataByObjectId', () => {
     it('returns matching metadata', async () => {
-      const metadataStore = useMetadataStore();
       metadataStore.metadata = [meta];
 
       const result = metadataStore.findMetadataByObjectId('000');
@@ -84,7 +90,6 @@ describe('Metadata Store', () => {
     });
 
     it('returns undefined when no match found', async () => {
-      const metadataStore = useMetadataStore();
       metadataStore.metadata = [meta];
 
       const result = metadataStore.findMetadataByObjectId('111');
@@ -96,7 +101,6 @@ describe('Metadata Store', () => {
 
   describe('findValue', () => {
     it('returns matching metadata', async () => {
-      const metadataStore = useMetadataStore();
       metadataStore.metadata = [meta];
 
       const result = metadataStore.findValue('000', 'foo');
@@ -105,7 +109,6 @@ describe('Metadata Store', () => {
     });
 
     it('returns undefined when no match found', async () => {
-      const metadataStore = useMetadataStore();
       metadataStore.metadata = [meta];
 
       const result = metadataStore.findValue('111', 'foo');

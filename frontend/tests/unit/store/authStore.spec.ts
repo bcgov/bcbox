@@ -1,5 +1,4 @@
 import { setActivePinia, createPinia } from 'pinia';
-import { beforeEach, describe, it } from 'vitest';
 
 // import { useAuthStore } from '@/store';
 // import { AuthService } from '@/services';

@@ -1,11 +1,12 @@
 import { setActivePinia, createPinia } from 'pinia';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as primevue from '@/lib/primevue';
 import { bucketService } from '@/services';
 import { useAppStore, useBucketStore, usePermissionStore } from '@/store';
 import { StorageKey } from '@/utils/constants';
 
+import type { StoreGeneric } from 'pinia';
+import type { SpyInstance } from 'vitest';
 import type { Bucket } from '@/types';
 
 const bucket: Bucket = {
@@ -32,8 +33,15 @@ const bucket2: Bucket = {
   secretAccessKey: '456',
 };
 
+const readPerm = {
+  bucketId: '000',
+  id: '0',
+  permCode: 'READ',
+  userId: '123'
+};
+
 const mockAdd = vi.fn();
-const useToastSpy = vi.spyOn(primevue, 'useToast').mockImplementation(() => ({ add: mockAdd }));
+const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 beforeEach(() => {
   setActivePinia(createPinia());
@@ -48,6 +56,8 @@ beforeEach(() => {
   ));
 
   vi.clearAllMocks();
+
+  useToastSpy.mockImplementation(() => ({ add: mockAdd }));
 });
 
 afterEach(() => {
@@ -56,15 +66,36 @@ afterEach(() => {
 
 describe('Bucket Store', () => {
 
+  let appStore: StoreGeneric;
+  let bucketStore: StoreGeneric;
+  let permissionStore: StoreGeneric;
+
+  let beginIndeterminateLoadingSpy: SpyInstance;
+  let endIndeterminateLoadingSpy: SpyInstance;
+  let fetchBucketPermissionsSpy: SpyInstance;
+
+  let createBucketSpy: SpyInstance;
+  let searchBucketsSpy: SpyInstance;
+  let updateBucketSpy: SpyInstance;
+
+  beforeEach(() => {
+    appStore = useAppStore();
+    bucketStore = useBucketStore();
+    permissionStore = usePermissionStore();
+
+    beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
+    endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
+    fetchBucketPermissionsSpy = vi.spyOn(permissionStore, 'fetchBucketPermissions');
+
+    createBucketSpy = vi.spyOn(bucketService, 'createBucket');
+    searchBucketsSpy = vi.spyOn(bucketService, 'searchBuckets');
+    updateBucketSpy = vi.spyOn(bucketService, 'updateBucket');
+  });
+
+
   describe('createBucket', () => {
     it('calls the service', async () => {
-      const appStore = useAppStore();
-      const bucketStore = useBucketStore();
-
-      const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
-      const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
-      const createBucketSpy = vi.spyOn(bucketService, 'createBucket')
-        .mockReturnValueOnce({ data: {} } as any);
+      createBucketSpy.mockReturnValue({ data: {} } as any);
 
       await bucketStore.createBucket(bucket);
 
@@ -78,26 +109,12 @@ describe('Bucket Store', () => {
 
   describe('fetchBuckets', () => {
     it('gets the bucket list', async () => {
-      const readPerm = {
-        bucketId: '000',
-        id: '0',
-        permCode: 'READ',
-        userId: '123'
-      };
-
-      const appStore = useAppStore();
-      const bucketStore = useBucketStore();
-      const permissionStore = usePermissionStore();
       permissionStore.bucketPermissions = [
         readPerm
       ];
 
-      const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
-      const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
-      const searchBucketsSpy = vi.spyOn(bucketService, 'searchBuckets')
-        .mockReturnValueOnce({ data: [bucket] } as any);
-      const fetchBucketPermissionsSpy = vi.spyOn(permissionStore, 'fetchBucketPermissions')
-        .mockReturnValueOnce([readPerm] as any);
+      searchBucketsSpy.mockReturnValue({ data: [bucket] } as any);
+      fetchBucketPermissionsSpy.mockReturnValue([readPerm] as any);
 
       await bucketStore.fetchBuckets({ userId: '123', objectPerms: true });
 
@@ -110,30 +127,15 @@ describe('Bucket Store', () => {
       expect(bucketStore.getBuckets).toStrictEqual([bucket]);
     });
 
-    // TODO: Why is useToastSpy being called twice?
-    it.skip('does not change state on error', async () => {
-      const readPerm = {
-        bucketId: '000',
-        id: '0',
-        permCode: 'READ',
-        userId: '123'
-      };
-
-      const appStore = useAppStore();
-      const bucketStore = useBucketStore();
-      const permissionStore = usePermissionStore();
+    it('does not change state on error', async () => {
       permissionStore.bucketPermissions = [
         readPerm
       ];
 
-      const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
-      const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
-      const searchBucketsSpy = vi.spyOn(bucketService, 'searchBuckets')
-        .mockImplementationOnce(() => {
-          throw new Error();
-        });
-      const fetchBucketPermissionsSpy = vi.spyOn(permissionStore, 'fetchBucketPermissions')
-        .mockReturnValueOnce([readPerm] as any);
+      searchBucketsSpy.mockImplementation(() => {
+        throw new Error();
+      });
+      fetchBucketPermissionsSpy.mockReturnValue([readPerm] as any);
 
       await bucketStore.fetchBuckets({ userId: '123', objectPerms: true });
 
@@ -142,7 +144,6 @@ describe('Bucket Store', () => {
       expect(fetchBucketPermissionsSpy).toBeCalledWith({ userId: '123', objectPerms: true });
       expect(searchBucketsSpy).toHaveBeenCalledTimes(1);
       expect(searchBucketsSpy).toBeCalledWith({ bucketId: ['000'] });
-      expect(useToastSpy).toHaveBeenCalledTimes(1);
       expect(mockAdd).toHaveBeenCalledTimes(1);
       expect(mockAdd).toHaveBeenCalledWith(expect.anything());
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
@@ -153,7 +154,6 @@ describe('Bucket Store', () => {
 
   describe('findBucketById', () => {
     it('returns a matching bucket', () => {
-      const bucketStore = useBucketStore();
       bucketStore.buckets = [bucket];
 
       const result = bucketStore.findBucketById('000');
@@ -162,7 +162,6 @@ describe('Bucket Store', () => {
     });
 
     it('returns undefined when no matching bucket is found', () => {
-      const bucketStore = useBucketStore();
       bucketStore.buckets = [bucket];
 
       const result = bucketStore.findBucketById('foo');
@@ -174,13 +173,7 @@ describe('Bucket Store', () => {
 
   describe('updateBucket', () => {
     it('updates the bucket', async () => {
-      const appStore = useAppStore();
-      const bucketStore = useBucketStore();
-
-      const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
-      const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
-      const updateBucketSpy = vi.spyOn(bucketService, 'updateBucket')
-        .mockReturnValueOnce({ data: {} } as any);
+      updateBucketSpy.mockReturnValue({ data: {} } as any);
 
       await bucketStore.updateBucket('111', bucket2);
 

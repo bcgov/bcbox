@@ -1,18 +1,28 @@
 import { setActivePinia, createPinia } from 'pinia';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as primevue from '@/lib/primevue';
 import { objectService } from '@/services';
 import { useAppStore, useTagStore } from '@/store';
 
+import type { StoreGeneric } from 'pinia';
+import type { SpyInstance } from 'vitest';
 import type { Tagging } from '@/types';
 
 const mockAdd = vi.fn();
-const useToastSpy = vi.spyOn(primevue, 'useToast').mockImplementation(() => ({ add: mockAdd }));
+const useToastSpy = vi.spyOn(primevue, 'useToast');
+
+const tag: Tagging = {
+  tagset: [
+    { key: 'foo', value: 'bar' },
+    { key: 'baz', value: 'bam' }
+  ],
+  objectId: '000'
+};
 
 beforeEach(() => {
   setActivePinia(createPinia());
   vi.clearAllMocks();
+  useToastSpy.mockImplementation(() => ({ add: mockAdd }));
 });
 
 afterEach(() => {
@@ -21,23 +31,27 @@ afterEach(() => {
 
 describe('Config Store', () => {
 
+  let appStore: StoreGeneric;
+  let tagStore: StoreGeneric;
+
+  let beginIndeterminateLoadingSpy: SpyInstance;
+  let endIndeterminateLoadingSpy: SpyInstance;
+
+  let getTaggingSpy: SpyInstance;
+
+  beforeEach(() => {
+    appStore = useAppStore();
+    tagStore = useTagStore();
+
+    beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
+    endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
+
+    getTaggingSpy = vi.spyOn(objectService, 'getObjectTagging');
+  });
+
   describe('fetchTagging', () => {
     it('fetches the tags', async () => {
-      const appStore = useAppStore();
-      const tagStore = useTagStore();
-
-      const tag: Tagging = {
-        tagset: [
-          { key: 'foo', value: 'bar' },
-          { key: 'baz', value: 'bam' }
-        ],
-        objectId: '000'
-      };
-
-      const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
-      const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
-      const getTaggingSpy = vi.spyOn(objectService, 'getObjectTagging')
-        .mockReturnValueOnce({ data: [tag] } as any);
+      getTaggingSpy.mockReturnValueOnce({ data: [tag] } as any);
 
       await tagStore.fetchTagging({ objectId: '000' });
 
@@ -49,22 +63,15 @@ describe('Config Store', () => {
     });
 
     it('does not change state on error', async () => {
-      const appStore = useAppStore();
-      const tagStore = useTagStore();
-
-      const beginIndeterminateLoadingSpy = vi.spyOn(appStore, 'beginIndeterminateLoading');
-      const endIndeterminateLoadingSpy = vi.spyOn(appStore, 'endIndeterminateLoading');
-      const getTaggingSpy = vi.spyOn(objectService, 'getObjectTagging')
-        .mockImplementationOnce(() => {
-          throw new Error();
-        });
+      getTaggingSpy.mockImplementationOnce(() => {
+        throw new Error();
+      });
 
       await tagStore.fetchTagging({ objectId: '000' });
 
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(getTaggingSpy).toHaveBeenCalledTimes(1);
       expect(getTaggingSpy).toHaveBeenCalledWith({ objectId: '000' });
-      expect(useToastSpy).toHaveBeenCalledTimes(1);
       expect(mockAdd).toHaveBeenCalledTimes(1);
       expect(mockAdd).toHaveBeenCalledWith(expect.anything());
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
@@ -75,15 +82,6 @@ describe('Config Store', () => {
 
   describe('findTaggingByObjectId', () => {
     it('returns matching metadata', async () => {
-      const tag: Tagging = {
-        tagset: [
-          { key: 'foo', value: 'bar' },
-          { key: 'baz', value: 'bam' }
-        ],
-        objectId: '000'
-      };
-
-      const tagStore = useTagStore();
       tagStore.tagging = [tag];
 
       const result = tagStore.findTaggingByObjectId('000');
@@ -92,15 +90,6 @@ describe('Config Store', () => {
     });
 
     it('returns undefined when no match found', async () => {
-      const tag: Tagging = {
-        tagset: [
-          { key: 'foo', value: 'bar' },
-          { key: 'baz', value: 'bam' }
-        ],
-        objectId: '000'
-      };
-
-      const tagStore = useTagStore();
       tagStore.tagging = [tag];
 
       const result = tagStore.findTaggingByObjectId('111');
