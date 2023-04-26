@@ -1,7 +1,8 @@
 
 # BCBox
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
 ![Tests](https://github.com/bcgov/bcbox/workflows/Tests/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/bfaf1cdb7fe730c10840/maintainability)](https://codeclimate.com/github/bcgov/bcbox/maintainability)
@@ -29,12 +30,15 @@ frontend/                  - Frontend Root
 │   ├── components/        - Components Layer
 │   ├── composables/       - Common composition elements
 │   ├── interfaces/        - Typescript interface definitions
+│   ├── lib/               - Repackaged external libraries
 │   ├── router/            - Router Layer
 │   ├── services/          - Services Layer
 │   ├── store/             - Store Layer
+│   ├── types/             - Typescript type definitions
 │   ├── utils/             - Utility components
 │   └── views/             - View Layer
 └── tests/                 - Node.js web application tests
+bcgovpubcode.yaml          - BCGov Public Code manifest
 CODE-OF-CONDUCT.md         - Code of Conduct
 COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
 CONTRIBUTING.md            - Contributing Guidelines
