@@ -1,6 +1,6 @@
 # bcbox
 
-![Version: 0.0.5](https://img.shields.io/badge/Version-0.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
+![Version: 0.0.6](https://img.shields.io/badge/Version-0.0.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
 
 A frontend UI for managing access control to S3 Objects
 
@@ -40,7 +40,6 @@ Kubernetes: `>= 1.13.0`
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | config.configMap.FRONTEND_APIPATH | string | `"api/v1"` |  |
 | config.configMap.FRONTEND_COMS_APIPATH | string | `nil` |  |
-| config.configMap.FRONTEND_NOTIFICATION_BANNER | string | `nil` |  |
 | config.configMap.FRONTEND_OIDC_AUTHORITY | string | `nil` |  |
 | config.configMap.FRONTEND_OIDC_CLIENTID | string | `nil` |  |
 | config.configMap.SERVER_APIPATH | string | `"/api/v1"` |  |
