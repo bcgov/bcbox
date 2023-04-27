@@ -50,7 +50,7 @@ const toast = useToast();
 const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = metadataStore.findValue(objectId, 'name') || '';
+  permissionsObjectName.value = metadataStore.findValue(objectId, 'coms-name') || '';
 };
 
 function onDeletedSuccess() {

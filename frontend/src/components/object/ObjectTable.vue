@@ -65,7 +65,7 @@ const showPermissions = async (objectId: string) => {
 
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = metadataStore.findValue(objectId, 'name') || '';
+  permissionsObjectName.value = metadataStore.findValue(objectId, 'coms-name') || '';
 };
 
 const togglePublic = async (objectId: string, isPublic: boolean) => {
@@ -98,7 +98,7 @@ watch( getObjects, async () => {
   await metadataStore.fetchMetadata({objectId: objIds});
 
   tableData.value = objs.map( (x: COMSObjectDataSource) => {
-    x.name = metadataStore.findValue(x.id, 'name');
+    x.name = metadataStore.findValue(x.id, 'coms-name');
     return x;
   });
 });
