@@ -66,7 +66,7 @@ watch( props, () => {
     <GridRow
       class=" overflow-hidden"
       label="Name"
-      :value="objectMetadata?.metadata.find(x => x.key === 'name')?.value"
+      :value="objectMetadata?.metadata.find(x => x.key === 'coms-name')?.value"
     />
     <GridRow
       v-if="fullView"
