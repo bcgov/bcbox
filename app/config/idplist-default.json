@@ -12,5 +12,12 @@
     "idp": "bceidbasic",
     "identityKey": "bceid_user_guid",
     "searchable": false
+  },
+  {
+    "name": "BCeID Business",
+    "elevatedRights": false,
+    "idp": "bceidbusiness",
+    "identityKey": "bceid_user_guid",
+    "searchable": false
   }
 ]
