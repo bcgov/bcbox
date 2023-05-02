@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
-import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
 import { useAppStore } from '@/store';
 import { partition } from '@/utils/utils';
+import { error } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 import type { GetObjectTaggingOptions, Tagging } from '@/types';
@@ -15,7 +15,6 @@ export type TagStoreState = {
 
 export const useTagStore = defineStore('tag', () => {
   const appStore = useAppStore();
-  const toast = useToast();
 
   // State
   const state: TagStoreState = {
@@ -46,8 +45,8 @@ export const useTagStore = defineStore('tag', () => {
       // Merge and assign
       state.tagging.value = difference.concat(response);
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching tags', detail: error, life: 3000 });
+    catch (e) {
+      error('Fetching tags', e);
     }
     finally {
       appStore.endIndeterminateLoading();

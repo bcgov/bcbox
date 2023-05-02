@@ -1,14 +1,34 @@
 import { useToast as useToastPrimevue } from 'primevue/usetoast';
 
+import { app } from '@/main';
+import { ConfigService } from '@/services/index';
 import type { ToastMessageOptions } from 'primevue/toast';
 
-export const useToast = () => {
-  const toast = useToastPrimevue();
+export function success(title: string, msg: any, options: ToastMessageOptions = {}): void {
+  app.config.globalProperties.$toast.add({
+    severity: 'success',
+    summary: title,
+    detail: msg,
+    life: new ConfigService().getConfig().toast.successTimeout,
+    ...options
+  });
+};
 
-  const add = (options: ToastMessageOptions = {}) => {
-    const { severity = 'error', summary = 'Unable to load data.', detail = '', life = 5000 } = options;
-    toast.add({ severity: severity, summary: summary, detail: detail, life: life });
-  };
+export function info(msg: any, options: ToastMessageOptions = {}): void {
+  app.config.globalProperties.$toast.add({
+    severity: 'info',
+    detail: msg,
+    life: new ConfigService().getConfig().toast.successTimeout,
+    ...options
+  });
+};
 
-  return { add };
+export const error = (title: string, msg: any, options: ToastMessageOptions = {}) => {
+  app.config.globalProperties.$toast.add({
+    severity: 'error',
+    summary: title,
+    detail: msg,
+    life: new ConfigService().getConfig().toast.successTimeout,
+    ...options
+  });
 };

@@ -20,6 +20,8 @@ import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import '@/assets/main.scss';
 
+export const app = createApp(App);
+
 /**
  * @function initializeApp
  * Initializes and mounts the Vue instance
@@ -27,7 +29,6 @@ import '@/assets/main.scss';
 function initializeApp(): void {
   library.add(fas);
 
-  const app = createApp(App);
   const pinia = createPinia();
   pinia.use(createPersistedState({
     key: id => `bcbox.${id}`

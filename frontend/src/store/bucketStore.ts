@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
-import { useToast } from '@/lib/primevue';
 import { bucketService } from '@/services';
 import { useAppStore, usePermissionStore } from '@/store';
 import { partition } from '@/utils/utils';
+import { error } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketSearchPermissionsOptions } from '@/types';
@@ -14,7 +14,6 @@ export type BucketStoreState = {
 }
 
 export const useBucketStore = defineStore('bucket', () => {
-  const toast = useToast();
 
   // Store
   const appStore = useAppStore();
@@ -72,8 +71,8 @@ export const useBucketStore = defineStore('bucket', () => {
         }
       }
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching buckets', detail: error, life: 3000 });
+    catch (e) {
+      error('Fetching buckets', e);
     }
     finally {
       appStore.endIndeterminateLoading();

@@ -9,7 +9,7 @@ import {
   ObjectTable,
   ObjectUpload
 } from '@/components/object';
-import { Button, useToast } from '@/lib/primevue';
+import { Button } from '@/lib/primevue';
 import {
   useAuthStore,
   useBucketStore,
@@ -18,6 +18,7 @@ import {
 } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
+import { success } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 
@@ -48,8 +49,6 @@ const selectedObjectIds = computed(() => {
 });
 
 // Actions
-const toast = useToast();
-
 const showObjectInfo = async (objectId: string | undefined) => {
   objectInfoId.value = objectId;
 };
@@ -76,12 +75,7 @@ const closeUpload = () => {
 // };
 
 function onDeletedSuccess() {
-  toast.add({
-    severity: 'success',
-    summary: 'Success',
-    detail: 'File(s) deleted',
-    life: 3000
-  });
+  success('File deleting', 'File deleted');
 }
 
 onMounted(async () => {

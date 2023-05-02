@@ -5,7 +5,8 @@ import { object, string } from 'yup';
 
 import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
-import { Button, useToast } from '@/lib/primevue';
+import { Button } from '@/lib/primevue';
+import { error, success } from '@/lib/primevue/useToast';
 import { useAuthStore, useBucketStore } from '@/store';
 import { differential } from '@/utils/utils';
 
@@ -57,7 +58,6 @@ const schema = object({
 });
 
 // Actions
-const toast = useToast();
 
 const onSubmit = async (values: any) => {
   try {
@@ -77,23 +77,9 @@ const onSubmit = async (values: any) => {
     await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
     emit('submit-bucket-config');
 
-    toast.add(
-      {
-        severity: 'success',
-        summary: 'Success',
-        detail: 'Bucket configuration successful',
-        life: 3000
-      }
-    );
-  } catch (error: any) {
-    toast.add(
-      {
-        severity: 'error',
-        summary: 'Bucket configuration was not successful',
-        detail: error,
-        life: 5000
-      }
-    );
+    success('Configuring bucket', 'Bucket configuration successful');
+  } catch (exception: any) {
+    error('Configuring bucket', exception);
   }
 };
 

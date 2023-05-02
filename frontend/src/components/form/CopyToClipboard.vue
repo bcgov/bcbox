@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { Button, useToast } from '@/lib/primevue';
 import { ButtonMode } from '@/utils/enums';
+import { Button } from '@/lib/primevue';
+import { info } from '@/lib/primevue/useToast';
 
 // Props
 type Props = {
@@ -16,16 +17,11 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 // Actions
-const toast = useToast();
 
 const copyToClipboard = () => {
   if( props.toCopy ) {
     navigator.clipboard.writeText(props.toCopy);
-    toast.add({
-      severity: 'info',
-      summary: 'Copied to clipboard',
-      life: 3000,
-    });
+    info('Copied to clipboard');
   }
 };
 </script>

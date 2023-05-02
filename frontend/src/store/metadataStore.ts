@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
-import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
 import { useAppStore } from '@/store';
 import { partition } from '@/utils/utils';
+import { error } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 import type { GetMetadataOptions, Metadata } from '@/types';
@@ -15,7 +15,6 @@ export type MetadataStoreState = {
 
 export const useMetadataStore = defineStore('metadata', () => {
   const appStore = useAppStore();
-  const toast = useToast();
 
   // State
   const state: MetadataStoreState = {
@@ -46,8 +45,8 @@ export const useMetadataStore = defineStore('metadata', () => {
       // Merge and assign
       state.metadata.value = difference.concat(response);
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching metadata', detail: error, life: 3000 });
+    catch (e) {
+      error('Fetching metadata', e);
     }
     finally {
       appStore.endIndeterminateLoading();

@@ -8,11 +8,12 @@ import {
   ObjectPermission
 } from '@/components/object';
 import { ShareObjectButton } from '@/components/object/share';
-import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch, useToast } from '@/lib/primevue';
+import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 import { formatDateLong } from '@/utils/formatters';
+import { info, success } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
@@ -50,8 +51,6 @@ const selectedObjects: Ref<Array<COMSObject>> = ref([]);
 const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
 
 // Actions
-const toast = useToast();
-
 const formatShortUuid = (uuid: string) => {
   return uuid?.slice(0,8) ?? uuid;
 };
@@ -73,12 +72,7 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
 };
 
 function onDeletedSuccess() {
-  toast.add({
-    severity: 'success',
-    summary: 'Success',
-    detail: 'File deleted',
-    life: 3000
-  });
+  success('File deleting', 'File deleted');
 }
 
 watch( getObjects, async () => {

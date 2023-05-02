@@ -2,9 +2,10 @@
 import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { Button, Dialog, useConfirm, useToast } from '@/lib/primevue';
+import { Button, Dialog, useConfirm } from '@/lib/primevue';
 import { useObjectStore } from '@/store/objectStore';
 import { ButtonMode } from '@/utils/enums';
+import { error } from '@/lib/primevue/useToast';
 
 // Props
 type Props = {
@@ -27,7 +28,6 @@ const displayNoFileDialog = ref(false);
 
 // Actions
 const confirm = useConfirm();
-const toast = useToast();
 
 const confirmDelete = () => {
   if (props.ids.length) {
@@ -41,8 +41,8 @@ const confirmDelete = () => {
         try {
           await objectStore.deleteObjects(props.ids);
           emit('on-deleted-success');
-        } catch (error) {
-          toast.add({ severity: 'error', summary: 'Error deleting one or more files', detail: error, life: 3000 });
+        } catch (e) {
+          error('Deleting files', e);
           emit('on-deleted-error');
         }
       },

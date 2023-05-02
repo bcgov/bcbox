@@ -1,7 +1,7 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 
-import { useToast } from '@/lib/primevue';
+import { error as toastError } from '@/lib/primevue/useToast';
 import { permissionService, userService } from '@/services';
 import { useAppStore, useAuthStore, useConfigStore } from '@/store';
 import { Permissions } from '@/utils/constants';
@@ -32,7 +32,6 @@ export const usePermissionStore = defineStore('permission', () => {
   const appStore = useAppStore();
   const { getProfile } = storeToRefs(useAuthStore());
   const { getConfig } = storeToRefs(useConfigStore());
-  const toast = useToast();
 
   // State
   const state: PermissionStoreState = {
@@ -59,7 +58,7 @@ export const usePermissionStore = defineStore('permission', () => {
       await permissionService.bucketAddPermissions(bucketId, [{ userId, permCode }]);
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error adding bucket permission', detail: error, life: 3000 });
+      toastError('Adding bucket permission', error);
     }
     finally {
       await fetchBucketPermissions();
@@ -73,7 +72,7 @@ export const usePermissionStore = defineStore('permission', () => {
       getters.getMappedBucketToUserPermissions.value.push(user);
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error adding bucket user', detail: error, life: 3000 });
+      toastError('Adding bucket user', error);
     }
   }
 
@@ -88,7 +87,7 @@ export const usePermissionStore = defineStore('permission', () => {
       }
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error adding object permission', detail: error, life: 3000 });
+      toastError('Adding object permission', error);
     }
     finally {
       await fetchObjectPermissions();
@@ -102,7 +101,7 @@ export const usePermissionStore = defineStore('permission', () => {
       getters.getMappedObjectToUserPermissions.value.push(user);
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error adding object user', detail: error, life: 3000 });
+      toastError('Adding object user', error);
     }
   }
 
@@ -112,7 +111,7 @@ export const usePermissionStore = defineStore('permission', () => {
       await permissionService.bucketDeletePermission(bucketId, { userId, permCode });
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error deleting bucket permission', detail: error, life: 3000 });
+      toastError('Deleting bucket permission', error);
     }
     finally {
       await fetchBucketPermissions();
@@ -132,7 +131,7 @@ export const usePermissionStore = defineStore('permission', () => {
       }
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error deleting object permission', detail: error, life: 3000 });
+      toastError('Deleting object permission', error);
     }
     finally {
       await fetchObjectPermissions();
@@ -162,7 +161,7 @@ export const usePermissionStore = defineStore('permission', () => {
       return response;
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching bucket permissions', detail: error, life: 3000 });
+      toastError('Fetching bucket permissions', error);
     }
     finally {
       appStore.endIndeterminateLoading();
@@ -193,7 +192,7 @@ export const usePermissionStore = defineStore('permission', () => {
       return response;
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching object permissions', detail: error, life: 3000 });
+      toastError('Fetching object permissions', error);
     }
     finally {
       appStore.endIndeterminateLoading();
@@ -253,12 +252,7 @@ export const usePermissionStore = defineStore('permission', () => {
       state.mappedBucketToUserPermissions.value = userPermissions;
     }
     catch (error) {
-      toast.add({
-        severity: 'error',
-        summary: 'Error mapping bucket permissions to user permissions',
-        detail: error,
-        life: 3000
-      });
+      toastError('Mapping bucket permissions to user permissions',error);
     }
     finally {
       appStore.endIndeterminateLoading();
@@ -296,12 +290,7 @@ export const usePermissionStore = defineStore('permission', () => {
       state.mappedObjectToUserPermissions.value = userPermissions;
     }
     catch (error) {
-      toast.add({
-        severity: 'error',
-        summary: 'Error mapping object permissions to user permissions',
-        detail: error,
-        life: 3000
-      });
+      toastError('Mapping object permissions to user permissions',error);
     }
     finally {
       appStore.endIndeterminateLoading();
@@ -316,7 +305,7 @@ export const usePermissionStore = defineStore('permission', () => {
       }
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error removing bucket user', detail: error, life: 3000 });
+      toastError('Removing bucket user', error);
     }
     finally {
       await fetchBucketPermissions();
@@ -337,7 +326,7 @@ export const usePermissionStore = defineStore('permission', () => {
       }
     }
     catch (error) {
-      toast.add({ severity: 'error', summary: 'Error removing object user', detail: error, life: 3000 });
+      toastError('Removing object user', error);
     }
     finally {
       await fetchObjectPermissions();

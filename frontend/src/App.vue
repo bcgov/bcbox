@@ -3,8 +3,9 @@ import { storeToRefs } from 'pinia';
 import { onBeforeMount, onErrorCaptured, ref } from 'vue';
 import { RouterView } from 'vue-router';
 import { AppLayout, Navbar, ProgressLoader } from '@/components/layout';
-import { ConfirmDialog, Toast, useToast }from '@/lib/primevue';
+import { ConfirmDialog, Toast }from '@/lib/primevue';
 import { useAppStore, useAuthStore, useConfigStore } from '@/store';
+import { error } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 
@@ -23,12 +24,7 @@ onBeforeMount(async () => {
 
 // Top level error handler
 onErrorCaptured((e: Error) => {
-  const toast = useToast();
-  toast.add({
-    severity: 'error',
-    summary: 'Error',
-    detail: e.message, life: 3000
-  });
+  error('Error', e);
 });
 </script>
 

@@ -4,9 +4,9 @@ import { onBeforeMount, onErrorCaptured, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { ObjectList } from '@/components/object';
-import { useToast } from '@/lib/primevue';
 import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
+import { error } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketPermission } from '@/types';
@@ -35,8 +35,7 @@ async function getBucketName() {
 }
 
 onErrorCaptured((e: Error) => {
-  const toast = useToast();
-  toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: e.message, life: 5000 });
+  error('Loading bucket', e);
 });
 
 onBeforeMount( async () => {

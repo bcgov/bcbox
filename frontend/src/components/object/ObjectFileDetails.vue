@@ -13,10 +13,11 @@ import {
   ObjectTag
 } from '@/components/object';
 import { ShareObjectButton } from '@/components/object/share';
-import { Button, Dialog, useToast } from '@/lib/primevue';
+import { Button, Dialog } from '@/lib/primevue';
 import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore, useTagStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
+import { success } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
@@ -45,7 +46,6 @@ const bucketId: Ref<string> = ref('');
 
 // Actions
 const router = useRouter();
-const toast = useToast();
 
 const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
@@ -54,12 +54,7 @@ const showPermissions = async (objectId: string) => {
 };
 
 function onDeletedSuccess() {
-  toast.add({
-    severity: 'success',
-    summary: 'Success',
-    detail: 'File deleted',
-    life: 3000
-  });
+  success('File deleting', 'File deteled')
   router.push({ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucketId.value } });
 }
 

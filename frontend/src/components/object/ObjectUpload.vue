@@ -3,8 +3,9 @@ import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
-import { Button, FileUpload, useToast } from '@/lib/primevue';
+import { Button, FileUpload } from '@/lib/primevue';
 import { useAuthStore, useObjectStore } from '@/store';
+import { error } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 
@@ -28,7 +29,6 @@ const successfulFiles: Ref<Array<File>> = ref([]);
 const failedFiles: Ref<Array<File>> = ref([]);
 
 // Actions
-const toast = useToast();
 
 const onSelectedFiles = (event: any) => {
   pendingFiles.value = event.files;
@@ -49,8 +49,8 @@ const onUpload = async (event: any) => {
           // Infinite timeout for big files upload to avoid timeout error
           await objectStore.createObject(file, bucketId, { timeout: 0 });
           successfulFiles.value.push(file);
-        } catch (error) {
-          toast.add({ severity: 'error', summary: 'Error', detail: `Failed to upload file ${file.name}`, life: 3000 });
+        } catch (e) {
+          error('File uploading', e);
           failedFiles.value.push(file);
         }
       })
@@ -62,7 +62,7 @@ const onUpload = async (event: any) => {
     // Update object store
     await objectStore.fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
   } else {
-    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to acquire bucket ID', life: 3000 });
+    error('File uploading', 'Failed to acquire bucket ID');
   }
 };
 
