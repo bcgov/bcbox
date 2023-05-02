@@ -4,3 +4,4 @@ export { default as ConfigService } from './configService';
 export { default as objectService } from './objectService';
 export { default as permissionService } from './permissionService';
 export { default as userService } from './userService';
+export { default as versionService } from './versionService';

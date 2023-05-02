@@ -7,6 +7,7 @@ export { default as Column } from 'primevue/column';
 export { default as ConfirmDialog } from 'primevue/confirmdialog';
 export { default as DataTable } from 'primevue/datatable';
 export { default as Dialog } from 'primevue/dialog';
+export { default as Divider } from 'primevue/divider';
 export { default as Dropdown } from 'primevue/dropdown';
 export { default as FileUpload } from 'primevue/fileupload';
 export { default as InputSwitch } from 'primevue/inputswitch';

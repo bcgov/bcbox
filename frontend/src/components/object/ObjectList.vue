@@ -143,7 +143,7 @@ onMounted(async () => {
         style="max-width: 33%; min-width: 33%"
       >
         <ObjectSidebar
-          :object-info-id="objectInfoId"
+          :object-id="objectInfoId"
           @close-object-info="closeObjectInfo"
         />
       </div>

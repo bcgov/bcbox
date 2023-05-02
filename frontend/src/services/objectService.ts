@@ -85,6 +85,17 @@ export default {
   },
 
   /**
+   * @function listObjectVersion
+   * Returns the object version history
+   * @param objectId The id for the object to get
+   * @returns {Promise} An axios response
+   */
+  listObjectVersion(objectId: string) {
+    return comsAxios().get(`${PATH}/${objectId}/version`);
+  },
+
+
+  /**
    * @function searchObjects
    * List and search for all objects
    * @returns {Promise} An axios response
