@@ -50,14 +50,14 @@ const { getObjects } = storeToRefs(objectStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
+const bucketId: Ref<string> = ref('');
+const filename: Ref<string | undefined> = ref(undefined);
+const latestVersionId: Ref<string | undefined> = ref(undefined);
+const obj: Ref<COMSObject | undefined> = ref(undefined);
 const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsObjectId: Ref<string> = ref('');
 const permissionsObjectName: Ref<string> = ref('');
-const obj: Ref<COMSObject | undefined> = ref(undefined);
-const bucketId: Ref<string> = ref('');
-const latestVersionId: Ref<string | undefined> = ref(undefined);
 const version: Ref<Version | undefined> = ref(undefined);
-const filename: Ref<string | undefined> = ref(undefined);
 
 // Actions
 const router = useRouter();
@@ -183,9 +183,7 @@ watch( [props, getObjects], async () => {
           :version-id="props.versionId"
         />
       </div>
-      <div>
-        <Divider layout="vertical" />
-      </div>
+      <Divider layout="vertical" />
       <div class="flex flex-column w-6 gap-3 py-5">
         <ObjectVersion
           v-if="props.versionId"

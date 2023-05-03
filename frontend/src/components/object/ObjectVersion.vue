@@ -60,12 +60,10 @@ async function load() {
   const versions = versionStore.findVersionsByObjectId(props.objectId);
   await userStore.fetchUsers({userId:[versions.map( (x: Version) => x.createdBy)]});
 
-  tableData.value = versions.map( (v: Version) => {
-    return {
-      ...v,
-      createdByName: getUserSearch.value.find( (u: User) => u.userId === v.createdBy )?.fullName
-    };
-  });
+  tableData.value = versions.map( (v: Version) => ({
+    ...v,
+    createdByName: getUserSearch.value.find( (u: User) => u.userId === v.createdBy )?.fullName
+  }));
 }
 
 onMounted(() => {
@@ -150,11 +148,13 @@ watch( [props], () => {
                 data.id, getUserId, Permissions.READ, props.bucketId as string)"
               :mode="ButtonMode.ICON"
               :ids="['TODO']"
+              :disabled="true"
             />
             <Button
               v-if="data.public || permissionStore.isObjectActionAllowed(
                 data.id, getUserId, Permissions.READ, props.bucketId as string)"
               class="p-button-lg p-button-rounded p-button-text"
+              :disabled="true"
               @click="showInfo('TODO')"
             >
               <font-awesome-icon icon="fa-solid fa-circle-info" />
@@ -164,6 +164,7 @@ watch( [props], () => {
                 data.id, getUserId, Permissions.DELETE, props.bucketId as string)"
               :mode="ButtonMode.ICON"
               :ids="['TODO']"
+              :disabled="true"
               @on-deleted-success="onDeletedSuccess"
             />
           </template>
