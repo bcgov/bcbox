@@ -31,11 +31,11 @@ const { getUserSearch } = storeToRefs(userStore);
 
 // State
 const bucket: Ref<Bucket | undefined> = ref(undefined);
+const createdBy: Ref<string | undefined> = ref(undefined);
 const object: Ref<COMSObject | undefined> = ref(undefined);
 const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
-const version: Ref<Version | undefined> = ref(undefined);
-const createdBy: Ref<string | undefined> = ref(undefined);
 const updatedBy: Ref<string | undefined> = ref(undefined);
+const version: Ref<Version | undefined> = ref(undefined);
 
 // Actions
 async function load() {
@@ -43,7 +43,6 @@ async function load() {
   bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
 
   if( props.fullView ) {
-
     if( props.versionId ) {
       version.value = versionStore.findVersionById(props.versionId);
       objectMetadata.value = versionStore.findMetadataByVersionId(props.versionId);

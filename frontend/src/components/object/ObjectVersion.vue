@@ -58,7 +58,7 @@ function onDeletedSuccess() {
 async function load() {
   await versionStore.fetchVersions({ objectId: props.objectId });
   const versions = versionStore.findVersionsByObjectId(props.objectId);
-  await userStore.fetchUsers({ userId:[versions.map( (x: Version) => x.createdBy)] });
+  await userStore.fetchUsers({ userId: versions.map( (x: Version) => x.createdBy) });
 
   tableData.value = versions.map( (v: Version) => ({
     ...v,
@@ -117,10 +117,10 @@ watch( [props], () => {
                 :to="{ name: RouteNames.DETAIL_OBJECTS,
                        query: { objectId: props.objectId, versionId: data.id } }"
               >
-                {{ formatDateLong(data.updatedAt) }}
+                {{ data.updatedAt ? formatDateLong(data.updatedAt) : formatDateLong(data.createdAt) }}
               </router-link>
               <span v-else>
-                {{ formatDateLong(data.updatedAt) }}
+                {{ data.updatedAt ? formatDateLong(data.updatedAt) : formatDateLong(data.createdAt) }}
               </span>
             </div>
           </template>
