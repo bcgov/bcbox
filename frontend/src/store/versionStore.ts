@@ -115,9 +115,7 @@ export const useVersionStore = defineStore('version', () => {
 
   function findLatestVersionIdByObjectId(objectId: string) {
     return state.versions.value.filter((x: Version) => x.objectId === objectId)
-      .sort((a: Version, b: Version) =>
-        Date.parse(b.createdAt as string) - Date.parse(a.createdAt as string)
-      )[0].id;
+      .sort((a: Version, b: Version) => Date.parse(b.createdAt as string) - Date.parse(a.createdAt as string))[0]?.id;
   }
 
   function findMetadataByVersionId(versionId: string) {

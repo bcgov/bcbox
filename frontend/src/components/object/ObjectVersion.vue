@@ -56,9 +56,9 @@ function onDeletedSuccess() {
 }
 
 async function load() {
-  await versionStore.fetchVersions({objectId: props.objectId});
+  await versionStore.fetchVersions({ objectId: props.objectId });
   const versions = versionStore.findVersionsByObjectId(props.objectId);
-  await userStore.fetchUsers({userId:[versions.map( (x: Version) => x.createdBy)]});
+  await userStore.fetchUsers({ userId:[versions.map( (x: Version) => x.createdBy)] });
 
   tableData.value = versions.map( (v: Version) => ({
     ...v,
