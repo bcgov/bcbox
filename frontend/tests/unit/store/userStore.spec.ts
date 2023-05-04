@@ -21,6 +21,19 @@ const user: User = {
   elevatedRights: true,
 };
 
+const user2: User = {
+  active: true,
+  email: 'test@dev.com',
+  firstName: 'baz',
+  fullName: 'baz bam',
+  identityId: 'someId',
+  idp: 'someIdp',
+  lastName: 'bam',
+  userId: '111',
+  username: 'bazbam',
+  elevatedRights: true,
+};
+
 const noIdUser: User = {
   active: true,
   email: 'foo@bar.com',
@@ -118,6 +131,16 @@ describe('User Store', () => {
       expect(userStore.getUserSearch).toStrictEqual([user]);
       userStore.clearSearch();
       expect(userStore.getUserSearch).toStrictEqual([]);
+    });
+  });
+
+
+  describe('findUsersById', () => {
+    it('returns the correct subset', async () => {
+      userStore.userSearch = [user, user2];
+
+      const result = userStore.findUsersById(['000']);
+      expect(result).toStrictEqual([user]);
     });
   });
 });
