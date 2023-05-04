@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 
 import { Column, DataTable } from '@/lib/primevue';
@@ -20,6 +21,8 @@ const props = withDefaults(defineProps<Props>(), {
 // Store
 const metadataStore = useMetadataStore();
 const versionStore = useVersionStore();
+const { getMetadata: tsGetMetadata } = storeToRefs(metadataStore);
+const { getMetadata: vsGetMetadata } = storeToRefs(versionStore);
 
 // State
 const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
@@ -38,7 +41,7 @@ onMounted(() => {
   load();
 });
 
-watch(props, () => {
+watch([props, tsGetMetadata,vsGetMetadata] , () => {
   load();
 });
 </script>
