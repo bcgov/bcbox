@@ -19,6 +19,7 @@ import type { COMSObject } from '@/types';
 
 type COMSObjectDataSource = {
   name?: string;
+  lastUpdatedDate?: string;
 } & COMSObject;
 
 // Props
@@ -99,6 +100,7 @@ watch( getObjects, async () => {
 
   tableData.value = objs.map( (x: COMSObjectDataSource) => {
     x.name = metadataStore.findValue(x.id, 'coms-name');
+    x.lastUpdatedDate = x.updatedAt ?? x.createdAt;
     return x;
   });
 });
@@ -198,13 +200,13 @@ const filters = ref({
         </template>
       </Column>
       <Column
-        field="updatedAt"
+        field="lastUpdatedDate"
         header="Updated date"
         :sortable="true"
         :hidden="props.objectInfoId ? true : false"
       >
         <template #body="{ data }">
-          {{ formatDateLong(data.updatedAt) }}
+          {{ formatDateLong(data.lastUpdatedDate) }}
         </template>
       </Column>
       <Column
