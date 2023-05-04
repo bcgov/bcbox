@@ -45,7 +45,7 @@ watch( [props], () => {
     :object-id="props.objectId"
   >
     <ObjectFileDetails
-      v-if="props.objectId && version"
+      v-if="props.objectId"
       :object-id="props.objectId"
       :version-id="version"
     />

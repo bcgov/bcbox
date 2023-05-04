@@ -4,9 +4,10 @@ import { computed, ref } from 'vue';
 import { useToast } from '@/lib/primevue';
 import { userService } from '@/services';
 import { useAppStore } from '@/store';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-import type { IdentityProvider, User } from '@/types';
+import type { IdentityProvider, SearchUsersOptions, User } from '@/types';
 
 export type UserStoreState = {
   currentUser: Ref<User | null>;
@@ -34,13 +35,27 @@ export const useUserStore = defineStore('user', () => {
   };
 
   // Actions
-  async function fetchUsers(params: object) {
+  async function fetchUsers(params: SearchUsersOptions) {
     try {
       appStore.beginIndeterminateLoading();
-      const response = (await userService.searchForUsers(params)).data;
 
-      // Filter out any user without an IDP
-      state.userSearch.value = response.filter((x: User) => !!x.identityId);
+      // Search & filter out any user without an IDP
+      const response = (await userService.searchForUsers(params)).data.filter((x: User) => !!x.identityId);
+
+      // Remove old values matching search parameters
+      const matches = (x: User) => (
+        (!params.userId ||
+          (Array.isArray(params.userId) && params.userId.some((y: string | undefined) => x.userId === y)) ||
+          (!Array.isArray(params.userId) && params.userId === x.userId)) &&
+        (!params.email || x.email === params.email) &&
+        (!params.idp || x.idp === params.idp) &&
+        (!params.lastName || x.lastName === params.lastName)
+      );
+
+      const [, difference] = partition(state.userSearch.value, matches);
+
+      // Merge and assign
+      state.userSearch.value = difference.concat(response);
     }
     catch (error: any) {
       toast.add({ severity: 'error', summary: 'Error searching users', detail: error, life: 3000 });
@@ -54,6 +69,10 @@ export const useUserStore = defineStore('user', () => {
     state.userSearch.value = [];
   }
 
+  function findUsersById(userId: Array<string>) {
+    return state.userSearch.value.filter((x: User) => userId.includes(x.userId));
+  }
+
   return {
     // State
     ...state,
@@ -63,7 +82,8 @@ export const useUserStore = defineStore('user', () => {
 
     // Actions
     clearSearch,
-    fetchUsers
+    fetchUsers,
+    findUsersById
   };
 }, { persist: true });
 

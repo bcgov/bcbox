@@ -26,3 +26,4 @@ export type { ObjectGetPermissionsOptions } from './options/ObjectGetPermissions
 export type { ObjectSearchPermissionsOptions } from './options/ObjectSearchPermissionsOptions';
 export type { SearchBucketsOptions } from './options/SearchBucketsOptions';
 export type { SearchObjectsOptions } from './options/SearchObjectsOptions';
+export type { SearchUsersOptions } from './options/SearchUsersOptions';
