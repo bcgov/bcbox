@@ -36,7 +36,7 @@ async function getBucketName() {
 
 onErrorCaptured((e: Error) => {
   const toast = useToast();
-  toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: e.message, life: 5000 });
+  toast.error('Loading bucket', e.message);
 });
 
 onBeforeMount( async () => {

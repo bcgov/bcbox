@@ -16,13 +16,13 @@ const meta: Metadata = {
   objectId: '000'
 };
 
-const mockAdd = vi.fn();
+const mockToast = vi.fn();
 const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 beforeEach(() => {
   setActivePinia(createPinia());
   vi.clearAllMocks();
-  useToastSpy.mockImplementation(() => ({ add: mockAdd }));
+  useToastSpy.mockImplementation(() => ({ error: mockToast, info: mockToast, success: mockToast }));
 });
 
 afterEach(() => {
@@ -72,8 +72,8 @@ describe('Metadata Store', () => {
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(getMetadataSpy).toHaveBeenCalledTimes(1);
       expect(getMetadataSpy).toHaveBeenCalledWith(null, { objectId: '000' });
-      expect(mockAdd).toHaveBeenCalledTimes(1);
-      expect(mockAdd).toHaveBeenCalledWith(expect.anything());
+      expect(mockToast).toHaveBeenCalledTimes(1);
+      expect(mockToast).toHaveBeenCalledWith('Fetching metadata', new Error);
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(metadataStore.getMetadata).toStrictEqual([]);
     });

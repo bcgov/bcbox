@@ -76,12 +76,7 @@ const closeUpload = () => {
 // };
 
 function onDeletedSuccess() {
-  toast.add({
-    severity: 'success',
-    summary: 'Success',
-    detail: 'File(s) deleted',
-    life: 3000
-  });
+  toast.success('Deleting file', 'File deleted');
 }
 
 onMounted(async () => {

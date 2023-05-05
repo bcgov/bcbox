@@ -32,7 +32,7 @@ const readPerm = {
   userId: '123'
 };
 
-const mockAdd = vi.fn();
+const mockToast = vi.fn();
 const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 beforeEach(() => {
@@ -49,7 +49,7 @@ beforeEach(() => {
 
   vi.clearAllMocks();
 
-  useToastSpy.mockImplementation(() => ({ add: mockAdd }));
+  useToastSpy.mockImplementation(() => ({ error: mockToast, info: mockToast, success: mockToast }));
 });
 
 afterEach(() => {
@@ -156,8 +156,8 @@ describe('Object Store', () => {
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(getObjectSpy).toHaveBeenCalledTimes(1);
       expect(getObjectSpy).toHaveBeenCalledWith(obj.id, undefined);
-      expect(mockAdd).toHaveBeenCalledTimes(1);
-      expect(mockAdd).toHaveBeenCalledWith(expect.anything());
+      expect(mockToast).toHaveBeenCalledTimes(1);
+      expect(mockToast).toHaveBeenCalledWith('Downloading object', new Error);
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -210,8 +210,8 @@ describe('Object Store', () => {
         deleteMarker: false,
         latest: true
       });
-      expect(mockAdd).toHaveBeenCalledTimes(1);
-      expect(mockAdd).toHaveBeenCalledWith(expect.anything());
+      expect(mockToast).toHaveBeenCalledTimes(1);
+      expect(mockToast).toHaveBeenCalledWith('Fetching objects', new Error);
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(objectStore.getObjects).toStrictEqual([]);
     });

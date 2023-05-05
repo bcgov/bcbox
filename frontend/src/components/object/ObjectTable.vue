@@ -74,12 +74,7 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
 };
 
 function onDeletedSuccess() {
-  toast.add({
-    severity: 'success',
-    summary: 'Success',
-    detail: 'File deleted',
-    life: 3000
-  });
+  toast.success('Deleting file', 'File deleted');
 }
 
 watch( getObjects, async () => {

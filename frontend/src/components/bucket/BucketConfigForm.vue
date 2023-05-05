@@ -77,23 +77,9 @@ const onSubmit = async (values: any) => {
     await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
     emit('submit-bucket-config');
 
-    toast.add(
-      {
-        severity: 'success',
-        summary: 'Success',
-        detail: 'Bucket configuration successful',
-        life: 3000
-      }
-    );
+    toast.success('Configuring bucket', 'Bucket configuration successful');
   } catch (error: any) {
-    toast.add(
-      {
-        severity: 'error',
-        summary: 'Bucket configuration was not successful',
-        detail: error,
-        life: 5000
-      }
-    );
+    toast.error('Configuring bucket', error);
   }
 };
 

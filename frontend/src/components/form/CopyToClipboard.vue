@@ -21,11 +21,7 @@ const toast = useToast();
 const copyToClipboard = () => {
   if( props.toCopy ) {
     navigator.clipboard.writeText(props.toCopy);
-    toast.add({
-      severity: 'info',
-      summary: 'Copied to clipboard',
-      life: 3000,
-    });
+    toast.info('Copying clipboard', 'Copied to clipboard');
   }
 };
 </script>

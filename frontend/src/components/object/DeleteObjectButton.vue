@@ -41,8 +41,8 @@ const confirmDelete = () => {
         try {
           await objectStore.deleteObjects(props.ids);
           emit('on-deleted-success');
-        } catch (error) {
-          toast.add({ severity: 'error', summary: 'Error deleting one or more files', detail: error, life: 3000 });
+        } catch (error: any) {
+          toast.error('Deleting files', error);
           emit('on-deleted-error');
         }
       },

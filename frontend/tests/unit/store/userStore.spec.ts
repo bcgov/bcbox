@@ -34,13 +34,13 @@ const noIdUser: User = {
   elevatedRights: true,
 };
 
-const mockAdd = vi.fn();
+const mockToast = vi.fn();
 const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 beforeEach(() => {
   setActivePinia(createPinia());
   vi.clearAllMocks();
-  useToastSpy.mockImplementation(() => ({ add: mockAdd }));
+  useToastSpy.mockImplementation(() => ({ error: mockToast, info: mockToast, success: mockToast }));
 });
 
 afterEach(() => {
@@ -103,8 +103,8 @@ describe('User Store', () => {
       expect(searchForUsersSpy).toHaveBeenCalledTimes(1);
       expect(searchForUsersSpy).toHaveBeenCalledWith({ lastName: 'bar' });
       expect(useToastSpy).toHaveBeenCalledTimes(1);
-      expect(mockAdd).toHaveBeenCalledTimes(1);
-      expect(mockAdd).toHaveBeenCalledWith(expect.anything());
+      expect(mockToast).toHaveBeenCalledTimes(1);
+      expect(mockToast).toHaveBeenCalledWith('Searching users', new Error);
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(userStore.userSearch).toStrictEqual([]);
     });
