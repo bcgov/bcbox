@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { objectService } from '@/services';
 import { useAppStore } from '@/store';
 import { partition } from '@/utils/utils';
-import { error } from '@/lib/primevue/useToast';
+import { error } from '@/services/toastService';
 
 import type { Ref } from 'vue';
 import type { GetObjectTaggingOptions, Tagging } from '@/types';
@@ -45,7 +45,7 @@ export const useTagStore = defineStore('tag', () => {
       // Merge and assign
       state.tagging.value = difference.concat(response);
     }
-    catch (e) {
+    catch (e: any) {
       error('Fetching tags', e);
     }
     finally {

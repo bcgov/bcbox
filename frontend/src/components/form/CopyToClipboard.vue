@@ -2,8 +2,8 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { ButtonMode } from '@/utils/enums';
+import { info } from '@/services/toastService';
 import { Button } from '@/lib/primevue';
-import { info } from '@/lib/primevue/useToast';
 
 // Props
 type Props = {

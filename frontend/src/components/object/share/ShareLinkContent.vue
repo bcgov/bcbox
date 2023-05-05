@@ -2,8 +2,8 @@
 import QrcodeVue from 'qrcode.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+import { info } from '@/services/toastService';
 import { Button, InputText } from '@/lib/primevue';
-import { info } from '@/lib/primevue/useToast';
 
 // Props
 type Props = {
@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<Props>(), {});
 // Actions
 const copyLinkToClipboard = () => {
   navigator.clipboard.writeText(props.shareLink);
-  info('Share Link copied to clipboard');
+  info('Share link copied to clipboard');
 };
 </script>
 

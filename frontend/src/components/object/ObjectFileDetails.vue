@@ -13,11 +13,11 @@ import {
   ObjectTag
 } from '@/components/object';
 import { ShareObjectButton } from '@/components/object/share';
+import { success } from '@/services/toastService';
 import { Button, Dialog } from '@/lib/primevue';
 import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore, useTagStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
-import { success } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
@@ -54,7 +54,7 @@ const showPermissions = async (objectId: string) => {
 };
 
 function onDeletedSuccess() {
-  success('File deleting', 'File deteled')
+  success('Deleting file', 'File deteled');
   router.push({ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucketId.value } });
 }
 

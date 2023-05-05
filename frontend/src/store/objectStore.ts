@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { objectService } from '@/services';
 import { useAppStore, useAuthStore, usePermissionStore } from '@/store';
 import { partition } from '@/utils/utils';
-import { error } from '@/lib/primevue/useToast';
+import { error } from '@/services/toastService';
 
 import type { AxiosRequestConfig } from 'axios';
 import type { Ref } from 'vue';
@@ -40,7 +40,7 @@ export const useObjectStore = defineStore('object', () => {
       appStore.beginIndeterminateLoading();
       await objectService.createObject(object, bucketId, axiosOptions);
     }
-    catch (e) {
+    catch (e: any) {
       error('Creating object', e);
     }
     finally {
@@ -59,8 +59,8 @@ export const useObjectStore = defineStore('object', () => {
         })
       );
     }
-    catch (e) {
-      error('Object deleting', e);
+    catch (e: any) {
+      error('Deleting object', e);
     }
     finally {
       fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
@@ -73,7 +73,7 @@ export const useObjectStore = defineStore('object', () => {
       appStore.beginIndeterminateLoading();
       await objectService.getObject(objectId, versionId);
     }
-    catch (e) {
+    catch (e: any) {
       error('Downloading object', e);
     }
     finally {
@@ -121,7 +121,7 @@ export const useObjectStore = defineStore('object', () => {
         }
       }
     }
-    catch (e) {
+    catch (e: any) {
       error('Fetching objects', e);
     }
     finally {
@@ -140,8 +140,8 @@ export const useObjectStore = defineStore('object', () => {
       // Return full response as data will always be No Content
       return (await objectService.headObject(objectId));
     }
-    catch (e) {
-      error('Head fetching', e);
+    catch (e: any) {
+      error('Fetching head', e);
     }
     finally {
       appStore.endIndeterminateLoading();
@@ -157,7 +157,7 @@ export const useObjectStore = defineStore('object', () => {
       appStore.beginIndeterminateLoading();
       await objectService.togglePublic(objectId, isPublic);
     }
-    catch (e) {
+    catch (e: any) {
       error('Changing public state', e);
     }
     finally {

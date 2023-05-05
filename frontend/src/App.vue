@@ -5,7 +5,7 @@ import { RouterView } from 'vue-router';
 import { AppLayout, Navbar, ProgressLoader } from '@/components/layout';
 import { ConfirmDialog, Toast }from '@/lib/primevue';
 import { useAppStore, useAuthStore, useConfigStore } from '@/store';
-import { error } from '@/lib/primevue/useToast';
+import { error } from '@/services/toastService';
 
 import type { Ref } from 'vue';
 
@@ -24,7 +24,7 @@ onBeforeMount(async () => {
 
 // Top level error handler
 onErrorCaptured((e: Error) => {
-  error('Error', e);
+  error('Error', e.message);
 });
 </script>
 

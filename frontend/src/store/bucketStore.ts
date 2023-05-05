@@ -3,8 +3,8 @@ import { computed, ref } from 'vue';
 
 import { bucketService } from '@/services';
 import { useAppStore, usePermissionStore } from '@/store';
+import { error } from '@/services/toastService';
 import { partition } from '@/utils/utils';
-import { error } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketSearchPermissionsOptions } from '@/types';
@@ -71,7 +71,7 @@ export const useBucketStore = defineStore('bucket', () => {
         }
       }
     }
-    catch (e) {
+    catch (e: any) {
       error('Fetching buckets', e);
     }
     finally {

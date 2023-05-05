@@ -5,8 +5,8 @@ import { object, string } from 'yup';
 
 import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
+import { error, success } from '@/services/toastService';
 import { Button } from '@/lib/primevue';
-import { error, success } from '@/lib/primevue/useToast';
 import { useAuthStore, useBucketStore } from '@/store';
 import { differential } from '@/utils/utils';
 
@@ -78,8 +78,8 @@ const onSubmit = async (values: any) => {
     emit('submit-bucket-config');
 
     success('Configuring bucket', 'Bucket configuration successful');
-  } catch (exception: any) {
-    error('Configuring bucket', exception);
+  } catch (e: any) {
+    error('Configuring bucket', e);
   }
 };
 

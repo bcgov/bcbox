@@ -8,12 +8,12 @@ import {
   ObjectPermission
 } from '@/components/object';
 import { ShareObjectButton } from '@/components/object/share';
+import { success } from '@/services/toastService';
 import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 import { formatDateLong } from '@/utils/formatters';
-import { info, success } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
@@ -72,7 +72,7 @@ const togglePublic = async (objectId: string, isPublic: boolean) => {
 };
 
 function onDeletedSuccess() {
-  success('File deleting', 'File deleted');
+  success('Deleting file', 'File deleted');
 }
 
 watch( getObjects, async () => {

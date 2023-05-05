@@ -5,7 +5,7 @@ import { ref } from 'vue';
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
 import { Button, FileUpload } from '@/lib/primevue';
 import { useAuthStore, useObjectStore } from '@/store';
-import { error } from '@/lib/primevue/useToast';
+import { error } from '@/services/toastService';
 
 import type { Ref } from 'vue';
 
@@ -49,8 +49,8 @@ const onUpload = async (event: any) => {
           // Infinite timeout for big files upload to avoid timeout error
           await objectStore.createObject(file, bucketId, { timeout: 0 });
           successfulFiles.value.push(file);
-        } catch (e) {
-          error('File uploading', e);
+        } catch (e: any) {
+          error('Uploading file', e);
           failedFiles.value.push(file);
         }
       })
@@ -62,7 +62,7 @@ const onUpload = async (event: any) => {
     // Update object store
     await objectStore.fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
   } else {
-    error('File uploading', 'Failed to acquire bucket ID');
+    error('Uploading file', 'Failed to acquire bucket ID');
   }
 };
 

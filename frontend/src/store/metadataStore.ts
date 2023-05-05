@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { objectService } from '@/services';
 import { useAppStore } from '@/store';
 import { partition } from '@/utils/utils';
-import { error } from '@/lib/primevue/useToast';
+import { error } from '@/services/toastService';
 
 import type { Ref } from 'vue';
 import type { GetMetadataOptions, Metadata } from '@/types';
@@ -45,7 +45,7 @@ export const useMetadataStore = defineStore('metadata', () => {
       // Merge and assign
       state.metadata.value = difference.concat(response);
     }
-    catch (e) {
+    catch (e: any) {
       error('Fetching metadata', e);
     }
     finally {

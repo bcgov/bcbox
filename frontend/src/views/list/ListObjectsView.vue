@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router';
 import { ObjectList } from '@/components/object';
 import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
-import { error } from '@/lib/primevue/useToast';
+import { error } from '@/services/toastService';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketPermission } from '@/types';
@@ -35,7 +35,7 @@ async function getBucketName() {
 }
 
 onErrorCaptured((e: Error) => {
-  error('Loading bucket', e);
+  error('Loading bucket', e.message);
 });
 
 onBeforeMount( async () => {

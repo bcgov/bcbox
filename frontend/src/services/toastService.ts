@@ -1,20 +1,19 @@
-import { useToast as useToastPrimevue } from 'primevue/usetoast';
-
-import { app } from '@/main';
-import { ConfigService } from '@/services/index';
 import type { ToastMessageOptions } from 'primevue/toast';
 
-export function success(title: string, msg: any, options: ToastMessageOptions = {}): void {
+import { ConfigService } from '@/services/index';
+import { app } from '@/main';
+
+export const error = (title: string, msg: string, options: ToastMessageOptions = {}) => {
   app.config.globalProperties.$toast.add({
-    severity: 'success',
-    summary: title,
+    severity: 'error',
+    summary: 'Error:' + ' ' + title,
     detail: msg,
     life: new ConfigService().getConfig().toast.successTimeout,
     ...options
   });
 };
 
-export function info(msg: any, options: ToastMessageOptions = {}): void {
+export function info(msg: string, options: ToastMessageOptions = {}): void {
   app.config.globalProperties.$toast.add({
     severity: 'info',
     detail: msg,
@@ -23,10 +22,10 @@ export function info(msg: any, options: ToastMessageOptions = {}): void {
   });
 };
 
-export const error = (title: string, msg: any, options: ToastMessageOptions = {}) => {
+export function success(title: string, msg: string, options: ToastMessageOptions = {}): void {
   app.config.globalProperties.$toast.add({
-    severity: 'error',
-    summary: title,
+    severity: 'success',
+    summary: 'Sucess:' + ' ' + title,
     detail: msg,
     life: new ConfigService().getConfig().toast.successTimeout,
     ...options

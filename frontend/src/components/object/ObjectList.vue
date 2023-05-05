@@ -9,6 +9,7 @@ import {
   ObjectTable,
   ObjectUpload
 } from '@/components/object';
+import { success } from '@/services/toastService';
 import { Button } from '@/lib/primevue';
 import {
   useAuthStore,
@@ -18,7 +19,6 @@ import {
 } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
-import { success } from '@/lib/primevue/useToast';
 
 import type { Ref } from 'vue';
 
@@ -75,7 +75,7 @@ const closeUpload = () => {
 // };
 
 function onDeletedSuccess() {
-  success('File deleting', 'File deleted');
+  success('Deleting file', 'File deleted');
 }
 
 onMounted(async () => {

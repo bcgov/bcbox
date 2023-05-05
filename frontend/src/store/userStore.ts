@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 
 import { userService } from '@/services';
 import { useAppStore } from '@/store';
-import { error } from '@/lib/primevue/useToast';
+import { error } from '@/services/toastService';
 
 import type { Ref } from 'vue';
 import type { IdentityProvider, User } from '@/types';
@@ -40,7 +40,7 @@ export const useUserStore = defineStore('user', () => {
       // Filter out any user without an IDP
       state.userSearch.value = response.filter((x: User) => !!x.identityId);
     }
-    catch (e) {
+    catch (e: any) {
       error('Searching users', e);
     }
     finally {
