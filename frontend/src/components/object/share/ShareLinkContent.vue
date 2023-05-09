@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<Props>(), {});
 // Actions
 const copyLinkToClipboard = () => {
   navigator.clipboard.writeText(props.shareLink);
-  toast.info('Sharing link', 'Share link copied to clipboard');
+  toast.info('Share link copied to clipboard');
 };
 </script>
 
