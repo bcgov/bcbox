@@ -49,7 +49,7 @@ beforeEach(() => {
 
   vi.clearAllMocks();
 
-  useToastSpy.mockImplementation(() => ({ error: mockToast, info: mockToast, success: mockToast }));
+  useToastSpy.mockImplementation(() => ({ error: mockToast, info: mockToast, success: mockToast, warn: mockToast }));
 });
 
 afterEach(() => {
