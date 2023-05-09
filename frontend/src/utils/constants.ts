@@ -43,5 +43,7 @@ export const ValidationMessages = Object.freeze({
 
 export const ToastTimeout = Object.freeze({
   ERROR: 5000,
-  SUCCESS: 3000
+  INFO: 3000,
+  SUCCESS: 3000,
+  WARNING: 5000
 });

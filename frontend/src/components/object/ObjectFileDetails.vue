@@ -54,7 +54,7 @@ const showPermissions = async (objectId: string) => {
 };
 
 function onDeletedSuccess() {
-  toast.success('Deleting file', 'File deleted');
+  toast.success('File deleted');
   router.push({ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucketId.value } });
 }
 

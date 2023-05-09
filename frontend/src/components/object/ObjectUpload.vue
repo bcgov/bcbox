@@ -50,7 +50,7 @@ const onUpload = async (event: any) => {
           await objectStore.createObject(file, bucketId, { timeout: 0 });
           successfulFiles.value.push(file);
         } catch (error: any) {
-          toast.error('Uploading file', error);
+          toast.error(`Failed to upload file ${file.name}`, error);
           failedFiles.value.push(file);
         }
       })
@@ -62,7 +62,7 @@ const onUpload = async (event: any) => {
     // Update object store
     await objectStore.fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
   } else {
-    toast.error('Uploading file', 'Failed to acquire bucket ID');
+    toast.error('Updating file', 'Failed to acquire bucket ID');
   }
 };
 

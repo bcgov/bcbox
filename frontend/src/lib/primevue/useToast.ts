@@ -1,38 +1,49 @@
+import { ToastTimeout } from '@/utils/constants';
 import type { ToastMessageOptions } from 'primevue/toast';
 import { useToast as useToastPrimevue } from 'primevue/usetoast';
-
-import { ToastTimeout } from '@/utils/constants';
 
 export const useToast = () => {
   const toast = useToastPrimevue();
 
-  const error = (title: string, msg: string, options: ToastMessageOptions = {}) => {
+  const error = (title: string, msg: string = '', options: ToastMessageOptions = {}) => {
     const {
       severity = 'error',
-      summary = 'Error: ' + title,
+      summary = `Error: ${title}`,
       detail = msg,
       life = ToastTimeout.ERROR
     } = options;
     toast.add({ severity: severity, summary: summary, detail: detail, life: life });
   };
-  const info = (title: string, msg: string, options: ToastMessageOptions = {}) => {
+
+  const info = (title: string, msg: string = '', options: ToastMessageOptions = {}) => {
     const {
       severity = 'info',
-      summary = 'Info: ' + title,
+      summary = `Info: ${title}`,
       detail = msg,
-      life = ToastTimeout.SUCCESS
+      life = ToastTimeout.INFO
     } = options;
     toast.add({ severity: severity, summary: summary, detail: detail, life: life });
   };
-  const success = (title: string, msg: string, options: ToastMessageOptions = {}) => {
+
+  const success = (title: string, msg: string = '', options: ToastMessageOptions = {}) => {
     const {
       severity = 'error',
-      summary = 'Sucess: ' + title,
+      summary = `Sucess: ${title}`,
       detail = msg,
       life = ToastTimeout.SUCCESS
     } = options;
     toast.add({ severity: severity, summary: summary, detail: detail, life: life });
   };
 
-  return { error, info, success };
+  const warn = (title: string, msg: string = '', options: ToastMessageOptions = {}) => {
+    const {
+      severity = 'warn',
+      summary = `Warning: ${title}`,
+      detail = msg,
+      life = ToastTimeout.WARNING
+    } = options;
+    toast.add({ severity: severity, summary: summary, detail: detail, life: life });
+  };
+
+  return { error, info, success, warn };
 };

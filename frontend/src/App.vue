@@ -24,10 +24,7 @@ onBeforeMount(async () => {
 // Top level error handler
 onErrorCaptured((e: Error) => {
   const toast = useToast();
-  toast.error(
-    'Error',
-    e.message
-  );
+  toast.error('Error', e.message);
 });
 </script>
 
