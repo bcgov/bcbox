@@ -57,8 +57,8 @@ export const useVersionStore = defineStore('version', () => {
       // Merge and assign
       state.metadata.value = difference.concat(response);
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching metadata', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Fetching metadata', error);
     }
     finally {
       appStore.endIndeterminateLoading();
@@ -81,8 +81,8 @@ export const useVersionStore = defineStore('version', () => {
       // Merge and assign
       state.tagging.value = difference.concat(response);
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching tags', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Fetching tags', error);
     }
     finally {
       appStore.endIndeterminateLoading();
@@ -105,8 +105,8 @@ export const useVersionStore = defineStore('version', () => {
       // Merge and assign
       state.versions.value = difference.concat(response);
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching versions', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Fetching versions', error);
     }
     finally {
       appStore.endIndeterminateLoading();

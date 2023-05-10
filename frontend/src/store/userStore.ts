@@ -58,7 +58,7 @@ export const useUserStore = defineStore('user', () => {
       state.userSearch.value = difference.concat(response);
     }
     catch (error: any) {
-      toast.add({ severity: 'error', summary: 'Error searching users', detail: error, life: 3000 });
+      toast.error('Searching users', error);
     }
     finally {
       appStore.endIndeterminateLoading();

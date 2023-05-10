@@ -47,12 +47,7 @@ const showInfo = async (id: string) => {
 };
 
 function onDeletedSuccess() {
-  toast.add({
-    severity: 'success',
-    summary: 'Success',
-    detail: 'File deleted',
-    life: 3000
-  });
+  toast.success('File deleted');
 }
 
 async function load() {

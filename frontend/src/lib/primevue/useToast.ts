@@ -27,7 +27,7 @@ export const useToast = () => {
 
   const success = (title: string, msg: string = '', options: ToastMessageOptions = {}) => {
     const {
-      severity = 'error',
+      severity = 'success',
       summary = `Sucess: ${title}`,
       detail = msg,
       life = ToastTimeout.SUCCESS
