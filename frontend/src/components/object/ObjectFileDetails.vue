@@ -11,6 +11,7 @@ import {
   ObjectPermission,
   ObjectProperties,
   ObjectTag,
+  ObjectUploadBasic,
   ObjectVersion
 } from '@/components/object';
 import { ShareObjectButton } from '@/components/object/share';
@@ -169,7 +170,6 @@ watch( [props, getObjects], async () => {
       </div>
     </div>
 
-
     <div class="flex flex-row">
       <div class="flex flex-column w-6 gap-3 py-5">
         <ObjectProperties
@@ -185,6 +185,13 @@ watch( [props, getObjects], async () => {
       </div>
       <Divider layout="vertical" />
       <div class="flex flex-column w-6 gap-3 py-5">
+        <div class="flex flex-row-reverse">
+          <ObjectUploadBasic
+            :bucket-id="bucketId"
+            :object-id="props.objectId"
+          />
+        </div>
+
         <ObjectVersion
           v-if="props.versionId"
           :bucket-id="bucketId"

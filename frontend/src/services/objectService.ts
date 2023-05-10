@@ -124,12 +124,15 @@ export default {
   /**
    * @function updateObject
    * Update the object record (will add new version)
+   * @param {String} objectId The id for the object
+   * @param {Any} object Object to be created
+   * @param {AxiosRequestConfig} axiosOptions Axios request config options
    * @returns {Promise} An axios response
    */
-  updateObject(objectId: string, object: any) {
+  updateObject(objectId: string, object: any, axiosOptions?: AxiosRequestConfig) {
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
     const fd = new FormData();
     fd.append('file', object);
-    return comsAxios().post(`${PATH}/${objectId}`, fd, config);
+    return comsAxios(axiosOptions).post(`${PATH}/${objectId}`, fd, config);
   },
 };

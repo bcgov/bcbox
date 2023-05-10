@@ -11,5 +11,6 @@ export { default as ObjectSidebar } from './ObjectSidebar.vue';
 export { default as ObjectTable } from './ObjectTable.vue';
 export { default as ObjectTag } from './ObjectTag.vue';
 export { default as ObjectUpload } from './ObjectUpload.vue';
+export { default as ObjectUploadBasic } from './ObjectUploadBasic.vue';
 export { default as ObjectUploadFile } from './ObjectUploadFile.vue';
 export { default as ObjectVersion } from './ObjectVersion.vue';
