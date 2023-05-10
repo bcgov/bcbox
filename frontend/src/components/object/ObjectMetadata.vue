@@ -1,37 +1,47 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 
 import { Column, DataTable } from '@/lib/primevue';
-import { useMetadataStore } from '@/store';
+import { useMetadataStore, useVersionStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { Metadata } from '@/types';
 
 // Props
 type Props = {
-  objectInfoId: string;
+  objectId: string;
+  versionId?: string;
 };
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  versionId: undefined
+});
 
 // Store
 const metadataStore = useMetadataStore();
+const versionStore = useVersionStore();
+const { getMetadata: tsGetMetadata } = storeToRefs(metadataStore);
+const { getMetadata: vsGetMetadata } = storeToRefs(versionStore);
 
 // State
 const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
 
 // Actions
 async function load() {
-  objectMetadata.value = metadataStore.findMetadataByObjectId(
-    props.objectInfoId
-  );
+  if( props.versionId ) {
+    objectMetadata.value = versionStore.findMetadataByVersionId(props.versionId);
+  }
+  else {
+    objectMetadata.value = metadataStore.findMetadataByObjectId(props.objectId);
+  }
 }
 
 onMounted(() => {
   load();
 });
 
-watch(props, () => {
+watch([props, tsGetMetadata,vsGetMetadata] , () => {
   load();
 });
 </script>
@@ -43,10 +53,11 @@ watch(props, () => {
         Metadata
       </h2>
     </div>
-    <div>
+    <div class="col-12">
       <DataTable
         v-if="objectMetadata"
         :value="objectMetadata.metadata"
+        class="p-datatable-sm"
         responsive-layout="scroll"
       >
         <Column

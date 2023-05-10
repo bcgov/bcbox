@@ -1,6 +1,7 @@
 import { comsAxios } from './interceptors';
 
 import type { AxiosResponse } from 'axios';
+import type { SearchUsersOptions } from '@/types';
 
 const PATH = 'user';
 
@@ -8,10 +9,10 @@ export default {
   /**
    * @function searchForUsers
    * Returns a list of users based on the provided filtering parameters
-   * @param {object} params Object containing the data to filter against
+   * @param {SearchUsersOptions} params SearchUsersOptions object containing the data to filter against
    * @returns {Promise<AxiosResponse>} An axios response
    */
-  searchForUsers(params: object): Promise<AxiosResponse> {
+  searchForUsers(params: SearchUsersOptions): Promise<AxiosResponse> {
     return comsAxios().get(`${PATH}`, { params: params });
   },
 

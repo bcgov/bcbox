@@ -189,7 +189,7 @@ export const usePermissionStore = defineStore('permission', () => {
       // Merge and assign
       state.objectPermissions.value = difference.concat(newPerms);
 
-      // Pass response back so objectStore can handle objectPerms=true correctly
+      // Pass response back so objectStore can handle bucketPerms=true correctly
       return response;
     }
     catch (error: any) {

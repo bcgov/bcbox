@@ -10,38 +10,54 @@ import {
   ObjectMetadata,
   ObjectPermission,
   ObjectProperties,
-  ObjectTag
+  ObjectTag,
+  ObjectVersion
 } from '@/components/object';
 import { ShareObjectButton } from '@/components/object/share';
-import { Button, Dialog, useToast } from '@/lib/primevue';
-import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore, useTagStore } from '@/store';
+import { Button, Dialog, Divider, useToast } from '@/lib/primevue';
+import {
+  useAuthStore,
+  useMetadataStore,
+  useObjectStore,
+  usePermissionStore,
+  useTagStore,
+  useVersionStore
+} from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
+import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
-import type { COMSObject } from '@/types';
+import type { COMSObject, Version } from '@/types';
 
 // Props
 type Props = {
-  objectId: string
+  objectId: string,
+  versionId?: string
 };
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  versionId: undefined
+});
 
 // Store
 const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const tagStore = useTagStore();
+const versionStore = useVersionStore();
 const { getObjects } = storeToRefs(objectStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
+const bucketId: Ref<string> = ref('');
+const filename: Ref<string | undefined> = ref(undefined);
+const latestVersionId: Ref<string | undefined> = ref(undefined);
+const obj: Ref<COMSObject | undefined> = ref(undefined);
 const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsObjectId: Ref<string> = ref('');
 const permissionsObjectName: Ref<string> = ref('');
-const obj: Ref<COMSObject | undefined> = ref(undefined);
-const bucketId: Ref<string> = ref('');
+const version: Ref<Version | undefined> = ref(undefined);
 
 // Actions
 const router = useRouter();
@@ -76,67 +92,110 @@ onBeforeMount( async () => {
   }
 });
 
-watch( [props, getObjects], () => {
-  metadataStore.fetchMetadata({objectId: props.objectId });
-  tagStore.fetchTagging({objectId: props.objectId });
+watch( [props, getObjects], async () => {
+  await metadataStore.fetchMetadata({objectId: props.objectId});
+  tagStore.fetchTagging({objectId: props.objectId});
   obj.value = objectStore.findObjectById(props.objectId);
   bucketId.value = obj.value?.bucketId || '';
+  latestVersionId.value = versionStore.findLatestVersionIdByObjectId(props.objectId);
+
+  if( props.versionId ) {
+    await versionStore.fetchMetadata({versionId: props.versionId});
+    versionStore.fetchTagging({versionId: props.versionId});
+    version.value = versionStore.findVersionById(props.versionId);
+    filename.value = versionStore.findMetadataValue(props.versionId, 'coms-name');
+  }
+  else {
+    filename.value = metadataStore.findValue(props.objectId, 'coms-name');
+  }
 });
 </script>
 
 <template>
   <div v-if="obj">
-    <div class="flex justify-content-start">
-      <div class="flex col align-items-center pl-0 heading">
-        <font-awesome-icon
-          icon="fa-solid fa-circle-info"
-          style="font-size: 2rem"
-        />
-        <h1 class="pl-1 font-bold">
-          File details
+    <div class="grid pol-0">
+      <div class="col-12">
+        <h1
+          class="pl-1 font-bold heading"
+        >
+          <span v-if="latestVersionId !== props.versionId">
+            Previous version:
+            {{ formatDateLong(version?.createdAt as string) }}
+          </span>
+          <span v-else>
+            File details
+          </span>
         </h1>
       </div>
+      <div class="flex col justify-content-start">
+        <div class="flex col align-items-center heading">
+          <font-awesome-icon
+            icon="fa-solid fa-circle-info"
+            style="font-size: 2rem"
+          />
+          <h1 class="pl-1 font-bold">
+            {{ filename }}
+          </h1>
+        </div>
 
-      <div
-        class="action-buttons"
-      >
-        <ShareObjectButton
-          :id="props.objectId"
-        />
-        <DownloadObjectButton
-          v-if="obj.public || permissionStore.isObjectActionAllowed(
-            props.objectId, getUserId, Permissions.READ, bucketId)"
-          :mode="ButtonMode.ICON"
-          :ids="[props.objectId]"
-        />
-        <Button
-          v-if="permissionStore.isObjectActionAllowed(
-            props.objectId, getUserId, Permissions.MANAGE, bucketId)"
-          class="p-button-lg p-button-text"
-          @click="showPermissions(props.objectId)"
+        <div
+          class="action-buttons"
         >
-          <font-awesome-icon icon="fa-solid fa-users" />
-        </Button>
-        <DeleteObjectButton
-          v-if="permissionStore.isObjectActionAllowed(
-            props.objectId, getUserId, Permissions.DELETE, bucketId)"
-          :mode="ButtonMode.ICON"
-          :ids="[props.objectId]"
-          @on-deleted-success="onDeletedSuccess"
-        />
+          <ShareObjectButton
+            :id="props.objectId"
+          />
+          <DownloadObjectButton
+            v-if="obj.public || permissionStore.isObjectActionAllowed(
+              props.objectId, getUserId, Permissions.READ, bucketId)"
+            :mode="ButtonMode.ICON"
+            :ids="[props.objectId]"
+          />
+          <Button
+            v-if="permissionStore.isObjectActionAllowed(
+              props.objectId, getUserId, Permissions.MANAGE, bucketId)"
+            class="p-button-lg p-button-text"
+            @click="showPermissions(props.objectId)"
+          >
+            <font-awesome-icon icon="fa-solid fa-users" />
+          </Button>
+          <DeleteObjectButton
+            v-if="permissionStore.isObjectActionAllowed(
+              props.objectId, getUserId, Permissions.DELETE, bucketId)"
+            :mode="ButtonMode.ICON"
+            :ids="[props.objectId]"
+            @on-deleted-success="onDeletedSuccess"
+          />
+        </div>
       </div>
     </div>
 
-    <div>
-      <ObjectProperties
-        :object-info-id="props.objectId"
-        :full-view="true"
-      />
-      <ObjectAccess :object-info-id="props.objectId" />
-      <ObjectMetadata
-        :object-info-id="props.objectId"
-      />
-      <ObjectTag :object-info-id="props.objectId" />
+
+    <div class="flex flex-row">
+      <div class="flex flex-column w-6 gap-3 py-5">
+        <ObjectProperties
+          :object-id="props.objectId"
+          :version-id="props.versionId"
+          :full-view="true"
+        />
+        <ObjectAccess :object-id="props.objectId" />
+        <ObjectMetadata
+          :object-id="props.objectId"
+          :version-id="props.versionId"
+        />
+      </div>
+      <Divider layout="vertical" />
+      <div class="flex flex-column w-6 gap-3 py-5">
+        <ObjectVersion
+          v-if="props.versionId"
+          :bucket-id="bucketId"
+          :object-id="props.objectId"
+          :version-id="props.versionId"
+        />
+        <ObjectTag
+          :object-id="props.objectId"
+          :version-id="props.versionId"
+        />
+      </div>
     </div>
   </div>
 

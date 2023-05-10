@@ -10,7 +10,7 @@ import type { COMSObjectPermission } from '@/types';
 
 // Props
 type Props = {
-  objectInfoId: string;
+  objectId: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -20,20 +20,22 @@ const permissionStore = usePermissionStore();
 const userStore = useUserStore();
 
 const { getObjectPermissions } = storeToRefs(permissionStore);
-const { userSearch } = storeToRefs(userStore);
 
 // State
 const managedBy: Ref<string | undefined> = ref();
 
 // Actions
 async function load() {
+  await permissionStore.fetchObjectPermissions({objectId: props.objectId});
+
   const uniqueIds = [...new Set(getObjectPermissions.value
-    .filter( (x: COMSObjectPermission) => x.objectId === props.objectInfoId && x.permCode === Permissions.MANAGE )
+    .filter( (x: COMSObjectPermission) => x.objectId === props.objectId && x.permCode === Permissions.MANAGE )
     .map( (x: COMSObjectPermission) => x.userId) )];
 
-  await userStore.fetchUsers({userId: uniqueIds} );
-
-  managedBy.value = userSearch.value.map( x => x.fullName ).join( ', ');
+  if( uniqueIds.length ) {
+    await userStore.fetchUsers({ userId: uniqueIds });
+    managedBy.value = userStore.findUsersById(uniqueIds).map( x => x.fullName ).join( ', ');
+  }
 }
 
 onMounted(() => {

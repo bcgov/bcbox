@@ -12,7 +12,7 @@ import { Permissions, RouteNames } from '@/utils/constants';
 
 // Props
 type Props = {
-  objectInfoId: string;
+  objectId: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -32,11 +32,11 @@ const closeObjectInfo = async () => {
 };
 
 watch( props, () => {
-  const obj = objectStore.findObjectById(props.objectInfoId);
+  const obj = objectStore.findObjectById(props.objectId);
   if( obj &&
      (obj.public || permissionStore.isObjectActionAllowed(obj.id, getUserId.value, Permissions.READ, obj.bucketId)))
   {
-    tagStore.fetchTagging({objectId: props.objectInfoId});
+    tagStore.fetchTagging({objectId: props.objectId});
   }
 }, { immediate: true });
 </script>
@@ -62,18 +62,18 @@ watch( props, () => {
   </div>
   <div class="pl-2 sidebar">
     <ObjectProperties
-      :object-info-id="props.objectInfoId"
+      :object-id="props.objectId"
       :full-view="false"
     />
     <ObjectMetadata
-      :object-info-id="props.objectInfoId"
+      :object-id="props.objectId"
     />
-    <ObjectTag :object-info-id="props.objectInfoId" />
+    <ObjectTag :object-id="props.objectId" />
     <div class="col-12 pl-0">
       <router-link
         v-slot="{ navigate }"
         custom
-        :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objectId: props.objectInfoId } }"
+        :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objectId: props.objectId } }"
       >
         <Button
           label="Primary"

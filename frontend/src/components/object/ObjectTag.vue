@@ -3,35 +3,45 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 
 import { Button } from '@/lib/primevue';
-import { useTagStore } from '@/store';
+import { useTagStore, useVersionStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { Tagging } from '@/types';
 
 // Props
 type Props = {
-  objectInfoId: string;
+  objectId: string;
+  versionId?: string;
 };
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  versionId: undefined
+});
 
 // Store
 const tagStore = useTagStore();
-const { getTagging } = storeToRefs(tagStore);
+const versionStore = useVersionStore();
+const { getTagging: tsGetTagging } = storeToRefs(tagStore);
+const { getTagging: vsGetTagging } = storeToRefs(versionStore);
 
 // State
 const objectTagging: Ref<Tagging | undefined> = ref(undefined);
 
 // Actions
 async function load() {
-  objectTagging.value = tagStore.findTaggingByObjectId(props.objectInfoId);
+  if( props.versionId ) {
+    objectTagging.value = versionStore.findTaggingByVersionId(props.versionId);
+  }
+  else {
+    objectTagging.value = tagStore.findTaggingByObjectId(props.objectId);
+  }
 }
 
 onMounted(() => {
   load();
 });
 
-watch( [props, getTagging], () => {
+watch( [props, tsGetTagging, vsGetTagging], () => {
   load();
 });
 </script>
