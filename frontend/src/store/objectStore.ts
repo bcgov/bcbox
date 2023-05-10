@@ -166,6 +166,19 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
+  async function updateObject(object: any, objectId: string, axiosOptions?: AxiosRequestConfig) {
+    try {
+      appStore.beginIndeterminateLoading();
+      await objectService.updateObject(objectId, object, axiosOptions);
+    }
+    catch (error: any) {
+      toast.error('Updating object', error);
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   return {
     // State
     ...state,
@@ -181,7 +194,8 @@ export const useObjectStore = defineStore('object', () => {
     findObjectById,
     headObject,
     setSelectedObjects,
-    togglePublic
+    togglePublic,
+    updateObject
   };
 }, { persist: true });
 

@@ -26,7 +26,7 @@ const managedBy: Ref<string | undefined> = ref();
 
 // Actions
 async function load() {
-  await permissionStore.fetchObjectPermissions({objectId: props.objectId});
+  await permissionStore.fetchObjectPermissions({ objectId: props.objectId });
 
   const uniqueIds = [...new Set(getObjectPermissions.value
     .filter( (x: COMSObjectPermission) => x.objectId === props.objectId && x.permCode === Permissions.MANAGE )
