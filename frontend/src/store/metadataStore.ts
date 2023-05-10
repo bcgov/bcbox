@@ -46,8 +46,8 @@ export const useMetadataStore = defineStore('metadata', () => {
       // Merge and assign
       state.metadata.value = difference.concat(response);
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching metadata', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Fetching metadata', error);
     }
     finally {
       appStore.endIndeterminateLoading();

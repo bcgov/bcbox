@@ -8,7 +8,7 @@ import type { StoreGeneric } from 'pinia';
 import type { SpyInstance } from 'vitest';
 import type { Tagging } from '@/types';
 
-const mockAdd = vi.fn();
+const mockToast = vi.fn();
 const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 const tag: Tagging = {
@@ -22,7 +22,7 @@ const tag: Tagging = {
 beforeEach(() => {
   setActivePinia(createPinia());
   vi.clearAllMocks();
-  useToastSpy.mockImplementation(() => ({ add: mockAdd }));
+  useToastSpy.mockImplementation(() => ({ error: mockToast, info: mockToast, success: mockToast, warn: mockToast }));
 });
 
 afterEach(() => {
@@ -72,8 +72,8 @@ describe('Config Store', () => {
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(getTaggingSpy).toHaveBeenCalledTimes(1);
       expect(getTaggingSpy).toHaveBeenCalledWith({ objectId: '000' });
-      expect(mockAdd).toHaveBeenCalledTimes(1);
-      expect(mockAdd).toHaveBeenCalledWith(expect.anything());
+      expect(mockToast).toHaveBeenCalledTimes(1);
+      expect(mockToast).toHaveBeenCalledWith('Fetching tags', new Error);
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(tagStore.getTagging).toStrictEqual([]);
     });

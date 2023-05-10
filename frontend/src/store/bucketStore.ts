@@ -72,8 +72,8 @@ export const useBucketStore = defineStore('bucket', () => {
         }
       }
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching buckets', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Fetching buckets', error);
     }
     finally {
       appStore.endIndeterminateLoading();

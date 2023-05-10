@@ -40,7 +40,7 @@ const readPerm = {
   userId: '123'
 };
 
-const mockAdd = vi.fn();
+const mockToast = vi.fn();
 const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 beforeEach(() => {
@@ -57,7 +57,7 @@ beforeEach(() => {
 
   vi.clearAllMocks();
 
-  useToastSpy.mockImplementation(() => ({ add: mockAdd }));
+  useToastSpy.mockImplementation(() => ({ error: mockToast, info: mockToast, success: mockToast, warn: mockToast }));
 });
 
 afterEach(() => {
@@ -144,8 +144,8 @@ describe('Bucket Store', () => {
       expect(fetchBucketPermissionsSpy).toBeCalledWith({ userId: '123', objectPerms: true });
       expect(searchBucketsSpy).toHaveBeenCalledTimes(1);
       expect(searchBucketsSpy).toBeCalledWith({ bucketId: ['000'] });
-      expect(mockAdd).toHaveBeenCalledTimes(1);
-      expect(mockAdd).toHaveBeenCalledWith(expect.anything());
+      expect(mockToast).toHaveBeenCalledTimes(1);
+      expect(mockToast).toHaveBeenCalledWith('Fetching buckets', new Error);
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(bucketStore.getBuckets).toStrictEqual([]);
     });

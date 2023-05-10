@@ -41,8 +41,8 @@ export const useObjectStore = defineStore('object', () => {
       appStore.beginIndeterminateLoading();
       await objectService.createObject(object, bucketId, axiosOptions);
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error creating object', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Creating object', error);
     }
     finally {
       appStore.endIndeterminateLoading();
@@ -60,8 +60,8 @@ export const useObjectStore = defineStore('object', () => {
         })
       );
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error deleting object', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Deleting object', error);
     }
     finally {
       fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
@@ -74,8 +74,8 @@ export const useObjectStore = defineStore('object', () => {
       appStore.beginIndeterminateLoading();
       await objectService.getObject(objectId, versionId);
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error downloading object', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Downloading object', error);
     }
     finally {
       appStore.endIndeterminateLoading();
@@ -122,8 +122,8 @@ export const useObjectStore = defineStore('object', () => {
         }
       }
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching objects', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Fetching objects', error);
     }
     finally {
       appStore.endIndeterminateLoading();
@@ -141,8 +141,8 @@ export const useObjectStore = defineStore('object', () => {
       // Return full response as data will always be No Content
       return (await objectService.headObject(objectId));
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching head', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Fetching head', error);
     }
     finally {
       appStore.endIndeterminateLoading();
@@ -158,8 +158,8 @@ export const useObjectStore = defineStore('object', () => {
       appStore.beginIndeterminateLoading();
       await objectService.togglePublic(objectId, isPublic);
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error changing public state', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Changing public state', error);
     }
     finally {
       appStore.endIndeterminateLoading();

@@ -2,7 +2,7 @@ export const BucketConfig = Object.freeze({
   HEADER_NEW_BUCKET: 'Configure bucket',
   TITLE_NEW_BUCKET: 'Use this form to configure a bucket to be used in BCBox for the first time.',
   NOTICE_NEW_BUCKET: 'If you intend to share files in your bucket with BCeID users, you are required'
-  + ' to email IDIM.Consulting@gov.bc.ca to share your intentions and where you intend to advertise this.'
+    + ' to email IDIM.Consulting@gov.bc.ca to share your intentions and where you intend to advertise this.'
 });
 
 export const Permissions = Object.freeze({
@@ -39,4 +39,11 @@ export const StorageKey = Object.freeze({
 
 export const ValidationMessages = Object.freeze({
   REQUIRED: 'This field is required.',
+});
+
+export const ToastTimeout = Object.freeze({
+  ERROR: 5000,
+  INFO: 3000,
+  SUCCESS: 3000,
+  WARNING: 5000
 });

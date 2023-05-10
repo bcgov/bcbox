@@ -49,8 +49,8 @@ const onUpload = async (event: any) => {
           // Infinite timeout for big files upload to avoid timeout error
           await objectStore.createObject(file, bucketId, { timeout: 0 });
           successfulFiles.value.push(file);
-        } catch (error) {
-          toast.add({ severity: 'error', summary: 'Error', detail: `Failed to upload file ${file.name}`, life: 3000 });
+        } catch (error: any) {
+          toast.error(`Failed to upload file ${file.name}`, error);
           failedFiles.value.push(file);
         }
       })
@@ -62,7 +62,7 @@ const onUpload = async (event: any) => {
     // Update object store
     await objectStore.fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
   } else {
-    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to acquire bucket ID', life: 3000 });
+    toast.error('Updating file', 'Failed to acquire bucket ID');
   }
 };
 

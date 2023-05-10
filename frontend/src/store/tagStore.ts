@@ -46,8 +46,8 @@ export const useTagStore = defineStore('tag', () => {
       // Merge and assign
       state.tagging.value = difference.concat(response);
     }
-    catch (error) {
-      toast.add({ severity: 'error', summary: 'Error fetching tags', detail: error, life: 3000 });
+    catch (error: any) {
+      toast.error('Fetching tags', error);
     }
     finally {
       appStore.endIndeterminateLoading();

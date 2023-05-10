@@ -40,8 +40,8 @@ export const useUserStore = defineStore('user', () => {
       // Filter out any user without an IDP
       state.userSearch.value = response.filter((x: User) => !!x.identityId);
     }
-    catch (error) {
-      useToast().add({ severity: 'error', summary: 'Error searching users', detail: error, life: 3000 });
+    catch (error: any) {
+      useToast().error('Searching users', error);
     }
     finally {
       appStore.endIndeterminateLoading();
