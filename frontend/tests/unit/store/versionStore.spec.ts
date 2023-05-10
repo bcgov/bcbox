@@ -1,7 +1,7 @@
 import { setActivePinia, createPinia } from 'pinia';
 
 import * as primevue from '@/lib/primevue';
-import { versionService } from '@/services';
+import { objectService, versionService } from '@/services';
 import { useAppStore, useVersionStore } from '@/store';
 
 import type { StoreGeneric } from 'pinia';
@@ -42,13 +42,13 @@ const versionOld: Version = {
   createdAt: '2022-05-01T18:25:42.462Z'
 };
 
-const mockAdd = vi.fn();
+const mockToast = vi.fn();
 const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 beforeEach(() => {
   setActivePinia(createPinia());
   vi.clearAllMocks();
-  useToastSpy.mockImplementation(() => ({ add: mockAdd }));
+  useToastSpy.mockImplementation(() => ({ error: mockToast, info: mockToast, success: mockToast, warn: mockToast }));
 });
 
 afterEach(() => {
@@ -65,6 +65,7 @@ describe('Version Store', () => {
 
   let getMetadataSpy: SpyInstance;
   let getTaggingSpy: SpyInstance;
+  let getVersionsSpy: SpyInstance;
 
   beforeEach(() => {
     appStore = useAppStore();
@@ -75,6 +76,7 @@ describe('Version Store', () => {
 
     getMetadataSpy = vi.spyOn(versionService, 'getMetadata');
     getTaggingSpy = vi.spyOn(versionService, 'getObjectTagging');
+    getVersionsSpy = vi.spyOn(objectService, 'listObjectVersion');
   });
 
   describe('fetchMetadata', () => {
@@ -100,8 +102,8 @@ describe('Version Store', () => {
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(getMetadataSpy).toHaveBeenCalledTimes(1);
       expect(getMetadataSpy).toHaveBeenCalledWith(null, { versionId: '000' });
-      expect(mockAdd).toHaveBeenCalledTimes(1);
-      expect(mockAdd).toHaveBeenCalledWith(expect.anything());
+      expect(mockToast).toHaveBeenCalledTimes(1);
+      expect(mockToast).toHaveBeenCalledWith('Fetching metadata', new Error);
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(versionStore.getMetadata).toStrictEqual([]);
     });
@@ -131,8 +133,39 @@ describe('Version Store', () => {
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(getTaggingSpy).toHaveBeenCalledTimes(1);
       expect(getTaggingSpy).toHaveBeenCalledWith({ versionId: '000' });
-      expect(mockAdd).toHaveBeenCalledTimes(1);
-      expect(mockAdd).toHaveBeenCalledWith(expect.anything());
+      expect(mockToast).toHaveBeenCalledTimes(1);
+      expect(mockToast).toHaveBeenCalledWith('Fetching tags', new Error);
+      expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
+      expect(versionStore.getTagging).toStrictEqual([]);
+    });
+  });
+
+
+  describe('fetchVersions', () => {
+    it('fetches the versions', async () => {
+      getVersionsSpy.mockReturnValueOnce({ data: [version] } as any);
+
+      await versionStore.fetchVersions({ objectId: '000' });
+
+      expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
+      expect(getVersionsSpy).toHaveBeenCalledTimes(1);
+      expect(getVersionsSpy).toHaveBeenCalledWith('000');
+      expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
+      expect(versionStore.getVersions).toStrictEqual([version]);
+    });
+
+    it('does not change state on error', async () => {
+      getVersionsSpy.mockImplementationOnce(() => {
+        throw new Error();
+      });
+
+      await versionStore.fetchVersions({ objectId: '000' });
+
+      expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
+      expect(getVersionsSpy).toHaveBeenCalledTimes(1);
+      expect(getVersionsSpy).toHaveBeenCalledWith('000');
+      expect(mockToast).toHaveBeenCalledTimes(1);
+      expect(mockToast).toHaveBeenCalledWith('Fetching versions', new Error);
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(versionStore.getTagging).toStrictEqual([]);
     });
