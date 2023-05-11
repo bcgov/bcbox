@@ -146,6 +146,7 @@ const filters = ref({
 
           <Button
             class="ml-2"
+            icon="pi pi-refresh"
             outlined
             rounded
             aria-label="Filter"
