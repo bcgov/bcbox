@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ProgressSpinner from 'primevue/progressspinner';
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
@@ -63,6 +64,9 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
         >
           <h3>There are no buckets associated with your account.</h3>
         </div>
+      </template>
+      <template #loading>
+        <ProgressSpinner />
       </template>
       <Column header-style="width: 1%">
         <template #body>

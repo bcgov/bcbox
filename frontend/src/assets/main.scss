@@ -127,6 +127,6 @@ td .wrap-block{ width: inherit; }
 
 .p-button {
   &:hover {
-    filter: brightness(250%);
+    opacity: 0.8;
   }
 }

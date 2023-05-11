@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ProgressSpinner from 'primevue/progressspinner';
 import { storeToRefs } from 'pinia';
 import { ref, watch } from 'vue';
 
@@ -118,6 +119,7 @@ const filters = ref({
     <DataTable
       v-model:selection="selectedObjects"
       v-model:filters="filters"
+      :loading="useAppStore().getIsLoading"
       :value="tableData"
       data-key="id"
       class="p-datatable-sm"
@@ -144,7 +146,6 @@ const filters = ref({
 
           <Button
             class="ml-2"
-            icon="pi pi-refresh"
             outlined
             rounded
             aria-label="Filter"
@@ -161,6 +162,9 @@ const filters = ref({
             There are no objects associated with your account in this bucket.
           </h3>
         </div>
+      </template>
+      <template #loading>
+        <ProgressSpinner />
       </template>
       <Column
         selection-mode="multiple"
