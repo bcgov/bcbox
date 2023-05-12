@@ -130,3 +130,14 @@ td .wrap-block{ width: inherit; }
     opacity: 0.8;
   }
 }
+
+.p-progress-spinner-circle {
+  stroke: grey !important;
+}
+
+.p-datatable {
+  .p-datatable-loading-overlay {
+    background: white;
+    opacity: .3;
+  }
+}
