@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { Button, useToast } from '@/lib/primevue';
+import { Button, useConfirm, useToast } from '@/lib/primevue';
 import { useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
@@ -14,6 +14,9 @@ type Props = {
 
 const props = withDefaults(defineProps<Props>(), {});
 
+// Emits
+const emit = defineEmits(['on-file-changed', 'on-file-uploaded']);
+
 // Store
 const objectStore = useObjectStore();
 
@@ -22,11 +25,28 @@ const fileInput: Ref<any> = ref(null);
 const file: Ref<File | undefined> = ref(undefined);
 
 // Actions
+const confirm = useConfirm();
 const toast = useToast();
+
+const confirmUpdate = () => {
+  confirm.require({
+    message: 'Please confirm that you want to upload a new version. All other versions will still be stored.',
+    header: 'Upload new version',
+    acceptLabel: 'Confirm',
+    rejectLabel: 'Cancel',
+    accept: async () => {
+      onUpload();
+    },
+    reject: () => {
+      // Intentionally left empty
+    },
+  });
+};
 
 const onChange = async (event: any) => {
   file.value = event.target.files[0];
-  onUpload();
+  emit('on-file-changed');
+  confirmUpdate();
 };
 
 const onSelectFile = async () => {
@@ -38,9 +58,11 @@ const onUpload = async () => {
     if( file.value ) {
       // Infinite timeout for big files upload to avoid timeout error
       await objectStore.updateObject(file.value, props.objectId, { timeout: 0 });
+      emit('on-file-uploaded');
+      toast.success('File uploaded');
     }
   } catch (error: any) {
-    toast.error(`Failed to upload file ${file.value?.name}`, error);
+    toast.error(`File upload: ${file.value?.name}`, error);
   }
 };
 </script>

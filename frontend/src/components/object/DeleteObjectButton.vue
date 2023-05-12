@@ -18,7 +18,6 @@ const props = withDefaults(defineProps<Props>(), {});
 // Emits
 const emit = defineEmits(['on-deleted-success', 'on-deleted-error']);
 
-
 // Store
 const objectStore = useObjectStore();
 

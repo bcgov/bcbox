@@ -75,6 +75,18 @@ function onDeletedSuccess() {
   router.push({ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucketId.value } });
 }
 
+async function onFileUploaded() {
+  await objectStore.fetchObjects({objectId: props.objectId, userId: getUserId.value, bucketPerms: true});
+  await versionStore.fetchVersions({ objectId: props.objectId });
+
+  // Obtaining the version id and passing it to the route forces a destruct/construct of the component
+  // Easier approach than attempting to in-place refresh all the data
+  router.push({ name: RouteNames.DETAIL_OBJECTS, query: {
+    objectId: props.objectId,
+    versionId: versionStore.findLatestVersionIdByObjectId(props.objectId)
+  }});
+}
+
 onBeforeMount( async () => {
   if( props.objectId ) {
     const head = await objectStore.headObject(props.objectId);
@@ -189,9 +201,9 @@ watch( [props, getObjects], async () => {
           <ObjectUploadBasic
             :bucket-id="bucketId"
             :object-id="props.objectId"
+            @on-file-uploaded="onFileUploaded"
           />
         </div>
-
         <ObjectVersion
           v-if="props.versionId"
           :bucket-id="bucketId"
