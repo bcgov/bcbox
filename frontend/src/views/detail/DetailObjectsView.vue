@@ -27,7 +27,7 @@ const version: Ref<string | undefined> = ref(props.versionId);
 onBeforeMount( async () => {
   // Get the latest version if not defined
   if( !version.value ) {
-    await versionStore.fetchVersions({objectId: props.objectId});
+    await versionStore.fetchVersions({ objectId: props.objectId });
     version.value = versionStore.findLatestVersionIdByObjectId(props.objectId);
   }
 });
