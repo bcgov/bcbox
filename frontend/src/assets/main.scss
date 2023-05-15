@@ -131,8 +131,10 @@ td .wrap-block{ width: inherit; }
   }
 }
 
-.p-progress-spinner-circle {
-  stroke: grey !important;
+.p-inputswitch-slider {
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
 .p-datatable {

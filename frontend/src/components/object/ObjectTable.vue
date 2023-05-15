@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import ProgressSpinner from 'primevue/progressspinner';
 import { storeToRefs } from 'pinia';
 import { ref, watch } from 'vue';
 
+import { Loader } from '@/components/layout';
 import {
   DeleteObjectButton,
   DownloadObjectButton,
@@ -165,7 +165,7 @@ const filters = ref({
         </div>
       </template>
       <template #loading>
-        <ProgressSpinner />
+        <Loader />
       </template>
       <Column
         selection-mode="multiple"
