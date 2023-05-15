@@ -125,16 +125,10 @@ td .wrap-block{ width: inherit; }
   }
 }
 
-.p-button {
+.p-button, .p-inputswitch-slider {
   &:hover {
     opacity: 0.8;
     text-decoration: underline;
-  }
-}
-
-.p-inputswitch-slider {
-  &:hover {
-    opacity: 0.8;
   }
 }
 
