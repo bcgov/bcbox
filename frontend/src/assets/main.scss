@@ -128,6 +128,7 @@ td .wrap-block{ width: inherit; }
 .p-button {
   &:hover {
     opacity: 0.8;
+    text-decoration: underline;
   }
 }
 
