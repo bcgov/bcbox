@@ -1,20 +1,36 @@
-@import './base.css';
-@import './primevue.scss';
-@import './variables.scss';
+@import "./base.css";
+@import "./primevue.scss";
+@import "./variables.scss";
 
 #app {
   margin: 0 auto;
   font-weight: normal;
 }
 
+// ----- links and buttons:
 a,
 a:visited {
   color: $bcbox-link-text;
   text-decoration: underline;
   &:hover {
     color: $bcbox-link-text-hover;
-    text-decoration: none;
   }
+}
+
+.p-button,
+.p-inputswitch-slider {
+  &:hover {
+    opacity: 0.8;
+  }
+}
+// underline button text
+.p-button:hover {
+  text-decoration: underline;
+}
+// don't underline button icons
+.p-button .p-button-icon:before {
+  text-decoration: none;
+  display: inline-block;
 }
 
 .truncate {
@@ -26,6 +42,8 @@ a:visited {
     text-overflow: ellipsis;
   }
 }
+
+// -------- layout
 
 .content-center {
   text-align: center !important;
@@ -39,31 +57,45 @@ a:visited {
   width: 800px;
 }
 
-// -------- layout
-
 // details page / sidebar
 .details-grid {
-  h2 { margin-bottom: 1rem; }
-  .col-fixed { width: 150px; }  // label column
+  h2 {
+    margin-bottom: 1rem;
+  }
+  .col-fixed {
+    width: 150px; // label column
+  }
   // make datatable look like grid
   .p-datatable {
-    thead th{ padding-top: 0; }
-    td { padding: 0.5rem; }
+    thead th {
+      padding-top: 0;
+    }
+    td {
+      padding: 0.5rem;
+    }
     th:first-child,
-    td:first-child { padding-left: 0; }
+    td:first-child {
+      padding-left: 0;
+    }
   }
 }
-.details-value-column { width: 40rem; }
-.sidebar .details-value-column { width: 20rem; }
+.details-value-column {
+  width: 40rem;
+}
+.sidebar .details-value-column {
+  width: 20rem;
+}
 // eof details page / sidebar
 
 // wrap text
-.wrap-block{
+.wrap-block {
   display: inline-block;
   overflow-wrap: break-word;
   width: 100%;
 }
-td .wrap-block{ width: inherit; }
+td .wrap-block {
+  width: inherit;
+}
 
 // --------- Info/settings dialog modals
 .bcbox-info-dialog {
@@ -74,8 +106,8 @@ td .wrap-block{ width: inherit; }
       .svg-inline--fa {
         color: $bcbox-primary;
         font-size: 1.8rem;
-        padding-right: .75rem;
-        padding-top: .15rem;
+        padding-right: 0.75rem;
+        padding-top: 0.15rem;
       }
 
       .p-dialog-title {
@@ -125,16 +157,9 @@ td .wrap-block{ width: inherit; }
   }
 }
 
-.p-button, .p-inputswitch-slider {
-  &:hover {
-    opacity: 0.8;
-    text-decoration: underline;
-  }
-}
-
 .p-datatable {
   .p-datatable-loading-overlay {
     background: white;
-    opacity: .3;
+    opacity: 0.8;
   }
 }

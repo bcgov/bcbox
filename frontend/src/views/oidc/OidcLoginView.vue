@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 
-import { Loader } from '@/components/layout';
+import { Spinner } from '@/components/layout';
 import { useAuthStore } from '@/store';
 
 const authStore = useAuthStore();
@@ -13,7 +13,7 @@ onMounted(() => {
 
 <template>
   <h2>Logging in...</h2>
-  <Loader />
+  <Spinner />
 </template>
 
 <style lang="scss" scoped>
