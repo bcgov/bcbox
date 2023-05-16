@@ -90,9 +90,14 @@ export const useObjectStore = defineStore('object', () => {
       const permResponse = await permissionStore.fetchObjectPermissions(params);
 
       if (permResponse) {
-        const uniqueIds: Array<string> = [
+        let uniqueIds: Array<string> = [
           ...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))
         ];
+
+        // Resolve API returning all objects with bucketPerms=true even when requesting single objectId
+        if (params.objectId) {
+          uniqueIds = uniqueIds.filter((x: string) => x === params.objectId);
+        }
 
         let response = Array<COMSObject>();
         if (uniqueIds.length) {
