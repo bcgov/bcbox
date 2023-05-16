@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
 import BucketPermission from '@/components/bucket/BucketPermission.vue';
+import { Spinner } from '@/components/layout';
 import { Button, Column, DataTable, Dialog } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
@@ -63,6 +64,9 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
         >
           <h3>There are no buckets associated with your account.</h3>
         </div>
+      </template>
+      <template #loading>
+        <Spinner />
       </template>
       <Column header-style="width: 1%">
         <template #body>

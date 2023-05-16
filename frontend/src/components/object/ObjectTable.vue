@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { ref, watch } from 'vue';
 
+import { Spinner } from '@/components/layout';
 import {
   DeleteObjectButton,
   DownloadObjectButton,
@@ -118,6 +119,7 @@ const filters = ref({
     <DataTable
       v-model:selection="selectedObjects"
       v-model:filters="filters"
+      :loading="useAppStore().getIsLoading"
       :value="tableData"
       data-key="id"
       class="p-datatable-sm"
@@ -161,6 +163,9 @@ const filters = ref({
             There are no objects associated with your account in this bucket.
           </h3>
         </div>
+      </template>
+      <template #loading>
+        <Spinner />
       </template>
       <Column
         selection-mode="multiple"

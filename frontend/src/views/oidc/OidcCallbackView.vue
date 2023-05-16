@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import ProgressSpinner from 'primevue/progressspinner';
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
+import { Spinner } from '@/components/layout';
 import { useAuthStore } from '@/store';
 import { StorageKey } from '@/utils/constants';
 
@@ -21,7 +21,7 @@ onMounted(async () => {
 
 <template>
   <h2>Authorizing...</h2>
-  <ProgressSpinner />
+  <Spinner />
 </template>
 
 <style lang="scss" scoped>
