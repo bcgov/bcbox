@@ -11,9 +11,12 @@ type Props = {
   disabled?: boolean;
   ids: Array<string>;
   mode: ButtonMode;
+  versionId?: string; // Only use this when downloading a single object
 };
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  versionId: undefined
+});
 
 // Store
 const objectStore = useObjectStore();
@@ -26,7 +29,7 @@ const download = () => {
   if (props.ids.length) {
     // For now we are looping the supplied IDs (if multiple selected) until there is a batching feature
     props.ids.forEach((i) => {
-      objectStore.downloadObject(i, undefined);
+      objectStore.downloadObject(i, props.versionId);
     });
   } else {
     displayNoFileDlg.value = true;

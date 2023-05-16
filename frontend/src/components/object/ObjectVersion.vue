@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 import {
   DeleteObjectButton,
@@ -39,15 +40,18 @@ const { getUserSearch } = storeToRefs(userStore);
 const tableData: Ref<Array<VersionDataSource>> = ref([]);
 
 // Actions
+const router = useRouter();
 const toast = useToast();
 
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-const showInfo = async (id: string) => {
-  // emit('show-object-info', id);
-};
-
-function onDeletedSuccess() {
+async function onDeletedSuccess() {
   toast.success('File deleted');
+  await versionStore.fetchVersions({ objectId: props.objectId });
+  router.push({ name: RouteNames.DETAIL_OBJECTS,
+    query: {
+      objectId: props.objectId,
+      versionId: versionStore.findLatestVersionIdByObjectId(props.objectId)
+    }
+  });
 }
 
 async function load() {
@@ -142,24 +146,28 @@ watch( [props], () => {
               v-if="data.public || permissionStore.isObjectActionAllowed(
                 data.id, getUserId, Permissions.READ, props.bucketId as string)"
               :mode="ButtonMode.ICON"
-              :ids="['TODO']"
-              :disabled="true"
+              :ids="[props.objectId]"
+              :version-id="data.id"
             />
-            <Button
-              v-if="data.public || permissionStore.isObjectActionAllowed(
-                data.id, getUserId, Permissions.READ, props.bucketId as string)"
-              class="p-button-lg p-button-rounded p-button-text"
-              :disabled="true"
-              @click="showInfo('TODO')"
+            <router-link
+              v-if="data.id !== props.versionId"
+              :to="{ name: RouteNames.DETAIL_OBJECTS,
+                     query: { objectId: props.objectId, versionId: data.id } }"
             >
-              <font-awesome-icon icon="fa-solid fa-circle-info" />
-            </Button>
+              <Button
+                v-if="data.public || permissionStore.isObjectActionAllowed(
+                  data.id, getUserId, Permissions.READ, props.bucketId as string)"
+                class="p-button-lg p-button-rounded p-button-text"
+              >
+                <font-awesome-icon icon="fa-solid fa-circle-info" />
+              </Button>
+            </router-link>
             <DeleteObjectButton
               v-if="permissionStore.isObjectActionAllowed(
                 data.id, getUserId, Permissions.DELETE, props.bucketId as string)"
               :mode="ButtonMode.ICON"
-              :ids="['TODO']"
-              :disabled="true"
+              :ids="[props.objectId]"
+              :version-id="data.id"
               @on-deleted-success="onDeletedSuccess"
             />
           </template>

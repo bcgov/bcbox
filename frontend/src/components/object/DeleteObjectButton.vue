@@ -11,9 +11,12 @@ type Props = {
   disabled?: boolean;
   ids: Array<string>;
   mode: ButtonMode;
+  versionId?: string; // Only use this when deleting a single object
 };
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  versionId: undefined
+});
 
 // Emits
 const emit = defineEmits(['on-deleted-success', 'on-deleted-error']);
@@ -32,13 +35,13 @@ const confirmDelete = () => {
   if (props.ids.length) {
     const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} files` : 'this file';
     confirm.require({
-      message: `Please confirm that you want to delete ${msgContext}`,
+      message: `Please confirm that you want to delete ${msgContext}.`,
       header: `Delete ${props.ids.length > 1 ? 'items' : 'item'}`,
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
       accept: async () => {
         try {
-          await objectStore.deleteObjects(props.ids);
+          await objectStore.deleteObjects(props.ids, props.versionId);
           emit('on-deleted-success');
         } catch (error: any) {
           toast.error('Error deleting one or more files');

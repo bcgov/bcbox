@@ -30,13 +30,11 @@ const toast = useToast();
 
 const confirmUpdate = () => {
   confirm.require({
-    message: 'Please confirm that you want to upload a new version. All other versions will still be stored.',
+    message: 'Please confirm that you want to upload a new version.',
     header: 'Upload new version',
     acceptLabel: 'Confirm',
     rejectLabel: 'Cancel',
-    accept: async () => {
-      onUpload();
-    },
+    accept: () => onUpload(),
     reject: () => {
       // Intentionally left empty
     },

@@ -9,8 +9,8 @@ export default {
   /**
    * @function createObject
    * Post an object
-   * @param {Any} object Object to be created
-   * @param {String} bucketId Bucket id containing the object
+   * @param {any} object Object to be created
+   * @param {string} bucketId Bucket id containing the object
    * @param {AxiosRequestConfig} axiosOptions Axios request config options
    * @returns {Promise} An axios response
    */
@@ -27,15 +27,23 @@ export default {
   /**
    * @function deleteObject
    * Delete an object
+   * @param {string} objectId The id for the object to delete
+   * @param {string} versionId An optional versionId
    * @returns {Promise} An axios response
    */
-  deleteObject(objectId: string) {
-    return comsAxios().delete(`${PATH}/${objectId}`);
+  deleteObject(objectId: string, versionId?: string) {
+    return comsAxios().delete(`${PATH}/${objectId}`, {
+      params: {
+        versionId: versionId
+      }
+    });
   },
 
   /**
    * @function getMetadata
    * Get an object's metadata
+   * @param {any} headers Optional request headers
+   * @param {GetMetadataOptions} params Optional query parameters
    * @returns {Promise} An axios response
    */
   getMetadata(headers: any = {}, params: GetMetadataOptions = {}) {
@@ -47,6 +55,7 @@ export default {
   /**
    * @function getObjectTagging
    * Get an objects tags
+   * @param {GetObjectTaggingOptions} params Optional query parameters
    * @returns {Promise} An axios response
    */
   getObjectTagging(params: GetObjectTaggingOptions = {}) {
@@ -56,8 +65,8 @@ export default {
   /**
    * @function getObject
    * Get an object
-   * @param objectId The id for the object to get
-   * @param versionId An optional versionId
+   * @param {string} objectId The id for the object to get
+   * @param {string} versionId An optional versionId
    */
   getObject(objectId: string, versionId?: string) {
     // Running in 'url' download mode only, could add options for other modes if needed
@@ -77,7 +86,7 @@ export default {
   /**
    * @function headObject
    * Get an object details (head call)
-   * @param objectId The id for the object to get
+   * @param {string} objectId The id for the object to get
    * @returns {Promise} An axios response
    */
   headObject(objectId: string) {
@@ -87,7 +96,7 @@ export default {
   /**
    * @function listObjectVersion
    * Returns the object version history
-   * @param objectId The id for the object to get
+   * @param {string} objectId The id for the object to get
    * @returns {Promise} An axios response
    */
   listObjectVersion(objectId: string) {
@@ -98,6 +107,7 @@ export default {
   /**
    * @function searchObjects
    * List and search for all objects
+   * @param {SearchObjectsOptions} params Optional query parameters
    * @returns {Promise} An axios response
    */
   searchObjects(params: SearchObjectsOptions = {}) {
@@ -109,8 +119,8 @@ export default {
   /**
    * @function togglePublic
    * Toggles the public property for an object
-   * @param objectId The id for the object
-   * @param isPublic Boolean on public status
+   * @param {string} objectId The id for the object
+   * @param {boolean} isPublic Boolean on public status
    * @returns {Promise} An axios response
    */
   togglePublic(objectId: string, isPublic: boolean) {
@@ -124,8 +134,8 @@ export default {
   /**
    * @function updateObject
    * Update the object record (will add new version)
-   * @param {String} objectId The id for the object
-   * @param {Any} object Object to be created
+   * @param {string} objectId The id for the object
+   * @param {any} object Object to be created
    * @param {AxiosRequestConfig} axiosOptions Axios request config options
    * @returns {Promise} An axios response
    */

@@ -49,14 +49,14 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  async function deleteObjects(objectIds: Array<string>) {
+  async function deleteObjects(objectIds: Array<string>, versionId?: string) {
     const bucketId = findObjectById(objectIds[0])?.bucketId;
 
     try {
       appStore.beginIndeterminateLoading();
       await Promise.all(
         objectIds.map(async (id) => {
-          await objectService.deleteObject(id);
+          await objectService.deleteObject(id, versionId);
         })
       );
     }
