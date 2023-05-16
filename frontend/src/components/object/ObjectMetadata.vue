@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 
-import { Column, DataTable } from '@/lib/primevue';
+import GridRow from '@/components/form/GridRow.vue';
 import { useMetadataStore, useVersionStore } from '@/store';
 
 import type { Ref } from 'vue';
@@ -53,36 +53,11 @@ watch([props, tsGetMetadata,vsGetMetadata] , () => {
         Metadata
       </h2>
     </div>
-    <div class="col-12">
-      <DataTable
-        v-if="objectMetadata"
-        :value="objectMetadata.metadata"
-        class="p-datatable-sm"
-        responsive-layout="scroll"
-      >
-        <Column
-          field="key"
-          header="Key"
-        >
-          <template #body="{ data }">
-            <div>
-              {{ data.key }}:
-            </div>
-          </template>
-        </Column>
-
-        <Column
-          field="value"
-          header="Value"
-          class="overflow-hidden details-value-column"
-        >
-          <template #body="{ data }">
-            <div class="wrap-block">
-              {{ data.value }}
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
+    <GridRow
+      v-for="meta in objectMetadata?.metadata"
+      :key="meta.key + meta.value"
+      :label="meta.key"
+      :value="meta.value"
+    />
   </div>
 </template>

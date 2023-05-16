@@ -162,6 +162,7 @@ watch( [props, getObjects], async () => {
               props.objectId, getUserId, Permissions.READ, bucketId)"
             :mode="ButtonMode.ICON"
             :ids="[props.objectId]"
+            :version-id="props.versionId"
           />
           <Button
             v-if="permissionStore.isObjectActionAllowed(
@@ -176,6 +177,7 @@ watch( [props, getObjects], async () => {
               props.objectId, getUserId, Permissions.DELETE, bucketId)"
             :mode="ButtonMode.ICON"
             :ids="[props.objectId]"
+            :version-id="props.versionId"
             @on-deleted-success="onDeletedSuccess"
           />
         </div>
