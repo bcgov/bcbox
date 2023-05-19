@@ -70,9 +70,21 @@ const showPermissions = async (objectId: string) => {
   permissionsObjectName.value = metadataStore.findValue(objectId, 'coms-name') || '';
 };
 
-function onDeletedSuccess() {
+async function onDeletedSuccess(versionId: string) {
   toast.success('File deleted');
-  router.push({ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucketId.value } });
+
+  await Promise.all([
+    objectStore.fetchObjects({objectId: props.objectId, userId: getUserId.value, bucketPerms: true}),
+    versionStore.fetchVersions({ objectId: props.objectId })
+  ]);
+
+  // Navigate to new latest version if deleting active version
+  if( props.versionId === versionId ) {
+    router.push({ name: RouteNames.DETAIL_OBJECTS, query: {
+      objectId: props.objectId,
+      versionId: versionStore.findLatestVersionIdByObjectId(props.objectId)
+    }});
+  }
 }
 
 async function onFileUploaded() {

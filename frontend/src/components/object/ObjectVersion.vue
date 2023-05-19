@@ -35,6 +35,7 @@ const userStore = useUserStore();
 const versionStore = useVersionStore();
 const { getUserId } = storeToRefs(useAuthStore());
 const { getUserSearch } = storeToRefs(userStore);
+const { getVersions } = storeToRefs(versionStore);
 
 // State
 const tableData: Ref<Array<VersionDataSource>> = ref([]);
@@ -43,26 +44,23 @@ const tableData: Ref<Array<VersionDataSource>> = ref([]);
 const router = useRouter();
 const toast = useToast();
 
-async function onDeletedSuccess() {
+async function onDeletedSuccess(versionId: string) {
   toast.success('File deleted');
   await versionStore.fetchVersions({ objectId: props.objectId });
-  router.push({ name: RouteNames.DETAIL_OBJECTS,
-    query: {
+
+  // Navigate to new latest version if deleting active version
+  if( props.versionId === versionId ) {
+    router.push({ name: RouteNames.DETAIL_OBJECTS, query: {
       objectId: props.objectId,
       versionId: versionStore.findLatestVersionIdByObjectId(props.objectId)
-    }
-  });
+    }});
+  }
 }
 
 async function load() {
   await versionStore.fetchVersions({ objectId: props.objectId });
   const versions = versionStore.findVersionsByObjectId(props.objectId);
   await userStore.fetchUsers({ userId: versions.map( (x: Version) => x.createdBy) });
-
-  tableData.value = versions.map( (v: Version) => ({
-    ...v,
-    createdByName: getUserSearch.value.find( (u: User) => u.userId === v.createdBy )?.fullName
-  }));
 }
 
 onMounted(() => {
@@ -72,6 +70,15 @@ onMounted(() => {
 watch( [props], () => {
   load();
 });
+
+watch( [getVersions], () => {
+  const versions = versionStore.findVersionsByObjectId(props.objectId);
+  tableData.value = versions.map( (v: Version) => ({
+    ...v,
+    createdByName: getUserSearch.value.find( (u: User) => u.userId === v.createdBy )?.fullName
+  }));
+});
+
 </script>
 
 <template>
