@@ -7,7 +7,8 @@ export type AppStoreState = {
   loadingCalls: Ref<number>
   loadingInterval: Ref<ReturnType<typeof setTimeout> | undefined>
   loadingMode: Ref<'determinate' | 'indeterminate'>
-  loadingValue: Ref<number>
+  loadingValue: Ref<number>,
+  uploadingCalls: Ref<number>
 }
 
 export const useAppStore = defineStore('app', () => {
@@ -16,7 +17,8 @@ export const useAppStore = defineStore('app', () => {
     loadingCalls: ref(0),
     loadingInterval: ref(undefined),
     loadingMode: ref('indeterminate'),
-    loadingValue: ref(0)
+    loadingValue: ref(0),
+    uploadingCalls: ref(0)
   };
 
   // Getters
@@ -25,6 +27,7 @@ export const useAppStore = defineStore('app', () => {
     getLoadingCalls: computed(() => state.loadingCalls.value),
     getLoadingMode: computed(() => state.loadingMode.value),
     getLoadingValue: computed(() => state.loadingValue.value),
+    getIsUploading: computed(() => state.uploadingCalls.value > 0),
   };
 
   // Actions
@@ -59,6 +62,20 @@ export const useAppStore = defineStore('app', () => {
     }, 300);
   }
 
+  function beginUploading() {
+    ++state.uploadingCalls.value;
+  }
+
+  function clearUploads() {
+    state.uploadingCalls.value = 0;
+  }
+
+  function endUploading() {
+    setTimeout(() => {
+      --state.uploadingCalls.value;
+    }, 300);
+  }
+
   return {
     // State
     ...state,
@@ -70,7 +87,10 @@ export const useAppStore = defineStore('app', () => {
     beginDeterminateLoading,
     beginIndeterminateLoading,
     endDeterminateLoading,
-    endIndeterminateLoading
+    endIndeterminateLoading,
+    beginUploading,
+    clearUploads,
+    endUploading
   };
 });
 
