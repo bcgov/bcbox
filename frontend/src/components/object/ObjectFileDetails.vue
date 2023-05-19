@@ -11,6 +11,7 @@ import {
   ObjectPermission,
   ObjectProperties,
   ObjectTag,
+  ObjectUploadBasic,
   ObjectVersion
 } from '@/components/object';
 import { ShareObjectButton } from '@/components/object/share';
@@ -69,9 +70,35 @@ const showPermissions = async (objectId: string) => {
   permissionsObjectName.value = metadataStore.findValue(objectId, 'coms-name') || '';
 };
 
-function onDeletedSuccess() {
+async function onDeletedSuccess(versionId: string) {
   toast.success('File deleted');
-  router.push({ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucketId.value } });
+
+  await Promise.all([
+    objectStore.fetchObjects({objectId: props.objectId, userId: getUserId.value, bucketPerms: true}),
+    versionStore.fetchVersions({ objectId: props.objectId })
+  ]);
+
+  // Navigate to new latest version if deleting active version
+  if( props.versionId === versionId ) {
+    router.push({ name: RouteNames.DETAIL_OBJECTS, query: {
+      objectId: props.objectId,
+      versionId: versionStore.findLatestVersionIdByObjectId(props.objectId)
+    }});
+  }
+}
+
+async function onFileUploaded() {
+  await Promise.all([
+    objectStore.fetchObjects({objectId: props.objectId, userId: getUserId.value, bucketPerms: true}),
+    versionStore.fetchVersions({ objectId: props.objectId })
+  ]);
+
+  // Obtaining the version id and passing it to the route forces a destruct/construct of the component
+  // Easier approach than attempting to in-place refresh all the data
+  router.push({ name: RouteNames.DETAIL_OBJECTS, query: {
+    objectId: props.objectId,
+    versionId: versionStore.findLatestVersionIdByObjectId(props.objectId)
+  }});
 }
 
 onBeforeMount( async () => {
@@ -149,6 +176,7 @@ watch( [props, getObjects], async () => {
               props.objectId, getUserId, Permissions.READ, bucketId)"
             :mode="ButtonMode.ICON"
             :ids="[props.objectId]"
+            :version-id="props.versionId"
           />
           <Button
             v-if="permissionStore.isObjectActionAllowed(
@@ -163,12 +191,13 @@ watch( [props, getObjects], async () => {
               props.objectId, getUserId, Permissions.DELETE, bucketId)"
             :mode="ButtonMode.ICON"
             :ids="[props.objectId]"
+            :version-id="props.versionId"
+            :disabled="versionStore.findVersionsByObjectId(props.objectId).length === 1"
             @on-deleted-success="onDeletedSuccess"
           />
         </div>
       </div>
     </div>
-
 
     <div class="flex flex-row">
       <div class="flex flex-column w-6 gap-3 py-5">
@@ -185,6 +214,15 @@ watch( [props, getObjects], async () => {
       </div>
       <Divider layout="vertical" />
       <div class="flex flex-column w-6 gap-3 py-5">
+        <div class="flex flex-row-reverse">
+          <ObjectUploadBasic
+            v-if="permissionStore.isObjectActionAllowed(
+              props.objectId, getUserId, Permissions.UPDATE, bucketId)"
+            :bucket-id="bucketId"
+            :object-id="props.objectId"
+            @on-file-uploaded="onFileUploaded"
+          />
+        </div>
         <ObjectVersion
           v-if="props.versionId"
           :bucket-id="bucketId"

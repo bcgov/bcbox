@@ -49,14 +49,14 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  async function deleteObjects(objectIds: Array<string>) {
+  async function deleteObjects(objectIds: Array<string>, versionId?: string) {
     const bucketId = findObjectById(objectIds[0])?.bucketId;
 
     try {
       appStore.beginIndeterminateLoading();
       await Promise.all(
         objectIds.map(async (id) => {
-          await objectService.deleteObject(id);
+          await objectService.deleteObject(id, versionId);
         })
       );
     }
@@ -91,7 +91,10 @@ export const useObjectStore = defineStore('object', () => {
 
       if (permResponse) {
         const uniqueIds: Array<string> = [
-          ...new Set<string>(permResponse.map((x: { objectId: string }) => x.objectId))
+          ...new Set<string>(permResponse
+            .map((x: { objectId: string }) => x.objectId)
+            // Resolve API returning all objects with bucketPerms=true even when requesting single objectId
+            .filter((objectId: string) => !params.objectId || objectId === params.objectId))
         ];
 
         let response = Array<COMSObject>();
@@ -166,6 +169,19 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
+  async function updateObject(object: any, objectId: string, axiosOptions?: AxiosRequestConfig) {
+    try {
+      appStore.beginIndeterminateLoading();
+      await objectService.updateObject(objectId, object, axiosOptions);
+    }
+    catch (error: any) {
+      toast.error('Updating object', error);
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   return {
     // State
     ...state,
@@ -181,7 +197,8 @@ export const useObjectStore = defineStore('object', () => {
     findObjectById,
     headObject,
     setSelectedObjects,
-    togglePublic
+    togglePublic,
+    updateObject
   };
 }, { persist: true });
 

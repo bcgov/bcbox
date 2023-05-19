@@ -11,13 +11,15 @@ type Props = {
   disabled?: boolean;
   ids: Array<string>;
   mode: ButtonMode;
+  versionId?: string; // Only use this when deleting a single object
 };
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  versionId: undefined
+});
 
 // Emits
 const emit = defineEmits(['on-deleted-success', 'on-deleted-error']);
-
 
 // Store
 const objectStore = useObjectStore();
@@ -31,24 +33,22 @@ const toast = useToast();
 
 const confirmDelete = () => {
   if (props.ids.length) {
-    const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} files` : 'this file';
+    const item = props.versionId ? 'version' : 'object';
+    const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} ${item}s` : `this ${item}`;
     confirm.require({
-      message: `Please confirm that you want to delete ${msgContext}`,
-      header: `Delete ${props.ids.length > 1 ? 'items' : 'item'}`,
+      message: `Please confirm that you want to delete ${msgContext}.`,
+      header: `Delete ${props.ids.length > 1 ? item + 's' : item }`,
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
       accept: async () => {
         try {
-          await objectStore.deleteObjects(props.ids);
-          emit('on-deleted-success');
+          await objectStore.deleteObjects(props.ids, props.versionId);
+          emit('on-deleted-success', props.versionId);
         } catch (error: any) {
-          toast.error('Error deleting one or more files');
+          toast.error(`Error deleting one or more ${item}s`);
           emit('on-deleted-error');
         }
-      },
-      reject: () => {
-        // Intentionally left empty
-      },
+      }
     });
   } else {
     displayNoFileDialog.value = true;

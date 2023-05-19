@@ -8,10 +8,7 @@ export function useAlert(header: string, message: string) {
       header: header,
       message: message,
       acceptLabel: 'OK',
-      rejectClass: 'hidden',
-      accept: () => {
-        // Intentionally left empty
-      },
+      rejectClass: 'hidden'
     });
   };
 
