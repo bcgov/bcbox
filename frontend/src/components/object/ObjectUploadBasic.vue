@@ -34,20 +34,17 @@ const confirmUpdate = () => {
     header: 'Upload new version',
     acceptLabel: 'Confirm',
     rejectLabel: 'Cancel',
-    accept: () => onUpload(),
-    reject: () => {
-      // Intentionally left empty
-    },
+    accept: () => onUpload()
   });
 };
 
-const onChange = async (event: any) => {
+const onChange = (event: any) => {
   file.value = event.target.files[0];
   emit('on-file-changed');
   confirmUpdate();
 };
 
-const onSelectFile = async () => {
+const onSelectFile = () => {
   fileInput.value.click();
 };
 

@@ -76,8 +76,10 @@ function onDeletedSuccess() {
 }
 
 async function onFileUploaded() {
-  await objectStore.fetchObjects({objectId: props.objectId, userId: getUserId.value, bucketPerms: true});
-  await versionStore.fetchVersions({ objectId: props.objectId });
+  await Promise.all([
+    objectStore.fetchObjects({objectId: props.objectId, userId: getUserId.value, bucketPerms: true}),
+    versionStore.fetchVersions({ objectId: props.objectId })
+  ]);
 
   // Obtaining the version id and passing it to the route forces a destruct/construct of the component
   // Easier approach than attempting to in-place refresh all the data
@@ -201,6 +203,8 @@ watch( [props, getObjects], async () => {
       <div class="flex flex-column w-6 gap-3 py-5">
         <div class="flex flex-row-reverse">
           <ObjectUploadBasic
+            v-if="permissionStore.isObjectActionAllowed(
+              props.objectId, getUserId, Permissions.UPDATE, bucketId)"
             :bucket-id="bucketId"
             :object-id="props.objectId"
             @on-file-uploaded="onFileUploaded"

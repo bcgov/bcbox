@@ -33,10 +33,11 @@ const toast = useToast();
 
 const confirmDelete = () => {
   if (props.ids.length) {
-    const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} files` : 'this file';
+    const item = props.versionId ? 'version' : 'object';
+    const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} ${item}s` : `this ${item}`;
     confirm.require({
       message: `Please confirm that you want to delete ${msgContext}.`,
-      header: `Delete ${props.ids.length > 1 ? 'items' : 'item'}`,
+      header: `Delete ${props.ids.length > 1 ? item + 's' : item }`,
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
       accept: async () => {
@@ -44,13 +45,10 @@ const confirmDelete = () => {
           await objectStore.deleteObjects(props.ids, props.versionId);
           emit('on-deleted-success');
         } catch (error: any) {
-          toast.error('Error deleting one or more files');
+          toast.error(`Error deleting one or more ${item}s`);
           emit('on-deleted-error');
         }
-      },
-      reject: () => {
-        // Intentionally left empty
-      },
+      }
     });
   } else {
     displayNoFileDialog.value = true;
