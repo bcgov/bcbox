@@ -192,6 +192,7 @@ watch( [props, getObjects], async () => {
             :mode="ButtonMode.ICON"
             :ids="[props.objectId]"
             :version-id="props.versionId"
+            :disabled="versionStore.findVersionsByObjectId(props.objectId).length === 1"
             @on-deleted-success="onDeletedSuccess"
           />
         </div>

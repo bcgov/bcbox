@@ -67,11 +67,11 @@ onMounted(() => {
   load();
 });
 
-watch( [props], () => {
+watch( props, () => {
   load();
 });
 
-watch( [getVersions], () => {
+watch( getVersions, () => {
   const versions = versionStore.findVersionsByObjectId(props.objectId);
   tableData.value = versions.map( (v: Version) => ({
     ...v,
@@ -175,6 +175,7 @@ watch( [getVersions], () => {
               :mode="ButtonMode.ICON"
               :ids="[props.objectId]"
               :version-id="data.id"
+              :disabled="tableData.length === 1"
               @on-deleted-success="onDeletedSuccess"
             />
           </template>
