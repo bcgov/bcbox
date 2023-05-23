@@ -127,7 +127,7 @@ export default function getRouter() {
     routes
   });
 
-  router.beforeEach(async (to, _from) => {
+  router.beforeEach(async (to) => {
     appStore.beginDeterminateLoading();
     // navStore.navigate(to); // Removed for now
 

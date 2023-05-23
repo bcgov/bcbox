@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 import { Button, useConfirm, useToast } from '@/lib/primevue';
-import { useObjectStore } from '@/store';
+import { useAppStore, useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
 
@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<Props>(), {});
 const emit = defineEmits(['on-file-changed', 'on-file-uploaded']);
 
 // Store
+const appStore = useAppStore();
 const objectStore = useObjectStore();
 
 // State
@@ -51,6 +52,9 @@ const onSelectFile = () => {
 const onUpload = async () => {
   try {
     if( file.value ) {
+      toast.info('Upload starting...');
+      appStore.beginUploading();
+
       // Infinite timeout for big files upload to avoid timeout error
       await objectStore.updateObject(file.value, props.objectId, { timeout: 0 });
       emit('on-file-uploaded');
@@ -58,6 +62,9 @@ const onUpload = async () => {
     }
   } catch (error: any) {
     toast.error(`File upload: ${file.value?.name}`, error);
+  }
+  finally {
+    appStore.endUploading();
   }
 };
 </script>
