@@ -147,9 +147,6 @@ export default function getRouter() {
         'Please confirm you want to navigate from current page.')) {
         return false;
       }
-      else {
-        appStore.clearUploads();
-      }
     }
 
     // Authentication Guard
