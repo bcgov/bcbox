@@ -19,7 +19,6 @@ import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
 
 type COMSObjectDataSource = {
-  name?: string;
   lastUpdatedDate?: string;
 } & COMSObject;
 
@@ -47,7 +46,7 @@ const { getUserId } = storeToRefs(useAuthStore());
 // State
 const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
-const permissionsObjectName = ref('');
+const permissionsObjectName: Ref<string | undefined> = ref('');
 const selectedObjects: Ref<Array<COMSObject>> = ref([]);
 const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
 
@@ -67,7 +66,7 @@ const showPermissions = async (objectId: string) => {
 
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = metadataStore.findValue(objectId, 'coms-name') || '';
+  permissionsObjectName.value = objectStore.findObjectById(objectId)?.name;
 };
 
 const togglePublic = async (objectId: string, isPublic: boolean) => {
@@ -95,7 +94,6 @@ watch( getObjects, async () => {
   await metadataStore.fetchMetadata({objectId: objIds});
 
   tableData.value = objs.map( (x: COMSObjectDataSource) => {
-    x.name = metadataStore.findValue(x.id, 'coms-name');
     x.lastUpdatedDate = x.updatedAt ?? x.createdAt;
     return x;
   });

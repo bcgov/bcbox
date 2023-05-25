@@ -52,12 +52,11 @@ const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const bucketId: Ref<string> = ref('');
-const filename: Ref<string | undefined> = ref(undefined);
 const latestVersionId: Ref<string | undefined> = ref(undefined);
 const obj: Ref<COMSObject | undefined> = ref(undefined);
 const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsObjectId: Ref<string> = ref('');
-const permissionsObjectName: Ref<string> = ref('');
+const permissionsObjectName: Ref<string | undefined> = ref('');
 const version: Ref<Version | undefined> = ref(undefined);
 
 // Actions
@@ -67,7 +66,7 @@ const toast = useToast();
 const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = metadataStore.findValue(objectId, 'coms-name') || '';
+  permissionsObjectName.value = obj.value?.name;
 };
 
 async function onDeletedSuccess(versionId: string) {
@@ -130,10 +129,6 @@ watch( [props, getObjects], async () => {
     await versionStore.fetchMetadata({versionId: props.versionId});
     versionStore.fetchTagging({versionId: props.versionId});
     version.value = versionStore.findVersionById(props.versionId);
-    filename.value = versionStore.findMetadataValue(props.versionId, 'coms-name');
-  }
-  else {
-    filename.value = metadataStore.findValue(props.objectId, 'coms-name');
   }
 });
 </script>
@@ -161,7 +156,7 @@ watch( [props, getObjects], async () => {
             style="font-size: 2rem"
           />
           <h1 class="pl-1 font-bold">
-            {{ filename }}
+            {{ obj.name }}
           </h1>
         </div>
 

@@ -58,7 +58,7 @@ onMounted( () => {
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
-      {{ metadataStore.findValue(id, 'coms-name') }}
+      {{ obj?.name }}
     </h3>
 
     <ul class="mb-4">
