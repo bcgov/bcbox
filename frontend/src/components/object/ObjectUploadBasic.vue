@@ -57,14 +57,16 @@ const onUpload = async () => {
 
       // Infinite timeout for big files upload to avoid timeout error
       await objectStore.updateObject(file.value, props.objectId, { timeout: 0 });
+
+      // No finally block as we need this called before potential navigation
+      appStore.endUploading();
+
       emit('on-file-uploaded');
       toast.success('File uploaded');
     }
   } catch (error: any) {
-    toast.error(`File upload: ${file.value?.name}`, error);
-  }
-  finally {
     appStore.endUploading();
+    toast.error(`File upload: ${file.value?.name}`, error);
   }
 };
 </script>
@@ -86,5 +88,6 @@ const onUpload = async () => {
     style="display: none"
     accept="*"
     @change="onChange"
+    @click="(event: any) => event.target.value = null"
   />
 </template>

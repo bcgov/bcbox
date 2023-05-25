@@ -71,11 +71,9 @@ export const useAppStore = defineStore('app', () => {
   }
 
   function endUploading() {
-    setTimeout(() => {
-      if (--state.uploadingCalls.value < 0) {
-        state.loadingCalls.value = 0; // Safeguard negatives
-      }
-    }, 300);
+    if (--state.uploadingCalls.value < 0) {
+      state.loadingCalls.value = 0; // Safeguard negatives
+    }
   }
 
   return {

@@ -13,9 +13,8 @@ const { getIsLoading, getIsUploading } = storeToRefs(appStore);
 
 const ready: Ref<boolean> = ref(false);
 
-
 const preventNav = (event: any) => {
-  if (getIsUploading) {
+  if (getIsUploading.value) {
     event.preventDefault();
 
     // Chrome requires returnValue to be set
