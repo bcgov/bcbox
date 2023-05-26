@@ -131,6 +131,14 @@ export default function getRouter() {
     appStore.beginDeterminateLoading();
     // navStore.navigate(to); // Removed for now
 
+    // Uploading navigation guard
+    if (appStore.getIsUploading) {
+      if (!confirm('Navigation may cancel upload(s) in progress. ' +
+        'Please confirm you want to navigate from current page.')) {
+        return false;
+      }
+    }
+
     // Backend Redirection Handler
     if (to.query?.r) {
       router.replace({
@@ -138,15 +146,6 @@ export default function getRouter() {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
         query: (({ r, ...q }) => q)(to.query)
       });
-    }
-
-
-    // Uploading navigation guard
-    if (appStore.getIsUploading) {
-      if (!confirm('Navigation may cancel upload(s) in progress. ' +
-        'Please confirm you want to navigate from current page.')) {
-        return false;
-      }
     }
 
     // Authentication Guard

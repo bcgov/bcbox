@@ -24,10 +24,10 @@ export const useAppStore = defineStore('app', () => {
   // Getters
   const getters = {
     getIsLoading: computed(() => state.loadingCalls.value > 0),
+    getIsUploading: computed(() => state.uploadingCalls.value > 0),
     getLoadingCalls: computed(() => state.loadingCalls.value),
     getLoadingMode: computed(() => state.loadingMode.value),
-    getLoadingValue: computed(() => state.loadingValue.value),
-    getIsUploading: computed(() => state.uploadingCalls.value > 0),
+    getLoadingValue: computed(() => state.loadingValue.value)
   };
 
   // Actions

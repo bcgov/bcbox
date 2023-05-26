@@ -43,7 +43,7 @@ const onUpload = async (event: any) => {
     successfulFiles.value = [];
     failedFiles.value = [];
 
-    toast.info('Upload starting...');
+    toast.info('File upload starting...');
 
     // Send all files to COMS for upload
     await Promise.allSettled(

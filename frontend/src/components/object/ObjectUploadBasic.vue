@@ -52,7 +52,7 @@ const onSelectFile = () => {
 const onUpload = async () => {
   try {
     if( file.value ) {
-      toast.info('Upload starting...');
+      toast.info('File upload starting...');
       appStore.beginUploading();
 
       // Infinite timeout for big files upload to avoid timeout error
