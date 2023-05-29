@@ -4,7 +4,7 @@ import { ref } from 'vue';
 
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
 import { Button, FileUpload, useToast } from '@/lib/primevue';
-import { useAuthStore, useObjectStore } from '@/store';
+import { useAuthStore, useAppStore, useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
 
@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 // Store
+const appStore = useAppStore();
 const objectStore = useObjectStore();
 const { getUserId } = storeToRefs(useAuthStore());
 
@@ -42,16 +43,23 @@ const onUpload = async (event: any) => {
     successfulFiles.value = [];
     failedFiles.value = [];
 
+    toast.info('File upload starting...');
+
     // Send all files to COMS for upload
     await Promise.allSettled(
       event.files.map(async (file: File) => {
         try {
+          appStore.beginUploading();
+
           // Infinite timeout for big files upload to avoid timeout error
           await objectStore.createObject(file, bucketId, { timeout: 0 });
           successfulFiles.value.push(file);
         } catch (error: any) {
           toast.error(`Failed to upload file ${file.name}`, error);
           failedFiles.value.push(file);
+        }
+        finally {
+          appStore.endUploading();
         }
       })
     );

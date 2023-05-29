@@ -127,9 +127,17 @@ export default function getRouter() {
     routes
   });
 
-  router.beforeEach(async (to, _from, next) => {
+  router.beforeEach(async (to) => {
     appStore.beginDeterminateLoading();
     // navStore.navigate(to); // Removed for now
+
+    // Uploading navigation guard
+    if (appStore.getIsUploading) {
+      if (!confirm('Navigation may cancel upload(s) in progress. ' +
+        'Please confirm you want to navigate from current page.')) {
+        return false;
+      }
+    }
 
     // Backend Redirection Handler
     if (to.query?.r) {
@@ -147,8 +155,6 @@ export default function getRouter() {
         router.replace({ name: RouteNames.LOGIN });
       }
     }
-
-    next();
   });
 
   router.afterEach(() => {
