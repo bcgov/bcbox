@@ -5,7 +5,7 @@ import { computed, ref, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ShareLinkContent from '@/components/object/share/ShareLinkContent.vue';
 import { Button, Dialog, TabView, TabPanel } from '@/lib/primevue';
-import { useConfigStore, useMetadataStore, useObjectStore } from '@/store';
+import { useConfigStore, useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
@@ -18,7 +18,6 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {});
 
 // Store
-const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const { getConfig } = storeToRefs(useConfigStore());
 
@@ -58,7 +57,7 @@ onMounted( () => {
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
-      {{ metadataStore.findValue(id, 'coms-name') }}
+      {{ obj?.name }}
     </h3>
 
     <ul class="mb-4">

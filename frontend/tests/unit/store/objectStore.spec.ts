@@ -13,6 +13,7 @@ const obj: COMSObject = {
   active: true,
   bucketId: '000',
   id: '000',
+  name: 'object1',
   path: 'dev/test',
   public: false,
 };
@@ -21,6 +22,7 @@ const obj2: COMSObject = {
   active: true,
   bucketId: '000',
   id: '111',
+  name: 'object2',
   path: 'dev/test',
   public: false,
 };
