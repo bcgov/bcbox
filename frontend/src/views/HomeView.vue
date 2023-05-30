@@ -103,40 +103,13 @@ const { getConfig } = storeToRefs(useConfigStore());
         Versioning, metadata, tagging, syncing with existing buckets and more
       </h1>
     </div>
-    <div
-      class="flex justify-content-center mb-3"
-      style="height: 32px"
-    >
-      <p class="text-xl">
-        We continue to expand the features of BCBox. Stay tuned for documentation on our <a
-          target="_blank"
-          href="https://github.com/bcgov/bcbox/wiki"
-        >wiki</a>.<br /><br />
-      </p>
-    </div>
     <div class="flex justify-content-center mb-8 text-xl">
       <ul>
         <li>
-          Need a bucket? Contact <a href="mailto: NRIDS.Optimize@gov.bc.ca">NRIDS Optimization</a>
-          (Natural Resource ministries) or your <br /> ministry's service desk
-        </li>
-        <li>
-          See BCBox on
-          <a
-            href="https://github.com/bcgov/bcbox"
+          Contact <a
+            href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701"
             target="_blank"
-          >Github</a>
-        </li>
-        <li>
-          Learn more about the
-          <a
-            href="https://bcgov.github.io/common-service-showcase/"
-            target="_blank"
-          >Common Services Showcase Team</a>
-        </li>
-        <li>
-          Email the <a href="mailto: nrm.commonserviceshowcase@gov.bc.ca">Common Services Showcase Team</a>
-          with questions or feedback
+          >NRIDS Optimization</a> or your ministry's service desk. You will need a bucket to get started.
         </li>
       </ul>
     </div>
@@ -158,24 +131,39 @@ const { getConfig } = storeToRefs(useConfigStore());
     <div class="flex justify-content-left mb-5 text-xl">
       <ul>
         <li>
-          It is your responsibility to comply with Privacy laws governing the collection,
-          use and disclosure of personally identifiable information
+          It is your responsibility to comply with the <a
+            href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/96165_03#part3"
+            target="_blank"
+          >Freedom of Information and Protection of Privacy Act</a>
+          governing the collection, use and disclosure of personally identifiable information
         </li>
         <li>
           Access to this tool does not inherently grant permission to collect,
           use or disclose any personally identifiable information
         </li>
         <li>
-          It is your responsibility to obtain consent to collect information as required by law
+          It is your responsibility to provide a Collection Notice to individuals before collecting personally
+          identifiable information, as required by law
         </li>
         <li>
-          Before uploading and distributing files you are required to discuss your intention with your <a
+          Before uploading and distributing files you are required to discuss your privacy intentions with your
+          <a
             href="https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/privacy/resources/privacy-officers"
             target="_blank"
-          >Ministry Privacy Officer</a> and to complete assessments as required.
+          >Ministry Privacy Officer</a>
+          and to complete assessments as required
+        </li>
+        <li>
           If you intend to advise users to access with BCeID, please send an email to the
-          <a href="mailto: IDIM.Consulting@gov.bc.ca">Provincial Identity Information Management Program</a>
-          indicating your intentions
+          <a href="mailto:IDIM.Consulting@gov.bc.ca">Provincial Identity Information Management Program</a>
+          indicating your BCeID-related intentions
+        </li>
+        <li>
+          All other inquiries around getting or using buckets should be directed to <a
+            href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701"
+            target="_blank"
+          >NRIDS Optimization</a>
+          (Natural Resource ministries) or your ministry's service desk
         </li>
         <li>
           Storage and custodianship of metadata and tags (not the objects themselves in your bucket)

@@ -1,10 +1,6 @@
 export const BucketConfig = Object.freeze({
   HEADER_NEW_BUCKET: 'Configure bucket',
   TITLE_NEW_BUCKET: 'Use this form to configure a bucket to be used in BCBox for the first time.',
-
-  // TODO: Revisit this and have this be driven from the /config endpoint
-  NOTICE_NEW_BUCKET: 'If you intend to share files in your bucket with BCeID users, you are required'
-    + ' to email IDIM.Consulting@gov.bc.ca to share your intentions and where you intend to advertise this.'
 });
 
 export const Permissions = Object.freeze({
