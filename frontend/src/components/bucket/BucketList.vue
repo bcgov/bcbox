@@ -86,8 +86,17 @@ onMounted(async () => {
           {{ bucketConfigTitle }}
         </h3>
 
+        <Message severity="info">
+          Need a bucket? Or help with buckets? Contact <a
+            href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701"
+            target="_blank"
+          >NRIDS Optimization</a> (Natural Resource ministries) or your ministry's service desk.
+        </Message>
+
         <Message severity="warn">
-          {{ BucketConfig.NOTICE_NEW_BUCKET }}
+          If you intend to share files in your bucket with BCeID users, you are required to email
+          <a href="mailto:IDIM.Consulting@gov.bc.ca">IDIM.Consulting@gov.bc.ca</a> to share your
+          BCeID-related intentions and where you intend to advertise this.
         </Message>
 
         <BucketConfigForm
