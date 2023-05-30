@@ -106,8 +106,10 @@ const { getConfig } = storeToRefs(useConfigStore());
     <div class="flex justify-content-center mb-8 text-xl">
       <ul>
         <li>
-          Need a bucket? Contact <a href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701">NRIDS Optimization</a>
-          (Natural Resource ministries) or your ministry's service desk – you will need a bucket to get started
+          Contact <a
+            href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701"
+            target="_blank"
+          >NRIDS Optimization</a> or your ministry's service desk. You will need a bucket to get started.
         </li>
       </ul>
     </div>
@@ -130,7 +132,7 @@ const { getConfig } = storeToRefs(useConfigStore());
       <ul>
         <li>
           It is your responsibility to comply with the <a
-            hef="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/96165_03#part3"
+            href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/96165_03#part3"
             target="_blank"
           >Freedom of Information and Protection of Privacy Act</a>
           governing the collection, use and disclosure of personally identifiable information

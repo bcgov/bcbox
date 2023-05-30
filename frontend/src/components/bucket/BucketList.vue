@@ -87,10 +87,11 @@ onMounted(async () => {
         </h3>
 
         <Message severity="info">
-          Need a bucket? Or help with buckets? Contact <a
+          Please contact <a
             href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701"
             target="_blank"
-          >NRIDS Optimization</a> (Natural Resource ministries) or your ministry's service desk.
+          >NRIDS Optimization</a>
+          (Natural Resource ministries) or your ministry's service desk if you need help with buckets.
         </Message>
 
         <Message severity="warn">
