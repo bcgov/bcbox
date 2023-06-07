@@ -112,7 +112,7 @@ describe('Version Store', () => {
 
   describe('fetchTagging', () => {
     it('fetches the tags', async () => {
-      getTaggingSpy.mockReturnValueOnce({ data: [tag] } as any);
+      getTaggingSpy.mockReturnValue({ data: [tag] } as any);
 
       await versionStore.fetchTagging({ versionId: '000' });
 
@@ -124,7 +124,7 @@ describe('Version Store', () => {
     });
 
     it('does not change state on error', async () => {
-      getTaggingSpy.mockImplementationOnce(() => {
+      getTaggingSpy.mockImplementation(() => {
         throw new Error();
       });
 
@@ -143,7 +143,7 @@ describe('Version Store', () => {
 
   describe('fetchVersions', () => {
     it('fetches the versions', async () => {
-      getVersionsSpy.mockReturnValueOnce({ data: [version] } as any);
+      getVersionsSpy.mockReturnValue({ data: [version] } as any);
 
       await versionStore.fetchVersions({ objectId: '000' });
 
@@ -155,7 +155,7 @@ describe('Version Store', () => {
     });
 
     it('does not change state on error', async () => {
-      getVersionsSpy.mockImplementationOnce(() => {
+      getVersionsSpy.mockImplementation(() => {
         throw new Error();
       });
 

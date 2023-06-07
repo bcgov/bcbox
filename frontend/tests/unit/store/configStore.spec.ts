@@ -44,7 +44,7 @@ describe('Config Store', () => {
 
   describe('init', () => {
     it('initializes the service and sets the state', async () => {
-      configServiceGetConfigSpy.mockReturnValueOnce(sessionStorage.getItem(StorageKey.CONFIG));
+      configServiceGetConfigSpy.mockReturnValue(sessionStorage.getItem(StorageKey.CONFIG));
 
       await configStore.init();
 
