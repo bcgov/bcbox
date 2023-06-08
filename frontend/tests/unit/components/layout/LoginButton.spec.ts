@@ -1,11 +1,10 @@
 import { createTestingPinia } from '@pinia/testing';
-import { flushPromises, mount, shallowMount } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
 import { useRouter, useRoute } from 'vue-router';
 
 import PrimeVue from 'primevue/config';
 import LoginButton from '@/components/layout/LoginButton.vue';
 import { StorageKey } from '@/utils/constants';
-import { useAuthStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 // Mock router calls
@@ -37,7 +36,11 @@ describe('LoginButton.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(LoginButton, {
       global: {
-        plugins: [createTestingPinia(), PrimeVue],
+        plugins: [createTestingPinia({
+          initialState: {
+            auth: { user: {} }
+          }
+        }), PrimeVue],
       },
     });
     expect(wrapper).toBeTruthy();
@@ -47,13 +50,13 @@ describe('LoginButton.vue', () => {
     it('renders login button', async () => {
       const wrapper = mount(LoginButton, {
         global: {
-          plugins: [createTestingPinia(), PrimeVue],
+          plugins: [createTestingPinia({
+            initialState: {
+              auth: { isAuthenticated: false }
+            }
+          }), PrimeVue],
         },
       });
-
-      const authStore = useAuthStore();
-      authStore.isAuthenticated = false;
-      await flushPromises();
 
       const btn = wrapper.getComponent({ name: 'Button' });
       expect(btn.text()).toBe('Log in');
@@ -71,14 +74,14 @@ describe('LoginButton.vue', () => {
 
       const wrapper = shallowMount(LoginButton, {
         global: {
-          plugins: [createTestingPinia(), PrimeVue],
+          plugins: [createTestingPinia({
+            initialState: {
+              auth: { isAuthenticated: false }
+            }
+          }), PrimeVue],
           stubs: ['router-link', 'router-view'],
         },
       });
-
-      const authStore = useAuthStore();
-      authStore.isAuthenticated = false;
-      await flushPromises();
 
       const btn = wrapper.getComponent({ name: 'Button' });
       await btn.trigger('click');
@@ -92,13 +95,13 @@ describe('LoginButton.vue', () => {
     it('renders logout button', async () => {
       const wrapper = mount(LoginButton, {
         global: {
-          plugins: [createTestingPinia(), PrimeVue],
+          plugins: [createTestingPinia({
+            initialState: {
+              auth: { isAuthenticated: true }
+            }
+          }), PrimeVue],
         },
       });
-
-      const authStore = useAuthStore();
-      authStore.isAuthenticated = true;
-      await flushPromises();
 
       const btn = wrapper.getComponent({ name: 'Button' });
       expect(btn.text()).toBe('Log out');
@@ -116,14 +119,14 @@ describe('LoginButton.vue', () => {
 
       const wrapper = shallowMount(LoginButton, {
         global: {
-          plugins: [createTestingPinia(), PrimeVue],
+          plugins: [createTestingPinia({
+            initialState: {
+              auth: { isAuthenticated: true }
+            }
+          }), PrimeVue],
           stubs: ['router-link', 'router-view'],
         },
       });
-
-      const authStore = useAuthStore();
-      authStore.isAuthenticated = true;
-      await flushPromises();
 
       const btn = wrapper.getComponent({ name: 'Button' });
       await btn.trigger('click');
