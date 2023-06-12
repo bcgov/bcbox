@@ -14,10 +14,31 @@ export default {
    * @param {AxiosRequestConfig} axiosOptions Axios request config options
    * @returns {Promise} An axios response
    */
-  createObject(object: any, bucketId?: string, axiosOptions?: AxiosRequestConfig) {
+  createObject(
+    object: any,
+    headers: {
+      metadata?: Array<{ key: string; value: string }>,
+    },
+    params: {
+      bucketId?: string,
+      tagset?: Array<{ key: string; value: string }>
+    },
+    axiosOptions?: AxiosRequestConfig) {
+
+    // Unwrap the metadata if required
+    let metadata;
+    if (headers.metadata) {
+      metadata = Object.assign({},
+        ...(headers.metadata.map((x: { key: string; value: string }) => ({ [x.key]: x.value })))
+      );
+    }
+
     const config = {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      params: { bucketId: bucketId },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        ...metadata
+      },
+      params: params,
     };
     const fd = new FormData();
     fd.append('file', object);
