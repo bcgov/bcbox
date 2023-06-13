@@ -25,7 +25,7 @@ export default {
     },
     axiosOptions?: AxiosRequestConfig) {
 
-    // Unwrap the metadata if required
+    // Map the metadata if required
     let metadata;
     if (headers.metadata) {
       metadata = Object.assign({},
@@ -33,12 +33,21 @@ export default {
       );
     }
 
+    // Map the tagset if required
+    let tagset;
+    if (params.tagset) {
+      tagset = Object.assign({}, ...(params.tagset.map((x: { key: string; value: string }) => ({ [x.key]: x.value }))));
+    }
+
     const config = {
       headers: {
         'Content-Type': 'multipart/form-data',
         ...metadata
       },
-      params: params,
+      params: {
+        bucketId: params.bucketId,
+        tagset: tagset
+      }
     };
     const fd = new FormData();
     fd.append('file', object);

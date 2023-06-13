@@ -12,10 +12,13 @@ import type { ObjectMetadataTagFormType } from '@/components/object/ObjectMetada
 type Props = {
   files: Array<any>; // TODO: Change any to more specific type
   badgeProps: any;
+  formData?: Array<ObjectMetadataTagFormType>;
   removeCallback: Function;
 };
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  formData: () => []
+});
 
 // Emits
 const emit = defineEmits(['submit-object-metadatatag-config']);
@@ -25,7 +28,7 @@ const metaVisible: Ref<boolean> = ref(false);
 const metadataTagFormData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
 });
-const formData: Ref<Array<ObjectMetadataTagFormType>> = ref([]);
+const formData: Ref<Array<ObjectMetadataTagFormType>> = ref(props.formData);
 
 // Actions
 const showMetaModal = async (filename: string) => {
@@ -33,7 +36,7 @@ const showMetaModal = async (filename: string) => {
 
   metadataTagFormData.value.filename = filename;
   metadataTagFormData.value.metadata = idx >= 0 ? formData.value[idx].metadata : undefined;
-  metadataTagFormData.value.tags = idx >= 0 ? formData.value[idx].tags : undefined;
+  metadataTagFormData.value.tagset = idx >= 0 ? formData.value[idx].tagset : undefined;
 
   metaVisible.value = true;
 };
@@ -43,7 +46,7 @@ const submitMetaModal = (values: ObjectMetadataTagFormType) => {
 
   if( idx >= 0 ) {
     formData.value[idx].metadata = values.metadata;
-    formData.value[idx].tags = values.tags;
+    formData.value[idx].tagset = values.tagset;
   }
   else {
     formData.value.push(values);
@@ -124,7 +127,7 @@ const closeMetaModal = () => {
       <ObjectMetadataTagForm
         :filename="metadataTagFormData.filename"
         :metadata="metadataTagFormData.metadata"
-        :tags="metadataTagFormData.tags"
+        :tagset="metadataTagFormData.tagset"
         @submit-object-metadatatag-config="submitMetaModal"
         @cancel-object-metadatatag-config="closeMetaModal"
       />

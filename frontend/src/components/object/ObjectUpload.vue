@@ -58,7 +58,7 @@ const onUpload = async (event: any) => {
           await objectStore.createObject(
             file,
             { metadata: data?.metadata },
-            { bucketId: bucketId, tagset: data?.tags},
+            { bucketId: bucketId, tagset: data?.tagset},
             { timeout: 0 } // Infinite timeout for big files upload to avoid timeout error
           );
           successfulFiles.value.push(file);
@@ -71,6 +71,9 @@ const onUpload = async (event: any) => {
         }
       })
     );
+
+    // Clear metadata and tagset information - clears children as well
+    formData = [];
 
     // Clear selected files at the end of upload process
     pendingFiles.value = [];
@@ -166,6 +169,7 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
       <ObjectUploadFile
         :files="files || pendingFiles"
         :badge-props="{ value: 'Pending', severity: 'warning' }"
+        :form-data="formData"
         :remove-callback="removeFileCallback"
         @submit-object-metadatatag-config="submitObjectMetaTagConfig"
       />

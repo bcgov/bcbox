@@ -49,6 +49,7 @@ export const useObjectStore = defineStore('object', () => {
     try {
       appStore.beginIndeterminateLoading();
 
+      // Ensure x-amz-meta- prefix exists
       if (headers.metadata) {
         for (const meta of headers.metadata) {
           if (!meta.key.startsWith('x-amz-meta-')) {
