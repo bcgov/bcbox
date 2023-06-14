@@ -45,3 +45,5 @@ export const ToastTimeout = Object.freeze({
   SUCCESS: 3000,
   WARNING: 5000
 });
+
+export const MAX_TAGS = 9;
