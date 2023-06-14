@@ -51,7 +51,7 @@ describe('Config Store', () => {
 
   describe('fetchTagging', () => {
     it('fetches the tags', async () => {
-      getTaggingSpy.mockReturnValueOnce({ data: [tag] } as any);
+      getTaggingSpy.mockReturnValue({ data: [tag] } as any);
 
       await tagStore.fetchTagging({ objectId: '000' });
 
@@ -63,7 +63,7 @@ describe('Config Store', () => {
     });
 
     it('does not change state on error', async () => {
-      getTaggingSpy.mockImplementationOnce(() => {
+      getTaggingSpy.mockImplementation(() => {
         throw new Error();
       });
 

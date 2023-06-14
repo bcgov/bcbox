@@ -82,7 +82,7 @@ describe('User Store', () => {
 
   describe('fetchUsers', () => {
     it('sets the state from the search results', async () => {
-      searchForUsersSpy.mockReturnValueOnce({ data: [user] } as any);
+      searchForUsersSpy.mockReturnValue({ data: [user] } as any);
 
       await userStore.fetchUsers({ lastName: 'bar' });
 
@@ -94,7 +94,7 @@ describe('User Store', () => {
     });
 
     it('filters out users without an IDP', async () => {
-      searchForUsersSpy.mockReturnValueOnce({ data: [noIdUser] } as any);
+      searchForUsersSpy.mockReturnValue({ data: [noIdUser] } as any);
 
       await userStore.fetchUsers({ lastName: 'bar' });
 
@@ -106,7 +106,7 @@ describe('User Store', () => {
     });
 
     it('displays toast on error', async () => {
-      searchForUsersSpy.mockImplementationOnce(() => {
+      searchForUsersSpy.mockImplementation(() => {
         throw new Error();
       });
 
