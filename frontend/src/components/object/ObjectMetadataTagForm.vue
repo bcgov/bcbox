@@ -48,8 +48,8 @@ const onSubmit = async (values: any) => {
 
     emit('submit-object-metadatatag-config', {
       filename: props.filename,
-      metadata: values.metadata,
-      tagset: values.tagset
+      metadata: values.metadata.length ? values.metadata : undefined,
+      tagset: values.tagset.length ? values.tagset : undefined
     } as ObjectMetadataTagFormType);
   } catch (error: any) {
     toast.error('Adding metadata and tags', error);
@@ -107,7 +107,7 @@ const onCancel = () => {
           <div class="col flex align-content-center justify-content-center p-0">
             <Button
               class="p-button-lg p-button-text p-button-danger p-0"
-              @click="remove(index)"
+              @click="() => { remove(index); if(!fields.length) push({});}"
             >
               <font-awesome-icon icon="fa-solid fa-minus" />
             </Button>
@@ -143,7 +143,7 @@ const onCancel = () => {
         <div class="col" />
       </div>
       <FieldArray
-        v-slot="{fields, push, remove }"
+        v-slot="{ fields, push, remove }"
         name="tagset"
       >
         <div
@@ -166,7 +166,7 @@ const onCancel = () => {
           <div class="col flex align-content-center justify-content-center p-0">
             <Button
               class="p-button-lg p-button-text p-button-danger p-0"
-              @click="remove(index)"
+              @click="() => { remove(index); if(!fields.length) push({});}"
             >
               <font-awesome-icon icon="fa-solid fa-minus" />
             </Button>
