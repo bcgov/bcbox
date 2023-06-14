@@ -4,7 +4,7 @@ import PrimeVue from 'primevue/config';
 import TextInput from '@/components/form/TextInput.vue';
 
 describe('TextInput.vue', () => {
-  it('renders', async () => {
+  it('renders', () => {
     const wrapper = shallowMount(TextInput, {
       props: {
         name: 'test',
@@ -17,7 +17,7 @@ describe('TextInput.vue', () => {
     expect(wrapper).toBeTruthy();
   });
 
-  it('displays the label', async () => {
+  it('displays the label', () => {
     const wrapper = shallowMount(TextInput, {
       props: {
         label: 'testlabel',
@@ -32,7 +32,7 @@ describe('TextInput.vue', () => {
     expect(label.text()).toBe('testlabel');
   });
 
-  it('displays the help text', async () => {
+  it('displays the help text', () => {
     const wrapper = shallowMount(TextInput, {
       props: {
         helpText: 'some help text',
@@ -47,7 +47,7 @@ describe('TextInput.vue', () => {
     expect(help.text()).toBe('some help text');
   });
 
-  it('sets the placeholder text', async () => {
+  it('sets the placeholder text', () => {
     const wrapper = shallowMount(TextInput, {
       props: {
         name: 'test',
@@ -62,7 +62,7 @@ describe('TextInput.vue', () => {
     expect(input.attributes('placeholder')).toBe('some placeholder text');
   });
 
-  it('sets the disabled attribute', async () => {
+  it('sets the disabled attribute', () => {
     const wrapper = shallowMount(TextInput, {
       props: {
         disabled: true,

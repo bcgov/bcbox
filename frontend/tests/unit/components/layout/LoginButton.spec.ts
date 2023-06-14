@@ -47,7 +47,7 @@ describe('LoginButton.vue', () => {
   });
 
   describe('unauthenticated', () => {
-    it('renders login button', async () => {
+    it('renders login button', () => {
       const wrapper = mount(LoginButton, {
         global: {
           plugins: [createTestingPinia({
@@ -92,7 +92,7 @@ describe('LoginButton.vue', () => {
 
 
   describe('authenticated', () => {
-    it('renders logout button', async () => {
+    it('renders logout button', () => {
       const wrapper = mount(LoginButton, {
         global: {
           plugins: [createTestingPinia({
