@@ -3,6 +3,12 @@ export const BucketConfig = Object.freeze({
   TITLE_NEW_BUCKET: 'Use this form to configure a bucket to be used in BCBox for the first time.',
 });
 
+/**
+ * Max allowable tags to be added to an object
+ * S3 max is 10, but one is reserved for the COMS `coms-id`
+ */
+export const MAX_TAGS = 9;
+
 export const Permissions = Object.freeze({
   CREATE: 'CREATE',
   READ: 'READ',
@@ -35,10 +41,6 @@ export const StorageKey = Object.freeze({
   CONFIG: 'config'
 });
 
-export const ValidationMessages = Object.freeze({
-  REQUIRED: 'This field is required.',
-});
-
 export const ToastTimeout = Object.freeze({
   ERROR: 5000,
   INFO: 3000,
@@ -46,4 +48,6 @@ export const ToastTimeout = Object.freeze({
   WARNING: 5000
 });
 
-export const MAX_TAGS = 9;
+export const ValidationMessages = Object.freeze({
+  REQUIRED: 'This field is required.',
+});

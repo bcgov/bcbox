@@ -23,32 +23,31 @@ export default {
       bucketId?: string,
       tagset?: Array<{ key: string; value: string }>
     },
-    axiosOptions?: AxiosRequestConfig) {
+    axiosOptions?: AxiosRequestConfig
+  ) {
+    const config = {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      params: {
+        bucketId: params.bucketId,
+        tagset: {}
+      },
+    };
 
     // Map the metadata if required
-    let metadata;
     if (headers.metadata) {
-      metadata = Object.assign({},
-        ...(headers.metadata.map((x: { key: string; value: string }) => ({ [x.key]: x.value })))
-      );
+      config.headers = {
+        ...config.headers,
+        ...Object.fromEntries((headers.metadata.map((x: { key: string; value: string }) => ([x.key, x.value]))))
+      };
     }
 
     // Map the tagset if required
-    let tagset;
     if (params.tagset) {
-      tagset = Object.assign({}, ...(params.tagset.map((x: { key: string; value: string }) => ({ [x.key]: x.value }))));
+      config.params.tagset = Object.fromEntries(
+        (params.tagset.map((x: { key: string; value: string }) => ([x.key, x.value])))
+      );
     }
 
-    const config = {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        ...metadata
-      },
-      params: {
-        bucketId: params.bucketId,
-        tagset: tagset
-      }
-    };
     const fd = new FormData();
     fd.append('file', object);
     return comsAxios(axiosOptions).post(PATH, fd, config);

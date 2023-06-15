@@ -34,11 +34,9 @@ const formData: Ref<Array<ObjectMetadataTagFormType>> = ref(props.formData);
 
 // Actions
 const showMetaModal = async (filename: string) => {
-  const idx = formData.value.findIndex( (x: ObjectMetadataTagFormType) => x.filename === filename);
-
   metadataTagFormData.value.filename = filename;
-  metadataTagFormData.value.metadata = idx >= 0 ? formData.value[idx].metadata : undefined;
-  metadataTagFormData.value.tagset = idx >= 0 ? formData.value[idx].tagset : undefined;
+  metadataTagFormData.value.metadata = formData.value.find(x => x.filename === filename)?.metadata;
+  metadataTagFormData.value.tagset = formData.value.find(x => x.filename === filename)?.tagset ;
 
   metaVisible.value = true;
 };

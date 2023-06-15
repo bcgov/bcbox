@@ -58,7 +58,7 @@ const onUpload = async (event: any) => {
           await objectStore.createObject(
             file,
             { metadata: data?.metadata },
-            { bucketId: bucketId, tagset: data?.tagset},
+            { bucketId: bucketId, tagset: data?.tagset },
             { timeout: 0 } // Infinite timeout for big files upload to avoid timeout error
           );
           successfulFiles.value.push(file);
