@@ -167,6 +167,7 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
     </template>
     <template #content="{ files, uploadedFiles, removeFileCallback, removeUploadedFileCallback }">
       <ObjectUploadFile
+        :editable="true"
         :files="files || pendingFiles"
         :badge-props="{ value: 'Pending', severity: 'warning' }"
         :form-data="formData"

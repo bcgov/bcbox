@@ -10,6 +10,7 @@ import type { ObjectMetadataTagFormType } from '@/components/object/ObjectMetada
 
 // Props
 type Props = {
+  editable?: boolean;
   files: Array<any>; // TODO: Change any to more specific type
   badgeProps: any;
   formData?: Array<ObjectMetadataTagFormType>;
@@ -17,6 +18,7 @@ type Props = {
 };
 
 const props = withDefaults(defineProps<Props>(), {
+  editable: false,
   formData: () => []
 });
 
@@ -90,6 +92,7 @@ const closeMetaModal = () => {
       </div>
       <div class="ml-auto">
         <Button
+          v-if="editable"
           class="p-button-lg p-button-rounded p-button-text"
           @click="showMetaModal(file.name)"
         >
