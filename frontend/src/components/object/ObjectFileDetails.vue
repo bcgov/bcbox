@@ -203,8 +203,10 @@ watch( [props, getObjects], async () => {
         />
         <ObjectAccess :object-id="props.objectId" />
         <ObjectMetadata
+          :editable="props.versionId === latestVersionId"
           :object-id="props.objectId"
           :version-id="props.versionId"
+          @on-file-uploaded="onFileUploaded"
         />
       </div>
       <Divider layout="vertical" />
@@ -225,8 +227,10 @@ watch( [props, getObjects], async () => {
           :version-id="props.versionId"
         />
         <ObjectTag
+          :editable="props.versionId === latestVersionId"
           :object-id="props.objectId"
           :version-id="props.versionId"
+          @on-file-uploaded="onFileUploaded"
         />
       </div>
     </div>

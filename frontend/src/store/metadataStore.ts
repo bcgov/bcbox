@@ -62,6 +62,33 @@ export const useMetadataStore = defineStore('metadata', () => {
     return findMetadataByObjectId(objectId)?.metadata.find(x => x.key === key)?.value;
   }
 
+  async function replaceMetadata(
+    objectId: string,
+    metadata: Array<{ key: string; value: string }>,
+    versionId?: string,
+  ) {
+    try {
+      appStore.beginIndeterminateLoading();
+      // Ensure x-amz-meta- prefix exists
+      if (metadata) {
+        for (const meta of metadata) {
+          if (!meta.key.startsWith('x-amz-meta-')) {
+            meta.key = `x-amz-meta-${meta.key}`;
+          }
+        }
+      }
+
+      await objectService.replaceMetadata(objectId, metadata, versionId);
+      await fetchMetadata({ objectId: objectId });
+    }
+    catch (error: any) {
+      toast.error('Updating metadata', error);
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   return {
     // State
     ...state,
@@ -72,7 +99,8 @@ export const useMetadataStore = defineStore('metadata', () => {
     // Actions
     fetchMetadata,
     findMetadataByObjectId,
-    findValue
+    findValue,
+    replaceMetadata
   };
 }, { persist: true });
 

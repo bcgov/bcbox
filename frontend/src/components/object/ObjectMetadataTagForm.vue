@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { FieldArray, Form } from 'vee-validate';
+import { onBeforeMount } from 'vue';
 
 import TextInput from '@/components/form/TextInput.vue';
 import { Button, useToast } from '@/lib/primevue';
 import { MAX_TAGS } from '@/utils/constants';
-
-import type { COMSObject } from '@/types';
 
 export type ObjectMetadataTagFormType = {
   filename: string;
@@ -16,15 +15,17 @@ export type ObjectMetadataTagFormType = {
 // Props
 type Props = {
   filename: string;
-  obj?: COMSObject;
   metadata?: Array<{ key: string; value: string }>;
+  metadataEditable?: boolean;
   tagset?: Array<{ key: string; value: string }>;
+  tagsetEditable?: boolean;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  obj: undefined,
   metadata: () => [{key: '', value: ''}],
+  metadataEditable: true,
   tagset: () => [{key: '', value: ''}],
+  tagsetEditable: true,
 });
 
 // Emits
@@ -59,6 +60,10 @@ const onSubmit = async (values: any) => {
 const onCancel = () => {
   emit('cancel-object-metadatatag-config');
 };
+
+onBeforeMount(() => {
+  initialValues.tagset = initialValues.tagset?.filter( (x: {key: string, value: string}) => x.key !== 'coms-id' );
+});
 </script>
 
 <template>
@@ -67,130 +72,134 @@ const onCancel = () => {
       :initial-values="initialValues"
       @submit="onSubmit"
     >
-      <div class="grid">
-        <div class="col-12">
-          <h2 class="font-bold">
-            Metadata
-          </h2>
-        </div>
-        <div class="grid col-11 pb-0 pt-0">
-          <div class="col-6">
-            Key
+      <span v-if="metadataEditable">
+        <div class="grid">
+          <div class="col-12">
+            <h2 class="font-bold">
+              Metadata
+            </h2>
           </div>
-          <div class="col-6">
-            Value
-          </div>
-        </div>
-        <div class="col" />
-      </div>
-      <FieldArray
-        v-slot="{ fields, push, remove }"
-        name="metadata"
-      >
-        <div
-          v-for="(meta, index) of fields"
-          :key="'metadata.'+index"
-          class="grid"
-        >
-          <div class="grid col-11">
-            <div class="col">
-              <TextInput
-                :name="'metadata.'+index+'.key'"
-              />
-            </div>
-            <div class="col">
-              <TextInput
-                :name="'metadata.'+index+'.value'"
-              />
-            </div>
-          </div>
-          <div class="col flex align-content-center justify-content-center p-0">
-            <Button
-              class="p-button-lg p-button-text p-button-danger p-0"
-              @click="() => { remove(index); if(!fields.length) push({});}"
-            >
-              <font-awesome-icon icon="fa-solid fa-minus" />
-            </Button>
-          </div>
-        </div>
-        <div class="mb-4">
-          <Button
-            class="p-button p-button-text p-0"
-            @click="push({})"
-          >
-            <font-awesome-icon
-              icon="fa-solid fa-plus"
-              class="mr-1"
-            /> Add row
-          </Button>
-        </div>
-      </FieldArray>
-
-      <div class="grid">
-        <div class="col-12">
-          <h2 class="font-bold">
-            Tags
-          </h2>
-        </div>
-        <div class="grid col-11">
-          <div class="col-6 pt-0">
-            Key
-          </div>
-          <div class="col-6 pt-0">
-            Value
-          </div>
-        </div>
-        <div class="col" />
-      </div>
-      <FieldArray
-        v-slot="{ fields, push, remove }"
-        name="tagset"
-      >
-        <div
-          v-for="(tag, index) of fields"
-          :key="index"
-          class="grid"
-        >
           <div class="grid col-11 pb-0 pt-0">
-            <div class="col">
-              <TextInput
-                :name="'tagset.'+index+'.key'"
-              />
+            <div class="col-6">
+              Key
             </div>
-            <div class="col">
-              <TextInput
-                :name="'tagset.'+index+'.value'"
-              />
+            <div class="col-6">
+              Value
             </div>
           </div>
-          <div class="col flex align-content-center justify-content-center p-0">
+          <div class="col" />
+        </div>
+        <FieldArray
+          v-slot="{ fields, push, remove }"
+          name="metadata"
+        >
+          <div
+            v-for="(meta, index) of fields"
+            :key="'metadata.'+index"
+            class="grid"
+          >
+            <div class="grid col-11">
+              <div class="col">
+                <TextInput
+                  :name="'metadata.'+index+'.key'"
+                />
+              </div>
+              <div class="col">
+                <TextInput
+                  :name="'metadata.'+index+'.value'"
+                />
+              </div>
+            </div>
+            <div class="col flex align-content-center justify-content-center p-0">
+              <Button
+                class="p-button-lg p-button-text p-button-danger p-0"
+                @click="() => { remove(index); if(!fields.length) push({});}"
+              >
+                <font-awesome-icon icon="fa-solid fa-minus" />
+              </Button>
+            </div>
+          </div>
+          <div class="mb-4">
             <Button
-              class="p-button-lg p-button-text p-button-danger p-0"
-              @click="() => { remove(index); if(!fields.length) push({});}"
+              class="p-button p-button-text p-0"
+              @click="push({})"
             >
-              <font-awesome-icon icon="fa-solid fa-minus" />
+              <font-awesome-icon
+                icon="fa-solid fa-plus"
+                class="mr-1"
+              /> Add row
             </Button>
           </div>
-        </div>
-        <div class="mb-4">
-          <Button
-            v-if="fields.length < MAX_TAGS"
-            class="p-button p-button-text p-0"
-            @click="push({})"
-          >
-            <font-awesome-icon
-              icon="fa-solid fa-plus"
-              class="mr-1"
-            /> Add row
-          </Button>
-          <div v-if="fields.length >= MAX_TAGS">
-            <font-awesome-icon
-              icon="fa-solid fa-triangle-exclamation"
-              class="mr-1"
-            /> Tag limit reached
+        </FieldArray>
+      </span>
+
+      <span v-if="tagsetEditable">
+        <div class="grid">
+          <div class="col-12">
+            <h2 class="font-bold">
+              Tags
+            </h2>
           </div>
+          <div class="grid col-11">
+            <div class="col-6 pt-0">
+              Key
+            </div>
+            <div class="col-6 pt-0">
+              Value
+            </div>
+          </div>
+          <div class="col" />
         </div>
-      </FieldArray>
+        <FieldArray
+          v-slot="{ fields, push, remove }"
+          name="tagset"
+        >
+          <div
+            v-for="(tag, index) of fields"
+            :key="index"
+            class="grid"
+          >
+            <div class="grid col-11 pb-0 pt-0">
+              <div class="col">
+                <TextInput
+                  :name="'tagset.'+index+'.key'"
+                />
+              </div>
+              <div class="col">
+                <TextInput
+                  :name="'tagset.'+index+'.value'"
+                />
+              </div>
+            </div>
+            <div class="col flex align-content-center justify-content-center p-0">
+              <Button
+                class="p-button-lg p-button-text p-button-danger p-0"
+                @click="() => { remove(index); if(!fields.length) push({});}"
+              >
+                <font-awesome-icon icon="fa-solid fa-minus" />
+              </Button>
+            </div>
+          </div>
+          <div class="mb-4">
+            <Button
+              v-if="fields.length < MAX_TAGS"
+              class="p-button p-button-text p-0"
+              @click="push({})"
+            >
+              <font-awesome-icon
+                icon="fa-solid fa-plus"
+                class="mr-1"
+              /> Add row
+            </Button>
+            <div v-if="fields.length >= MAX_TAGS">
+              <font-awesome-icon
+                icon="fa-solid fa-triangle-exclamation"
+                class="mr-1"
+              /> Tag limit reached
+            </div>
+          </div>
+        </FieldArray>
+      </span>
 
       <Button
         class="mt-5"
