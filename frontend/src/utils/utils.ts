@@ -1,3 +1,5 @@
+import { DELIMITER } from '@/utils/constants';
+
 /**
  * @function differential
  * Create a key/value differential from source against comparer
@@ -18,6 +20,25 @@ export function differential(source: any, comparer: any): any {
  */
 export function isDebugMode(): boolean {
   return import.meta.env.MODE.toUpperCase() === 'DEBUG';
+}
+
+/**
+ * @function joinPath
+ * Joins a set of string arguments to yield a string path
+ * @param  {...string} items The strings to join on
+ * @returns {string} A path string with the specified delimiter
+ */
+export function joinPath(...items: Array<string>): string {
+  if (items && items.length) {
+    const parts: Array<string> = [];
+    items.forEach(p => {
+      if (p) p.split(DELIMITER).forEach(x => {
+        if (x && x.trim().length) parts.push(x);
+      });
+    });
+    return parts.join(DELIMITER);
+  }
+  else return '';
 }
 
 /**

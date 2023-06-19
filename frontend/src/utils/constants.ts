@@ -4,6 +4,11 @@ export const BucketConfig = Object.freeze({
 });
 
 /**
+ * Default string delimiter
+ */
+export const DELIMITER = '/';
+
+/**
  * Max allowable tags to be added to an object
  * S3 max is 10, but one is reserved for the COMS `coms-id`
  */
