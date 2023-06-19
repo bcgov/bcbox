@@ -98,11 +98,21 @@ describe('Object Store', () => {
 
       createObjectSpy.mockReturnValue({} as any);
 
-      await objectStore.createObject(blob, '000', { timeout: 0 });
+      await objectStore.createObject(blob, { metadata: [] }, { bucketId: '000', tagset: [] }, { timeout: 0 });
 
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(createObjectSpy).toHaveBeenCalledTimes(1);
-      expect(createObjectSpy).toHaveBeenCalledWith(blob, '000', { timeout: 0 });
+      expect(createObjectSpy).toHaveBeenCalledWith(
+        blob,
+        {
+          metadata: []
+        },
+        {
+          bucketId: '000',
+          tagset: []
+        },
+        { timeout: 0 }
+      );
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
     });
   });

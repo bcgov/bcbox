@@ -7,6 +7,7 @@ import { Button, FileUpload, useToast } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
+import type { ObjectMetadataTagFormType } from '@/components/object/ObjectMetadataTagForm.vue';
 
 // Props
 type Props = {
@@ -29,6 +30,7 @@ const successfulFiles: Ref<Array<File>> = ref([]);
 const failedFiles: Ref<Array<File>> = ref([]);
 
 // Actions
+let formData: Array<ObjectMetadataTagFormType> = [];
 const toast = useToast();
 
 const onSelectedFiles = (event: any) => {
@@ -51,8 +53,14 @@ const onUpload = async (event: any) => {
         try {
           appStore.beginUploading();
 
-          // Infinite timeout for big files upload to avoid timeout error
-          await objectStore.createObject(file, bucketId, { timeout: 0 });
+          const data = formData.find( (x: ObjectMetadataTagFormType) => x.filename === file.name );
+
+          await objectStore.createObject(
+            file,
+            { metadata: data?.metadata },
+            { bucketId: bucketId, tagset: data?.tagset },
+            { timeout: 0 } // Infinite timeout for big files upload to avoid timeout error
+          );
           successfulFiles.value.push(file);
         } catch (error: any) {
           toast.error(`Failed to upload file ${file.name}`, error);
@@ -63,6 +71,9 @@ const onUpload = async (event: any) => {
         }
       })
     );
+
+    // Clear metadata and tagset information - clears children as well
+    formData = [];
 
     // Clear selected files at the end of upload process
     pendingFiles.value = [];
@@ -84,6 +95,8 @@ const onRemoveFailedFile = async (index: number) => {
 
 // Based on files prop from upload component, are we in ready to upload mode
 const noFilesChosen = (files?: Array<File>): boolean => !files?.length;
+
+const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => formData = values;
 </script>
 
 <template>
@@ -154,9 +167,12 @@ const noFilesChosen = (files?: Array<File>): boolean => !files?.length;
     </template>
     <template #content="{ files, uploadedFiles, removeFileCallback, removeUploadedFileCallback }">
       <ObjectUploadFile
+        :editable="true"
         :files="files || pendingFiles"
         :badge-props="{ value: 'Pending', severity: 'warning' }"
+        :form-data="formData"
         :remove-callback="removeFileCallback"
+        @submit-object-metadatatag-config="submitObjectMetaTagConfig"
       />
       <ObjectUploadFile
         :files="uploadedFiles || successfulFiles"

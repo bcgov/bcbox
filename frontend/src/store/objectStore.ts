@@ -36,10 +36,29 @@ export const useObjectStore = defineStore('object', () => {
   };
 
   // Actions
-  async function createObject(object: any, bucketId?: string, axiosOptions?: AxiosRequestConfig) {
+  async function createObject(
+    object: any,
+    headers: {
+      metadata?: Array<{ key: string; value: string }>,
+    },
+    params: {
+      bucketId?: string,
+      tagset?: Array<{ key: string; value: string }>
+    },
+    axiosOptions?: AxiosRequestConfig) {
     try {
       appStore.beginIndeterminateLoading();
-      await objectService.createObject(object, bucketId, axiosOptions);
+
+      // Ensure x-amz-meta- prefix exists
+      if (headers.metadata) {
+        for (const meta of headers.metadata) {
+          if (!meta.key.startsWith('x-amz-meta-')) {
+            meta.key = `x-amz-meta-${meta.key}`;
+          }
+        }
+      }
+
+      await objectService.createObject(object, headers, params, axiosOptions);
     }
     catch (error: any) {
       toast.error('Creating object', error);
