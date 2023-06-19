@@ -7,7 +7,7 @@ import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
 import { Button, useToast } from '@/lib/primevue';
 import { useAuthStore, useBucketStore } from '@/store';
-import { differential } from '@/utils/utils';
+import { differential, joinPath } from '@/utils/utils';
 
 import type { Bucket } from '@/types';
 
@@ -66,9 +66,13 @@ const onSubmit = async (values: any) => {
       bucket: values.bucket,
       bucketName: values.bucketName,
       endpoint: values.endpoint,
-      key: values.key ? values.key : '/',
       secretAccessKey: values.secretAccessKey,
     } as Bucket;
+
+    // Only add key for new configurations
+    if( !props.bucket && values.key ) {
+      formBucket.key = joinPath(values.key);
+    }
 
     props.bucket ?
       await bucketStore.updateBucket(props.bucket?.bucketId, differential(formBucket, initialValues)) :
@@ -130,7 +134,8 @@ const onCancel = () => {
         name="key"
         label="Key"
         placeholder="directory"
-        help-text="An optional path prefix within a bucket. The path will be created if it doesn't already exist."
+        help-text="A path prefix within a bucket. The path will be created if it doesn't already exist.
+          Will default to '/' if not provided. This value cannot be changed after the bucket is configured."
         :disabled="!!props.bucket"
       />
       <Button
@@ -152,7 +157,7 @@ const onCancel = () => {
 <style lang="scss" scoped>
 
 :deep(.p-inputtext) {
-  width: 65% !important;
+  width: 100% !important;
 }
 
 :deep(.pi-eye) {
