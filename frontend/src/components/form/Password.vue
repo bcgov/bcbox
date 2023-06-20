@@ -35,7 +35,7 @@ const { errorMessage, value } = useField<string>(toRef(props, 'name'));
       :feedback="false"
       toggle-mask
     />
-    <small id="`${name}-help`">{{ helptext }}</small>
+    <small :id="`${name}-help`">{{ helptext }}</small>
     <ErrorMessage
       :name="props.name"
     />

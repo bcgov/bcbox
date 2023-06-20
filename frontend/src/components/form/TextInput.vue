@@ -35,7 +35,7 @@ const { errorMessage, value } = useField<string>(toRef(props, 'name'));
       :class="{ 'p-invalid': errorMessage }"
       :disabled="disabled"
     />
-    <small id="`${name}-help`">{{ helpText }}</small>
+    <small :id="`${name}-help`">{{ helpText }}</small>
     <ErrorMessage
       :name="name"
     />
