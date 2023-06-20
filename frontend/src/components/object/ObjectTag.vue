@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 
-import ObjectMetadataTagForm from '@/components/object/ObjectMetadataTagForm.vue';
+import { ObjectMetadataTagForm } from '@/components/object';
 import { Button, Dialog } from '@/lib/primevue';
 import { useObjectStore, useTagStore, useVersionStore } from '@/store';
 
@@ -32,31 +32,35 @@ const { getTagging: tsGetTagging } = storeToRefs(tagStore);
 const { getTagging: vsGetTagging } = storeToRefs(versionStore);
 
 // State
-const metaVisible: Ref<boolean> = ref(false);
-const metadataTagFormData: Ref<ObjectMetadataTagFormType> = ref({
+const editing: Ref<boolean> = ref(false);
+const formData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
 });
 const objectTagging: Ref<Tagging | undefined> = ref(undefined);
 
 // Actions
-const showMetaModal = async () => {
-  metadataTagFormData.value.filename = useObjectStore().findObjectById(props.objectId)?.name ?? '';
-  metadataTagFormData.value.tagset = objectTagging.value?.tagset;
+const showModal = () => {
+  formData.value.filename = useObjectStore().findObjectById(props.objectId)?.name ?? '';
+  formData.value.tagset = objectTagging.value?.tagset;
 
-  metaVisible.value = true;
+  editing.value = true;
 };
 
-const submitMetaModal = async (values: ObjectMetadataTagFormType) => {
-  if( values.tagset?.length ) {
-    await tagStore.replaceTagging(props.objectId, values.tagset, props.versionId);
-    emit('on-file-uploaded');
+const submitModal = async (values: ObjectMetadataTagFormType) => {
+  if( values.tagset ) {
+    await tagStore.replaceTagging(props.objectId,  values.tagset, props.versionId);
+  }
+  else {
+    await tagStore.deleteTagging(props.objectId, [], props.versionId);
   }
 
-  closeMetaModal();
+  emit('on-file-uploaded');
+
+  closeModal();
 };
 
-const closeMetaModal = () => {
-  metaVisible.value = false;
+const closeModal = () => {
+  editing.value = false;
 };
 
 async function load() {
@@ -105,7 +109,7 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
     <Button
       v-if="editable"
       outlined
-      @click="showMetaModal()"
+      @click="showModal()"
     >
       <font-awesome-icon
         icon="fa-solid fa-pen-to-square"
@@ -117,7 +121,7 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
 
   <!-- eslint-disable vue/no-v-model-argument -->
   <Dialog
-    v-model:visible="metaVisible"
+    v-model:visible="editing"
     :draggable="false"
     :modal="true"
     class="bcbox-info-dialog permissions-modal"
@@ -132,15 +136,15 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
-      {{ metadataTagFormData.filename }}
+      {{ formData.filename }}
     </h3>
 
     <ObjectMetadataTagForm
-      :filename="metadataTagFormData.filename"
+      :filename="formData.filename"
       :metadata-editable="false"
-      :tagset="metadataTagFormData.tagset"
-      @submit-object-metadatatag-config="submitMetaModal"
-      @cancel-object-metadatatag-config="closeMetaModal"
+      :tagset="formData.tagset"
+      @submit-object-metadatatag-config="submitModal"
+      @cancel-object-metadatatag-config="closeModal"
     />
   </Dialog>
 </template>

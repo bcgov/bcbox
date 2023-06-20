@@ -28,6 +28,25 @@ export const useTagStore = defineStore('tag', () => {
   };
 
   // Actions
+  async function deleteTagging(
+    objectId: string,
+    tagging: Array<Tag>,
+    versionId?: string,
+  ) {
+    try {
+      appStore.beginIndeterminateLoading();
+
+      await objectService.deleteTagging(objectId, tagging, versionId);
+      await fetchTagging({ objectId: objectId });
+    }
+    catch (error: any) {
+      toast.error('Deleting tags', error);
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   async function fetchTagging(params: GetObjectTaggingOptions = {}) {
     try {
       appStore.beginIndeterminateLoading();
@@ -83,6 +102,7 @@ export const useTagStore = defineStore('tag', () => {
     ...getters,
 
     // Actions
+    deleteTagging,
     fetchTagging,
     findTaggingByObjectId,
     replaceTagging

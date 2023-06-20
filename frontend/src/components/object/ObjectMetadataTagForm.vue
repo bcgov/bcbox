@@ -22,9 +22,9 @@ type Props = {
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  metadata: () => [{key: '', value: ''}],
+  metadata: () => [{ key: '', value: '' }],
   metadataEditable: true,
-  tagset: () => [{key: '', value: ''}],
+  tagset: () => [{ key: '', value: '' }],
   tagsetEditable: true,
 });
 
@@ -44,13 +44,13 @@ const toast = useToast();
 const onSubmit = async (values: any) => {
   try {
     // Remove any rows where key or value is empty
-    values.metadata = values.metadata.filter( (x: {key: string, value: string}) => x.key && x.value );
-    values.tagset = values.tagset.filter( (x: {key: string, value: string}) => x.key && x.value );
+    values.metadata = values.metadata?.filter( (x: {key: string, value: string}) => x.key && x.value );
+    values.tagset = values.tagset?.filter( (x: {key: string, value: string}) => x.key && x.value );
 
     emit('submit-object-metadatatag-config', {
       filename: props.filename,
-      metadata: values.metadata.length ? values.metadata : undefined,
-      tagset: values.tagset.length ? values.tagset : undefined
+      metadata: values.metadata,
+      tagset: values.tagset,
     } as ObjectMetadataTagFormType);
   } catch (error: any) {
     toast.error('Adding metadata and tags', error);
@@ -62,7 +62,12 @@ const onCancel = () => {
 };
 
 onBeforeMount(() => {
+  // Empty arrays can be given which won't trigger default prop values so check to see if blank rows need to be added
+  initialValues.metadata = initialValues.metadata?.length ? initialValues.metadata : [{ key: '', value: '' }];
+
+  // Filter coms-id first before determining initial set
   initialValues.tagset = initialValues.tagset?.filter( (x: {key: string, value: string}) => x.key !== 'coms-id' );
+  initialValues.tagset = initialValues.tagset?.length ? initialValues.tagset : [{ key: '', value: '' }];
 });
 </script>
 
@@ -73,6 +78,7 @@ onBeforeMount(() => {
       @submit="onSubmit"
     >
       <span v-if="metadataEditable">
+        <!-- TODO: Wrap these field arrays into a common key/value pair component? -->
         <div class="grid">
           <div class="col-12">
             <h2 class="font-bold">
@@ -95,25 +101,25 @@ onBeforeMount(() => {
         >
           <div
             v-for="(meta, index) of fields"
-            :key="'metadata.'+index"
+            :key="`metadata.${index}`"
             class="grid"
           >
             <div class="grid col-11">
               <div class="col">
                 <TextInput
-                  :name="'metadata.'+index+'.key'"
+                  :name="`metadata.${index}.key`"
                 />
               </div>
               <div class="col">
                 <TextInput
-                  :name="'metadata.'+index+'.value'"
+                  :name="`metadata.${index}.value`"
                 />
               </div>
             </div>
             <div class="col flex align-content-center justify-content-center p-0">
               <Button
                 class="p-button-lg p-button-text p-button-danger p-0"
-                @click="() => { remove(index); if(!fields.length) push({});}"
+                @click="remove(index)"
               >
                 <font-awesome-icon icon="fa-solid fa-minus" />
               </Button>
@@ -162,19 +168,19 @@ onBeforeMount(() => {
             <div class="grid col-11 pb-0 pt-0">
               <div class="col">
                 <TextInput
-                  :name="'tagset.'+index+'.key'"
+                  :name="`tagset.${index}.key`"
                 />
               </div>
               <div class="col">
                 <TextInput
-                  :name="'tagset.'+index+'.value'"
+                  :name="`tagset.${index}.value`"
                 />
               </div>
             </div>
             <div class="col flex align-content-center justify-content-center p-0">
               <Button
                 class="p-button-lg p-button-text p-button-danger p-0"
-                @click="() => { remove(index); if(!fields.length) push({});}"
+                @click="remove(index)"
               >
                 <font-awesome-icon icon="fa-solid fa-minus" />
               </Button>

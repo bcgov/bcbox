@@ -61,7 +61,7 @@ export const useObjectStore = defineStore('object', () => {
       await objectService.createObject(object, headers, params, axiosOptions);
     }
     catch (error: any) {
-      if (error.response.status === 409) {
+      if (error?.response?.status === 409) {
         toast.error('Creating object', 'File already exists');
       }
       else {

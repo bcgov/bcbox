@@ -2,7 +2,7 @@
 import { filesize } from 'filesize';
 import { ref, toRaw } from 'vue';
 
-import ObjectMetadataTagForm from '@/components/object/ObjectMetadataTagForm.vue';
+import { ObjectMetadataTagForm } from '@/components/object';
 import { Badge, Button, Dialog } from '@/lib/primevue';
 
 import type { Ref } from 'vue';
@@ -26,22 +26,22 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['submit-object-metadatatag-config']);
 
 // State
-const metaVisible: Ref<boolean> = ref(false);
-const metadataTagFormData: Ref<ObjectMetadataTagFormType> = ref({
+const editing: Ref<boolean> = ref(false);
+const initialModalData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
 });
 const formData: Ref<Array<ObjectMetadataTagFormType>> = ref(props.formData);
 
 // Actions
-const showMetaModal = async (filename: string) => {
-  metadataTagFormData.value.filename = filename;
-  metadataTagFormData.value.metadata = formData.value.find(x => x.filename === filename)?.metadata;
-  metadataTagFormData.value.tagset = formData.value.find(x => x.filename === filename)?.tagset ;
+const showModal = async (filename: string) => {
+  initialModalData.value.filename = filename;
+  initialModalData.value.metadata = formData.value.find(x => x.filename === filename)?.metadata;
+  initialModalData.value.tagset = formData.value.find(x => x.filename === filename)?.tagset ;
 
-  metaVisible.value = true;
+  editing.value = true;
 };
 
-const submitMetaModal = (values: ObjectMetadataTagFormType) => {
+const submitModal = (values: ObjectMetadataTagFormType) => {
   const idx = formData.value.findIndex( (x: ObjectMetadataTagFormType) => x.filename === values.filename);
 
   if( idx >= 0 ) {
@@ -55,11 +55,11 @@ const submitMetaModal = (values: ObjectMetadataTagFormType) => {
   // Emit formData back to ObjectUpload
   emit('submit-object-metadatatag-config', toRaw(formData.value));
 
-  closeMetaModal();
+  closeModal();
 };
 
-const closeMetaModal = () => {
-  metaVisible.value = false;
+const closeModal = () => {
+  editing.value = false;
 };
 
 </script>
@@ -92,7 +92,7 @@ const closeMetaModal = () => {
         <Button
           v-if="editable"
           class="p-button-lg p-button-rounded p-button-text"
-          @click="showMetaModal(file.name)"
+          @click="showModal(file.name)"
         >
           <font-awesome-icon icon="fa-solid fa-pen-to-square" />
         </Button>
@@ -107,7 +107,7 @@ const closeMetaModal = () => {
 
     <!-- eslint-disable vue/no-v-model-argument -->
     <Dialog
-      v-model:visible="metaVisible"
+      v-model:visible="editing"
       :draggable="false"
       :modal="true"
       class="bcbox-info-dialog permissions-modal"
@@ -122,15 +122,15 @@ const closeMetaModal = () => {
       </template>
 
       <h3 class="bcbox-info-dialog-subhead">
-        {{ metadataTagFormData.filename }}
+        {{ initialModalData.filename }}
       </h3>
 
       <ObjectMetadataTagForm
-        :filename="metadataTagFormData.filename"
-        :metadata="metadataTagFormData.metadata"
-        :tagset="metadataTagFormData.tagset"
-        @submit-object-metadatatag-config="submitMetaModal"
-        @cancel-object-metadatatag-config="closeMetaModal"
+        :filename="initialModalData.filename"
+        :metadata="initialModalData.metadata"
+        :tagset="initialModalData.tagset"
+        @submit-object-metadatatag-config="submitModal"
+        @cancel-object-metadatatag-config="closeModal"
       />
     </Dialog>
   </div>

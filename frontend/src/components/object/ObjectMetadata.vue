@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 
 import GridRow from '@/components/form/GridRow.vue';
-import ObjectMetadataTagForm from '@/components/object/ObjectMetadataTagForm.vue';
+import { ObjectMetadataTagForm } from '@/components/object';
 import { Button, Dialog, useConfirm } from '@/lib/primevue';
 import { useMetadataStore, useObjectStore, useVersionStore } from '@/store';
 
@@ -33,8 +33,8 @@ const { getMetadata: tsGetMetadata } = storeToRefs(metadataStore);
 const { getMetadata: vsGetMetadata } = storeToRefs(versionStore);
 
 // State
-const metaVisible: Ref<boolean> = ref(false);
-const metadataTagFormData: Ref<ObjectMetadataTagFormType> = ref({
+const editing: Ref<boolean> = ref(false);
+const formData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
 });
 const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
@@ -48,28 +48,26 @@ const confirmUpdate = (values: ObjectMetadataTagFormType) => {
     header: 'Save metadata',
     acceptLabel: 'Confirm',
     rejectLabel: 'Cancel',
-    accept: () => submitMetaModal(values)
+    accept: () => submitModal(values)
   });
 };
 
-const showMetaModal = async () => {
-  metadataTagFormData.value.filename = useObjectStore().findObjectById(props.objectId)?.name ?? '';
-  metadataTagFormData.value.metadata = objectMetadata.value?.metadata;
+const showModal = () => {
+  formData.value.filename = useObjectStore().findObjectById(props.objectId)?.name ?? '';
+  formData.value.metadata = objectMetadata.value?.metadata;
 
-  metaVisible.value = true;
+  editing.value = true;
 };
 
-const submitMetaModal = async (values: ObjectMetadataTagFormType) => {
-  if( values.metadata?.length ) {
-    await metadataStore.replaceMetadata(props.objectId, values.metadata, props.versionId);
-    emit('on-file-uploaded');
-  }
+const submitModal = async (values: ObjectMetadataTagFormType) => {
+  await metadataStore.replaceMetadata(props.objectId, values.metadata ?? [], props.versionId);
+  emit('on-file-uploaded');
 
-  closeMetaModal();
+  closeModal();
 };
 
-const closeMetaModal = () => {
-  metaVisible.value = false;
+const closeModal = () => {
+  editing.value = false;
 };
 
 async function load() {
@@ -108,7 +106,7 @@ watch([props, tsGetMetadata,vsGetMetadata] , () => {
     <Button
       v-if="editable"
       outlined
-      @click="showMetaModal()"
+      @click="showModal()"
     >
       <font-awesome-icon
         icon="fa-solid fa-pen-to-square"
@@ -120,7 +118,7 @@ watch([props, tsGetMetadata,vsGetMetadata] , () => {
 
   <!-- eslint-disable vue/no-v-model-argument -->
   <Dialog
-    v-model:visible="metaVisible"
+    v-model:visible="editing"
     :draggable="false"
     :modal="true"
     class="bcbox-info-dialog permissions-modal"
@@ -135,15 +133,15 @@ watch([props, tsGetMetadata,vsGetMetadata] , () => {
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
-      {{ metadataTagFormData.filename }}
+      {{ formData.filename }}
     </h3>
 
     <ObjectMetadataTagForm
-      :filename="metadataTagFormData.filename"
-      :metadata="metadataTagFormData.metadata"
+      :filename="formData.filename"
+      :metadata="formData.metadata"
       :tagset-editable="false"
       @submit-object-metadatatag-config="confirmUpdate"
-      @cancel-object-metadatatag-config="closeMetaModal"
+      @cancel-object-metadatatag-config="closeModal"
     />
   </Dialog>
 </template>

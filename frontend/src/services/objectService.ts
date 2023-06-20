@@ -69,6 +69,25 @@ export default {
   },
 
   /**
+   * @function deleteTagging
+   * Removes the specified set of tags from the object
+   * All tags in the tag-set will be removed from the object if no tags are specified
+   * @returns {Promise} An axios response
+   */
+  deleteTagging(
+    objectId: string,
+    tagging: Array<Tag>,
+    versionId?: string,
+  ) {
+    return comsAxios().delete(`${PATH}/${objectId}/tagging`, {
+      params: {
+        tagset: Object.fromEntries((tagging.map((x: { key: string; value: string }) => ([x.key, x.value])))),
+        versionId: versionId
+      }
+    });
+  },
+
+  /**
    * @function getMetadata
    * Get an object's metadata
    * @param {any} headers Optional request headers
