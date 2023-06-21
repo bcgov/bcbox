@@ -66,9 +66,13 @@ watch( props, () => {
       :full-view="false"
     />
     <ObjectMetadata
+      :editable="false"
       :object-id="props.objectId"
     />
-    <ObjectTag :object-id="props.objectId" />
+    <ObjectTag
+      :editable="false"
+      :object-id="props.objectId"
+    />
     <div class="col-12 pl-0">
       <router-link
         v-slot="{ navigate }"

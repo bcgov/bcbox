@@ -7,7 +7,7 @@ import { useAppStore } from '@/store';
 import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-import type { GetObjectTaggingOptions, Tagging } from '@/types';
+import type { GetObjectTaggingOptions, Tag, Tagging } from '@/types';
 
 export type TagStoreState = {
   tagging: Ref<Array<Tagging>>
@@ -28,6 +28,25 @@ export const useTagStore = defineStore('tag', () => {
   };
 
   // Actions
+  async function deleteTagging(
+    objectId: string,
+    tagging: Array<Tag>,
+    versionId?: string,
+  ) {
+    try {
+      appStore.beginIndeterminateLoading();
+
+      await objectService.deleteTagging(objectId, tagging, versionId);
+      await fetchTagging({ objectId: objectId });
+    }
+    catch (error: any) {
+      toast.error('Deleting tags', error);
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   async function fetchTagging(params: GetObjectTaggingOptions = {}) {
     try {
       appStore.beginIndeterminateLoading();
@@ -56,6 +75,25 @@ export const useTagStore = defineStore('tag', () => {
 
   const findTaggingByObjectId = (objectId: string) => state.tagging.value.find((x: Tagging) => x.objectId === objectId);
 
+  async function replaceTagging(
+    objectId: string,
+    tagging: Array<Tag>,
+    versionId?: string,
+  ) {
+    try {
+      appStore.beginIndeterminateLoading();
+
+      await objectService.replaceTagging(objectId, tagging, versionId);
+      await fetchTagging({ objectId: objectId });
+    }
+    catch (error: any) {
+      toast.error('Updating tags', error);
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   return {
     // State
     ...state,
@@ -64,8 +102,10 @@ export const useTagStore = defineStore('tag', () => {
     ...getters,
 
     // Actions
+    deleteTagging,
     fetchTagging,
     findTaggingByObjectId,
+    replaceTagging
   };
 }, { persist: true });
 

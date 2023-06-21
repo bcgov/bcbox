@@ -1,7 +1,7 @@
 import { comsAxios } from './interceptors';
 
 import type { AxiosRequestConfig } from 'axios';
-import type { GetMetadataOptions, GetObjectTaggingOptions, SearchObjectsOptions } from '@/types';
+import type { GetMetadataOptions, GetObjectTaggingOptions, SearchObjectsOptions, Tag } from '@/types';
 
 const PATH = '/object';
 
@@ -63,6 +63,25 @@ export default {
   deleteObject(objectId: string, versionId?: string) {
     return comsAxios().delete(`${PATH}/${objectId}`, {
       params: {
+        versionId: versionId
+      }
+    });
+  },
+
+  /**
+   * @function deleteTagging
+   * Removes the specified set of tags from the object
+   * All tags in the tag-set will be removed from the object if no tags are specified
+   * @returns {Promise} An axios response
+   */
+  deleteTagging(
+    objectId: string,
+    tagging: Array<Tag>,
+    versionId?: string,
+  ) {
+    return comsAxios().delete(`${PATH}/${objectId}/tagging`, {
+      params: {
+        tagset: Object.fromEntries((tagging.map((x: { key: string; value: string }) => ([x.key, x.value])))),
         versionId: versionId
       }
     });
@@ -132,6 +151,43 @@ export default {
     return comsAxios().get(`${PATH}/${objectId}/version`);
   },
 
+  /**
+   * @function replaceMetadata
+   * Creates a copy and new version of the object with the given metadata replacing the existing
+   * @returns {Promise} An axios response
+   */
+  replaceMetadata(
+    objectId: string,
+    metadata: Array<{ key: string; value: string }>,
+    versionId?: string,
+  ) {
+    return comsAxios().put(`${PATH}/${objectId}/metadata`, undefined, {
+      headers: {
+        ...Object.fromEntries((metadata.map((x: { key: string; value: string }) => ([x.key, x.value]))))
+      },
+      params: {
+        versionId: versionId
+      }
+    });
+  },
+
+  /**
+   * @function replaceTagging
+   * Replace the existing tag-set of an object with the set of given tags
+   * @returns {Promise} An axios response
+   */
+  replaceTagging(
+    objectId: string,
+    tagging: Array<Tag>,
+    versionId?: string,
+  ) {
+    return comsAxios().put(`${PATH}/${objectId}/tagging`, undefined, {
+      params: {
+        tagset: Object.fromEntries((tagging.map((x: { key: string; value: string }) => ([x.key, x.value])))),
+        versionId: versionId
+      }
+    });
+  },
 
   /**
    * @function searchObjects
