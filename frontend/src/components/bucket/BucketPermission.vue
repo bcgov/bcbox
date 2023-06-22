@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import BucketPermissionAddUser from '@/components/bucket/BucketPermissionAddUser.vue';
@@ -64,7 +64,7 @@ const updateBucketPermission = (value: boolean, userId: string, permCode: string
   }
 };
 
-onMounted( async () => {
+onBeforeMount( async () => {
   await permissionStore.fetchBucketPermissions({ bucketId: props.bucketId });
   await permissionStore.mapBucketToUserPermissions(props.bucketId);
 });

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import ObjectPermissionAddUser from '@/components/object/ObjectPermissionAddUser.vue';
@@ -72,7 +72,7 @@ const updateObjectPermission = (value: boolean, userId: string, permCode: string
   }
 };
 
-onMounted(() => {
+onBeforeMount(() => {
   permissionStore.mapObjectToUserPermissions(props.objectId);
 });
 </script>
