@@ -24,7 +24,6 @@ const permissionStore = usePermissionStore();
 const userStore = useUserStore();
 
 const { getBucketPermissions } = storeToRefs(permissionStore);
-const { userSearch } = storeToRefs(userStore);
 
 // State
 const managedBy: Ref<string | undefined> = ref();
@@ -53,7 +52,7 @@ async function load() {
 
   if (uniqueIds.length) {
     await userStore.fetchUsers({ userId: uniqueIds });
-    managedBy.value = userSearch.value.map((x) => x.fullName).join(', ');
+    managedBy.value = userStore.findUsersById(uniqueIds).map( x => x.fullName ).join(', ');
   }
 }
 
