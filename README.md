@@ -49,7 +49,7 @@ SECURITY.md                - Security Policy and Reporting
 
 ## Documentation
 
-* [Application Readme](app/README.md)
+* [Application Readme](frontend/README.md)
 * [Product Roadmap](https://github.com/bcgov/bcbox/wiki/Product-Roadmap)
 * [Product Wiki](https://github.com/bcgov/bcbox/wiki)
 * [Security Reporting](SECURITY.md)
