@@ -224,8 +224,39 @@ export default {
    * @param {AxiosRequestConfig} axiosOptions Axios request config options
    * @returns {Promise} An axios response
    */
-  updateObject(objectId: string, object: any, axiosOptions?: AxiosRequestConfig) {
-    const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+  updateObject(
+    objectId: string,
+    object: any,
+    headers: {
+      metadata?: Array<{ key: string; value: string }>,
+    },
+    params: {
+      tagset?: Array<{ key: string; value: string }>
+    },
+    axiosOptions?: AxiosRequestConfig
+  ) {
+    const config = {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      params: {
+        tagset: {}
+      },
+    };
+
+    // Map the metadata if required
+    if (headers.metadata) {
+      config.headers = {
+        ...config.headers,
+        ...Object.fromEntries((headers.metadata.map((x: { key: string; value: string }) => ([x.key, x.value]))))
+      };
+    }
+
+    // Map the tagset if required
+    if (params.tagset) {
+      config.params.tagset = Object.fromEntries(
+        (params.tagset.map((x: { key: string; value: string }) => ([x.key, x.value])))
+      );
+    }
+
     const fd = new FormData();
     fd.append('file', object);
     return comsAxios(axiosOptions).post(`${PATH}/${objectId}`, fd, config);

@@ -193,10 +193,30 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  async function updateObject(object: any, objectId: string, axiosOptions?: AxiosRequestConfig) {
+  async function updateObject(
+    objectId: string,
+    object: any,
+    headers: {
+      metadata?: Array<{ key: string; value: string }>,
+    },
+    params: {
+      tagset?: Array<{ key: string; value: string }>
+    },
+    axiosOptions?: AxiosRequestConfig
+  ) {
     try {
       appStore.beginIndeterminateLoading();
-      await objectService.updateObject(objectId, object, axiosOptions);
+
+      // Ensure x-amz-meta- prefix exists
+      if (headers.metadata) {
+        for (const meta of headers.metadata) {
+          if (!meta.key.startsWith('x-amz-meta-')) {
+            meta.key = `x-amz-meta-${meta.key}`;
+          }
+        }
+      }
+
+      await objectService.updateObject(objectId, object, headers, params, axiosOptions);
     }
     catch (error: any) {
       toast.error('Updating object', error);

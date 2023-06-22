@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import { Button, useConfirm, useToast } from '@/lib/primevue';
-import { useAppStore, useObjectStore } from '@/store';
+import { ObjectMetadataTagForm } from '@/components/object';
+import { Button, Dialog, useConfirm, useToast } from '@/lib/primevue';
+import { useAppStore, useMetadataStore, useObjectStore, useTagStore } from '@/store';
 
 import type { Ref } from 'vue';
+import type { ObjectMetadataTagFormType } from '@/components/object/ObjectMetadataTagForm.vue';
 
 // Props
 type Props = {
@@ -19,11 +21,20 @@ const emit = defineEmits(['on-file-changed', 'on-file-uploaded']);
 
 // Store
 const appStore = useAppStore();
+const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
+const tagStore = useTagStore();
 
 // State
 const fileInput: Ref<any> = ref(null);
 const file: Ref<File | undefined> = ref(undefined);
+
+const editing: Ref<boolean> = ref(false);
+const formData: Ref<ObjectMetadataTagFormType> = ref({
+  filename: ''
+});
+let objectMetadata: Array<{ key: string; value: string }> | undefined = undefined;
+let objectTagging: Array<{ key: string; value: string }> | undefined = undefined;
 
 // Actions
 const confirm = useConfirm();
@@ -35,14 +46,14 @@ const confirmUpdate = () => {
     header: 'Upload new version',
     acceptLabel: 'Confirm',
     rejectLabel: 'Cancel',
-    accept: () => onUpload()
+    accept: () => { onUpload(); closeModal(); }
   });
 };
 
 const onChange = (event: any) => {
   file.value = event.target.files[0];
   emit('on-file-changed');
-  confirmUpdate();
+  showModal();
 };
 
 const onSelectFile = () => {
@@ -55,8 +66,13 @@ const onUpload = async () => {
       toast.info('File upload starting...');
       appStore.beginUploading();
 
-      // Infinite timeout for big files upload to avoid timeout error
-      await objectStore.updateObject(file.value, props.objectId, { timeout: 0 });
+      await objectStore.updateObject(
+        props.objectId,
+        file.value,
+        { metadata: objectMetadata },
+        { tagset: objectTagging },
+        { timeout: 0 } // Infinite timeout for big files upload to avoid timeout error
+      );
 
       // No finally block as we need this called before potential navigation
       appStore.endUploading();
@@ -68,6 +84,24 @@ const onUpload = async () => {
     appStore.endUploading();
     toast.error(`File upload: ${file.value?.name}`, error);
   }
+};
+
+const showModal = () => {
+  formData.value.filename = objectStore.findObjectById(props.objectId)?.name ?? '';
+  formData.value.metadata = metadataStore.findMetadataByObjectId(props.objectId)?.metadata;
+  formData.value.tagset = tagStore.findTaggingByObjectId(props.objectId)?.tagset;
+
+  editing.value = true;
+};
+
+const submitModal = async (values: ObjectMetadataTagFormType) => {
+  objectMetadata = values.metadata;
+  objectTagging = values.tagset;
+  confirmUpdate();
+};
+
+const closeModal = () => {
+  editing.value = false;
 };
 </script>
 
@@ -90,4 +124,33 @@ const onUpload = async () => {
     @change="onChange"
     @click="(event: any) => event.target.value = null"
   />
+
+  <!-- eslint-disable vue/no-v-model-argument -->
+  <Dialog
+    v-model:visible="editing"
+    :draggable="false"
+    :modal="true"
+    class="bcbox-info-dialog permissions-modal"
+  >
+    <!-- eslint-enable vue/no-v-model-argument -->
+    <template #header>
+      <font-awesome-icon
+        icon="fa-solid fa-pen-to-square"
+        fixed-width
+      />
+      <span class="p-dialog-title">New version's metadata and tags</span>
+    </template>
+
+    <h3 class="bcbox-info-dialog-subhead">
+      {{ formData.filename }}
+    </h3>
+
+    <ObjectMetadataTagForm
+      :filename="formData.filename"
+      :metadata="formData.metadata"
+      :tagset="formData.tagset"
+      @submit-object-metadatatag-config="submitModal"
+      @cancel-object-metadatatag-config="closeModal"
+    />
+  </Dialog>
 </template>
