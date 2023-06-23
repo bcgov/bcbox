@@ -20,20 +20,9 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: RouteNames.HOME,
-    component: () => import('../views/HomeView.vue')
+    component: () => import('../views/HomeView.vue'),
+    meta: { title: 'Home' }
   },
-  // TODO: Determine if we want modals to have disrete vue-router paths on presentation
-  // {
-  //   path: '/create',
-  //   children: [
-  //     {
-  //       path: 'bucket',
-  //       name: RouteNames.CreateBucket,
-  //       component: () => import('../views/CreateBucketView.vue'),
-  //       meta: { requiresAuth: true },
-  //     },
-  //   ],
-  // },
   {
     path: '/detail',
     component: () => import('@/views/GenericView.vue'),
@@ -42,7 +31,8 @@ const routes: Array<RouteRecordRaw> = [
         path: 'objects',
         name: RouteNames.DETAIL_OBJECTS,
         component: () => import('@/views/detail/DetailObjectsView.vue'),
-        props: createProps
+        props: createProps,
+        meta: { title: 'Object Details' }
       }
     ]
   },
@@ -50,7 +40,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/developer',
     name: RouteNames.DEVELOPER,
     component: () => import('@/views/DeveloperView.vue'),
-    meta: { requiresAuth: true, breadcrumb: 'Developer' }
+    meta: { requiresAuth: true, breadcrumb: 'Developer', title: 'Developer' }
   },
   {
     path: '/list',
@@ -60,14 +50,14 @@ const routes: Array<RouteRecordRaw> = [
         path: 'buckets',
         name: RouteNames.LIST_BUCKETS,
         component: () => import('@/views/list/ListBucketsView.vue'),
-        meta: { requiresAuth: true, breadcrumb: 'Buckets' },
+        meta: { requiresAuth: true, breadcrumb: 'Buckets', title: 'My Buckets' },
         props: createProps
       },
       {
         path: 'objects',
         name: RouteNames.LIST_OBJECTS,
         component: () => import('@/views/list/ListObjectsView.vue'),
-        meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic' },
+        meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic', title: 'My Objects' },
         props: createProps
       }
     ]
@@ -80,11 +70,13 @@ const routes: Array<RouteRecordRaw> = [
         path: 'callback',
         name: RouteNames.CALLBACK,
         component: () => import('@/views/oidc/OidcCallbackView.vue'),
+        meta: { title: 'Authenticating...' }
       },
       {
         path: 'login',
         name: RouteNames.LOGIN,
         component: () => import('@/views/oidc/OidcLoginView.vue'),
+        meta: { title: 'Logging in...' },
         beforeEnter: () => {
           const entrypoint = `${window.location.pathname}${window.location.search}${window.location.hash}`;
           window.sessionStorage.setItem(StorageKey.AUTH, entrypoint);
@@ -93,28 +85,22 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'logout',
         name: RouteNames.LOGOUT,
-        component: () => import('@/views/oidc/OidcLogoutView.vue')
+        component: () => import('@/views/oidc/OidcLogoutView.vue'),
+        meta: { title: 'Logging out...' }
       },
     ]
   },
-  // TODO: Determine if we want modals to have disrete vue-router paths on presentation
-  // {
-  //   path: '/permission',
-  //   children: [{}],
-  // },
-  // {
-  //   path: '/update',
-  //   children: [{}],
-  // },
   {
     path: '/forbidden',
     name: RouteNames.FORBIDDEN,
     component: () => import('@/views/Forbidden.vue'),
+    meta: { title: 'Forbidden' }
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFound.vue'),
+    meta: { title: 'Not Found' }
   }
 ];
 
@@ -157,7 +143,10 @@ export default function getRouter() {
     }
   });
 
-  router.afterEach(() => {
+  router.afterEach((to) => {
+    // Update document title
+    document.title = to.meta.title ? `BCBox - ${to.meta.title}` : 'BCBox';
+
     appStore.endDeterminateLoading();
   });
 

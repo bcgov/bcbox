@@ -4,7 +4,7 @@ import { ref } from 'vue';
 
 import BucketPermission from '@/components/bucket/BucketPermission.vue';
 import { Spinner } from '@/components/layout';
-import { Button, Column, DataTable, Dialog } from '@/lib/primevue';
+import { Button, Column, DataTable, Dialog, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 
@@ -12,10 +12,11 @@ import type { Ref } from 'vue';
 import type { Bucket } from '@/types';
 
 // Store
+const bucketStore = useBucketStore();
 const permissionStore = usePermissionStore();
 const { getIsLoading } = storeToRefs(useAppStore());
 const { getUserId } = storeToRefs(useAuthStore());
-const { getBuckets } = storeToRefs(useBucketStore());
+const { getBuckets } = storeToRefs(bucketStore);
 
 // State
 const permissionsVisible: Ref<boolean> = ref(false);
@@ -24,7 +25,9 @@ const permissionBucketName: Ref<string> = ref('');
 
 const emit = defineEmits(['show-bucket-config', 'show-sidebar-info']);
 
-// Functions
+// Actions
+const confirm = useConfirm();
+
 const showSidebarInfo = async (id: number) => {
   emit('show-sidebar-info', id);
 };
@@ -38,6 +41,23 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
   permissionsBucketId.value = bucketId;
   permissionBucketName.value = bucketName;
 };
+
+const confirmDeleteBucket = (bucketId: string) => {
+  confirm.require({
+    message: 'Are you sure you want to delete this bucket in BCBox? \
+      This will drop all related objects and permissions from BCBox, \
+      but the files will still remain in the actual bucket.',
+    header: 'Delete bucket',
+    acceptLabel: 'Confirm',
+    rejectLabel: 'Cancel',
+    accept: () => deleteBucket(bucketId)
+  });
+};
+
+async function deleteBucket(bucketId: string) {
+  await bucketStore.deleteBucket(bucketId);
+  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+}
 </script>
 
 <template>
@@ -123,6 +143,13 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
             @click="showSidebarInfo(data.bucketId)"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
+          </Button>
+          <Button
+            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.DELETE )"
+            class="p-button-lg p-button-text p-button-danger"
+            @click="confirmDeleteBucket(data.bucketId)"
+          >
+            <font-awesome-icon icon="fa-solid fa-trash" />
           </Button>
         </template>
       </Column>
