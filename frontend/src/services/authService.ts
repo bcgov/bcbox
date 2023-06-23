@@ -110,6 +110,6 @@ export default class AuthService {
    * @returns {Promise<void>}
    */
   public async logout(): Promise<void> {
-    return AuthService._userManager.signoutRedirect();
+    return AuthService._userManager.signoutRedirect({ redirectMethod: 'replace' });
   }
 }
