@@ -12,11 +12,11 @@ const authStore = useAuthStore();
 const { getIsAuthenticated } = storeToRefs(authStore);
 
 function login() {
-  router.replace({ name: RouteNames.LOGIN });
+  router.push({ name: RouteNames.LOGIN });
 }
 
 function logout() {
-  router.replace({ name: RouteNames.LOGOUT });
+  router.push({ name: RouteNames.LOGOUT });
 }
 </script>
 
