@@ -42,6 +42,17 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
+  async function deleteBucket(bucketId: string) {
+    try {
+      appStore.beginIndeterminateLoading();
+
+      await bucketService.deleteBucket(bucketId);
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   async function fetchBuckets(params?: BucketSearchPermissionsOptions) {
     try {
       appStore.beginIndeterminateLoading();
@@ -104,6 +115,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
     // Actions
     createBucket,
+    deleteBucket,
     fetchBuckets,
     findBucketById,
     updateBucket

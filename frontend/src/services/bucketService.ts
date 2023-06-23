@@ -26,6 +26,17 @@ export default {
   },
 
   /**
+   * @function deleteBucket
+   * Deletes a bucket
+   * This is a COMS DB delete only. The S3 bucket remains intact
+   * @param {string} bucketId Bucket ID for the bucket to delete
+   * @returns {Promise} An axios response
+   */
+  deleteBucket(bucketId: string) {
+    return comsAxios().delete(`${BUCKET_PATH}/${bucketId}`);
+  },
+
+  /**
    * @function updateBucket
    * Updates a bucket
    * @param {Bucket} data Bucket object containing the data to update bucket
