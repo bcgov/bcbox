@@ -23,18 +23,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/HomeView.vue'),
     meta: { title: 'Home' }
   },
-  // TODO: Determine if we want modals to have disrete vue-router paths on presentation
-  // {
-  //   path: '/create',
-  //   children: [
-  //     {
-  //       path: 'bucket',
-  //       name: RouteNames.CreateBucket,
-  //       component: () => import('../views/CreateBucketView.vue'),
-  //       meta: { requiresAuth: true },
-  //     },
-  //   ],
-  // },
   {
     path: '/detail',
     component: () => import('@/views/GenericView.vue'),
@@ -102,15 +90,6 @@ const routes: Array<RouteRecordRaw> = [
       },
     ]
   },
-  // TODO: Determine if we want modals to have disrete vue-router paths on presentation
-  // {
-  //   path: '/permission',
-  //   children: [{}],
-  // },
-  // {
-  //   path: '/update',
-  //   children: [{}],
-  // },
   {
     path: '/forbidden',
     name: RouteNames.FORBIDDEN,
@@ -162,12 +141,12 @@ export default function getRouter() {
         router.replace({ name: RouteNames.LOGIN });
       }
     }
-
-    // Update document title
-    document.title = to.meta.title ? `BCBox - ${to.meta.title}` : 'BCBox';
   });
 
-  router.afterEach(() => {
+  router.afterEach((to) => {
+    // Update document title
+    document.title = to.meta.title ? `BCBox - ${to.meta.title}` : 'BCBox';
+
     appStore.endDeterminateLoading();
   });
 
