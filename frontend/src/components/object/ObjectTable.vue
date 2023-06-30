@@ -10,7 +10,7 @@ import {
 } from '@/components/object';
 import { ShareObjectButton } from '@/components/object/share';
 import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch, useToast } from '@/lib/primevue';
-import { useAuthStore, useAppStore, useMetadataStore, useObjectStore, usePermissionStore } from '@/store';
+import { useAuthStore, useAppStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 import { formatDateLong } from '@/utils/formatters';
@@ -37,7 +37,6 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['show-object-info']);
 
 // Store
-const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const { getObjects } = storeToRefs(objectStore);
@@ -81,17 +80,6 @@ watch( getObjects, async () => {
   // Filter object cache to this specific bucket
   const objs: Array<COMSObjectDataSource> = getObjects.value
     .filter( (x: COMSObject) => x.bucketId === props.bucketId ) as COMSObjectDataSource[];
-
-  // Update metadata store with metadata user has access to
-  const objIds: Array<string> = [];
-  objs.forEach( (x: COMSObject) => {
-    if( x.public || permissionStore.isObjectActionAllowed(
-      x.id, getUserId.value, Permissions.READ, props.bucketId as string))
-    {
-      objIds.push(x.id);
-    }
-  });
-  await metadataStore.fetchMetadata({objectId: objIds});
 
   tableData.value = objs.map( (x: COMSObjectDataSource) => {
     x.lastUpdatedDate = x.updatedAt ?? x.createdAt;
