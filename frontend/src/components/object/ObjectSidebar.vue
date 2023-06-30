@@ -7,7 +7,7 @@ import {
   ObjectTag
 } from '@/components/object';
 import { Button } from '@/lib/primevue';
-import { useAuthStore, useObjectStore, usePermissionStore, useTagStore } from '@/store';
+import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore, useTagStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 
 // Props
@@ -21,6 +21,7 @@ const props = withDefaults(defineProps<Props>(), {});
 const emit = defineEmits(['close-object-info']);
 
 // Store
+const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const tagStore = useTagStore();
@@ -37,6 +38,7 @@ watch( props, () => {
      (obj.public || permissionStore.isObjectActionAllowed(obj.id, getUserId.value, Permissions.READ, obj.bucketId)))
   {
     tagStore.fetchTagging({objectId: props.objectId});
+    metadataStore.fetchMetadata({objectId: props.objectId});
   }
 }, { immediate: true });
 </script>
