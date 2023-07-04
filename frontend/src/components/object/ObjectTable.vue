@@ -6,7 +6,8 @@ import { Spinner } from '@/components/layout';
 import {
   DeleteObjectButton,
   DownloadObjectButton,
-  ObjectPermission
+  ObjectPermission,
+  ObjectTagFilter,
 } from '@/components/object';
 import { ShareObjectButton } from '@/components/object/share';
 import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch, useToast } from '@/lib/primevue';
@@ -122,6 +123,8 @@ const filters = ref({
     >
       <template #header>
         <div class="flex justify-content-end">
+          <ObjectTagFilter class="mr-4" />
+
           <span class="p-input-icon-left">
             <i class="pi pi-search" />
             <InputText

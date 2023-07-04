@@ -202,6 +202,20 @@ export default {
   },
 
   /**
+   * @function searchTagging
+   * Gets a list of tags matching the given parameters
+   * @param {Array<Tag>} tagset Query parameters to search on
+   * @returns {Promise} An axios response
+   */
+  searchTagging(tagset: Array<Tag>) {
+    return comsAxios().get(`${PATH}/tagging`, {
+      params: {
+        tagset: Object.fromEntries((tagset.map((x: { key: string; value: string }) => ([x.key, x.value]))))
+      }
+    });
+  },
+
+  /**
    * @function togglePublic
    * Toggles the public property for an object
    * @param {string} objectId The id for the object
