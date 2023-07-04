@@ -4,7 +4,7 @@ export type SearchObjectsOptions = {
   name?: string,
   path?: string,
   mimeType?: string,
-  //tagset: type.tagset(),
+  tagset?: any,
   public?: boolean,
   active?: boolean,
   deleteMarker?: boolean,

@@ -3,9 +3,21 @@ import { storeToRefs } from 'pinia';
 import { ref, onMounted, computed } from 'vue';
 
 import { MultiSelect } from '@/lib/primevue';
-import { useTagStore } from '@/store';
+import { useObjectStore, useTagStore } from '@/store';
+
+import type { Tag } from '@/types';
+
+// Props
+type Props = {
+  bucketId?: string;
+};
+
+const props = withDefaults(defineProps<Props>(), {
+  bucketId: undefined,
+});
 
 // Store
+const objectStore = useObjectStore();
 const tagStore = useTagStore();
 const { getTagSearchResults } = storeToRefs(useTagStore());
 
@@ -27,6 +39,17 @@ const tagsetValues = computed(() => {
 });
 
 // Actions
+const selectedValuesChanged = () => {
+  const tagSetToSearch: Array<Tag> = selectedTags.value.map(
+    ({ display, ...rawTag }: any) => rawTag
+  );
+  objectStore.fetchObjects(
+    {
+      bucketId: props.bucketId,
+    },
+    tagSetToSearch
+  );
+};
 
 onMounted(async () => {
   searching.value = true;
@@ -36,7 +59,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  {{ selectedTags }}
   <MultiSelect
     v-model="selectedTags"
     :options="tagsetValues"
@@ -48,6 +70,7 @@ onMounted(async () => {
     filter
     filter-placeholder="Search tags"
     :show-toggle-all="false"
+    @update:model-value="selectedValuesChanged"
   />
 </template>
 

@@ -8,7 +8,7 @@ import { partition } from '@/utils/utils';
 
 import type { AxiosRequestConfig } from 'axios';
 import type { Ref } from 'vue';
-import type { COMSObject, ObjectSearchPermissionsOptions } from '@/types';
+import type { COMSObject, ObjectSearchPermissionsOptions, Tag } from '@/types';
 
 export type ObjectStoreState = {
   objects: Ref<Array<COMSObject>>;
@@ -106,8 +106,9 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  async function fetchObjects(params: ObjectSearchPermissionsOptions = {}) {
+  async function fetchObjects(params: ObjectSearchPermissionsOptions = {}, tagset?: Array<Tag>) {
     try {
+      console.log(tagset ? tagset[0] : undefined);
       appStore.beginIndeterminateLoading();
 
       // Get a unique list of object IDs the user has access to
@@ -126,6 +127,7 @@ export const useObjectStore = defineStore('object', () => {
           response = (await objectService.searchObjects({
             bucketId: params.bucketId ? [params.bucketId] : undefined,
             objectId: uniqueIds,
+            tagset: tagset ? tagset.reduce((acc, cur) => ({ ...acc, [cur.key]: cur.value }), {}) : undefined,
 
             // Added to allow deletion of objects before versioning implementation
             // TODO: Verify if needed after versioning implemented
