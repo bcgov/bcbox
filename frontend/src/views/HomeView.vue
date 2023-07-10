@@ -29,7 +29,14 @@ const { getConfig } = storeToRefs(useConfigStore());
       <p class="text-xl text-center">
         This website uses the <a href="https://bcgov.github.io/common-service-showcase/services/coms.html">Common Object Management Service</a> so
         <a href="https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/id-services/idir">IDIR</a> and <a href="https://www.bceid.ca/">BCeID</a>
-        users can <br /> upload and share files.
+        users can upload and share files.<br /><br />
+        You will need access to a bucket – a file storage container – before you can use BCBox.
+        If you are new to buckets and don't know a bucket manager, contact
+        <a href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701">NRIDS Optimization</a> (NRM only)
+        or your ministry's service desk to get credentials for a bucket. Then come back, log in, and add it in BCBox.
+        <br /><br />
+        If you already have a bucket from outside of BCBox, you can't yet work on existing files
+        from that bucket in BCBox, but we are currently working to make this possible through synchronization.
       </p>
     </div>
     <div class="flex justify-content-center mb-5">
@@ -48,6 +55,19 @@ const { getConfig } = storeToRefs(useConfigStore());
         class="border-1 drop-shadow"
         width="60%"
       />
+    </div>
+    <div class="flex justify-content-center mb-5">
+      <h1 class="font-bold">
+        Ongoing feature enhancements
+      </h1>
+    </div>
+    <div class="flex justify-content-center mb-8 text-xl">
+      <ul>
+        <li>
+          BCBox is constantly improving! See BCBox's <a href="https://github.com/bcgov/bcbox/wiki">Help</a> for more information,
+          a link to our Product Roadmap, and documentation of features as they are implemented.
+        </li>
+      </ul>
     </div>
     <div class="grid mb-8">
       <div class="col-6 pr-5">
