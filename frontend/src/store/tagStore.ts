@@ -101,6 +101,8 @@ export const useTagStore = defineStore('tag', () => {
     tagset: Array<Tag> = [],
   ) {
     try {
+      state.tagSearchResults.value = [];
+      // await new Promise((resolve) => setTimeout(resolve, 4000));
       const response = (await objectService.searchTagging(tagset)).data;
       state.tagSearchResults.value = response;
     }

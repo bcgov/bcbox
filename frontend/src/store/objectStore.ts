@@ -108,7 +108,6 @@ export const useObjectStore = defineStore('object', () => {
 
   async function fetchObjects(params: ObjectSearchPermissionsOptions = {}, tagset?: Array<Tag>) {
     try {
-      console.log(tagset ? tagset[0] : undefined);
       appStore.beginIndeterminateLoading();
 
       // Get a unique list of object IDs the user has access to

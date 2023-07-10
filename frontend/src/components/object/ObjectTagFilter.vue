@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { ref, onMounted, computed } from 'vue';
+import { storeToRefs } from "pinia";
+import { ref, onMounted, computed } from "vue";
 
-import { MultiSelect } from '@/lib/primevue';
-import { useObjectStore, useTagStore } from '@/store';
+import { MultiSelect } from "@/lib/primevue";
+import { useObjectStore, useTagStore } from "@/store";
 
-import type { Tag } from '@/types';
+import type { Tag } from "@/types";
 
 // Props
 type Props = {
@@ -28,21 +28,28 @@ const selectedTags = ref();
 // Computed
 const tagsetValues = computed(() => {
   // Take the tags for all objects, distinct, and flatten them into a single array
+  // Add a display property to each tag to be used by the multiselect
+  // coms-id not allowed as a tag to filter on by COMS
   const distinctVals = [
-    ...new Set(getTagSearchResults.value.map((obj) => obj.tagset).flat()),
+    ...new Set(getTagSearchResults.value.flatMap((obj) => obj.tagset)),
   ];
-  // Add a display property to show in the dropdown and search on
-  return distinctVals.map((val) => ({
-    ...val,
-    display: `${val.key}:${val.value}`,
-  }));
+  return distinctVals
+    .map((val) => ({ ...val, display: `${val.key}:${val.value}` }))
+    .filter((val) => val.key !== "coms-id")
+    .filter(
+      (val, index, self) =>
+        index === self.findIndex((t) => t.display === val.display)
+    )
+    .sort((a, b) => a.display.localeCompare(b.display));
 });
 
 // Actions
 const selectedValuesChanged = () => {
+  // Just the tag objects, not the display property
   const tagSetToSearch: Array<Tag> = selectedTags.value.map(
     ({ display, ...rawTag }: any) => rawTag
   );
+  // Search the object store with the tagset as a param
   objectStore.fetchObjects(
     {
       bucketId: props.bucketId,
@@ -51,11 +58,13 @@ const selectedValuesChanged = () => {
   );
 };
 
-onMounted(async () => {
+const searchTagging = async () => {
   searching.value = true;
+  //await 4 seconds
   await tagStore.searchTagging();
   searching.value = false;
-});
+};
+
 </script>
 
 <template>
@@ -69,9 +78,17 @@ onMounted(async () => {
     placeholder="Tags"
     filter
     filter-placeholder="Search tags"
+    @show="searchTagging"
     :show-toggle-all="false"
     @update:model-value="selectedValuesChanged"
-  />
+  >
+    <template #optiongroup>
+      <i class="pi pi-tag"></i>
+    </template>
+    <template #loader>
+      test
+    </template>
+  </MultiSelect>
 </template>
 
 <style lang="scss" scoped>
