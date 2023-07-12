@@ -8,7 +8,7 @@ import { partition } from '@/utils/utils';
 
 import type { AxiosRequestConfig } from 'axios';
 import type { Ref } from 'vue';
-import type { COMSObject, ObjectSearchPermissionsOptions, Tag } from '@/types';
+import type { COMSObject, MetadataPair, ObjectSearchPermissionsOptions, Tag } from '@/types';
 
 export type ObjectStoreState = {
   objects: Ref<Array<COMSObject>>;
@@ -106,7 +106,10 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  async function fetchObjects(params: ObjectSearchPermissionsOptions = {}, tagset?: Array<Tag>) {
+  async function fetchObjects(
+    params: ObjectSearchPermissionsOptions = {}, 
+    tagset?: Array<Tag>, 
+    metadata?: Array<MetadataPair>) {
     try {
       appStore.beginIndeterminateLoading();
 
@@ -123,6 +126,14 @@ export const useObjectStore = defineStore('object', () => {
 
         let response = Array<COMSObject>();
         if (uniqueIds.length) {
+          // If metadata specified, search for objects with matching metadata
+          const headers: Record<string, string> = {};
+          if (metadata?.length) {
+            for (const meta of metadata) {
+              headers[`x-amz-meta-${meta.key}`] = meta.value;
+            }
+          }
+
           response = (await objectService.searchObjects({
             bucketId: params.bucketId ? [params.bucketId] : undefined,
             objectId: uniqueIds,
@@ -132,7 +143,7 @@ export const useObjectStore = defineStore('object', () => {
             // TODO: Verify if needed after versioning implemented
             deleteMarker: false,
             latest: true
-          })).data;
+          }, headers)).data;
 
           // Remove old values matching search parameters
           const matches = (x: COMSObject) => (
@@ -198,10 +209,10 @@ export const useObjectStore = defineStore('object', () => {
     objectId: string,
     object: any,
     headers: {
-      metadata?: Array<{ key: string; value: string }>,
+      metadata?: Array<MetadataPair>,
     },
     params: {
-      tagset?: Array<{ key: string; value: string }>
+      tagset?: Array<Tag>
     },
     axiosOptions?: AxiosRequestConfig
   ) {

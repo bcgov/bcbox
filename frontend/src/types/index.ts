@@ -4,6 +4,7 @@ export type { COMSObject } from './COMSObject';
 export type { COMSObjectPermission } from './COMSObjectPermission';
 export type { IdentityProvider } from './IdentityProvider';
 export type { Metadata } from './Metadata';
+export type { MetadataPair } from './MetadataPair';
 export type { Permission } from './Permission';
 export type { Tagging } from './Tagging';
 export type { Tag } from './Tag';

@@ -1,5 +1,7 @@
+import type { MetadataPair } from '@/types';
+
 export type Metadata = {
-  metadata: Array<{ key: string; value: string }>;
+  metadata: Array<MetadataPair>;
   objectId?: string;
   versionId?: string;
 }
