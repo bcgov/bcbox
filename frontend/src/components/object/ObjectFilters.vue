@@ -134,5 +134,9 @@ const searchTagging = async () => {
 .filterDropdown {
   min-width: 15rem;
   height: 2.45rem;
+  :deep(.p-multiselect-token) {
+    padding-bottom: 2px;
+    padding-top: 2px;
+  }
 }
 </style>
