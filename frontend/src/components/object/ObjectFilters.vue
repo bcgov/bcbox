@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref, computed, type ComputedRef, type Ref } from 'vue';
+import { ref, computed } from 'vue';
 
 import { MultiSelect } from '@/lib/primevue';
 import { useMetadataStore, useObjectStore, useTagStore } from '@/store';
+import { Permissions } from '@/utils/constants';
 
-import type { Metadata, MetadataPair, Tag, Tagging } from '@/types';
+import type { MetadataPair, Tag } from '@/types';
 
 // Props
 type Props = {
@@ -86,6 +87,7 @@ const selectedFilterValuesChanged = () => {
   objectStore.fetchObjects(
     {
       bucketId: props.bucketId,
+      permCode: Permissions.READ
     },
     tagSetToSearch,
     metaToSearch
