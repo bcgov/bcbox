@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, computed, type ComputedRef, type Ref } from 'vue';
 
 import { MultiSelect } from '@/lib/primevue';
 import { useMetadataStore, useObjectStore, useTagStore } from '@/store';
 
-import type { MetadataPair, Tag } from '@/types';
+import type { Metadata, MetadataPair, Tag, Tagging } from '@/types';
 
 // Props
 type Props = {
@@ -21,6 +21,7 @@ const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const tagStore = useTagStore();
 const { getMetadataSearchResults } = storeToRefs(useMetadataStore());
+const { getObjects } = storeToRefs(useObjectStore());
 const { getTagSearchResults } = storeToRefs(useTagStore());
 
 // State
@@ -30,13 +31,18 @@ const selectedTags = ref([]);
 
 // Computed
 const metadataValues = computed(() => {
-  // Take the metadata for all objects, distinct, and flatten them into a single array
-  // Add a display property to each tag to be used by the multiselect
-  const distinctVals = [
-    ...new Set(getMetadataSearchResults.value.flatMap((obj) => obj.metadata)),
+  // Filter out any tags that don't have an objectID that exist in getObjects
+  const filteredVals = getMetadataSearchResults.value.filter((val) =>
+    getObjects.value.some((obj) => obj.id === val.objectId)
+  );
+  // Take the metadata for the objects, and flatten them into a single array
+  const metadataVals = [
+    ...new Set(filteredVals.flatMap((obj) => obj.metadata)),
   ];
-  return distinctVals
+  return metadataVals
+    // Add a display property to each tag to be used by the multiselect
     .map((val) => ({ ...val, display: `${val.key}:${val.value}` }))
+    // Unique by display property
     .filter(
       (val, index, self) =>
         index === self.findIndex((t) => t.display === val.display)
@@ -45,15 +51,20 @@ const metadataValues = computed(() => {
 });
 
 const tagsetValues = computed(() => {
-  // Take the tags for all objects, distinct, and flatten them into a single array
-  // Add a display property to each tag to be used by the multiselect
-  // coms-id not allowed as a tag to filter on by COMS
-  const distinctVals = [
-    ...new Set(getTagSearchResults.value.flatMap((obj) => obj.tagset)),
+  // Filter out any tags that don't have an objectID that exist in getObjects
+  const filteredVals = getTagSearchResults.value.filter((val) =>
+    getObjects.value.some((obj) => obj.id === val.objectId)
+  );
+  // Take the tags for the objects, and flatten them into a single array
+  const taggingVals = [
+    ...new Set(filteredVals.flatMap((obj) => obj.tagset)),
   ];
-  return distinctVals
+  return taggingVals
+    // Add a display property to each tag to be used by the multiselect
     .map((val) => ({ ...val, display: `${val.key}=${val.value}` }))
+    // coms-id not allowed as a tag to filter on by COMS
     .filter((val) => val.key !== 'coms-id')
+    // Unique by display property
     .filter(
       (val, index, self) =>
         index === self.findIndex((t) => t.display === val.display)
