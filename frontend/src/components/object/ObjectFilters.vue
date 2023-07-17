@@ -30,6 +30,22 @@ const searching = ref(false);
 const selectedMetadata = ref([]);
 const selectedTags = ref([]);
 
+// Store subscriptions
+objectStore.$onAction(
+  ({name, args}) => {
+    // If someone calls fetchObjects to refresh the table, clear the filter
+    // unless supplied with filter(s)
+    if (name === 'fetchObjects') {
+      // Args are supplied from onAction as a single array so have to check how many to satisfy needed condition
+      // Might be a cleaner way of doing this...
+      if(args.length < 2) {
+        selectedMetadata.value = [];
+        selectedTags.value = [];
+      }
+    }
+  }
+);
+
 // Computed
 const metadataValues = computed(() => {
   // Filter out any tags that don't have an objectID that exist in getObjects
