@@ -203,7 +203,8 @@ const filters = ref({
           <InputSwitch
             v-model="data.public"
             :disabled="!permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
+              data.id, getUserId, Permissions.MANAGE, props.bucketId as string) ||
+              !usePermissionStore().isUserElevatedRights()"
             @change="togglePublic(data.id, data.public)"
           />
         </template>
