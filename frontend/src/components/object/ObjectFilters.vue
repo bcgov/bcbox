@@ -48,16 +48,14 @@ objectStore.$onAction(
 
 // Computed
 const metadataValues = computed(() => {
-  // Filter out any tags that don't have an objectID that exist in getObjects
+  // Filter out any tags that don't have an objectID that exist in getUnfilteredObjectIds
   const filteredVals = getMetadataSearchResults.value.filter((searchRes) =>
     getUnfilteredObjectIds.value.some((obj) => obj === searchRes.objectId)
   );
 
-  // Take the metadata for the objects, and flatten them into a single array
-  const metadataVals = [
-    ...new Set(filteredVals.flatMap((obj) => obj.metadata)),
-  ];
-  return metadataVals
+  return filteredVals
+    // Take the metadata for the objects, and flatten them into a single array
+    .flatMap((obj) => obj.metadata)
     // Add a display property to each tag to be used by the multiselect
     .map((val) => ({ ...val, display: `${val.key}:${val.value}` }))
     // Unique by display property
@@ -74,11 +72,9 @@ const tagsetValues = computed(() => {
     getUnfilteredObjectIds.value.some((obj) => obj === searchRes.objectId)
   );
 
-  // Take the tags for the objects, and flatten them into a single array
-  const taggingVals = [
-    ...new Set(filteredVals.flatMap((obj) => obj.tagset)),
-  ];
-  return taggingVals
+  return filteredVals
+    // Take the tags for the objects, and flatten them into a single array
+    .flatMap((obj) => obj.tagset)
     // Add a display property to each tag to be used by the multiselect
     .map((val) => ({ ...val, display: `${val.key}=${val.value}` }))
     // coms-id not allowed as a tag to filter on by COMS
@@ -139,6 +135,7 @@ const searchTagging = async () => {
     placeholder="Metadata"
     filter
     filter-placeholder="Search metadata"
+    :empty-message="searching ? 'Loading...' : 'No available options'"
     :show-toggle-all="false"
     @show="searchMetadata"
     @update:model-value="selectedFilterValuesChanged"
@@ -155,6 +152,7 @@ const searchTagging = async () => {
     placeholder="Tags"
     filter
     filter-placeholder="Search tags"
+    :empty-message="searching ? 'Loading...' : 'No available options'"
     :show-toggle-all="false"
     @show="searchTagging"
     @update:model-value="selectedFilterValuesChanged"

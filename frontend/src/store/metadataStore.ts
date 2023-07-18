@@ -97,7 +97,6 @@ export const useMetadataStore = defineStore('metadata', () => {
   ) {
     try {
       state.metadataSearchResults.value = [];
-      // await new Promise((resolve) => setTimeout(resolve, 4000));
       const response = (await objectService.searchMetadata({ metadata: metadataSet })).data;
       state.metadataSearchResults.value = response;
     }
