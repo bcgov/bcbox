@@ -102,7 +102,7 @@ export const useMetadataStore = defineStore('metadata', () => {
       state.metadataSearchResults.value = response;
     }
     catch (error: any) {
-      toast.error('Searching tags', error);
+      toast.error('Searching metadata', error);
     }
   }
 
