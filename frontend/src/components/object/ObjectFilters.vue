@@ -22,7 +22,7 @@ const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const tagStore = useTagStore();
 const { getMetadataSearchResults } = storeToRefs(useMetadataStore());
-const { getObjects } = storeToRefs(useObjectStore());
+const { getUnfilteredObjectIds } = storeToRefs(useObjectStore());
 const { getTagSearchResults } = storeToRefs(useTagStore());
 
 // State
@@ -49,9 +49,10 @@ objectStore.$onAction(
 // Computed
 const metadataValues = computed(() => {
   // Filter out any tags that don't have an objectID that exist in getObjects
-  const filteredVals = getMetadataSearchResults.value.filter((val) =>
-    getObjects.value.some((obj) => obj.id === val.objectId)
+  const filteredVals = getMetadataSearchResults.value.filter((searchRes) =>
+    getUnfilteredObjectIds.value.some((obj) => obj === searchRes.objectId)
   );
+
   // Take the metadata for the objects, and flatten them into a single array
   const metadataVals = [
     ...new Set(filteredVals.flatMap((obj) => obj.metadata)),
@@ -68,10 +69,11 @@ const metadataValues = computed(() => {
 });
 
 const tagsetValues = computed(() => {
-  // Filter out any tags that don't have an objectID that exist in getObjects
-  const filteredVals = getTagSearchResults.value.filter((val) =>
-    getObjects.value.some((obj) => obj.id === val.objectId)
+  // Filter out any tags that don't have an objectID that exist in getUnfilteredObjectIds
+  const filteredVals = getTagSearchResults.value.filter((searchRes) =>
+    getUnfilteredObjectIds.value.some((obj) => obj === searchRes.objectId)
   );
+
   // Take the tags for the objects, and flatten them into a single array
   const taggingVals = [
     ...new Set(filteredVals.flatMap((obj) => obj.tagset)),

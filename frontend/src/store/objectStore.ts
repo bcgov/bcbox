@@ -13,6 +13,7 @@ import type { COMSObject, MetadataPair, ObjectSearchPermissionsOptions, Tag } fr
 export type ObjectStoreState = {
   objects: Ref<Array<COMSObject>>;
   selectedObjects: Ref<Array<COMSObject>>; // All selected table row items
+  unfilteredObjectIds: Ref<Array<string>>;
 }
 
 export const useObjectStore = defineStore('object', () => {
@@ -27,12 +28,14 @@ export const useObjectStore = defineStore('object', () => {
   const state: ObjectStoreState = {
     objects: ref([]),
     selectedObjects: ref([]),
+    unfilteredObjectIds: ref([]),
   };
 
   // Getters
   const getters = {
     getObjects: computed(() => state.objects.value),
-    getSelectedObjects: computed(() => state.selectedObjects.value)
+    getSelectedObjects: computed(() => state.selectedObjects.value),
+    getUnfilteredObjectIds: computed(() => state.unfilteredObjectIds.value),
   };
 
   // Actions
@@ -155,9 +158,14 @@ export const useObjectStore = defineStore('object', () => {
 
           // Merge and assign
           state.objects.value = difference.concat(response);
+          // Track all the object IDs that the user would have access to in the table (even if filters are applied)
+          if(!tagset && !metadata) {
+            state.unfilteredObjectIds.value = state.objects.value.map((o) => o.id);
+          }
         }
         else {
           state.objects.value = response;
+          state.unfilteredObjectIds.value = [];
         }
       }
     }
