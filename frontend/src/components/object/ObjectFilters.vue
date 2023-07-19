@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, computed, type Ref } from 'vue';
 
 import { MultiSelect } from '@/lib/primevue';
 import { useMetadataStore, useObjectStore, useTagStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { MetadataPair, Tag } from '@/types';
+import type { MultiSelectChangeEvent } from 'primevue/multiselect';
+
+type FilterDisplayItem = {
+  key: string;
+  value: string;
+  display?: string;
+}
 
 // Props
 type Props = {
@@ -27,8 +34,8 @@ const { getTagSearchResults } = storeToRefs(useTagStore());
 
 // State
 const searching = ref(false);
-const selectedMetadata = ref([]);
-const selectedTags = ref([]);
+const selectedMetadata: Ref<MetadataPair[]> = ref([]);
+const selectedTags: Ref<Tag[]> = ref([]);
 
 // Store subscriptions
 objectStore.$onAction(
@@ -88,6 +95,29 @@ const tagsetValues = computed(() => {
 });
 
 // Actions
+const uncheckOther= (event: MultiSelectChangeEvent, modelValue: Ref<MetadataPair[] | Tag[]>) =>{
+  if(event.value.length > 1) {
+    // Docs say value should be the current selected, but it's the whole list. Current is always the last one
+    const selectedOption = event.value[event.value.length - 1];
+    const tagKey = selectedOption.key;
+    // remove any other keys from multiselect list that match the key but keep the current one
+    modelValue.value = modelValue.value.filter(
+      (meta: FilterDisplayItem) => meta.key !== tagKey || meta.display === selectedOption.display
+    );
+  }
+};
+const selectedMetadataChanged = (event: MultiSelectChangeEvent) => {
+  // Unselect any other metadata that have the same metadata key
+  // e.g. if 'class:high' is selected, unselect any other metadata that have 'class' as the key
+  uncheckOther(event, selectedMetadata);
+  selectedFilterValuesChanged();
+};
+const selectedTagsChanged = (event: MultiSelectChangeEvent) => {
+  // Unselect any other tags that have the same tag key
+  // e.g. if 'coms-id=1234' is selected, unselect any other tags that have 'coms-id' as the key
+  uncheckOther(event, selectedTags);
+  selectedFilterValuesChanged();
+};
 const selectedFilterValuesChanged = () => {
   // Get the 'display' property out from selected tag and metadata
   const metaToSearch: Array<MetadataPair> = selectedMetadata.value.map(
@@ -138,7 +168,7 @@ const searchTagging = async () => {
     :empty-message="searching ? 'Loading...' : 'No available options'"
     :show-toggle-all="false"
     @show="searchMetadata"
-    @update:model-value="selectedFilterValuesChanged"
+    @change="selectedMetadataChanged"
   />
 
   
@@ -155,7 +185,7 @@ const searchTagging = async () => {
     :empty-message="searching ? 'Loading...' : 'No available options'"
     :show-toggle-all="false"
     @show="searchTagging"
-    @update:model-value="selectedFilterValuesChanged"
+    @change="selectedTagsChanged"
   />
 </template>
 
