@@ -159,7 +159,7 @@ export const useObjectStore = defineStore('object', () => {
           // Merge and assign
           state.objects.value = difference.concat(response);
           // Track all the object IDs that the user would have access to in the table (even if filters are applied)
-          if(!tagset && !metadata) {
+          if(!tagset?.length && !metadata?.length) {
             state.unfilteredObjectIds.value = state.objects.value.map((o) => o.id);
           }
         }
