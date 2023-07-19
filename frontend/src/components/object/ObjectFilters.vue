@@ -140,14 +140,12 @@ const selectedFilterValuesChanged = () => {
 
 const searchMetadata = async () => {
   searching.value = true;
-  //await 4 seconds
   await metadataStore.searchMetadata();
   searching.value = false;
 };
 
 const searchTagging = async () => {
   searching.value = true;
-  //await 4 seconds
   await tagStore.searchTagging();
   searching.value = false;
 };
@@ -167,7 +165,7 @@ const searchTagging = async () => {
     filter-placeholder="Search metadata"
     :empty-message="searching ? 'Loading...' : 'No available options'"
     :show-toggle-all="false"
-    @show="searchMetadata"
+    @before-show="searchMetadata"
     @change="selectedMetadataChanged"
   />
 
@@ -184,7 +182,7 @@ const searchTagging = async () => {
     filter-placeholder="Search tags"
     :empty-message="searching ? 'Loading...' : 'No available options'"
     :show-toggle-all="false"
-    @show="searchTagging"
+    @before-show="searchTagging"
     @change="selectedTagsChanged"
   />
 </template>
