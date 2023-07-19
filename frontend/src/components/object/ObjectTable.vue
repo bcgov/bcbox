@@ -123,7 +123,7 @@ const filters = ref({
     >
       <template #header>
         <div class="flex justify-content-end">
-          <ObjectFilters />
+          <ObjectFilters :bucket-id="props.bucketId" />
 
           <span class="p-input-icon-left ml-4">
             <i class="pi pi-search" />
