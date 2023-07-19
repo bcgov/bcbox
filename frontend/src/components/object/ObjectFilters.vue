@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref, computed, type Ref } from 'vue';
+import { ref, computed } from 'vue';
 
 import { MultiSelect } from '@/lib/primevue';
 import { useMetadataStore, useObjectStore, useTagStore } from '@/store';
@@ -8,6 +8,7 @@ import { Permissions } from '@/utils/constants';
 
 import type { MetadataPair, Tag } from '@/types';
 import type { MultiSelectChangeEvent } from 'primevue/multiselect';
+import type { Ref } from 'vue';
 
 type FilterDisplayItem = {
   key: string;
@@ -95,7 +96,7 @@ const tagsetValues = computed(() => {
 });
 
 // Actions
-const uncheckOther= (event: MultiSelectChangeEvent, modelValue: Ref<MetadataPair[] | Tag[]>) =>{
+const uncheckOther = (event: MultiSelectChangeEvent, modelValue: Ref<MetadataPair[] | Tag[]>) =>{
   if(event.value.length > 1) {
     // Docs say value should be the current selected, but it's the whole list. Current is always the last one
     const selectedOption = event.value[event.value.length - 1];
