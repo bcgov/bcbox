@@ -7,10 +7,11 @@ import { useAppStore } from '@/store';
 import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-import type { GetMetadataOptions, Metadata } from '@/types';
+import type { GetMetadataOptions, Metadata, MetadataPair } from '@/types';
 
 export type MetadataStoreState = {
-  metadata: Ref<Array<Metadata>>
+  metadata: Ref<Array<Metadata>>,
+  metadataSearchResults: Ref<Array<Metadata>>
 }
 
 export const useMetadataStore = defineStore('metadata', () => {
@@ -19,12 +20,14 @@ export const useMetadataStore = defineStore('metadata', () => {
 
   // State
   const state: MetadataStoreState = {
-    metadata: ref([])
+    metadata: ref([]),
+    metadataSearchResults: ref([])
   };
 
   // Getters
   const getters = {
-    getMetadata: computed(() => state.metadata.value)
+    getMetadata: computed(() => state.metadata.value),
+    getMetadataSearchResults: computed(() => state.metadataSearchResults.value)
   };
 
   // Actions
@@ -89,6 +92,19 @@ export const useMetadataStore = defineStore('metadata', () => {
     }
   }
 
+  async function searchMetadata(
+    metadataSet: Array<MetadataPair> = [],
+  ) {
+    try {
+      state.metadataSearchResults.value = [];
+      const response = (await objectService.searchMetadata({ metadata: metadataSet })).data;
+      state.metadataSearchResults.value = response;
+    }
+    catch (error: any) {
+      toast.error('Searching metadata', error);
+    }
+  }
+
   return {
     // State
     ...state,
@@ -100,6 +116,7 @@ export const useMetadataStore = defineStore('metadata', () => {
     fetchMetadata,
     findMetadataByObjectId,
     findValue,
+    searchMetadata,
     replaceMetadata
   };
 }, { persist: true });

@@ -195,7 +195,7 @@ describe('Object Store', () => {
         objectId: ['000'],
         deleteMarker: false,
         latest: true
-      });
+      }, {});
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(objectStore.getObjects).toStrictEqual([obj]);
     });
@@ -221,7 +221,7 @@ describe('Object Store', () => {
         objectId: ['000'],
         deleteMarker: false,
         latest: true
-      });
+      }, {});
       expect(mockToast).toHaveBeenCalledTimes(1);
       expect(mockToast).toHaveBeenCalledWith('Fetching objects', new Error);
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);

@@ -11,6 +11,7 @@ import type { GetObjectTaggingOptions, Tag, Tagging } from '@/types';
 
 export type TagStoreState = {
   tagging: Ref<Array<Tagging>>
+  tagSearchResults: Ref<Array<Tagging>>
 }
 
 export const useTagStore = defineStore('tag', () => {
@@ -19,12 +20,14 @@ export const useTagStore = defineStore('tag', () => {
 
   // State
   const state: TagStoreState = {
-    tagging: ref([])
+    tagging: ref([]),
+    tagSearchResults: ref([])
   };
 
   // Getters
   const getters = {
-    getTagging: computed(() => state.tagging.value)
+    getTagging: computed(() => state.tagging.value),
+    getTagSearchResults: computed(() => state.tagSearchResults.value)
   };
 
   // Actions
@@ -94,6 +97,20 @@ export const useTagStore = defineStore('tag', () => {
     }
   }
 
+  async function searchTagging(
+    tagset: Array<Tag> = [],
+  ) {
+    try {
+      state.tagSearchResults.value = [];
+      // await new Promise((resolve) => setTimeout(resolve, 4000));
+      const response = (await objectService.searchTagging(tagset)).data;
+      state.tagSearchResults.value = response;
+    }
+    catch (error: any) {
+      toast.error('Searching tags', error);
+    }
+  }
+
   return {
     // State
     ...state,
@@ -105,7 +122,8 @@ export const useTagStore = defineStore('tag', () => {
     deleteTagging,
     fetchTagging,
     findTaggingByObjectId,
-    replaceTagging
+    replaceTagging,
+    searchTagging
   };
 }, { persist: true });
 

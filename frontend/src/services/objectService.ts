@@ -1,7 +1,7 @@
 import { comsAxios } from './interceptors';
 
 import type { AxiosRequestConfig } from 'axios';
-import type { GetMetadataOptions, GetObjectTaggingOptions, SearchObjectsOptions, Tag } from '@/types';
+import type { GetMetadataOptions, GetObjectTaggingOptions, MetadataPair, SearchObjectsOptions, Tag } from '@/types';
 
 const PATH = '/object';
 
@@ -190,15 +190,53 @@ export default {
   },
 
   /**
+   * @function searchMetadata
+   * Gets a list of tags matching the given parameters
+   * @param {Object} headers Optional request headers
+   * @returns {Promise} An axios response
+   */
+  searchMetadata(
+    headers: {
+      metadata?: Array<MetadataPair>,
+    },) {
+
+    const config = {
+      headers: {},
+    };
+  
+    // Map the metadata if required
+    if (headers.metadata) {
+      config.headers = {
+        ...Object.fromEntries((headers.metadata.map((x: { key: string; value: string }) => ([x.key, x.value]))))
+      };
+    }
+    return comsAxios().get(`${PATH}/metadata`, config);
+  },  
+
+  /**
    * @function searchObjects
    * List and search for all objects
    * @param {SearchObjectsOptions} params Optional query parameters
    * @returns {Promise} An axios response
    */
-  searchObjects(params: SearchObjectsOptions = {}) {
+  searchObjects(params: SearchObjectsOptions = {}, headers: any = {},) {
     // remove objectId array if its first element is undefined
     if (params.objectId && params.objectId[0] === undefined) delete params.objectId;
-    return comsAxios().get(PATH, { params: params });
+    return comsAxios().get(PATH, { params: params, headers: headers });
+  },
+
+  /**
+   * @function searchTagging
+   * Gets a list of tags matching the given parameters
+   * @param {Array<Tag>} tagset Query parameters to search on
+   * @returns {Promise} An axios response
+   */
+  searchTagging(tagset: Array<Tag>) {
+    return comsAxios().get(`${PATH}/tagging`, {
+      params: {
+        tagset: Object.fromEntries((tagset.map((x: { key: string; value: string }) => ([x.key, x.value]))))
+      }
+    });
   },
 
   /**

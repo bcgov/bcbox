@@ -2,6 +2,7 @@ export { default as DeleteObjectButton } from './DeleteObjectButton.vue';
 export { default as DownloadObjectButton } from './DownloadObjectButton.vue';
 export { default as ObjectAccess } from './ObjectAccess.vue';
 export { default as ObjectFileDetails } from './ObjectFileDetails.vue';
+export { default as ObjectFilters } from './ObjectFilters.vue';
 export { default as ObjectList } from './ObjectList.vue';
 export { default as ObjectMetadata } from './ObjectMetadata.vue';
 export { default as ObjectMetadataTagForm } from './ObjectMetadataTagForm.vue';
