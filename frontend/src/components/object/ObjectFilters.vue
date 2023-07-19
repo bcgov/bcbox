@@ -197,5 +197,8 @@ const searchTagging = async () => {
     padding-bottom: 2px;
     padding-top: 2px;
   }
+  :deep(.p-multiselect-label) {
+    padding-top: 6px;
+  }
 }
 </style>
