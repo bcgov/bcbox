@@ -5,7 +5,8 @@ import { onMounted, ref, watch } from 'vue';
 import GridRow from '@/components/form/GridRow.vue';
 import { ObjectMetadataTagForm } from '@/components/object';
 import { Button, Dialog, useConfirm } from '@/lib/primevue';
-import { useMetadataStore, useObjectStore, useVersionStore } from '@/store';
+import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore, useVersionStore } from '@/store';
+import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { ObjectMetadataTagFormType } from '@/components/object/ObjectMetadataTagForm.vue';
@@ -29,6 +30,8 @@ const emit = defineEmits(['on-file-uploaded']);
 // Store
 const metadataStore = useMetadataStore();
 const versionStore = useVersionStore();
+const permissionStore = usePermissionStore();
+const { getUserId } = storeToRefs(useAuthStore());
 const { getMetadata: tsGetMetadata } = storeToRefs(metadataStore);
 const { getMetadata: vsGetMetadata } = storeToRefs(versionStore);
 
@@ -104,7 +107,8 @@ watch([props, tsGetMetadata,vsGetMetadata] , () => {
   </div>
   <div>
     <Button
-      v-if="editable"
+      v-if="editable &&
+        permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, props.objectId)"
       outlined
       @click="showModal()"
     >
