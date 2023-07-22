@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
-import { Button, FileUpload, useToast } from '@/lib/primevue';
+import { Button, FileUpload, InputText, useToast } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
@@ -97,6 +97,35 @@ const onRemoveFailedFile = async (index: number) => {
 const noFilesChosen = (files?: Array<File>): boolean => !files?.length;
 
 const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => formData = values;
+
+// New object upload POC
+import axios from 'axios';
+const filePath = ref('');
+const authHeader = ref('');
+const dateHeader = ref('');
+const fileInput = ref<HTMLInputElement | null>(null);
+
+const uploadFile = async () => {
+  const file = fileInput.value?.files?.[0];
+  if (!file) return;
+
+  const arrayBuffer = await file.arrayBuffer();
+  const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
+
+  try {
+    await axios.put(filePath.value, blob, {
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        'X-Amz-Date': dateHeader.value,
+        'Authorization': authHeader.value
+      }
+    });
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+  }
+};
+
 </script>
 
 <template>
@@ -186,4 +215,59 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
       />
     </template>
   </FileUpload>
+
+  
+  <!-- New Object Upload POC  -->
+  <h2 class="mt-4">Binary Stream POC</h2>
+  <p>See the pull request this code is from for more details and screenshots</p>
+  <ol>
+    <li>Apply CORS settings on bucket</li>
+    <li>Open Postman and enter bucket credential details in Authorization tab</li>
+    <li>In Postman Headers tab fetch calculated Authorization and X-Amz-Date headers, supply below</li>
+    <li>Get the path/title of the file from the object list you wish to overwrite</li>
+    <li>Upload new file with Choose File button</li>
+    <li>Monitor in network tab (event fires on file selection)</li>
+    <li>Download the file you just replaced in the list below to check</li>
+  </ol>
+
+  <div class="field mt-4 ">
+    <label for="">File to replace</label>
+    <InputText
+      v-model="filePath"
+      class="w-6"
+    />
+    <small>Example: https://nrs.objectstore.gov.bc.ca/egejyy/coms/luke/salmon%20survey%20-%20Copy.txt</small>
+  </div>
+
+  <div class="field mt-4 ">
+    <label for="">Auth Header</label>
+    <InputText
+      v-model="authHeader"
+      class="w-6"
+    />
+    <small>Get from Postman</small>
+  </div>
+
+  <div class="field mt-4 ">
+    <label for="">X-Amz-Date Header</label>
+    <InputText
+      v-model="dateHeader"
+      class="w-6"
+    />
+    <small>Get from Postman</small>
+  </div>
+
+  <div>
+    <input
+      ref="fileInput"
+      type="file"
+      @change="uploadFile"
+    />
+  </div>
 </template>
+
+<style lang="scss" scoped>
+.field * {
+  display: block;
+}
+</style>
