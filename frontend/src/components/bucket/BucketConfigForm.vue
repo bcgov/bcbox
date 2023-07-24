@@ -103,24 +103,24 @@ const onCancel = () => {
         name="bucketName"
         label="Bucket name *"
         placeholder="My Documents"
-        help-text="Your custom display name for the bucket."
+        help-text="Your custom display name for the bucket - any name as you would like to see it listed in BCBox."
         autofocus
       />
       <TextInput
         name="bucket"
         label="Bucket *"
         placeholder="bucket0123456789"
-        help-text="Your storage provider's bucket identifier."
+        help-text="The name of the bucket given to you, e.g. yxwgj"
       />
       <TextInput
         name="endpoint"
         label="Endpoint *"
         placeholder="https://example.com/"
-        help-text="The URL of the object storage server."
+        help-text="The URL of your object storage namespace without the bucket identifier/name."
       />
       <Password
         name="accessKeyId"
-        label="Access key identifier / Username *"
+        label="Access key identifier / User account *"
         placeholder="username"
         help-text="User/Account identifier or username."
       />
@@ -132,9 +132,9 @@ const onCancel = () => {
       />
       <TextInput
         name="key"
-        label="Key"
+        label="Key/Folder"
         placeholder="directory"
-        help-text="A path prefix within a bucket. The path will be created if it doesn't already exist.
+        help-text="A folder prefix within a bucket. The folder will be created if it doesn't already exist.
           Will default to '/' if not provided. This value cannot be changed after the bucket is configured."
         :disabled="!!props.bucket"
       />
