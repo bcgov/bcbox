@@ -108,10 +108,11 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
       </div>
     </div>
   </div>
-  <div>
+  <div
+    v-if="editable &&
+      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, props.objectId)"
+  >
     <Button
-      v-if="editable &&
-        permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, props.objectId)"
       outlined
       @click="showModal()"
     >
