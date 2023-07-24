@@ -4,7 +4,8 @@ import { onMounted, ref, watch } from 'vue';
 
 import { ObjectMetadataTagForm } from '@/components/object';
 import { Button, Dialog } from '@/lib/primevue';
-import { useObjectStore, useTagStore, useVersionStore } from '@/store';
+import { useAuthStore, useObjectStore, usePermissionStore, useTagStore, useVersionStore } from '@/store';
+import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { ObjectMetadataTagFormType } from '@/components/object/ObjectMetadataTagForm.vue';
@@ -28,6 +29,8 @@ const emit = defineEmits(['on-file-uploaded']);
 // Store
 const tagStore = useTagStore();
 const versionStore = useVersionStore();
+const permissionStore = usePermissionStore();
+const { getUserId } = storeToRefs(useAuthStore());
 const { getTagging: tsGetTagging } = storeToRefs(tagStore);
 const { getTagging: vsGetTagging } = storeToRefs(versionStore);
 
@@ -105,9 +108,11 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
       </div>
     </div>
   </div>
-  <div>
+  <div
+    v-if="editable &&
+      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, props.objectId)"
+  >
     <Button
-      v-if="editable"
       outlined
       @click="showModal()"
     >
