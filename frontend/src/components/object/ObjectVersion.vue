@@ -44,6 +44,11 @@ const tableData: Ref<Array<VersionDataSource>> = ref([]);
 const router = useRouter();
 const toast = useToast();
 
+// Highlight row for currently selected version
+const rowClass = (data: any) => {
+  return [{ 'details-selected-version': data.id === props.versionId}];
+};
+
 async function onDeletedSuccess(versionId: string) {
   toast.success('File deleted');
   await versionStore.fetchVersions({ objectId: props.objectId });
@@ -97,6 +102,7 @@ watch( getVersions, () => {
         responsive-layout="scroll"
         :paginator="true"
         :rows="5"
+        :row-class="rowClass"
         paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
         current-page-report-template="{first}-{last} of {totalRecords}"
         :rows-per-page-options="[5, 10, 20]"

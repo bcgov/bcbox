@@ -79,6 +79,10 @@ a:visited {
     }
   }
 }
+// highlight the row for the currently selected version
+.details-selected-version {
+  background-color: $bcbox-highlight-background !important;
+}
 .details-value-column {
   width: 40rem;
 }
