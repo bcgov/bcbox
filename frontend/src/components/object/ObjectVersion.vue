@@ -157,7 +157,6 @@ watch( getVersions, () => {
               :version-id="data.id"
             />
             <router-link
-              v-if="data.id !== props.versionId"
               :to="{ name: RouteNames.DETAIL_OBJECTS,
                      query: { objectId: props.objectId, versionId: data.id } }"
             >
