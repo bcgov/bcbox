@@ -45,9 +45,7 @@ const router = useRouter();
 const toast = useToast();
 
 // Highlight row for currently selected version
-const rowClass = (data: any) => {
-  return [{ 'selected-row': data.id === props.versionId }];
-};
+const rowClass = (data: any) => [{ 'selected-row': data.id === props.versionId }];
 
 async function onDeletedSuccess(versionId: string) {
   toast.success('File deleted');
