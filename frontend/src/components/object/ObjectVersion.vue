@@ -46,7 +46,7 @@ const toast = useToast();
 
 // Highlight row for currently selected version
 const rowClass = (data: any) => {
-  return [{ 'details-selected-version': data.id === props.versionId}];
+  return [{ 'selected-row': data.id === props.versionId}];
 };
 
 async function onDeletedSuccess(versionId: string) {
