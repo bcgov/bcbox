@@ -100,7 +100,6 @@ onBeforeMount(() => {
       :value="getMappedObjectToUserPermissions"
       data-key="userId"
       class="p-datatable-sm"
-      striped-rows
       responsive-layout="scroll"
       :paginator="true"
       :rows="10"
