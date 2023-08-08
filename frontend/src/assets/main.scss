@@ -70,6 +70,10 @@ a:visited {
     thead th {
       padding-top: 0;
     }
+    // highlight the row for the currently selected version
+    tr.selected-row {
+      background-color: $bcbox-highlight-background !important;
+    }
     td {
       padding: 0.5rem;
     }

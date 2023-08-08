@@ -67,7 +67,6 @@ async function deleteBucket(bucketId: string) {
       :value="getBuckets"
       data-key="bucketId"
       class="p-datatable-sm"
-      striped-rows
       responsive-layout="scroll"
       :paginator="true"
       :rows="10"
