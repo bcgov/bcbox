@@ -154,26 +154,24 @@ watch( getVersions, () => {
           <template #body="{ data }">
             <DownloadObjectButton
               v-if="data.public || permissionStore.isObjectActionAllowed(
-                data.id, getUserId, Permissions.READ, props.bucketId as string)"
+                props.objectId, getUserId, Permissions.READ, props.bucketId as string)"
               :mode="ButtonMode.ICON"
               :ids="[props.objectId]"
               :version-id="data.id"
             />
             <router-link
+              v-if="data.public || permissionStore.isObjectActionAllowed(
+                props.objectId, getUserId, Permissions.READ, props.bucketId as string)"
               :to="{ name: RouteNames.DETAIL_OBJECTS,
                      query: { objectId: props.objectId, versionId: data.id } }"
             >
-              <Button
-                v-if="data.public || permissionStore.isObjectActionAllowed(
-                  data.id, getUserId, Permissions.READ, props.bucketId as string)"
-                class="p-button-lg p-button-rounded p-button-text"
-              >
+              <Button class="p-button-lg p-button-rounded p-button-text">
                 <font-awesome-icon icon="fa-solid fa-circle-info" />
               </Button>
             </router-link>
             <DeleteObjectButton
               v-if="permissionStore.isObjectActionAllowed(
-                data.id, getUserId, Permissions.DELETE, props.bucketId as string)"
+                props.objectId, getUserId, Permissions.DELETE, props.bucketId as string)"
               :mode="ButtonMode.ICON"
               :ids="[props.objectId]"
               :version-id="data.id"
