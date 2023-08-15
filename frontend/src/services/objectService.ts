@@ -27,7 +27,7 @@ export default {
     axiosOptions?: AxiosRequestConfig
   ) {
     const config = {
-      headers: { 
+      headers: {
         'Content-Type': 'application/octet-stream',
         'Content-Disposition': setDispositionHeader(object.name)
       },
@@ -52,7 +52,7 @@ export default {
       );
     }
 
-    const fd = await object.arrayBuffer()
+    const fd = await object.arrayBuffer();
     return comsAxios(axiosOptions).put(PATH, fd, config);
   },
 
@@ -206,7 +206,7 @@ export default {
     const config = {
       headers: {},
     };
-  
+
     // Map the metadata if required
     if (headers.metadata) {
       config.headers = {
@@ -214,7 +214,7 @@ export default {
       };
     }
     return comsAxios().get(`${PATH}/metadata`, config);
-  },  
+  },
 
   /**
    * @function searchObjects
@@ -277,7 +277,7 @@ export default {
     axiosOptions?: AxiosRequestConfig
   ) {
     const config = {
-      headers: { 
+      headers: {
         'Content-Type': 'application/octet-stream',
         'Content-Disposition': setDispositionHeader(object.name)
       },
@@ -301,7 +301,7 @@ export default {
       );
     }
 
-    const fd = await object.arrayBuffer()
+    const fd = await object.arrayBuffer();
     return comsAxios(axiosOptions).put(`${PATH}/${objectId}`, fd, config);
   },
 };
