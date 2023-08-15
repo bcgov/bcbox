@@ -1,4 +1,5 @@
 import { comsAxios } from './interceptors';
+import { setDispositionHeader } from '@/utils/utils';
 
 import type { AxiosRequestConfig } from 'axios';
 import type { GetMetadataOptions, GetObjectTaggingOptions, MetadataPair, SearchObjectsOptions, Tag } from '@/types';
@@ -14,7 +15,7 @@ export default {
    * @param {AxiosRequestConfig} axiosOptions Axios request config options
    * @returns {Promise} An axios response
    */
-  createObject(
+  async createObject(
     object: any,
     headers: {
       metadata?: Array<{ key: string; value: string }>,
@@ -26,7 +27,10 @@ export default {
     axiosOptions?: AxiosRequestConfig
   ) {
     const config = {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': setDispositionHeader(object.name)
+      },
       params: {
         bucketId: params.bucketId,
         tagset: {}
@@ -48,9 +52,8 @@ export default {
       );
     }
 
-    const fd = new FormData();
-    fd.append('file', object);
-    return comsAxios(axiosOptions).post(PATH, fd, config);
+    const fd = await object.arrayBuffer()
+    return comsAxios(axiosOptions).put(PATH, fd, config);
   },
 
   /**
@@ -262,7 +265,7 @@ export default {
    * @param {AxiosRequestConfig} axiosOptions Axios request config options
    * @returns {Promise} An axios response
    */
-  updateObject(
+  async updateObject(
     objectId: string,
     object: any,
     headers: {
@@ -274,7 +277,10 @@ export default {
     axiosOptions?: AxiosRequestConfig
   ) {
     const config = {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: { 
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': setDispositionHeader(object.name)
+      },
       params: {
         tagset: {}
       },
@@ -295,8 +301,7 @@ export default {
       );
     }
 
-    const fd = new FormData();
-    fd.append('file', object);
-    return comsAxios(axiosOptions).post(`${PATH}/${objectId}`, fd, config);
+    const fd = await object.arrayBuffer()
+    return comsAxios(axiosOptions).put(`${PATH}/${objectId}`, fd, config);
   },
 };
