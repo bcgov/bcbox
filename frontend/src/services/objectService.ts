@@ -28,7 +28,8 @@ export default {
   ) {
     const config = {
       headers: {
-        'Content-Disposition': setDispositionHeader(object.name)
+        'Content-Disposition': setDispositionHeader(object.name),
+        'Content-Type': 'application/octet-stream'
         // Content-Type header/MIME type detection needs TBD
         // Also in uploadObject call below
       },
@@ -279,7 +280,8 @@ export default {
   ) {
     const config = {
       headers: {
-        'Content-Disposition': setDispositionHeader(object.name)
+        'Content-Disposition': setDispositionHeader(object.name),
+        'Content-Type': 'application/octet-stream'
         // Content-Type header/MIME type detection needs TBD
       },
       params: {
