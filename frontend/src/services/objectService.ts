@@ -28,8 +28,9 @@ export default {
   ) {
     const config = {
       headers: {
-        'Content-Type': 'application/octet-stream',
         'Content-Disposition': setDispositionHeader(object.name)
+        // Content-Type header/MIME type detection needs TBD
+        // Also in uploadObject call below
       },
       params: {
         bucketId: params.bucketId,
@@ -278,8 +279,8 @@ export default {
   ) {
     const config = {
       headers: {
-        'Content-Type': 'application/octet-stream',
         'Content-Disposition': setDispositionHeader(object.name)
+        // Content-Type header/MIME type detection needs TBD
       },
       params: {
         tagset: {}

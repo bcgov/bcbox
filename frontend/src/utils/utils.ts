@@ -65,7 +65,8 @@ export function partition<T>(
 
 /**
  * @function setDispositionHeader
- * Constructs a value for http request header 'Content-Disposition'
+ * Constructs a valid RFC 6266 'Content-Disposition' header
+ * and optionally handles RFC 8187 UTF-8 encoding when necessary
  * @param  {string} filename The file name to check if encoding is needed
  * @returns {string} The value for the key 'Content-Disposition'
  */
