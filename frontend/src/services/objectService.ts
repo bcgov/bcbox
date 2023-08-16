@@ -30,14 +30,18 @@ export default {
       headers: {
         'Content-Disposition': setDispositionHeader(object.name),
         'Content-Type': 'application/octet-stream'
-        // Content-Type header/MIME type detection needs TBD
-        // Also in uploadObject call below
       },
       params: {
         bucketId: params.bucketId,
         tagset: {}
       },
     };
+
+    // Detect MIME type from File object and assign to header
+    // Fall back to application/octet-stream as above
+    if (object?.type) {
+      config.headers['Content-Type'] = object.type;
+    }
 
     // Map the metadata if required
     if (headers.metadata) {
@@ -282,12 +286,17 @@ export default {
       headers: {
         'Content-Disposition': setDispositionHeader(object.name),
         'Content-Type': 'application/octet-stream'
-        // Content-Type header/MIME type detection needs TBD
       },
       params: {
         tagset: {}
       },
     };
+
+    // Detect MIME type from File object and assign to header
+    // Fall back to application/octet-stream as above
+    if (object?.type) {
+      config.headers['Content-Type'] = object.type;
+    }
 
     // Map the metadata if required
     if (headers.metadata) {
