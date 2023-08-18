@@ -1,4 +1,5 @@
 import { comsAxios } from './interceptors';
+import { setDispositionHeader } from '@/utils/utils';
 
 import type { AxiosRequestConfig } from 'axios';
 import type { GetMetadataOptions, GetObjectTaggingOptions, MetadataPair, SearchObjectsOptions, Tag } from '@/types';
@@ -14,7 +15,7 @@ export default {
    * @param {AxiosRequestConfig} axiosOptions Axios request config options
    * @returns {Promise} An axios response
    */
-  createObject(
+  async createObject(
     object: any,
     headers: {
       metadata?: Array<{ key: string; value: string }>,
@@ -25,8 +26,13 @@ export default {
     },
     axiosOptions?: AxiosRequestConfig
   ) {
+    // setDispositionHeader constructs header based on file name
+    // Content-Type defaults octet-stream if MIME type unavailable
     const config = {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: {
+        'Content-Disposition': setDispositionHeader(object.name),
+        'Content-Type': object?.type ?? 'application/octet-stream'
+      },
       params: {
         bucketId: params.bucketId,
         tagset: {}
@@ -48,9 +54,8 @@ export default {
       );
     }
 
-    const fd = new FormData();
-    fd.append('file', object);
-    return comsAxios(axiosOptions).post(PATH, fd, config);
+    const fd = await object.arrayBuffer();
+    return comsAxios(axiosOptions).put(PATH, fd, config);
   },
 
   /**
@@ -203,7 +208,7 @@ export default {
     const config = {
       headers: {},
     };
-  
+
     // Map the metadata if required
     if (headers.metadata) {
       config.headers = {
@@ -211,7 +216,7 @@ export default {
       };
     }
     return comsAxios().get(`${PATH}/metadata`, config);
-  },  
+  },
 
   /**
    * @function searchObjects
@@ -262,7 +267,7 @@ export default {
    * @param {AxiosRequestConfig} axiosOptions Axios request config options
    * @returns {Promise} An axios response
    */
-  updateObject(
+  async updateObject(
     objectId: string,
     object: any,
     headers: {
@@ -273,8 +278,13 @@ export default {
     },
     axiosOptions?: AxiosRequestConfig
   ) {
+    // setDispositionHeader constructs header based on file name
+    // Content-Type defaults octet-stream if MIME type unavailable
     const config = {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: {
+        'Content-Disposition': setDispositionHeader(object.name),
+        'Content-Type': object?.type ?? 'application/octet-stream'
+      },
       params: {
         tagset: {}
       },
@@ -295,8 +305,7 @@ export default {
       );
     }
 
-    const fd = new FormData();
-    fd.append('file', object);
-    return comsAxios(axiosOptions).post(`${PATH}/${objectId}`, fd, config);
+    const fd = await object.arrayBuffer();
+    return comsAxios(axiosOptions).put(`${PATH}/${objectId}`, fd, config);
   },
 };

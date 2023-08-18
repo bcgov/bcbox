@@ -62,3 +62,21 @@ export function partition<T>(
     [[], []] as [Array<T>, Array<T>]
   );
 }
+
+/**
+ * @function setDispositionHeader
+ * Constructs a valid RFC 6266 'Content-Disposition' header
+ * and optionally handles RFC 8187 UTF-8 encoding when necessary
+ * @param  {string} filename The file name to check if encoding is needed
+ * @returns {string} The value for the key 'Content-Disposition'
+ */
+export function setDispositionHeader(filename: string) {
+  const dispositionHeader = `attachment; filename="${filename}"`;
+  const encodedFilename = encodeURIComponent(filename);
+
+  if (filename === encodedFilename) {
+    return dispositionHeader;
+  } else {
+    return dispositionHeader.concat(`; filename*=UTF-8''${encodedFilename}`);
+  }
+}
