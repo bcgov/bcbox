@@ -290,12 +290,6 @@ export default {
       },
     };
 
-    // Detect MIME type from File object and assign to header
-    // Fall back to application/octet-stream as above
-    if (object?.type) {
-      config.headers['Content-Type'] = object.type;
-    }
-
     // Map the metadata if required
     if (headers.metadata) {
       config.headers = {
