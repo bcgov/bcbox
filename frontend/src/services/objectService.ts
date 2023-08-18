@@ -26,22 +26,18 @@ export default {
     },
     axiosOptions?: AxiosRequestConfig
   ) {
+    // setDispositionHeader constructs header based on file name
+    // Content-Type defaults octet-stream if MIME type unavailable
     const config = {
       headers: {
         'Content-Disposition': setDispositionHeader(object.name),
-        'Content-Type': 'application/octet-stream'
+        'Content-Type': object?.type ?? 'application/octet-stream'
       },
       params: {
         bucketId: params.bucketId,
         tagset: {}
       },
     };
-
-    // Detect MIME type from File object and assign to header
-    // Fall back to application/octet-stream as above
-    if (object?.type) {
-      config.headers['Content-Type'] = object.type;
-    }
 
     // Map the metadata if required
     if (headers.metadata) {
@@ -282,10 +278,12 @@ export default {
     },
     axiosOptions?: AxiosRequestConfig
   ) {
+    // setDispositionHeader constructs header based on file name
+    // Content-Type defaults octet-stream if MIME type unavailable
     const config = {
       headers: {
         'Content-Disposition': setDispositionHeader(object.name),
-        'Content-Type': 'application/octet-stream'
+        'Content-Type': object?.type ?? 'application/octet-stream'
       },
       params: {
         tagset: {}
