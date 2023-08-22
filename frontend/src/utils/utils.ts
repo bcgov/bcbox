@@ -72,7 +72,10 @@ export function partition<T>(
  */
 export function setDispositionHeader(filename: string) {
   const dispositionHeader = `attachment; filename="${filename}"`;
-  const encodedFilename = encodeURIComponent(filename);
+  const encodedFilename = encodeURIComponent(filename).replace(
+    /[!'()*]/g,
+    (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+  );
 
   if (filename === encodedFilename) {
     return dispositionHeader;
