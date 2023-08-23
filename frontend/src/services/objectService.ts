@@ -1,5 +1,6 @@
 import { comsAxios } from './interceptors';
 import { setDispositionHeader } from '@/utils/utils';
+import { ConfigService } from './index';
 
 import type { AxiosRequestConfig } from 'axios';
 import type { GetMetadataOptions, GetObjectTaggingOptions, MetadataPair, SearchObjectsOptions, Tag } from '@/types';
@@ -227,7 +228,42 @@ export default {
   searchObjects(params: SearchObjectsOptions = {}, headers: any = {},) {
     // remove objectId array if its first element is undefined
     if (params.objectId && params.objectId[0] === undefined) delete params.objectId;
-    return comsAxios().get(PATH, { params: params, headers: headers });
+
+    if (params.objectId) {
+      /**
+       * split calls to COMS if query params (eg objectId's)
+       * will cause url length to excede 2000 characters
+       * see: https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
+       */
+      const urlLimit = 2000;
+      // caculate number of characters taken by base url and query params other than objectId:
+      const { objectId: objectIds, ...otherParams } = params;
+      const url = new URL(`${new ConfigService().getConfig().coms.apiPath}${PATH}`);
+      url.search = new URLSearchParams(otherParams);
+      const otherCharacters = url.toString().length;
+      const space = urlLimit - otherCharacters;
+      // number of allowed objectId's in each group - 48 chars for each objectId (&objectId[]=<uuid>)
+      const groupSize = Math.floor(space / 48);
+
+      // loop through each group and push COMS result to `groups` array
+      const iterations = Math.ceil(objectIds.length / groupSize);
+      const groups = [];
+      for (let i = 0; i < iterations; i++) {
+        const ids = objectIds.slice(i * groupSize, ((i * groupSize) + groupSize));
+        groups.push(comsAxios().get(PATH, { params: { ...params, objectId: ids }, headers: headers }));
+      }
+
+      Promise.allSettled(groups)
+        .then((results) => {
+          return results.map((x) => {
+            return x.value.data;
+          }).flat();
+        });
+    }
+    // else just call COMS once
+    else {
+      return comsAxios().get(PATH, { params: params, headers: headers });
+    }
   },
 
   /**

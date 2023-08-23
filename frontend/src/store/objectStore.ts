@@ -127,7 +127,7 @@ export const useObjectStore = defineStore('object', () => {
             .filter((objectId: string) => !params.objectId || objectId === params.objectId))
         ];
 
-        const response = Array<COMSObject>();
+        let response = Array<COMSObject>();
         if (uniqueIds.length) {
           // If metadata specified, search for objects with matching metadata
           const headers: Record<string, string> = {};
@@ -137,47 +137,16 @@ export const useObjectStore = defineStore('object', () => {
             }
           }
 
+          response = (await objectService.searchObjects({
+            bucketId: params.bucketId ? [params.bucketId] : undefined,
+            objectId: uniqueIds,
+            tagset: tagset ? tagset.reduce((acc, cur) => ({ ...acc, [cur.key]: cur.value }), {}) : undefined,
 
-          /**
-           * split calls to `objectService.searchObjects()` if URL limit excedes 2000 characters
-           * ref: https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
-           */
-          let maxLength = 2000;
-          // minus deleteMarker=false
-          maxLength = maxLength - 19;
-          // minus latest=false
-          maxLength = maxLength - 13;
-          // minus a single bucketId (bucketId[]=<uuid>)
-          if(params.bucketId) { maxLength = maxLength - 48; }
-          // if tagset parameters passed
-          if(tagset){
-            for (const tag in tagset) {
-              maxLength = maxLength - 10 - tagset[tag].key.length - tagset[tag].value.length;
-            }
-          }
-
-          // 48 chars for each objectId (&objectId[]=<uuid>)
-          const numObjs = Math.floor(maxLength / 48);
-
-          // for array of unique object ID's
-          const arrLength = uniqueIds.length;
-          if(arrLength > numObjs) {
-            const iterations = Math.ceil(arrLength / numObjs);
-            for (let i=0; i < iterations; i++ ) {
-
-              const ids = uniqueIds.slice(i * numObjs, ((i * numObjs) + numObjs ));
-
-              const group = (await objectService.searchObjects({
-                bucketId: params.bucketId ? [params.bucketId] : undefined,
-                objectId: ids,
-                tagset: tagset ? tagset.reduce((acc, cur) => ({ ...acc, [cur.key]: cur.value }), {}) : undefined,
-                deleteMarker: false,
-                latest: true
-              }, headers)).data;
-
-              response.concat(group);
-            }
-          }
+            // Added to allow deletion of objects before versioning implementation
+            // TODO: Verify if needed after versioning implemented
+            deleteMarker: false,
+            latest: true
+          }, headers)).data;
 
           // Remove old values matching search parameters
           const matches = (x: COMSObject) => (
