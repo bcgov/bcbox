@@ -110,8 +110,8 @@ export const useObjectStore = defineStore('object', () => {
   }
 
   async function fetchObjects(
-    params: ObjectSearchPermissionsOptions = {}, 
-    tagset?: Array<Tag>, 
+    params: ObjectSearchPermissionsOptions = {},
+    tagset?: Array<Tag>,
     metadata?: Array<MetadataPair>) {
     try {
       appStore.beginIndeterminateLoading();
@@ -137,7 +137,7 @@ export const useObjectStore = defineStore('object', () => {
             }
           }
 
-          response = (await objectService.searchObjects({
+          response = await objectService.searchObjects({
             bucketId: params.bucketId ? [params.bucketId] : undefined,
             objectId: uniqueIds,
             tagset: tagset ? tagset.reduce((acc, cur) => ({ ...acc, [cur.key]: cur.value }), {}) : undefined,
@@ -146,7 +146,7 @@ export const useObjectStore = defineStore('object', () => {
             // TODO: Verify if needed after versioning implemented
             deleteMarker: false,
             latest: true
-          }, headers)).data;
+          }, headers).then(r => r.data);
 
           // Remove old values matching search parameters
           const matches = (x: COMSObject) => (
@@ -159,7 +159,7 @@ export const useObjectStore = defineStore('object', () => {
           // Merge and assign
           state.objects.value = difference.concat(response);
 
-          // Track all the object IDs in this bucket that the user would have access to in the table 
+          // Track all the object IDs in this bucket that the user would have access to in the table
           // (even if filters are applied)
           if(!tagset?.length && !metadata?.length) {
             state.unfilteredObjectIds.value = state.objects.value
