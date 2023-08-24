@@ -1,6 +1,6 @@
 import { comsAxios } from './interceptors';
 import { setDispositionHeader } from '@/utils/utils';
-import { ConfigService } from './index';
+import ConfigService from './configService';
 
 import type { AxiosRequestConfig } from 'axios';
 import type { GetMetadataOptions, GetObjectTaggingOptions, MetadataPair, SearchObjectsOptions, Tag } from '@/types';
@@ -239,30 +239,39 @@ export default {
        * eg: `divideParam(params, attr)`
        *     ... return Promise.all(divideParam(params, objectId).map(zparam => comsAxios().get(PATH, {params: zparam, headers: headers});
        */
-      const urlLimit = 2000;
-      // caculate number of characters taken by base url and query params other than objectId:
-      const { objectId: objectIds, ...otherParams } = params;
-      const url = new URL(`${new ConfigService().getConfig().coms.apiPath}${PATH}`);
-      url.search = new URLSearchParams(otherParams);
-      const otherCharacters = url.toString().length;
+      let urlLimit = 2000;
+      // minus base url
+      const baseUrl = new URL(`${new ConfigService().getConfig().coms.apiPath}${PATH}`).toString().length;
+      urlLimit = urlLimit - baseUrl;
+      // minus deleteMarker=false
+      urlLimit = urlLimit - 19;
+      // minus latest=false
+      urlLimit = urlLimit - 13;
+      // minus a single bucketId (bucketId[]=<uuid>)
+      if (params.bucketId) { urlLimit = urlLimit - 48; }
+      // if tagset parameters passed
+      if (params.tagset) {
+        for (const [key, value] of Object.entries(params.tagset)) {
+          // @ts-ignore
+          urlLimit = urlLimit - 10 - key.length - value.length;
+        }
+      }
 
       // number of allowed objectId's in each group - 48 chars for each objectId (&objectId[]=<uuid>)
-      const space = urlLimit - otherCharacters;
+      const space = urlLimit;
       const groupSize = Math.floor(space / 48);
 
       // loop through each group and push COMS result to `groups` array
-      const iterations = Math.ceil(objectIds.length / groupSize);
+      const iterations = Math.ceil(params.objectId.length / groupSize);
       const groups = [];
-
       for (let i = 0; i < iterations; i++) {
-        const ids = objectIds.slice(i * groupSize, ((i * groupSize) + groupSize));
+        const ids = params.objectId.slice(i * groupSize, ((i * groupSize) + groupSize));
         groups.push(comsAxios().get(PATH, { params: { ...params, objectId: ids }, headers: headers }));
       }
-
+      // await for all calls to COMS to resolve and map results into one array
       return Promise.all(groups)
         .then((results) => ({ data: results.flatMap(result => result.data) }));
     }
-
     // else just call COMS once
     else {
       return comsAxios().get(PATH, { params: params, headers: headers });
