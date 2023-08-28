@@ -237,23 +237,24 @@ export default {
        *
        * TODO: consider creating a utils function
        * eg: `divideParam(params, attr)`
-       *     ... return Promise.all(divideParam(params, objectId).map(zparam => comsAxios().get(PATH, {params: zparam, headers: headers});
+       *      ...
+       *      return Promise.all(divideParam(params, objectId)
+       *        .map(zparam => comsAxios().get(PATH, {params: zparam, headers: headers});
        */
       let urlLimit = 2000;
-      // minus base url
-      const baseUrl = new URL(`${new ConfigService().getConfig().coms.apiPath}${PATH}`).toString().length;
-      urlLimit = urlLimit - baseUrl;
-      // minus deleteMarker=false
-      urlLimit = urlLimit - 19;
-      // minus latest=false
-      urlLimit = urlLimit - 13;
-      // minus a single bucketId (bucketId[]=<uuid>)
-      if (params.bucketId) { urlLimit = urlLimit - 48; }
+
+      const baseUrl = new URL(`${new ConfigService().getConfig().coms.apiPath}${PATH}`).toString();
+      urlLimit -= baseUrl.length; // subtract baseUrl length
+      if (params.deleteMarker) urlLimit -= 19; // subtract `deleteMarker=false`
+      if (params.latest) urlLimit -= 13; // subtract `latest=false`
+      if (params.bucketId) urlLimit -= 48; // subtract a single bucketId `bucketId[]=<uuid>`
       // if tagset parameters passed
       if (params.tagset) {
-        for (const [key, value] of Object.entries(params.tagset)) {
-          // @ts-ignore
-          urlLimit = urlLimit - 10 - key.length - value.length;
+        type TagsetObjectEntries = {
+          [K in keyof Tag]: [K, Tag[K]];
+        }[keyof Tag][];
+        for (const [key, value] of Object.entries(params.tagset) as TagsetObjectEntries) {
+          urlLimit -= (10 + key.length + value.length);
         }
       }
 
