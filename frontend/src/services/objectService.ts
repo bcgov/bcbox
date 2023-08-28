@@ -1,5 +1,6 @@
 import { comsAxios } from './interceptors';
 import { setDispositionHeader } from '@/utils/utils';
+import ConfigService from './configService';
 
 import type { AxiosRequestConfig } from 'axios';
 import type { GetMetadataOptions, GetObjectTaggingOptions, MetadataPair, SearchObjectsOptions, Tag } from '@/types';
@@ -227,7 +228,55 @@ export default {
   searchObjects(params: SearchObjectsOptions = {}, headers: any = {},) {
     // remove objectId array if its first element is undefined
     if (params.objectId && params.objectId[0] === undefined) delete params.objectId;
-    return comsAxios().get(PATH, { params: params, headers: headers });
+
+    if (params.objectId) {
+      /**
+       * split calls to COMS if query params (eg objectId's)
+       * will cause url length to excede 2000 characters
+       * see: https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
+       *
+       * TODO: consider creating a utils function
+       * eg: `divideParam(params, attr)`
+       *      ...
+       *      return Promise.all(divideParam(params, objectId)
+       *        .map(zparam => comsAxios().get(PATH, {params: zparam, headers: headers});
+       */
+      let urlLimit = 2000;
+
+      const baseUrl = new URL(`${new ConfigService().getConfig().coms.apiPath}${PATH}`).toString();
+      urlLimit -= baseUrl.length; // subtract baseUrl length
+      if (params.deleteMarker) urlLimit -= 19; // subtract `deleteMarker=false`
+      if (params.latest) urlLimit -= 13; // subtract `latest=false`
+      if (params.bucketId) urlLimit -= 48; // subtract a single bucketId `bucketId[]=<uuid>`
+      // if tagset parameters passed
+      if (params.tagset) {
+        type TagsetObjectEntries = {
+          [K in keyof Tag]: [K, Tag[K]];
+        }[keyof Tag][];
+        for (const [key, value] of Object.entries(params.tagset) as TagsetObjectEntries) {
+          urlLimit -= (10 + key.length + value.length);
+        }
+      }
+
+      // number of allowed objectId's in each group - 48 chars for each objectId (&objectId[]=<uuid>)
+      const space = urlLimit;
+      const groupSize = Math.floor(space / 48);
+
+      // loop through each group and push COMS result to `groups` array
+      const iterations = Math.ceil(params.objectId.length / groupSize);
+      const groups = [];
+      for (let i = 0; i < iterations; i++) {
+        const ids = params.objectId.slice(i * groupSize, ((i * groupSize) + groupSize));
+        groups.push(comsAxios().get(PATH, { params: { ...params, objectId: ids }, headers: headers }));
+      }
+      // await for all calls to COMS to resolve and map results into one array
+      return Promise.all(groups)
+        .then((results) => ({ data: results.flatMap(result => result.data) }));
+    }
+    // else just call COMS once
+    else {
+      return comsAxios().get(PATH, { params: params, headers: headers });
+    }
   },
 
   /**

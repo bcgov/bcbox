@@ -181,7 +181,7 @@ describe('Object Store', () => {
         readPerm
       ];
 
-      searchObjectsSpy.mockReturnValue({ data: [obj] } as any);
+      searchObjectsSpy.mockResolvedValue({ data: [obj] } as any);
       fetchObjectPermissionsSpy.mockReturnValue([readPerm] as any);
 
       await objectStore.fetchObjects({ bucketId: '000', userId: '123', bucketPerms: true });
