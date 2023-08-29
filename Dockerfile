@@ -7,7 +7,7 @@
 #
 # Build the application
 #
-FROM registry.access.redhat.com/ubi9/nodejs-18:1-48 as application
+FROM registry.access.redhat.com/ubi9/nodejs-18:1-62.1692771036 as application
 
 ENV NO_UPDATE_NOTIFIER=true
 
@@ -22,7 +22,7 @@ RUN npm ci --omit=dev
 #
 # Build the frontend
 #
-FROM registry.access.redhat.com/ubi9/nodejs-18:1-48 as frontend
+FROM registry.access.redhat.com/ubi9/nodejs-18:1-62.1692771036 as frontend
 
 ENV NO_UPDATE_NOTIFIER=true
 
@@ -37,7 +37,7 @@ RUN npm ci && npm run build
 #
 # Create the final container image
 #
-FROM registry.access.redhat.com/ubi9/nodejs-18-minimal:1-51
+FROM registry.access.redhat.com/ubi9/nodejs-18-minimal:1-67
 
 ENV APP_PORT=8080 \
     NO_UPDATE_NOTIFIER=true

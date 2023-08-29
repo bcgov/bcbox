@@ -14,8 +14,8 @@ At this time, only the latest version of BCBox is supported.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.3.0   | :white_check_mark: |
-| < 0.3.x | :x:                |
+| 0.4.0   | :white_check_mark: |
+| < 0.4.x | :x:                |
 
 ## Reporting a Bug
 
