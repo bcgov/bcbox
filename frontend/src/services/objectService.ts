@@ -55,8 +55,7 @@ export default {
       );
     }
 
-    const fd = await object.arrayBuffer();
-    return comsAxios(axiosOptions).put(PATH, fd, config);
+    return comsAxios(axiosOptions).put(PATH, object, config);
   },
 
   /**
@@ -354,7 +353,6 @@ export default {
       );
     }
 
-    const fd = await object.arrayBuffer();
-    return comsAxios(axiosOptions).put(`${PATH}/${objectId}`, fd, config);
+    return comsAxios(axiosOptions).put(`${PATH}/${objectId}`, object, config);
   },
 };
