@@ -132,10 +132,12 @@ const onCancel = () => {
       />
       <TextInput
         name="key"
-        label="Key/Folder"
-        placeholder="directory"
-        help-text="A folder prefix within a bucket. The folder will be created if it doesn't already exist.
-          Will default to '/' if not provided. This value cannot be changed after the bucket is configured."
+        label="Bucket sub-path"
+        placeholder="/"
+        help-text="Optionally sets the bucket to mount at a specific subdirectory.
+          The directory will be created if it does not already exist.
+          This will default to the root '/' if not provided.
+          This value cannot be changed after the bucket is configured."
         :disabled="!!props.bucket"
       />
       <Button
