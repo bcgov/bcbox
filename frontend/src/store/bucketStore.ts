@@ -120,6 +120,6 @@ export const useBucketStore = defineStore('bucket', () => {
     findBucketById,
     updateBucket
   };
-}, { persist: true });
+});
 
 export default useBucketStore;

@@ -125,6 +125,6 @@ export const useTagStore = defineStore('tag', () => {
     replaceTagging,
     searchTagging
   };
-}, { persist: true });
+});
 
 export default useTagStore;

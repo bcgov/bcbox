@@ -85,6 +85,6 @@ export const useUserStore = defineStore('user', () => {
     fetchUsers,
     findUsersById
   };
-}, { persist: true });
+});
 
 export default useUserStore;

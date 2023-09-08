@@ -268,6 +268,6 @@ export const useObjectStore = defineStore('object', () => {
     togglePublic,
     updateObject
   };
-}, { persist: true });
+});
 
 export default useObjectStore;
