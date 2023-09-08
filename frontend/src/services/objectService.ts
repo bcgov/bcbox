@@ -224,7 +224,7 @@ export default {
    * @param {SearchObjectsOptions} params Optional query parameters
    * @returns {Promise} An axios response
    */
-  searchObjects(params: SearchObjectsOptions = {}, headers: any = {},) {
+  async searchObjects(params: SearchObjectsOptions = {}, headers: any = {},) {
     // remove objectId array if its first element is undefined
     if (params.objectId && params.objectId[0] === undefined) delete params.objectId;
 
@@ -266,11 +266,9 @@ export default {
       const groups = [];
       for (let i = 0; i < iterations; i++) {
         const ids = params.objectId.slice(i * groupSize, ((i * groupSize) + groupSize));
-        groups.push(comsAxios().get(PATH, { params: { ...params, objectId: ids }, headers: headers }));
+        groups.push(await comsAxios().get(PATH, { params: { ...params, objectId: ids }, headers: headers }));
       }
-      // await for all calls to COMS to resolve and map results into one array
-      return Promise.all(groups)
-        .then((results) => ({ data: results.flatMap(result => result.data) }));
+      return Promise.resolve({ data: groups.flatMap(result => result.data) });
     }
     // else just call COMS once
     else {
