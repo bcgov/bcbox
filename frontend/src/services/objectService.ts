@@ -328,7 +328,6 @@ export default {
     // Content-Type defaults octet-stream if MIME type unavailable
     const config = {
       headers: {
-        'Content-Disposition': setDispositionHeader(object.name),
         'Content-Type': object?.type ?? 'application/octet-stream'
       },
       params: {
