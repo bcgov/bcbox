@@ -156,6 +156,6 @@ export const useVersionStore = defineStore('version', () => {
     findVersionById,
     findVersionsByObjectId,
   };
-}, { persist: true });
+});
 
 export default useVersionStore;

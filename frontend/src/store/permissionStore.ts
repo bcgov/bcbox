@@ -363,6 +363,6 @@ export const usePermissionStore = defineStore('permission', () => {
     removeBucketUser,
     removeObjectUser,
   };
-}, { persist: true });
+});
 
 export default usePermissionStore;

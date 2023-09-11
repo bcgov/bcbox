@@ -119,6 +119,6 @@ export const useMetadataStore = defineStore('metadata', () => {
     searchMetadata,
     replaceMetadata
   };
-}, { persist: true });
+});
 
 export default useMetadataStore;
