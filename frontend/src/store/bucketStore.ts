@@ -106,6 +106,21 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
+  async function syncBucket(bucketId: string) {
+    try {
+      appStore.beginIndeterminateLoading();
+
+      await bucketService.syncBucket(bucketId);
+      toast.success('', 'Sync is in queue and will begin soon');
+    }
+    catch (error: any) {
+      toast.error('Unable to sync', error);
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   return {
     // State
     ...state,
@@ -118,7 +133,8 @@ export const useBucketStore = defineStore('bucket', () => {
     deleteBucket,
     fetchBuckets,
     findBucketById,
-    updateBucket
+    updateBucket,
+    syncBucket
   };
 });
 

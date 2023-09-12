@@ -23,7 +23,7 @@ const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsBucketId: Ref<string> = ref('');
 const permissionBucketName: Ref<string> = ref('');
 
-const emit = defineEmits(['show-bucket-config', 'show-sidebar-info']);
+const emit = defineEmits(['show-bucket-config', 'show-sidebar-info', 'show-bucket-sync']);
 
 // Actions
 const confirm = useConfirm();
@@ -34,6 +34,10 @@ const showSidebarInfo = async (id: number) => {
 
 const showBucketConfig = async (bucket: Bucket) => {
   emit('show-bucket-config', bucket);
+};
+
+const showBucketSync = async (bucket: Bucket) => {
+  emit('show-bucket-sync', bucket);
 };
 
 const showPermissions = async (bucketId: string, bucketName: string) => {
@@ -117,11 +121,18 @@ async function deleteBucket(bucketId: string) {
       </Column>
       <Column
         header="Actions"
-        header-style="width: 200px"
+        header-style="width: 250px"
         header-class="header-right"
         body-class="content-right action-buttons"
       >
         <template #body="{ data }">
+          <Button
+            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.UPDATE )"
+            class="p-button-lg p-button-text"
+            @click="showBucketSync(data)"
+          >
+            <font-awesome-icon icon="fas fa-sync" />
+          </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.UPDATE )"
             class="p-button-lg p-button-text"

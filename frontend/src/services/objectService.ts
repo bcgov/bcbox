@@ -352,4 +352,14 @@ export default {
 
     return comsAxios(axiosOptions).put(`${PATH}/${objectId}`, object, config);
   },
+
+  /**
+   * @function syncObject
+   * Synchronize and object's data
+   * @param {string} objectId The id for the object
+   * @returns {Promise} An axios response
+   */
+  syncObject(objectId: string) {
+    return comsAxios().get(`${PATH}/${objectId}/sync`);
+  },
 };
