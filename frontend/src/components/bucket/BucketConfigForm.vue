@@ -141,13 +141,13 @@ const onCancel = () => {
         :disabled="!!props.bucket"
       />
       <Button
-        class="mt-2"
+        class="p-button mt-2 mr-1"
         label="Apply"
         type="submit"
         icon="pi pi-check"
       />
       <Button
-        class="p-button-text mt-2"
+        class="p-button-outlined mt-2"
         label="Cancel"
         icon="pi pi-times"
         @click="onCancel"

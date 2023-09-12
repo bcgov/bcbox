@@ -156,21 +156,18 @@ onMounted(async () => {
             such as in another software application,
             and want to see those changes reflected in BCBox
           </li>
-          <li>Do not use this feature if you aren't sure if you need it</li>
-          <li>Synchronization duration is dependent on file size and server load</li>
+          <li>Synchronization duration is dependent on server load</li>
         </ul>
 
         <Button
-          class="mt-2"
+          class="no-indent p-button mt-2 mr-1"
           label="Submit sync request"
           type="submit"
-          icon="pi pi-check"
           @click="syncBucket(bucketToUpdate)"
         />
         <Button
-          class="p-button-text mt-2"
+          class="no-indent p-button-outlined mt-2"
           label="Cancel"
-          icon="pi pi-times"
           @click="closeBucketSync"
         />
       </Dialog>
