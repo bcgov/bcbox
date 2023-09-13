@@ -138,7 +138,7 @@ const filters = ref({
             outlined
             rounded
             aria-label="Filter"
-            @click="objectStore.fetchObjects({ bucketId: props.bucketId })"
+            @click="objectStore.fetchObjects({ bucketId: props.bucketId, userId: getUserId, bucketPerms: true })"
           />
         </div>
       </template>

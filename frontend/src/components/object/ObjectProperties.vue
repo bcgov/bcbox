@@ -40,6 +40,7 @@ const version: Ref<Version | undefined> = ref(undefined);
 // Actions
 async function load() {
   object.value = objectStore.findObjectById(props.objectId);
+  await bucketStore.fetchBuckets({ bucketId: object.value?.bucketId });
   bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
 
   if( props.fullView ) {
