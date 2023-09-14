@@ -9,7 +9,8 @@ import {
   ObjectFilters,
   ObjectPermission,
 } from '@/components/object';
-import { ShareObjectButton, SyncObjectButton } from '@/components/object/share';
+import { ShareObjectButton } from '@/components/object/share';
+import { SyncButton } from '@/components/common';
 import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch, useToast } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
@@ -236,7 +237,11 @@ const filters = ref({
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
-          <SyncObjectButton :id="data.id" />
+          <SyncButton
+            :id="data.id"
+            type="object"
+            :name="data.name"
+          />
           <Button
             v-if="data.public || permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.READ, props.bucketId as string)"

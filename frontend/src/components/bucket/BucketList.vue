@@ -18,7 +18,6 @@ const { getConfig } = storeToRefs(useConfigStore());
 // State
 const sidebarInfo: Ref<Bucket | undefined> = ref(undefined);
 const displayBucketConfig: Ref<boolean> = ref(false);
-const displayBucketSync: Ref<boolean> = ref(false);
 const bucketConfigTitle: Ref<string> = ref(BucketConfig.TITLE_NEW_BUCKET);
 const bucketToUpdate: Ref<Bucket | undefined> = ref(undefined);
 
@@ -31,13 +30,6 @@ const closeSidebarInfo = () => {
   sidebarInfo.value = undefined;
 };
 
-const syncBucket = async (bucket?: Bucket) => {
-  bucketStore.syncBucket(bucket?.bucketId || '');
-  closeBucketSync();
-};
-
-/////////
-// Bucket config functions
 const showBucketConfig = (bucket?: Bucket) => {
   bucketConfigTitle.value = bucket?.bucketName || BucketConfig.TITLE_NEW_BUCKET;
   bucketToUpdate.value = bucket;
@@ -47,20 +39,6 @@ const showBucketConfig = (bucket?: Bucket) => {
 const closeBucketConfig = () => {
   displayBucketConfig.value = false;
 };
-/////////
-
-/////////
-// Bucket Sync functions
-const showBucketSync = (bucket?: Bucket) => {
-  bucketConfigTitle.value = bucket?.bucketName || BucketConfig.TITLE_NEW_BUCKET;
-  bucketToUpdate.value = bucket;
-  displayBucketSync.value = true;
-};
-
-const closeBucketSync = () => {
-  displayBucketSync.value = false;
-};
-/////////
 
 onMounted(async () => {
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
@@ -129,55 +107,12 @@ onMounted(async () => {
           @cancel-bucket-config="closeBucketConfig"
         />
       </Dialog>
-      <!-- Bucket sync dialog -->
-      <Dialog
-        class="bcbox-info-dialog"
-        :visible="displayBucketSync"
-        :style="{ width: '50vw' }"
-        :modal="true"
-        @update:visible="closeBucketSync"
-      >
-        <template #header>
-          <font-awesome-icon
-            icon="fas fa-sync"
-            fixed-width
-          />
-          <span class="p-dialog-title">Synchronize bucket</span>
-        </template>
-
-        <h3 class="bcbox-info-dialog-subhead">
-          {{ bucketConfigTitle }}
-        </h3>
-
-        <ul class="mb-4">
-          <li>This will schedule a synchronization of the bucket’s contents</li>
-          <li>
-            Use this if you are modifying it outside of BCBox,
-            such as in another software application,
-            and want to see those changes reflected in BCBox
-          </li>
-          <li>Synchronization duration is dependent on server load</li>
-        </ul>
-
-        <Button
-          class="no-indent p-button mt-2 mr-1"
-          label="Submit sync request"
-          type="submit"
-          @click="syncBucket(bucketToUpdate)"
-        />
-        <Button
-          class="no-indent p-button-outlined mt-2"
-          label="Cancel"
-          @click="closeBucketSync"
-        />
-      </Dialog>
     </div>
     <div class="flex">
       <div class="flex-grow-1">
         <BucketTable
           @show-sidebar-info="showSidebarInfo"
           @show-bucket-config="showBucketConfig"
-          @show-bucket-sync="showBucketSync"
         />
       </div>
       <div

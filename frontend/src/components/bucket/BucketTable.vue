@@ -4,6 +4,7 @@ import { ref } from 'vue';
 
 import BucketPermission from '@/components/bucket/BucketPermission.vue';
 import { Spinner } from '@/components/layout';
+import { SyncButton } from '@/components/common';
 import { Button, Column, DataTable, Dialog, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
@@ -34,10 +35,6 @@ const showSidebarInfo = async (id: number) => {
 
 const showBucketConfig = async (bucket: Bucket) => {
   emit('show-bucket-config', bucket);
-};
-
-const showBucketSync = async (bucket: Bucket) => {
-  emit('show-bucket-sync', bucket);
 };
 
 const showPermissions = async (bucketId: string, bucketName: string) => {
@@ -140,13 +137,18 @@ async function deleteBucket(bucketId: string) {
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
-          <Button
+          <!-- <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.UPDATE )"
             class="p-button-lg p-button-text"
             @click="showBucketSync(data)"
           >
             <font-awesome-icon icon="fas fa-sync" />
-          </Button>
+          </Button> -->
+          <SyncButton
+            :id="data.bucketId"
+            type="bucket"
+            :name="data.bucketName"
+          />
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.READ )"
             class="p-button-lg p-button-rounded p-button-text"
