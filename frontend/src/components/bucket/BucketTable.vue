@@ -137,10 +137,7 @@ async function deleteBucket(bucketId: string) {
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
-          <SyncButton
-            :bucket-id="data.bucketId"
-            :name="data.bucketName"
-          />
+          <SyncButton :bucket-id="data.bucketId" />
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.READ )"
             class="p-button-lg p-button-rounded p-button-text"

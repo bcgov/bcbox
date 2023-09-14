@@ -1,21 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Button, Dialog, useToast } from '@/lib/primevue';
 import { useObjectStore, useBucketStore } from '@/store';
 
+import type { Ref } from 'vue';
+
 // Props
 type Props = {
   bucketId?: string;
   objectId?: string;
-  name: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   bucketId: '',
   objectId: ''
 });
+
+// State
+const name: Ref<String> = ref('');
 
 // Store
 const objectStore = useObjectStore();
@@ -38,6 +42,13 @@ const onSubmit = () => {
   displaySyncDialog.value = false;
 };
 
+onMounted( () => {
+  if (props.bucketId) {
+    name.value = bucketStore.findBucketById(props.bucketId)?.bucketName ?? '';
+  } else if (props.objectId) {
+    name.value = objectStore.findObjectById(props.objectId)?.name ?? '';
+  }
+});
 </script>
 
 <template>
@@ -54,18 +65,18 @@ const onSubmit = () => {
         fixed-width
       />
       <span
-        v-if="props.objectId"
+        v-if="props.bucketId"
         class="p-dialog-title"
-      >Synchronize File
+      >Synchronize Bucket
       </span>
       <span
         v-else
         class="p-dialog-title"
-      >Synchronize Object</span>
+      >Synchronize File</span>
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
-      {{ props.name }}
+      {{ name }}
     </h3>
 
     <ul class="mb-4 ml-1.5">

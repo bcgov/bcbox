@@ -237,10 +237,7 @@ const filters = ref({
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
-          <SyncButton
-            :object-id="data.id"
-            :name="data.name"
-          />
+          <SyncButton :object-id="data.id" />
           <Button
             v-if="data.public || permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.READ, props.bucketId as string)"
