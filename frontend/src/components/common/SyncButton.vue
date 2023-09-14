@@ -8,15 +8,15 @@ import { useObjectStore, useBucketStore } from '@/store';
 
 // Props
 type Props = {
-  type: string;
-  id: string;
+  bucketId?: string;
+  objectId?: string;
   name: string;
 };
 
-const BUCKET = 'bucket';
-const OBJECT = 'object';
-
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  bucketId: '',
+  objectId: ''
+});
 
 // Store
 const objectStore = useObjectStore();
@@ -27,17 +27,13 @@ const toast = useToast();
 const displaySyncDialog = ref(false);
 
 // Actions
-const syncFunction = () => {
-  switch (props.type) {
-    case OBJECT:
-      objectStore.syncObject(props.id);
-      break;
-    case BUCKET:
-      bucketStore.syncBucket(props.id);
-      break;
-    default:
-      toast.error('', 'Unable to synchronize');
-      break;
+const onSubmit = () => {
+  if (props.objectId) {
+    objectStore.syncObject(props.objectId);
+  } else if (props.bucketId) {
+    bucketStore.syncBucket(props.bucketId);
+  } else {
+    toast.error('', 'Unable to synchronize');
   }
 
   displaySyncDialog.value = false;
@@ -58,7 +54,15 @@ const syncFunction = () => {
         icon="fas fa-sync"
         fixed-width
       />
-      <span class="p-dialog-title">Synchronize {{ props.type }}</span>
+      <span
+        v-if="props.objectId"
+        class="p-dialog-title"
+      >Synchronize File
+      </span>
+      <span
+        v-else
+        class="p-dialog-title"
+      >Synchronize Object</span>
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
@@ -66,7 +70,7 @@ const syncFunction = () => {
     </h3>
 
     <ul class="mb-4">
-      <li v-if="props.type === BUCKET">
+      <li v-if="props.bucketId">
         This will schedule a synchronization of the bucket's contents
       </li>
       <li v-else>
@@ -84,7 +88,7 @@ const syncFunction = () => {
       class="no-indent p-button mr-1 mt-2"
       label="Submit sync request"
       type="submit"
-      @click="syncFunction"
+      @click="onSubmit"
     />
     <Button
       class="no-indent p-button-outlined mt-2"

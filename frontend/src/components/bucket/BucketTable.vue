@@ -138,8 +138,7 @@ async function deleteBucket(bucketId: string) {
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
           <SyncButton
-            :id="data.bucketId"
-            type="bucket"
+            :bucket-id="data.bucketId"
             :name="data.bucketName"
           />
           <Button

@@ -9,8 +9,8 @@ import {
   ObjectFilters,
   ObjectPermission,
 } from '@/components/object';
-import { ShareObjectButton } from '@/components/object/share';
 import { SyncButton } from '@/components/common';
+import { ShareObjectButton } from '@/components/object/share';
 import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch, useToast } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
@@ -238,8 +238,7 @@ const filters = ref({
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
           <SyncButton
-            :id="data.id"
-            type="object"
+            :object-id="data.id"
             :name="data.name"
           />
           <Button
