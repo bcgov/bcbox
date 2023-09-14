@@ -279,9 +279,9 @@ export const useObjectStore = defineStore('object', () => {
     findObjectById,
     headObject,
     setSelectedObjects,
+    syncObject,
     togglePublic,
-    updateObject,
-    syncObject
+    updateObject
   };
 });
 

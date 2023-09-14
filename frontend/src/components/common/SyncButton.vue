@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Button, Dialog, useToast } from '@/lib/primevue';
 import { useObjectStore, useBucketStore } from '@/store';
 
-
 // Props
 type Props = {
   bucketId?: string;
@@ -69,7 +68,7 @@ const onSubmit = () => {
       {{ props.name }}
     </h3>
 
-    <ul class="mb-4">
+    <ul class="mb-4 ml-1.5">
       <li v-if="props.bucketId">
         This will schedule a synchronization of the bucket's contents
       </li>
@@ -104,12 +103,3 @@ const onSubmit = () => {
     <font-awesome-icon icon="fa-solid fa-sync" />
   </Button>
 </template>
-
-<style scoped lang="scss">
-h2 {
-  font-weight: bold;
-}
-ul {
-  padding-left: 22px;
-}
-</style>

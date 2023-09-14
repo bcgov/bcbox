@@ -133,8 +133,8 @@ export const useBucketStore = defineStore('bucket', () => {
     deleteBucket,
     fetchBuckets,
     findBucketById,
-    updateBucket,
-    syncBucket
+    syncBucket,
+    updateBucket
   };
 });
 
