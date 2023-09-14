@@ -67,6 +67,7 @@ onMounted(async () => {
         <font-awesome-icon icon="fa-solid fa-plus" />
         Connect bucket to BCBox
       </Button>
+      <!-- Bucket config dialog -->
       <Dialog
         class="bcbox-info-dialog"
         :visible="displayBucketConfig"

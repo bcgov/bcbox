@@ -4,6 +4,7 @@ import { ref } from 'vue';
 
 import BucketPermission from '@/components/bucket/BucketPermission.vue';
 import { Spinner } from '@/components/layout';
+import { SyncButton } from '@/components/common';
 import { Button, Column, DataTable, Dialog, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
@@ -117,7 +118,7 @@ async function deleteBucket(bucketId: string) {
       </Column>
       <Column
         header="Actions"
-        header-style="width: 200px"
+        header-style="width: 250px"
         header-class="header-right"
         body-class="content-right action-buttons"
       >
@@ -136,6 +137,7 @@ async function deleteBucket(bucketId: string) {
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
+          <SyncButton :bucket-id="data.bucketId" />
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.READ )"
             class="p-button-lg p-button-rounded p-button-text"

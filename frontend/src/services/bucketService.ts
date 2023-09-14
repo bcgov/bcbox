@@ -44,5 +44,15 @@ export default {
    */
   updateBucket(bucketId: string, data: Bucket) {
     return comsAxios().patch(`${BUCKET_PATH}/${bucketId}`, data);
+  },
+
+  /**
+   * @function syncBucket
+   * Synchronizes a bucket
+   * @param {string} bucketId Bucket ID for the bucket to synchronize
+   * @returns {Promise} An axios response
+   */
+  syncBucket(bucketId: string) {
+    return comsAxios().get(`${BUCKET_PATH}/${bucketId}/sync`);
   }
 };

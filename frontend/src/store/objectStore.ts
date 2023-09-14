@@ -161,9 +161,9 @@ export const useObjectStore = defineStore('object', () => {
 
           // Track all the object IDs in this bucket that the user would have access to in the table
           // (even if filters are applied)
-          if(!tagset?.length && !metadata?.length) {
+          if (!tagset?.length && !metadata?.length) {
             state.unfilteredObjectIds.value = state.objects.value
-              .filter( (x) => !params.bucketId || x.bucketId === params.bucketId )
+              .filter((x) => !params.bucketId || x.bucketId === params.bucketId)
               .map((o) => o.id);
           }
         }
@@ -250,6 +250,20 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
+  async function syncObject(objectId: string) {
+    try {
+      appStore.beginIndeterminateLoading();
+      await objectService.syncObject(objectId);
+      toast.success('', 'Sync is in queue and will begin soon');
+    }
+    catch (error: any) {
+      toast.error('Unable to sync', error);
+    }
+    finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   return {
     // State
     ...state,
@@ -265,6 +279,7 @@ export const useObjectStore = defineStore('object', () => {
     findObjectById,
     headObject,
     setSelectedObjects,
+    syncObject,
     togglePublic,
     updateObject
   };
