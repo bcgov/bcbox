@@ -3,7 +3,7 @@ import { comsAxios } from './interceptors';
 import type { AxiosResponse } from 'axios';
 import type { SearchUsersOptions } from '@/types';
 
-import { COMS_SYSTEM_USER } from '@/utils/constants';
+import { SYSTEM_USER } from '@/utils/constants';
 
 const PATH = 'user';
 
@@ -15,9 +15,9 @@ export default {
    * @returns {Promise<AxiosResponse>} An axios response or empty array
    */
   searchForUsers(params: SearchUsersOptions): Promise<AxiosResponse> {
-    // delete userId prop if only contains 'system user'
-    const userIds = params.userId?.filter(id => id !== null && id !== COMS_SYSTEM_USER);
-    if(userIds?.length === 0) delete params.userId ;
+    // Drop userId param if it only contains the system user
+    const userIds = params.userId?.filter(id => id !== null && id !== SYSTEM_USER);
+    if (userIds?.length === 0) delete params.userId;
 
     if (Object.keys(params).length) {
       return comsAxios().get(`${PATH}`, { params: params });

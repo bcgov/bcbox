@@ -46,8 +46,10 @@ export const StorageKey = Object.freeze({
   CONFIG: 'config'
 });
 
-// user ID of system user record in COMS db
-export const COMS_SYSTEM_USER = '00000000-0000-0000-0000-000000000000';
+/**
+ * Default COMS System User ID
+ */
+export const SYSTEM_USER = '00000000-0000-0000-0000-000000000000';
 
 export const ToastTimeout = Object.freeze({
   ERROR: 5000,
