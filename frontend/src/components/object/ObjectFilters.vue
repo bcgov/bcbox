@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 import { ref, computed } from 'vue';
 
 import { MultiSelect } from '@/lib/primevue';
-import { useMetadataStore, useObjectStore, useTagStore } from '@/store';
+import { useAuthStore, useMetadataStore, useObjectStore, useTagStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { MetadataPair, Tag } from '@/types';
@@ -32,6 +32,7 @@ const tagStore = useTagStore();
 const { getMetadataSearchResults } = storeToRefs(useMetadataStore());
 const { getUnfilteredObjectIds } = storeToRefs(useObjectStore());
 const { getTagSearchResults } = storeToRefs(useTagStore());
+const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const searching = ref(false);
@@ -132,7 +133,9 @@ const selectedFilterValuesChanged = () => {
   objectStore.fetchObjects(
     {
       bucketId: props.bucketId,
-      permCode: Permissions.READ
+      bucketPerms: true,
+      permCode: Permissions.READ,
+      userId: getUserId.value
     },
     tagSetToSearch,
     metaToSearch
@@ -170,7 +173,6 @@ const searchTagging = async () => {
     @change="selectedMetadataChanged"
   />
 
-  
   <MultiSelect
     v-model="selectedTags"
     :options="tagsetValues"
