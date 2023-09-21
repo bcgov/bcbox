@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { isProxy, onMounted, ref, Ref, watch } from 'vue';
+import { isProxy, onMounted, ref, watch } from 'vue';
 
 import { Button, Dropdown, RadioButton } from '@/lib/primevue';
 import { useConfigStore, useUserStore } from '@/store';
 import { Regex } from '@/utils/constants';
 
+import type { Ref } from 'vue';
 import type { IChangeEvent, IInputEvent } from '@/interfaces';
 import type { IdentityProvider, User, UserPermissions } from '@/types';
 
