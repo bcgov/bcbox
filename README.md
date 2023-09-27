@@ -64,6 +64,10 @@ If you would like to contribute, please see our [contributing](CONTRIBUTING.md) 
 
 Please note that this project is released with a [Contributor Code of Conduct](CODE-OF-CONDUCT.md). By participating in this project you agree to abide by its terms.
 
+## Forking & Self-hosting
+
+If you intend to fork, host and support your own version of this application, please ensure that you re-brand the application's name and content. Please remove any notices, links or contact information and consider contributing new features back to this repository.
+
 ## License
 
 ```txt
