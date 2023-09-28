@@ -70,7 +70,7 @@ const onSubmit = async (values: any) => {
     } as Bucket;
 
     // Only add key for new configurations
-    if( !props.bucket && values.key ) {
+    if( !props.bucket && values.key && joinPath(values.key)) {
       formBucket.key = joinPath(values.key);
     }
 
