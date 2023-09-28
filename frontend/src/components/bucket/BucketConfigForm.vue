@@ -52,7 +52,7 @@ const schema = object({
   bucket: string().max(255).required().label('Bucket'),
   bucketName: string().max(255).required().label('Bucket name'),
   endpoint: string().max(255).required().label('Endpoint'),
-  key: string().max(255).label('Key'),
+  key: string().matches(/^[^\\]+$/, 'Sub-path must not contain backslashes').max(255).label('Key'),
   secretAccessKey: string().max(255).required().label('Secret Access Key')
 });
 
