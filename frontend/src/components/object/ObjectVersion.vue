@@ -126,10 +126,10 @@ watch( getVersions, () => {
                 :to="{ name: RouteNames.DETAIL_OBJECTS,
                        query: { objectId: props.objectId, versionId: data.id } }"
               >
-                {{ data.updatedAt ? formatDateLong(data.updatedAt) : formatDateLong(data.createdAt) }}
+                {{ data.createdAt ? formatDateLong(data.createdAt) : formatDateLong(data.createdAt) }}
               </router-link>
               <span v-else>
-                {{ data.updatedAt ? formatDateLong(data.updatedAt) : formatDateLong(data.createdAt) }}
+                {{ data.createdAt ? formatDateLong(data.createdAt) : formatDateLong(data.createdAt) }}
               </span>
             </div>
           </template>
