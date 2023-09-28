@@ -36,7 +36,7 @@ export function joinPath(...items: Array<string>): string {
         if (x && x.trim().length) parts.push(x);
       });
     });
-    return parts.join(DELIMITER);
+    return parts.join(DELIMITER) ?? '';
   }
   else return '';
 }
