@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 
 import { ObjectMetadataTagForm } from '@/components/object';
-import { Button, Dialog } from '@/lib/primevue';
+import { Button, Dialog, Tag } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, usePermissionStore, useTagStore, useVersionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
@@ -98,13 +98,12 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
       v-for="tag in objectTagging?.tagset"
       :key="tag.key + tag.value"
     >
-      <div class="col">
-        <Button
-          label="Primary"
-          class="p-button-raised p-button-rounded"
-        >
-          {{ tag.key + "=" + tag.value }}
-        </Button>
+      <div class="grid">
+        <div class="col mr-2">
+          <Tag value="Primary" rounded>
+            {{ tag.key + "=" + tag.value }}
+        </Tag>
+        </div>
       </div>
     </div>
   </div>

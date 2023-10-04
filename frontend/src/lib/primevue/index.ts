@@ -20,6 +20,7 @@ export { default as ProgressSpinner } from 'primevue/progressspinner';
 export { default as RadioButton } from 'primevue/radiobutton';
 export { default as TabView } from 'primevue/tabview';
 export { default as TabPanel } from 'primevue/tabpanel';
+export { default as Tag } from 'primevue/tag';
 export { default as Toast } from 'primevue/toast';
 export { default as Toolbar } from 'primevue/toolbar';
 
