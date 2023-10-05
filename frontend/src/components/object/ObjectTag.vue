@@ -13,6 +13,7 @@ import type { Tagging } from '@/types';
 
 // Props
 type Props = {
+  bucketId: string | undefined;
   editable?: boolean;
   objectId: string;
   versionId?: string;
@@ -109,7 +110,7 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
   </div>
   <div
     v-if="editable &&
-      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, props.objectId)"
+      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, props.bucketId)"
   >
     <Button
       outlined

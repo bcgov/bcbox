@@ -203,6 +203,7 @@ watch( [props, getObjects], async () => {
         />
         <ObjectAccess :object-id="props.objectId" />
         <ObjectMetadata
+          :bucket-id="bucketId"
           :editable="props.versionId === latestVersionId"
           :object-id="props.objectId"
           :version-id="props.versionId"
@@ -227,6 +228,7 @@ watch( [props, getObjects], async () => {
           :version-id="props.versionId"
         />
         <ObjectTag
+          :bucket-id="bucketId"
           :editable="props.versionId === latestVersionId"
           :object-id="props.objectId"
           :version-id="props.versionId"

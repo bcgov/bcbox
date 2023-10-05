@@ -8,7 +8,7 @@ import { RouteNames } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
-import type { Bucket, COMSObject, Metadata, Version } from '@/types';
+import type { Bucket, COMSObject, Metadata } from '@/types';
 
 // Props
 type Props = {
