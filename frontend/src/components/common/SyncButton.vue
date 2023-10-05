@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Button, Dialog, useToast } from '@/lib/primevue';
@@ -42,13 +42,14 @@ const onSubmit = () => {
   displaySyncDialog.value = false;
 };
 
-onMounted( () => {
+const onClick = () => {
+  displaySyncDialog.value = true;
   if (props.bucketId) {
     name.value = bucketStore.findBucketById(props.bucketId)?.bucketName ?? '';
   } else if (props.objectId) {
     name.value = objectStore.findObjectById(props.objectId)?.name ?? '';
   }
-});
+};
 </script>
 
 <template>
@@ -109,7 +110,7 @@ onMounted( () => {
 
   <Button
     class="p-button-lg p-button-text"
-    @click="displaySyncDialog = true"
+    @click="onClick"
   >
     <font-awesome-icon icon="fa-solid fa-sync" />
   </Button>
