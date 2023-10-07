@@ -48,7 +48,7 @@ watch( props, () => {
 </script>
 
 <template>
-  <div class="grid details-grid grid-nogutter mb-2">
+  <div  v-if="managedBy" class="grid details-grid grid-nogutter mb-2">
     <div class="col-12">
       <h2 class="font-bold">
         Access
