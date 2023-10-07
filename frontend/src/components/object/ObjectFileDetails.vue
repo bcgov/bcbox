@@ -26,7 +26,6 @@ import {
 } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
-import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
 import type { COMSObject, Version } from '@/types';
@@ -140,11 +139,7 @@ watch( [props, getObjects], async () => {
         <h1
           class="pl-1 font-bold heading"
         >
-          <span v-if="latestVersionId !== props.versionId">
-            Previous version:
-            {{ formatDateLong(version?.createdAt as string) }}
-          </span>
-          <span v-else>
+          <span>
             File details
           </span>
         </h1>
