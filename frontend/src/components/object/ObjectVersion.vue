@@ -74,11 +74,13 @@ watch( props, () => {
   load();
 });
 
-watch( getVersions, () => {
+watch( getVersions, async () => {
   const versions = versionStore.findVersionsByObjectId(props.objectId);
-  tableData.value = versions.map( (v: Version) => ({
+  await userStore.fetchUsers({ userId: versions.map( (x: Version) => x.createdBy) });
+  tableData.value = versions.map( (v: Version, index, arr) => ({
     ...v,
-    createdByName: getUserSearch.value.find( (u: User) => u.userId === v.createdBy )?.fullName
+    createdByName: getUserSearch.value.find( (u: User) => u.userId === v.createdBy )?.fullName,
+    versionNumber: arr.length - index
   }));
 });
 
@@ -115,8 +117,18 @@ watch( getVersions, () => {
           </div>
         </template>
         <Column
-          field="updatedAt"
+          field="versionNumber"
           header="Version"
+          header-style="width: 3em"
+          body-class="content-center"
+        >
+          <template #body="{ data }">
+            {{ data.versionNumber }}
+          </template>
+        </Column>
+        <Column
+          field="updatedAt"
+          header="Creation date"
           header-style="width: 33%"
         >
           <template #body="{ data }">
@@ -126,17 +138,17 @@ watch( getVersions, () => {
                 :to="{ name: RouteNames.DETAIL_OBJECTS,
                        query: { objectId: props.objectId, versionId: data.id } }"
               >
-                {{ data.updatedAt ? formatDateLong(data.updatedAt) : formatDateLong(data.createdAt) }}
+                {{ data.s3VersionId ? formatDateLong(data.createdAt) : formatDateLong(data.createdAt?? data.updatedAt) }}
               </router-link>
               <span v-else>
-                {{ data.updatedAt ? formatDateLong(data.updatedAt) : formatDateLong(data.createdAt) }}
+                {{ data.s3VersionId ? formatDateLong(data.createdAt) : formatDateLong(data.createdAt?? data.updatedAt) }}
               </span>
             </div>
           </template>
         </Column>
         <Column
           field="createdBy"
-          header="Updated by"
+          header="Created by"
           header-style="width: 33%"
         >
           <template #body="{ data }">
