@@ -57,6 +57,7 @@ const download = () => {
     v-if="props.mode === ButtonMode.ICON"
     class="p-button-lg p-button-text"
     :disabled="props.disabled"
+    aria-label="Download Object"
     @click="download()"
   >
     <font-awesome-icon icon="fa-solid fa-download" />
@@ -66,6 +67,7 @@ const download = () => {
     class="mr-2"
     outlined
     :disabled="props.disabled"
+    aria-label="Download Object"
     @click="download()"
   >
     <font-awesome-icon

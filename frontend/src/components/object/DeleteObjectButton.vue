@@ -76,6 +76,7 @@ const confirmDelete = () => {
     v-if="props.mode === ButtonMode.ICON"
     class="p-button-lg p-button-text p-button-danger"
     :disabled="props.disabled"
+    aria-label="Delete Object"
     @click="confirmDelete()"
   >
     <font-awesome-icon icon="fa-solid fa-trash" />
@@ -84,6 +85,7 @@ const confirmDelete = () => {
     v-else
     class="p-button-outlined p-button-danger"
     :disabled="props.disabled"
+    aria-label="Delete Object"
     @click="confirmDelete()"
   >
     <font-awesome-icon

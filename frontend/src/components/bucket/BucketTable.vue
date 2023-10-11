@@ -126,16 +126,16 @@ async function deleteBucket(bucketId: string) {
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.UPDATE )"
             class="p-button-lg p-button-text"
-            @click="showBucketConfig(data)"
             aria-label="Configure bucket"
+            @click="showBucketConfig(data)"
           >
             <font-awesome-icon icon="fas fa-cog" />
           </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.MANAGE )"
             class="p-button-lg p-button-text"
-            @click="showPermissions(data.bucketId, data.bucketName)"
             aria-label="Bucket Permissions"
+            @click="showPermissions(data.bucketId, data.bucketName)"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
@@ -151,8 +151,8 @@ async function deleteBucket(bucketId: string) {
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.DELETE )"
             class="p-button-lg p-button-text p-button-danger"
-            @click="confirmDeleteBucket(data.bucketId)"
             aria-label="Delete bucket"
+            @click="confirmDeleteBucket(data.bucketId)"
           >
             <font-awesome-icon icon="fa-solid fa-trash" />
           </Button>

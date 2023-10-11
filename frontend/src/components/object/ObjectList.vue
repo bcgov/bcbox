@@ -106,6 +106,7 @@ onMounted(async () => {
         v-if="permissionStore.isBucketActionAllowed(props.bucketId as string, getUserId, Permissions.CREATE)"
         class="mr-2"
         :disabled="displayUpload"
+        aria-label="Show Object"
         @click="showUpload"
       >
         <font-awesome-icon
