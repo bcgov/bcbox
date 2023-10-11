@@ -64,6 +64,7 @@ onMounted(async () => {
         class="p-button-outlined mt-4"
         data-test="connect-bucket"
         @click="showBucketConfig()"
+        aria-label="Configure bucket"
       >
         <font-awesome-icon icon="fa-solid fa-plus" />
         Connect bucket to BCBox

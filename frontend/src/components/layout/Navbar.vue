@@ -25,7 +25,7 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
             v-if="getIsAuthenticated"
             class="mr-2"
           >
-            <router-link :to="{ name: RouteNames.LIST_BUCKETS }">
+            <router-link :to="{ name: RouteNames.LIST_BUCKETS }" aria-lable="My Buckets">
               My Buckets
             </router-link>
           </li>
@@ -33,6 +33,7 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
             <a
               target="_blank"
               href="https://github.com/bcgov/bcbox/wiki"
+              aria-label="bcbox wiki"
             >Help</a>
           </li>
         </ol>

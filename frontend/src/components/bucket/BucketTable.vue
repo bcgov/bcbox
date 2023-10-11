@@ -127,6 +127,7 @@ async function deleteBucket(bucketId: string) {
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.UPDATE )"
             class="p-button-lg p-button-text"
             @click="showBucketConfig(data)"
+            aria-label="Configure bucket"
           >
             <font-awesome-icon icon="fas fa-cog" />
           </Button>
@@ -134,6 +135,7 @@ async function deleteBucket(bucketId: string) {
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.MANAGE )"
             class="p-button-lg p-button-text"
             @click="showPermissions(data.bucketId, data.bucketName)"
+            aria-label="Bucket Permissions"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
@@ -142,6 +144,7 @@ async function deleteBucket(bucketId: string) {
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.READ )"
             class="p-button-lg p-button-rounded p-button-text"
             @click="showSidebarInfo(data.bucketId)"
+            aria-label="Bucket details"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
@@ -149,6 +152,7 @@ async function deleteBucket(bucketId: string) {
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.DELETE )"
             class="p-button-lg p-button-text p-button-danger"
             @click="confirmDeleteBucket(data.bucketId)"
+            aria-label="Delete bucket"
           >
             <font-awesome-icon icon="fa-solid fa-trash" />
           </Button>
