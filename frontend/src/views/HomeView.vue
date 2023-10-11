@@ -21,9 +21,9 @@ const { getConfig } = storeToRefs(useConfigStore());
 
   <div class="flex flex-column mr-8 ml-8">
     <div class="flex justify-content-center mb-5">
-      <h1 class="font-bold">
+      <h2 class="font-bold">
         Store and share files in BCBox
-      </h1>
+      </h2>
     </div>
     <div class="flex justify-content-center mb-5">
       <p class="text-xl text-center">
@@ -57,9 +57,9 @@ const { getConfig } = storeToRefs(useConfigStore());
       />
     </div>
     <div class="flex justify-content-center mb-5">
-      <h1 class="font-bold">
+      <h2 class="font-bold">
         Ongoing feature enhancements
-      </h1>
+      </h2>
     </div>
     <div class="flex justify-content-center mb-8 text-xl">
       <ul>
@@ -72,9 +72,9 @@ const { getConfig } = storeToRefs(useConfigStore());
     <div class="grid mb-8">
       <div class="col-6 pr-5">
         <div class="flex align-items-left mb-2">
-          <h1 class="font-bold">
+          <h2 class="font-bold">
             Upload and download objects
-          </h1>
+          </h2>
         </div>
         <div class="flex align-items-left">
           <p class="text-xl">
@@ -95,9 +95,9 @@ const { getConfig } = storeToRefs(useConfigStore());
     <div class="grid mb-8">
       <div class="col-6 pr-5">
         <div class="flex align-items-left mb-2">
-          <h1 class="font-bold">
+          <h2 class="font-bold">
             Manage access and share
-          </h1>
+          </h2>
         </div>
         <div class="flex align-items-left">
           <p class="text-xl">
@@ -119,9 +119,9 @@ const { getConfig } = storeToRefs(useConfigStore());
       </div>
     </div>
     <div class="flex justify-content-center mb-5">
-      <h1 class="font-bold">
+      <h2 class="font-bold">
         Versioning, metadata, tagging, syncing with existing buckets and more
-      </h1>
+      </h2>
     </div>
     <div class="flex justify-content-center mb-8 text-xl">
       <ul>
@@ -144,9 +144,9 @@ const { getConfig } = storeToRefs(useConfigStore());
       </router-link>
     </div>
     <div class="flex justify-content-center mb-5">
-      <h1 class="font-bold">
+      <h2 class="font-bold">
         Terms of Use
-      </h1>
+      </h2>
     </div>
     <div class="flex justify-content-left mb-5 text-xl">
       <ul>
