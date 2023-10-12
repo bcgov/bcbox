@@ -4,7 +4,7 @@ import { onMounted, ref, watch } from 'vue';
 
 import GridRow from '@/components/form/GridRow.vue';
 import { useBucketStore, useMetadataStore, useObjectStore, useUserStore } from '@/store';
-import { RouteNames, SYSTEM_USER } from '@/utils/constants';
+import { RouteNames } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
@@ -43,7 +43,7 @@ async function load() {
 
   if( props.fullView ) {
     objectMetadata.value = metadataStore.findMetadataByObjectId(object.value?.id as string);
-    await userStore.fetchUsers({userId:[object.value?.createdBy, object.value?.updatedBy].filter((userId) => userId != SYSTEM_USER)});
+    await userStore.fetchUsers({userId:[object.value?.createdBy, object.value?.updatedBy]});
     createdBy.value = getUserSearch.value.find( x => x.userId === object.value?.createdBy )?.fullName;
     updatedBy.value = getUserSearch.value.find( x => x.userId === object.value?.updatedBy )?.fullName;
   }

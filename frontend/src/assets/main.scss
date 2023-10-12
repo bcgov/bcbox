@@ -165,9 +165,18 @@ td .wrap-block {
   }
 }
 
+// ---------- datatables
+
 .p-datatable {
   .p-datatable-loading-overlay {
     background: white;
     opacity: 0.8;
+  }
+}
+
+.versions-table .p-datatable-table tbody tr:not(.selected-row) {
+  &:hover{
+    background-color: $bcbox-highlight-background !important;
+    cursor: pointer;
   }
 }

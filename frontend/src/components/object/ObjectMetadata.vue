@@ -14,7 +14,6 @@ import type { Metadata } from '@/types';
 
 // Props
 type Props = {
-  bucketId: string | undefined ;
   editable?: boolean;
   objectId: string;
   versionId?: string;
@@ -31,6 +30,7 @@ const emit = defineEmits(['on-file-uploaded']);
 // Store
 const metadataStore = useMetadataStore();
 const versionStore = useVersionStore();
+const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const { getUserId } = storeToRefs(useAuthStore());
 const { getMetadata: tsGetMetadata } = storeToRefs(metadataStore);
@@ -42,6 +42,10 @@ const formData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
 });
 const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
+
+
+// Object
+const obj = objectStore.findObjectById(props.objectId);
 
 // Actions
 const confirm = useConfirm();
@@ -57,7 +61,7 @@ const confirmUpdate = (values: ObjectMetadataTagFormType) => {
 };
 
 const showModal = () => {
-  formData.value.filename = useObjectStore().findObjectById(props.objectId)?.name ?? '';
+  formData.value.filename = obj?.name ?? '';
   formData.value.metadata = objectMetadata.value?.metadata;
 
   editing.value = true;
@@ -108,7 +112,7 @@ watch([props, tsGetMetadata,vsGetMetadata] , () => {
   </div>
   <div
     v-if="editable &&
-      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, props.bucketId)"
+      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, obj?.bucketId)"
   >
     <Button
       outlined

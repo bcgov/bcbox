@@ -29,12 +29,12 @@ async function load() {
   await permissionStore.fetchObjectPermissions({ objectId: props.objectId });
 
   const uniqueIds = [...new Set(getObjectPermissions.value
-    .filter( (x: COMSObjectPermission) => x.objectId === props.objectId && x.permCode === Permissions.MANAGE )
-    .map( (x: COMSObjectPermission) => x.userId) )];
+    .filter((x: COMSObjectPermission) => x.objectId === props.objectId && x.permCode === Permissions.MANAGE)
+    .map((x: COMSObjectPermission) => x.userId))];
 
-  if( uniqueIds.length ) {
+  if (uniqueIds.length) {
     await userStore.fetchUsers({ userId: uniqueIds });
-    managedBy.value = userStore.findUsersById(uniqueIds).map( x => x.fullName ).join(', ');
+    managedBy.value = userStore.findUsersById(uniqueIds).map(x => x.fullName).join(', ');
   }
 }
 
@@ -42,13 +42,16 @@ onMounted(() => {
   load();
 });
 
-watch( props, () => {
+watch(props, () => {
   load();
 });
 </script>
 
 <template>
-  <div  v-if="managedBy" class="grid details-grid grid-nogutter mb-2">
+  <div
+    v-if="managedBy"
+    class="grid details-grid grid-nogutter mb-2"
+  >
     <div class="col-12">
       <h2 class="font-bold">
         Access

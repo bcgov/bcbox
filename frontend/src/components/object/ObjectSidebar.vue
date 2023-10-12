@@ -33,7 +33,7 @@ const closeObjectInfo = async () => {
 };
 
 const obj = objectStore.findObjectById(props.objectId);
-const bucketId = obj ? obj.bucketId : undefined;
+const bucketId = obj?.bucketId;
 
 watch( props, () => {
   if( obj &&

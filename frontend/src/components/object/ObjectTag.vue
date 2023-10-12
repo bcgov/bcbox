@@ -13,7 +13,6 @@ import type { Tagging } from '@/types';
 
 // Props
 type Props = {
-  bucketId: string | undefined;
   editable?: boolean;
   objectId: string;
   versionId?: string;
@@ -28,6 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['on-file-uploaded']);
 
 // Store
+const objectStore = useObjectStore();
 const tagStore = useTagStore();
 const versionStore = useVersionStore();
 const permissionStore = usePermissionStore();
@@ -42,9 +42,12 @@ const formData: Ref<ObjectMetadataTagFormType> = ref({
 });
 const objectTagging: Ref<Tagging | undefined> = ref(undefined);
 
+// Object
+const obj = objectStore.findObjectById(props.objectId);
+
 // Actions
 const showModal = () => {
-  formData.value.filename = useObjectStore().findObjectById(props.objectId)?.name ?? '';
+  formData.value.filename = obj?.name ?? '';
   formData.value.tagset = objectTagging.value?.tagset;
 
   editing.value = true;
@@ -101,16 +104,19 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
     >
       <div class="grid">
         <div class="col mr-2">
-          <Tag value="Primary" rounded>
+          <Tag
+            value="Primary"
+            rounded
+          >
             {{ tag.key + "=" + tag.value }}
-        </Tag>
+          </Tag>
         </div>
       </div>
     </div>
   </div>
   <div
     v-if="editable &&
-      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, props.bucketId)"
+      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, obj?.bucketId)"
   >
     <Button
       outlined
