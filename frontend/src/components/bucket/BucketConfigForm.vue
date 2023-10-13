@@ -110,7 +110,7 @@ const onCancel = () => {
         name="bucket"
         label="Bucket *"
         placeholder="bucket0123456789"
-        help-text="The name of the bucket given to you, e.g. yxwgj"
+        :help-text="'The name of the bucket given to you. For example: \'yxwgj\'.'"
       />
       <TextInput
         name="endpoint"

@@ -60,6 +60,13 @@ async function onDeletedSuccess(versionId: string) {
   }
 }
 
+const rowClick = function(e: any){
+  router.push({
+    name: RouteNames.DETAIL_OBJECTS,
+    query: { objectId: e.data.objectId, versionId: e.data.id }
+  });
+};
+
 async function load() {
   await versionStore.fetchVersions({ objectId: props.objectId });
   const versions = versionStore.findVersionsByObjectId(props.objectId);
@@ -74,11 +81,13 @@ watch( props, () => {
   load();
 });
 
-watch( getVersions, () => {
+watch( getVersions, async () => {
   const versions = versionStore.findVersionsByObjectId(props.objectId);
-  tableData.value = versions.map( (v: Version) => ({
+  await userStore.fetchUsers({ userId: versions.map( (x: Version) => x.createdBy) });
+  tableData.value = versions.map( (v: Version, index, arr) => ({
     ...v,
-    createdByName: getUserSearch.value.find( (u: User) => u.userId === v.createdBy )?.fullName
+    createdByName: getUserSearch.value.find( (u: User) => u.userId === v.createdBy )?.fullName,
+    versionNumber: arr.length - index
   }));
 });
 
@@ -95,7 +104,7 @@ watch( getVersions, () => {
       <DataTable
         :value="tableData"
         data-key="id"
-        class="p-datatable-sm"
+        class="versions-table p-datatable-sm"
         responsive-layout="scroll"
         :paginator="true"
         :rows="5"
@@ -103,6 +112,7 @@ watch( getVersions, () => {
         paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
         current-page-report-template="{first}-{last} of {totalRecords}"
         :rows-per-page-options="[5, 10, 20]"
+        @row-click="rowClick($event)"
       >
         <template #empty>
           <div
@@ -115,28 +125,31 @@ watch( getVersions, () => {
           </div>
         </template>
         <Column
-          field="updatedAt"
+          field="versionNumber"
           header="Version"
+          header-style="width: 3em"
+          body-class="content-center"
+        >
+          <template #body="{ data }">
+            {{ data.versionNumber }}
+          </template>
+        </Column>
+        <Column
+          field="updatedAt"
+          header="Creation date"
           header-style="width: 33%"
         >
           <template #body="{ data }">
             <div>
-              <router-link
-                v-if="data.id !== props.versionId"
-                :to="{ name: RouteNames.DETAIL_OBJECTS,
-                       query: { objectId: props.objectId, versionId: data.id } }"
-              >
-                {{ data.updatedAt ? formatDateLong(data.updatedAt) : formatDateLong(data.createdAt) }}
-              </router-link>
-              <span v-else>
-                {{ data.updatedAt ? formatDateLong(data.updatedAt) : formatDateLong(data.createdAt) }}
+              <span>
+                {{ formatDateLong(data.s3VersionId ? data.createdAt : data.createdAt ?? data.updatedAt) }}
               </span>
             </div>
           </template>
         </Column>
         <Column
           field="createdBy"
-          header="Updated by"
+          header="Created by"
           header-style="width: 33%"
         >
           <template #body="{ data }">

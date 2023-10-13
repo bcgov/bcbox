@@ -15,9 +15,10 @@ export default {
    * @returns {Promise<AxiosResponse>} An axios response or empty array
    */
   searchForUsers(params: SearchUsersOptions): Promise<AxiosResponse> {
-    // Drop userId param if it only contains the system user
+    // Filter out SYSTEM_USER from userId param
     const userIds = params.userId?.filter(id => id !== null && id !== SYSTEM_USER);
-    if (userIds?.length === 0) delete params.userId;
+    // Drop userId param if it only contains the system user or assign back to params object, without duplicates
+    userIds?.length === 0 ? delete params.userId : params.userId = [...new Set(userIds)];
 
     if (Object.keys(params).length) {
       return comsAxios().get(`${PATH}`, { params: params });

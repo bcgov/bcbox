@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 
 import { ObjectMetadataTagForm } from '@/components/object';
-import { Button, Dialog } from '@/lib/primevue';
+import { Button, Dialog, Tag } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, usePermissionStore, useTagStore, useVersionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
@@ -27,6 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['on-file-uploaded']);
 
 // Store
+const objectStore = useObjectStore();
 const tagStore = useTagStore();
 const versionStore = useVersionStore();
 const permissionStore = usePermissionStore();
@@ -41,9 +42,12 @@ const formData: Ref<ObjectMetadataTagFormType> = ref({
 });
 const objectTagging: Ref<Tagging | undefined> = ref(undefined);
 
+// Object
+const obj = objectStore.findObjectById(props.objectId);
+
 // Actions
 const showModal = () => {
-  formData.value.filename = useObjectStore().findObjectById(props.objectId)?.name ?? '';
+  formData.value.filename = obj?.name ?? '';
   formData.value.tagset = objectTagging.value?.tagset;
 
   editing.value = true;
@@ -98,19 +102,21 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
       v-for="tag in objectTagging?.tagset"
       :key="tag.key + tag.value"
     >
-      <div class="col">
-        <Button
-          label="Primary"
-          class="p-button-raised p-button-rounded"
-        >
-          {{ tag.key + "=" + tag.value }}
-        </Button>
+      <div class="grid">
+        <div class="col mr-2">
+          <Tag
+            value="Primary"
+            rounded
+          >
+            {{ tag.key + "=" + tag.value }}
+          </Tag>
+        </div>
       </div>
     </div>
   </div>
   <div
     v-if="editable &&
-      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, props.objectId)"
+      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, obj?.bucketId)"
   >
     <Button
       outlined

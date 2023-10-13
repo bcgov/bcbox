@@ -3,12 +3,12 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 
 import GridRow from '@/components/form/GridRow.vue';
-import { useBucketStore, useMetadataStore, useObjectStore, useUserStore, useVersionStore } from '@/store';
+import { useBucketStore, useMetadataStore, useObjectStore, useUserStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
-import type { Bucket, COMSObject, Metadata, Version } from '@/types';
+import type { Bucket, COMSObject, Metadata } from '@/types';
 
 // Props
 type Props = {
@@ -26,7 +26,6 @@ const bucketStore = useBucketStore();
 const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const userStore = useUserStore();
-const versionStore = useVersionStore();
 const { getUserSearch } = storeToRefs(userStore);
 
 // State
@@ -35,7 +34,6 @@ const createdBy: Ref<string | undefined> = ref(undefined);
 const object: Ref<COMSObject | undefined> = ref(undefined);
 const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
 const updatedBy: Ref<string | undefined> = ref(undefined);
-const version: Ref<Version | undefined> = ref(undefined);
 
 // Actions
 async function load() {
@@ -44,21 +42,10 @@ async function load() {
   bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
 
   if( props.fullView ) {
-    if( props.versionId ) {
-      version.value = versionStore.findVersionById(props.versionId);
-      objectMetadata.value = versionStore.findMetadataByVersionId(props.versionId);
-
-      await userStore.fetchUsers({userId:[version.value?.createdBy, version.value?.updatedBy]});
-      createdBy.value = getUserSearch.value.find( x => x.userId === version.value?.createdBy )?.fullName;
-      updatedBy.value = getUserSearch.value.find( x => x.userId === version.value?.updatedBy )?.fullName;
-    }
-    else {
-      objectMetadata.value = metadataStore.findMetadataByObjectId(object.value?.id as string);
-
-      await userStore.fetchUsers({userId:[object.value?.createdBy, object.value?.updatedBy]});
-      createdBy.value = getUserSearch.value.find( x => x.userId === object.value?.createdBy )?.fullName;
-      updatedBy.value = getUserSearch.value.find( x => x.userId === object.value?.updatedBy )?.fullName;
-    }
+    objectMetadata.value = metadataStore.findMetadataByObjectId(object.value?.id as string);
+    await userStore.fetchUsers({userId:[object.value?.createdBy, object.value?.updatedBy]});
+    createdBy.value = getUserSearch.value.find( x => x.userId === object.value?.createdBy )?.fullName;
+    updatedBy.value = getUserSearch.value.find( x => x.userId === object.value?.updatedBy )?.fullName;
   }
 }
 

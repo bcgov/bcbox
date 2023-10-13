@@ -32,8 +32,10 @@ const closeObjectInfo = async () => {
   emit('close-object-info');
 };
 
+const obj = objectStore.findObjectById(props.objectId);
+const bucketId = obj?.bucketId;
+
 watch( props, () => {
-  const obj = objectStore.findObjectById(props.objectId);
   if( obj &&
      (obj.public || permissionStore.isObjectActionAllowed(obj.id, getUserId.value, Permissions.READ, obj.bucketId)))
   {
@@ -68,10 +70,12 @@ watch( props, () => {
       :full-view="false"
     />
     <ObjectMetadata
+      :bucket-id="bucketId"
       :editable="false"
       :object-id="props.objectId"
     />
     <ObjectTag
+      :bucket-id="bucketId"
       :editable="false"
       :object-id="props.objectId"
     />

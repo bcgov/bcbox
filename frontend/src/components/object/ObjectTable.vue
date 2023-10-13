@@ -117,8 +117,8 @@ const filters = ref({
       paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
       current-page-report-template="{first}-{last} of {totalRecords}"
       :rows-per-page-options="[10, 20, 50]"
-      sort-field="name"
-      :sort-order="1"
+      sort-field="lastUpdatedDate"
+      :sort-order="-1"
       :global-filter-fields="['name']"
     >
       <template #header>
