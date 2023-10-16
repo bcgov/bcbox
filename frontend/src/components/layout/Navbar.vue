@@ -25,7 +25,10 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
             v-if="getIsAuthenticated"
             class="mr-2"
           >
-            <router-link :to="{ name: RouteNames.LIST_BUCKETS }" aria-lable="My Buckets">
+            <router-link 
+              :to="{ name: RouteNames.LIST_BUCKETS }"
+              aria-label="My Buckets"
+            >
               My Buckets
             </router-link>
           </li>
