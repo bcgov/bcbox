@@ -143,8 +143,8 @@ async function deleteBucket(bucketId: string) {
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.READ )"
             class="p-button-lg p-button-rounded p-button-text"
-            @click="showSidebarInfo(data.bucketId)"
             aria-label="Bucket details"
+            @click="showSidebarInfo(data.bucketId)"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
