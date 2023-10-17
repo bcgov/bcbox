@@ -73,7 +73,7 @@ describe('BucketList.vue', async () => {
       },
     });
 
-    const button = wrapper.find('[icon="fa-solid fa-plus"]');
+    const button = wrapper.find('[data-test="connect-bucket"]');
 
     expect(button.isVisible()).toBeTruthy();
   });

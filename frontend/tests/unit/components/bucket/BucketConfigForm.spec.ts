@@ -42,7 +42,7 @@ describe('BucketConfigForm.vue', () => {
     expect(wrapper).toBeTruthy();
   });
 
-  it('it emits cancel config', async () => {
+  it('emits cancel config', async () => {
     const wrapper = mount(BucketConfigForm, {
       global: {
         plugins: [PrimeVue, createTestingPinia(), ToastService],
@@ -59,7 +59,7 @@ describe('BucketConfigForm.vue', () => {
     expect(wrapper.emitted()).toHaveProperty('cancel-bucket-config');
   });
 
-  it('it emits triggers onSubmit error', async () => {
+  it('emits triggers onSubmit error', async () => {
     const wrapper = mount(BucketConfigForm, {
       global: {
         plugins: [PrimeVue, createTestingPinia(), ToastService],
