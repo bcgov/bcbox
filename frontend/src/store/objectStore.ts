@@ -81,7 +81,9 @@ export const useObjectStore = defineStore('object', () => {
 
     try {
       appStore.beginIndeterminateLoading();
-      await Promise.all(
+      // Promise.allSettled returns array with an object per promise
+      // check MDN for details
+      return await Promise.allSettled(
         objectIds.map(async (id) => {
           await objectService.deleteObject(id, versionId);
         })
