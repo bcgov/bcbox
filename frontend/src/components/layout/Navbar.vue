@@ -36,7 +36,7 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
             <a
               target="_blank"
               href="https://github.com/bcgov/bcbox/wiki"
-              aria-label="bcbox wiki"
+              aria-label="BCBox Wiki"
             >Help</a>
           </li>
         </ol>

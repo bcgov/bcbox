@@ -54,7 +54,7 @@ const { getConfig } = storeToRefs(useConfigStore());
         src="@/assets/images/home_1.png"
         class="border-1 drop-shadow"
         width="60%"
-        alt="Screenshot of BCBox's file list interface, demonstrating a list of example files and possible actions including Upload, Download and Delete."
+        alt="Screenshot of BCBox's file list interface: a list of example files and possible actions including Upload, Download and Delete."
       />
     </div>
     <div class="flex justify-content-center mb-5">
@@ -89,7 +89,7 @@ const { getConfig } = storeToRefs(useConfigStore());
           <img
             src="@/assets/images/home_2.png"
             class="border-1 drop-shadow"
-            alt="Screenshot of BCBox's upload interface, demonstrating a drag-and-drop area and possible actions including Choose, Start Upload and Close."
+            alt="Screenshot of BCBox's upload interface: a drag-and-drop area, possible actions including Choose, Start Upload and Close."
           />
         </div>
       </div>
