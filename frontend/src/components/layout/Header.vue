@@ -21,7 +21,7 @@ import { LoginButton } from '@/components/layout';
             id="title-branding"
             class="justify-content-left"
           >
-            <h1>BCBox</h1>
+            <span>BCBox</span>
           </div>
         </div>
         <div class="col-fixed">
@@ -50,8 +50,9 @@ import { LoginButton } from '@/components/layout';
 #title-branding {
   padding-left: 10px;
   font-size: 20px;
-  > h1 {
+  > span {
     font-weight: 600;
+    font-size: 1.5em;
   }
 }
 </style>
