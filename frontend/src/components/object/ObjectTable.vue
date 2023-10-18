@@ -233,7 +233,7 @@ const filters = ref({
             v-if="permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
             class="p-button-lg p-button-text"
-            aria-label="Object Permissions"
+            aria-label="Object permissions"
             @click="showPermissions(data.id)"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
@@ -243,7 +243,7 @@ const filters = ref({
             v-if="data.public || permissionStore.isObjectActionAllowed(
               data.id, getUserId, Permissions.READ, props.bucketId as string)"
             class="p-button-lg p-button-rounded p-button-text"
-            aria-label="Synchronize Bucket"
+            aria-label="Synchronize bucket"
             @click="showInfo(data.id)"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />

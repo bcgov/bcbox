@@ -21,9 +21,9 @@ const { getConfig } = storeToRefs(useConfigStore());
 
   <div class="flex flex-column mr-8 ml-8">
     <div class="flex justify-content-center mb-5">
-      <h2 class="font-bold">
+      <h1 class="font-bold">
         Store and share files in BCBox
-      </h2>
+      </h1>
     </div>
     <div class="flex justify-content-center mb-5">
       <p class="text-xl text-center">
@@ -54,7 +54,7 @@ const { getConfig } = storeToRefs(useConfigStore());
         src="@/assets/images/home_1.png"
         class="border-1 drop-shadow"
         width="60%"
-        alt="Screenshot of BCBox's file list interface: 
+        alt="Screenshot of BCBox's file list interface:
             a list of example files and possible actions including Upload, Download and Delete."
       />
     </div>
@@ -90,7 +90,7 @@ const { getConfig } = storeToRefs(useConfigStore());
           <img
             src="@/assets/images/home_2.png"
             class="border-1 drop-shadow"
-            alt="Screenshot of BCBox's upload interface: a drag-and-drop area, 
+            alt="Screenshot of BCBox's upload interface: a drag-and-drop area,
                 possible actions including Choose, Start Upload and Close."
           />
         </div>
@@ -118,7 +118,7 @@ const { getConfig } = storeToRefs(useConfigStore());
           <img
             src="@/assets/images/home_3.png"
             class="border-1 drop-shadow"
-            alt="Screenshot of BCBox's share interface, 
+            alt="Screenshot of BCBox's share interface,
                   demonstrating a share link and QR code."
           />
         </div>

@@ -95,7 +95,7 @@ onMounted( () => {
 
   <Button
     class="p-button-lg p-button-text"
-    aria-label="Share Object"
+    aria-label="Share object"
     @click="displayShareDialog = true"
   >
     <font-awesome-icon icon="fa-solid fa-share-alt" />

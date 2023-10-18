@@ -48,8 +48,8 @@ onMounted(async () => {
 <template>
   <div>
     <div>
-      <h2>Select a bucket</h2>
-      <h3>Buckets are containers for storing objects.</h3>
+      <h1>Select a bucket</h1>
+      <h2>Buckets are containers for storing objects.</h2>
       <Message
         v-if="getConfig?.notificationBanner"
         severity="warn"

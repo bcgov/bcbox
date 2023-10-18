@@ -72,7 +72,7 @@ watch(props, () => {
         icon="fa-solid fa-circle-info"
         style="font-size: 2rem"
       />
-      <h2>Bucket details</h2>
+      <h1>Bucket details</h1>
     </div>
     <div class="col-fixed align-items-center">
       <Button
