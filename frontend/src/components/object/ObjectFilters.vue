@@ -86,8 +86,6 @@ const tagsetValues = computed(() => {
     .flatMap((obj) => obj.tagset)
     // Add a display property to each tag to be used by the multiselect
     .map((val) => ({ ...val, display: `${val.key}=${val.value}` }))
-    // coms-id not allowed as a tag to filter on by COMS
-    .filter((val) => val.key !== 'coms-id')
     // Unique by display property
     .filter(
       (val, index, self) =>
@@ -116,7 +114,7 @@ const selectedMetadataChanged = (event: MultiSelectChangeEvent) => {
 };
 const selectedTagsChanged = (event: MultiSelectChangeEvent) => {
   // Unselect any other tags that have the same tag key
-  // e.g. if 'coms-id=1234' is selected, unselect any other tags that have 'coms-id' as the key
+  // e.g. if 'colour=red' is selected, unselect any other tags that have 'colour' as the key
   uncheckOther(event, selectedTags);
   selectedFilterValuesChanged();
 };

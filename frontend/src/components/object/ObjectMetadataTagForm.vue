@@ -65,8 +65,7 @@ onBeforeMount(() => {
   // Empty arrays can be given which won't trigger default prop values so check to see if blank rows need to be added
   initialValues.metadata = initialValues.metadata?.length ? initialValues.metadata : [{ key: '', value: '' }];
 
-  // Filter coms-id first before determining initial set
-  initialValues.tagset = initialValues.tagset?.filter( (x: {key: string, value: string}) => x.key !== 'coms-id' );
+  // Determine initial set
   initialValues.tagset = initialValues.tagset?.length ? initialValues.tagset : [{ key: '', value: '' }];
 });
 </script>

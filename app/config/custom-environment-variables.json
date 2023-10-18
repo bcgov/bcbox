@@ -8,7 +8,8 @@
     "oidc": {
       "authority": "FRONTEND_OIDC_AUTHORITY",
       "clientId": "FRONTEND_OIDC_CLIENTID"
-    }
+    },
+    "s3MetaTagExclude": "FRONTEND_S3METATAG_EXCLUDE"
   },
   "server": {
     "apiPath": "SERVER_APIPATH",
