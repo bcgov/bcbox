@@ -37,19 +37,14 @@ const confirmDelete = () => {
     const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} ${item}s` : `this ${item}`;
     confirm.require({
       message: `Please confirm that you want to delete ${msgContext}.`,
-      header: `Delete ${props.ids.length > 1 ? item + 's' : item }`,
+      header: `Delete ${props.ids.length > 1 ? item + 's' : item}`,
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
       accept: async () => {
         try {
-          const res = await objectStore.deleteObjects(props.ids, props.versionId);
-          res?.forEach((ele, index)=>{
-            if (ele.status === 'fulfilled') {
-              emit('on-deleted-success', props.ids[index]);
-            } else {
-              toast.error(`Error deleting ${props.ids[index]}`);
-              emit('on-deleted-error');
-            }
+          props.ids?.forEach(async (ele) => {
+            const res = await objectStore.deleteObjects([ele], props.versionId);
+            if (res) emit('on-deleted-success', props.versionId);
           });
         } catch (error: any) {
           toast.error(`Error deleting one or more ${item}s`);
@@ -64,18 +59,10 @@ const confirmDelete = () => {
 </script>
 
 <template>
-  <Dialog
-    v-model:visible="displayNoFileDialog"
-    header="No File Selected"
-    :modal="true"
-  >
+  <Dialog v-model:visible="displayNoFileDialog" header="No File Selected" :modal="true">
     <p>Please select at least one file from the list to delete.</p>
     <template #footer>
-      <Button
-        label="Ok"
-        autofocus
-        @click="displayNoFileDialog = false"
-      />
+      <Button label="Ok" autofocus @click="displayNoFileDialog = false" />
     </template>
   </Dialog>
 
