@@ -12,7 +12,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <h2>Logging in...</h2>
+  <h1>Logging in...</h1>
   <Spinner />
 </template>
 

@@ -20,7 +20,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h2>Authorizing...</h2>
+  <h1>Authorizing...</h1>
   <Spinner />
 </template>
 

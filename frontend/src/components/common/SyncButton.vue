@@ -110,6 +110,7 @@ const onClick = () => {
 
   <Button
     class="p-button-lg p-button-text"
+    aria-label="Synchronize bucket"
     @click="onClick"
   >
     <font-awesome-icon icon="fa-solid fa-sync" />

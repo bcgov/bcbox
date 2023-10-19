@@ -49,7 +49,7 @@ onMounted(async () => {
   <div>
     <div>
       <h1>Select a bucket</h1>
-      <h3>Buckets are containers for storing objects.</h3>
+      <h2>Buckets are containers for storing objects.</h2>
       <Message
         v-if="getConfig?.notificationBanner"
         severity="warn"
@@ -63,6 +63,7 @@ onMounted(async () => {
         label="Primary"
         class="p-button-outlined mt-4"
         data-test="connect-bucket"
+        aria-label="Configure bucket"
         @click="showBucketConfig()"
       >
         <font-awesome-icon icon="fa-solid fa-plus" />

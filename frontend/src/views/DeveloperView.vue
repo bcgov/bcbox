@@ -11,10 +11,10 @@ const { getConfig } = storeToRefs(useConfigStore());
 </script>
 
 <template>
-  <h2>Developer</h2>
+  <h1>Developer</h1>
   <div>
     <div class="flex mt-3">
-      <h3>Config</h3>
+      <h2>Config</h2>
       <CopyToClipboard
         :mode="ButtonMode.ICON"
         :to-copy="JSON.stringify(getConfig)"
@@ -23,7 +23,7 @@ const { getConfig } = storeToRefs(useConfigStore());
     {{ getConfig }}
 
     <div class="flex mt-3">
-      <h3>Token</h3>
+      <h2>Token</h2>
       <CopyToClipboard
         :mode="ButtonMode.ICON"
         :to-copy="getAccessToken"
@@ -35,7 +35,7 @@ const { getConfig } = storeToRefs(useConfigStore());
     </div>
 
     <div class="flex mt-3">
-      <h3>Profile</h3>
+      <h2>Profile</h2>
       <CopyToClipboard
         :mode="ButtonMode.ICON"
         :to-copy="JSON.stringify(getProfile)"
