@@ -81,14 +81,12 @@ export const useObjectStore = defineStore('object', () => {
 
     try {
       appStore.beginIndeterminateLoading();
-      return await Promise.all(
-        objectIds.map(async (id) => {
-          await objectService.deleteObject(id, versionId);
-        })
-      );
+      await objectService.deleteObject(objectIds[0], versionId);
+      toast.success('Object deleted');
     }
     catch (error: any) {
-      toast.error('Deleting object', error);
+      toast.error('deleting object.');
+      throw error;
     }
     finally {
       fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });

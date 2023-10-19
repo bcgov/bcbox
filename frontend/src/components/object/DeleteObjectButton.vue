@@ -41,14 +41,14 @@ const confirmDelete = () => {
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
       accept: async () => {
-        try {
-          props.ids?.forEach(async (ele) => {
-            const res = await objectStore.deleteObjects([ele], props.versionId);
-            if (res) emit('on-deleted-success', props.versionId);
-          });
-        } catch (error: any) {
-          toast.error(`Error deleting one or more ${item}s`);
-          emit('on-deleted-error');
+        for( const id of props.ids){
+          try {
+            await objectStore.deleteObjects([id], props.versionId);
+            emit('on-deleted-success', props.versionId);
+          }
+          catch{
+            // intentionally left blank
+          }
         }
       }
     });
