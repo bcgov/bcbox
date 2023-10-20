@@ -87,7 +87,7 @@ watch(props, () => {
   <div class="pl-2 sidebar">
     <div class="grid details-grid grid-nogutter">
       <div class="col-12">
-        <h2 class="font-bold">
+        <h2>
           Properties
         </h2>
       </div>
@@ -110,7 +110,7 @@ watch(props, () => {
     </div>
     <div class="grid details-grid grid-nogutter">
       <div class="col-12">
-        <h2 class="font-bold">
+        <h2>
           Access
         </h2>
       </div>
@@ -129,7 +129,6 @@ watch(props, () => {
 <style lang="scss" scoped>
 h1 {
   padding-left: 1rem;
-  font-weight: bold;
 }
 
 h2 {
