@@ -150,7 +150,7 @@ watch( [props, getObjects], async () => {
             icon="fa-solid fa-circle-info"
             style="font-size: 2rem"
           />
-          <h1 class="pl-1 font-bold">
+          <h1 class="pl-1">
             {{ obj.name }}
           </h1>
         </div>

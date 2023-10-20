@@ -59,7 +59,7 @@ const { getConfig } = storeToRefs(useConfigStore());
       />
     </div>
     <div class="flex justify-content-center mb-5">
-      <h2 class="font-bold">
+      <h2>
         Ongoing feature enhancements
       </h2>
     </div>
@@ -74,7 +74,7 @@ const { getConfig } = storeToRefs(useConfigStore());
     <div class="grid mb-8">
       <div class="col-6 pr-5">
         <div class="flex align-items-left mb-2">
-          <h2 class="font-bold">
+          <h2>
             Upload and download objects
           </h2>
         </div>
@@ -99,7 +99,7 @@ const { getConfig } = storeToRefs(useConfigStore());
     <div class="grid mb-8">
       <div class="col-6 pr-5">
         <div class="flex align-items-left mb-2">
-          <h2 class="font-bold">
+          <h2>
             Manage access and share
           </h2>
         </div>
@@ -125,7 +125,7 @@ const { getConfig } = storeToRefs(useConfigStore());
       </div>
     </div>
     <div class="flex justify-content-center mb-5">
-      <h2 class="font-bold">
+      <h2>
         Versioning, metadata, tagging, syncing with existing buckets and more
       </h2>
     </div>
@@ -150,7 +150,7 @@ const { getConfig } = storeToRefs(useConfigStore());
       </router-link>
     </div>
     <div class="flex justify-content-center mb-5">
-      <h2 class="font-bold">
+      <h2>
         Terms of Use
       </h2>
     </div>

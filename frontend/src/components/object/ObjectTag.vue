@@ -94,7 +94,7 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
     class="grid details-grid grid-nogutter mb-2"
   >
     <div class="col-12">
-      <h2 class="font-bold">
+      <h2>
         Tags
       </h2>
     </div>
