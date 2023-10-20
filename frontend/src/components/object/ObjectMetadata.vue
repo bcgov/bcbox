@@ -97,10 +97,7 @@ watch([props, tsGetMetadata,vsGetMetadata] , () => {
 </script>
 
 <template>
-  <div
-    v-if="objectMetadata?.metadata.length"
-    class="grid details-grid grid-nogutter mb-2"
-  >
+  <div class="grid details-grid grid-nogutter mb-2">
     <div class="col-12">
       <h2>
         Metadata

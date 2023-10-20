@@ -1,7 +1,8 @@
 import { comsAxios } from './interceptors';
-import { s3MetaTagExclude } from '@/utils/utils';
+import { excludeMetaTag } from '@/utils/utils';
 
 import type { GetVersionMetadataOptions, GetVersionTaggingOptions } from '@/types';
+import { ExcludeTypes } from '@/utils/enums';
 
 const PATH = '/version';
 
@@ -14,9 +15,7 @@ export default {
   getMetadata(headers: any = {}, params: GetVersionMetadataOptions) {
     return comsAxios().get(`${PATH}/metadata`, { headers: headers, params: params })
       // filter out a configured list of select metadata
-      .then((response) => {
-        return s3MetaTagExclude('metadata', response);
-      });
+      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.METADATA, response.data) }));
   },
 
   /**
@@ -27,8 +26,6 @@ export default {
   getObjectTagging(params: GetVersionTaggingOptions) {
     return comsAxios().get(`${PATH}/tagging`, { params: params })
       // filter out a configured list of select tags
-      .then((response) => {
-        return s3MetaTagExclude('tagset', response);
-      });
+      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.TAGSET, response.data) }));
   },
 };

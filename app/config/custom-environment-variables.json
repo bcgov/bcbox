@@ -4,12 +4,15 @@
     "coms": {
       "apiPath": "FRONTEND_COMS_APIPATH"
     },
+    "exclude": {
+      "metadata": "FRONTEND_EXCLUDE_METADATA",
+      "tagset": "FRONTEND_EXCLUDE_TAGSET"
+    },
     "notificationBanner": "FRONTEND_NOTIFICATION_BANNER",
     "oidc": {
       "authority": "FRONTEND_OIDC_AUTHORITY",
       "clientId": "FRONTEND_OIDC_CLIENTID"
-    },
-    "s3MetaTagExclude": "FRONTEND_S3METATAG_EXCLUDE"
+    }
   },
   "server": {
     "apiPath": "SERVER_APIPATH",

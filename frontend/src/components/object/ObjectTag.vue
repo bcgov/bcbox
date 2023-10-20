@@ -89,10 +89,7 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
 </script>
 
 <template>
-  <div
-    v-if="objectTagging?.tagset.length"
-    class="grid details-grid grid-nogutter mb-2"
-  >
+  <div class="grid details-grid grid-nogutter mb-2">
     <div class="col-12">
       <h2>
         Tags

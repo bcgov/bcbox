@@ -1,5 +1,6 @@
 import { DELIMITER } from '@/utils/constants';
 import ConfigService from '@/services/configService';
+import { ExcludeTypes } from '@/utils/enums';
 
 /**
  * @function differential
@@ -65,25 +66,28 @@ export function partition<T>(
 }
 
 /**
- * @function s3MetaTagExclude
+ * @function excludeMetaTag
  * Filter out a configured list of select metadata or tags from a COMS response
- * @param {object} type either 'metadata' or 'tagset'
- * @param {object} axiosResponse A resolved axios response from COMS
+ * @param {string} type either 'metadata' or 'tagset'
+ * @param {object} data An object with metadata/tags from COMS
  * @returns {object} The response data with select metadata/tags from a configured list removed
  */
-export function s3MetaTagExclude(type: string, axiosResponse: { data: any }){
+export function excludeMetaTag(type: ExcludeTypes, data: [{
+  objectId: string,
+  metadata?: Array<{ key: string; value: string }>,
+  tagset?: Array<{ key: string; value: string }>
+}]){
+  // TODO: consider unit testing this function
   // array of selected tags/metadata (keys) to hide from UI
-  const excludeArray = new ConfigService().getConfig().s3MetaTagExclude?.[type] ?? [];
+  const excludeArray = new ConfigService()
+    .getConfig().exclude?.[type]?.split(',').map((s: string) => s.trim()) ?? [];
   // filter COMS data
-  const filtered = axiosResponse.data.map((obj:any) => {
+  return data.map((obj: any) => {
     return {
       ...obj,
-      [type]: obj[type]?.filter((el:any) => {
-        return !excludeArray.includes(el.key);
-      })
+      [type]: obj[type]?.filter((el: any) => !excludeArray.includes(el.key))
     };
   });
-  return { data: filtered };
 }
 
 /**

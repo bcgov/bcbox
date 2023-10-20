@@ -4,17 +4,9 @@ config:
   configMap:
     FRONTEND_APIPATH: api/v1
     FRONTEND_COMS_APIPATH: https://coms.api.gov.bc.ca/api/v1
+    FRONTEND_EXCLUDE_METADATA: geodrive.common.encoding,geodrive.windows.attr,geodrive.windows.secdesc,s3b-last-modified
     FRONTEND_OIDC_AUTHORITY: https://loginproxy.gov.bc.ca/auth/realms/standard
     FRONTEND_OIDC_CLIENTID: bc-box-4555
-    FRONTEND_S3METATAG_EXCLUDE:
-      metadata:
-        - geodrive.common.encoding
-        - geodrive.windows.attr
-        - geodrive.windows.secdesc
-        - s3b-last-modified
-        - sha256
-      tagset:
-        - coms-id
     SERVER_APIPATH: /api/v1
     SERVER_BODYLIMIT: 30mb
     # SERVER_LOGFILE: ~

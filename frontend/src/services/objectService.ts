@@ -1,9 +1,10 @@
-import { comsAxios } from './interceptors';
-import { s3MetaTagExclude, setDispositionHeader } from '@/utils/utils';
 import ConfigService from './configService';
+import { comsAxios } from './interceptors';
+import { excludeMetaTag, setDispositionHeader } from '@/utils/utils';
 
 import type { AxiosRequestConfig } from 'axios';
 import type { GetMetadataOptions, GetObjectTaggingOptions, MetadataPair, SearchObjectsOptions, Tag } from '@/types';
+import { ExcludeTypes } from '@/utils/enums';
 
 const PATH = '/object';
 
@@ -103,10 +104,8 @@ export default {
     // remove objectId array if its first element is undefined
     if (params.objectId && params.objectId[0] === undefined) delete params.objectId;
     return comsAxios().get(`${PATH}/metadata`, { headers: headers, params: params })
-      // filter out metadata and return as a promise again
-      .then((response) => {
-        return s3MetaTagExclude('metadata', response);
-      });
+      // filter out a configured list of select metadata
+      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.METADATA, response.data) }));
   },
 
   /**
@@ -118,9 +117,7 @@ export default {
   getObjectTagging(params: GetObjectTaggingOptions = {}) {
     return comsAxios().get(`${PATH}/tagging`, { params: params })
       // filter out a configured list of select tags
-      .then((response) => {
-        return s3MetaTagExclude('tagset', response);
-      });
+      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.TAGSET, response.data) }));
   },
 
   /**
@@ -225,9 +222,7 @@ export default {
     }
     return comsAxios().get(`${PATH}/metadata`, config)
       // filter out a configured list of select metadata
-      .then((response) => {
-        return s3MetaTagExclude('metadata', response);
-      });
+      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.METADATA, response.data)}));
   },
 
   /**
@@ -301,9 +296,7 @@ export default {
       }
     })
       // filter out a configured list of select tags
-      .then((response) => {
-        return s3MetaTagExclude('tagset', response);
-      });
+      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.TAGSET, response.data)}));
   },
 
   /**
