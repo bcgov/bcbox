@@ -17,12 +17,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <h2>Logging out...</h2>
+  <h1>Logging out...</h1>
   <Spinner />
 </template>
 
 <style lang="scss" scoped>
-h2 {
+h1 {
   margin-top: 10rem;
   text-align: center;
 }
