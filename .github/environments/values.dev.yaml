@@ -4,6 +4,7 @@ config:
   configMap:
     FRONTEND_APIPATH: api/v1
     FRONTEND_COMS_APIPATH: https://coms-dev.api.gov.bc.ca/api/v1
+    FRONTEND_EXCLUDE_METADATA: geodrive.common.encoding,geodrive.windows.attr,geodrive.windows.secdesc,s3b-last-modified
     FRONTEND_NOTIFICATION_BANNER : This is the DEV environment of BCBox. Uploaded files may not persist and may be deleted from the COMS database as we continue development. Please do not upload personal or private information. Thank you for your understanding as we work to improve BCBox
     FRONTEND_OIDC_AUTHORITY: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
     FRONTEND_OIDC_CLIENTID: bc-box-4555

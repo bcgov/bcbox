@@ -1,4 +1,6 @@
 import { DELIMITER } from '@/utils/constants';
+import ConfigService from '@/services/configService';
+import { ExcludeTypes } from '@/utils/enums';
 
 /**
  * @function differential
@@ -61,6 +63,31 @@ export function partition<T>(
     },
     [[], []] as [Array<T>, Array<T>]
   );
+}
+
+/**
+ * @function excludeMetaTag
+ * Filter out a configured list of select metadata or tags from a COMS response
+ * @param {string} type either 'metadata' or 'tagset'
+ * @param {object} data An object with metadata/tags from COMS
+ * @returns {object} The response data with select metadata/tags from a configured list removed
+ */
+export function excludeMetaTag(type: ExcludeTypes, data: [{
+  objectId: string,
+  metadata?: Array<{ key: string; value: string }>,
+  tagset?: Array<{ key: string; value: string }>
+}]){
+  // TODO: consider unit testing this function
+  // array of selected tags/metadata (keys) to hide from UI
+  const excludeArray = new ConfigService()
+    .getConfig().exclude?.[type]?.split(',').map((s: string) => s.trim()) ?? [];
+  // filter COMS data
+  return data.map((obj: any) => {
+    return {
+      ...obj,
+      [type]: obj[type]?.filter((el: any) => !excludeArray.includes(el.key))
+    };
+  });
 }
 
 /**

@@ -4,6 +4,7 @@ config:
   configMap:
     FRONTEND_APIPATH: api/v1
     FRONTEND_COMS_APIPATH: https://coms.api.gov.bc.ca/api/v1
+    FRONTEND_EXCLUDE_METADATA: geodrive.common.encoding,geodrive.windows.attr,geodrive.windows.secdesc,s3b-last-modified
     FRONTEND_OIDC_AUTHORITY: https://loginproxy.gov.bc.ca/auth/realms/standard
     FRONTEND_OIDC_CLIENTID: bc-box-4555
     SERVER_APIPATH: /api/v1

@@ -4,6 +4,10 @@
     "coms": {
       "apiPath": "FRONTEND_COMS_APIPATH"
     },
+    "exclude": {
+      "metadata": "FRONTEND_EXCLUDE_METADATA",
+      "tagset": "FRONTEND_EXCLUDE_TAGSET"
+    },
     "notificationBanner": "FRONTEND_NOTIFICATION_BANNER",
     "oidc": {
       "authority": "FRONTEND_OIDC_AUTHORITY",

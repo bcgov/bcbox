@@ -33,7 +33,6 @@ const closeObjectInfo = async () => {
 };
 
 const obj = objectStore.findObjectById(props.objectId);
-const bucketId = obj?.bucketId;
 
 watch( props, () => {
   if( obj &&
@@ -70,12 +69,10 @@ watch( props, () => {
       :full-view="false"
     />
     <ObjectMetadata
-      :bucket-id="bucketId"
       :editable="false"
       :object-id="props.objectId"
     />
     <ObjectTag
-      :bucket-id="bucketId"
       :editable="false"
       :object-id="props.objectId"
     />

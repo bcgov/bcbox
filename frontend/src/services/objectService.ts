@@ -1,9 +1,10 @@
-import { comsAxios } from './interceptors';
-import { setDispositionHeader } from '@/utils/utils';
 import ConfigService from './configService';
+import { comsAxios } from './interceptors';
+import { excludeMetaTag, setDispositionHeader } from '@/utils/utils';
 
 import type { AxiosRequestConfig } from 'axios';
 import type { GetMetadataOptions, GetObjectTaggingOptions, MetadataPair, SearchObjectsOptions, Tag } from '@/types';
+import { ExcludeTypes } from '@/utils/enums';
 
 const PATH = '/object';
 
@@ -102,7 +103,9 @@ export default {
   getMetadata(headers: any = {}, params: GetMetadataOptions = {}) {
     // remove objectId array if its first element is undefined
     if (params.objectId && params.objectId[0] === undefined) delete params.objectId;
-    return comsAxios().get(`${PATH}/metadata`, { headers: headers, params: params });
+    return comsAxios().get(`${PATH}/metadata`, { headers: headers, params: params })
+      // filter out a configured list of select metadata
+      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.METADATA, response.data) }));
   },
 
   /**
@@ -112,7 +115,9 @@ export default {
    * @returns {Promise} An axios response
    */
   getObjectTagging(params: GetObjectTaggingOptions = {}) {
-    return comsAxios().get(`${PATH}/tagging`, { params: params });
+    return comsAxios().get(`${PATH}/tagging`, { params: params })
+      // filter out a configured list of select tags
+      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.TAGSET, response.data) }));
   },
 
   /**
@@ -215,7 +220,9 @@ export default {
         ...Object.fromEntries((headers.metadata.map((x: { key: string; value: string }) => ([x.key, x.value]))))
       };
     }
-    return comsAxios().get(`${PATH}/metadata`, config);
+    return comsAxios().get(`${PATH}/metadata`, config)
+      // filter out a configured list of select metadata
+      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.METADATA, response.data)}));
   },
 
   /**
@@ -287,7 +294,9 @@ export default {
       params: {
         tagset: Object.fromEntries((tagset.map((x: { key: string; value: string }) => ([x.key, x.value]))))
       }
-    });
+    })
+      // filter out a configured list of select tags
+      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.TAGSET, response.data)}));
   },
 
   /**

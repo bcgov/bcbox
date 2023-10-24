@@ -1,6 +1,9 @@
 {
   "frontend": {
-    "apiPath": "api/v1"
+    "apiPath": "api/v1",
+    "exclude": {
+      "tagset": "coms-id"
+    }
   },
   "server": {
     "apiPath": "/api/v1",

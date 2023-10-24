@@ -6,3 +6,8 @@ export enum ButtonMode {
   BUTTON = 'BUTTON',
   ICON = 'ICON',
 }
+
+export enum ExcludeTypes {
+  METADATA = 'metadata',
+  TAGSET = 'tagset',
+}
