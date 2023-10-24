@@ -101,7 +101,6 @@ watch( props, () => {
 <style lang="scss" scoped>
 h1 {
   padding-left: 1rem;
-  font-weight: bold;
 }
 
 h2 {

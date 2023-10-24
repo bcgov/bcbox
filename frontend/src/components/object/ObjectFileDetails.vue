@@ -137,11 +137,9 @@ watch( [props, getObjects], async () => {
     <div class="grid pol-0">
       <div class="col-12">
         <h1
-          class="pl-1 font-bold heading"
+          class="pl-1 heading"
         >
-          <span>
-            File details
-          </span>
+          File details
         </h1>
       </div>
       <div class="flex col justify-content-start">
@@ -150,9 +148,9 @@ watch( [props, getObjects], async () => {
             icon="fa-solid fa-circle-info"
             style="font-size: 2rem"
           />
-          <h1 class="pl-1 font-bold">
+          <h2 class="pl-1">
             {{ obj.name }}
-          </h1>
+          </h2>
         </div>
 
         <div

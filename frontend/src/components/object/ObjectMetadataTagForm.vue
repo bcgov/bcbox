@@ -81,7 +81,7 @@ onBeforeMount(() => {
         <!-- TODO: Wrap these field arrays into a common key/value pair component? -->
         <div class="grid">
           <div class="col-12">
-            <h2 class="font-bold">
+            <h2>
               Metadata
             </h2>
           </div>
@@ -142,7 +142,7 @@ onBeforeMount(() => {
       <span v-if="tagsetEditable">
         <div class="grid">
           <div class="col-12">
-            <h2 class="font-bold">
+            <h2>
               Tags
             </h2>
           </div>

@@ -25,7 +25,7 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-h2 {
+h1 {
   margin-top: 10rem;
   text-align: center;
 }

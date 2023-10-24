@@ -99,7 +99,7 @@ watch([props, tsGetMetadata,vsGetMetadata] , () => {
 <template>
   <div class="grid details-grid grid-nogutter mb-2">
     <div class="col-12">
-      <h2 class="font-bold">
+      <h2>
         Metadata
       </h2>
     </div>

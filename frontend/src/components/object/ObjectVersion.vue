@@ -96,7 +96,7 @@ watch( getVersions, async () => {
 <template>
   <div class="grid details-grid grid-nogutter mb-2">
     <div class="col-12">
-      <h2 class="font-bold">
+      <h2>
         Versions
       </h2>
     </div>

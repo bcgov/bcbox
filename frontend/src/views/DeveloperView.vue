@@ -45,8 +45,3 @@ const { getConfig } = storeToRefs(useConfigStore());
   </div>
 </template>
 
-<style lang="scss" scoped>
-h3 {
-  margin-top: 1em;
-}
-</style>
