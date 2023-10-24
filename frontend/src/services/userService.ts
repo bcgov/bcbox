@@ -18,7 +18,15 @@ export default {
     // Filter out SYSTEM_USER from userId param
     const userIds = params.userId?.filter(id => id !== null && id !== SYSTEM_USER);
     // Drop userId param if it only contains the system user or assign back to params object, without duplicates
-    userIds?.length === 0 ? delete params.userId : params.userId = [...new Set(userIds)];
+    if (userIds) {
+      if (userIds.length === 0) {
+        delete params.userId;
+      }
+      else {
+        params.userId = [...new Set(userIds)];
+      }
+    }
+
 
     if (Object.keys(params).length) {
       return comsAxios().get(`${PATH}`, { params: params });
