@@ -32,7 +32,7 @@ onBeforeMount(async () => {
   window.addEventListener('beforeunload', preventNav);
 });
 
-onBeforeUnmount( () => {
+onBeforeUnmount(() => {
   window.removeEventListener('beforeunload', preventNav);
 });
 

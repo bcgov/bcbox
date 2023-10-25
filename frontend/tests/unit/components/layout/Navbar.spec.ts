@@ -6,14 +6,15 @@ import { StorageKey } from '@/utils/constants';
 import PrimeVue from 'primevue/config';
 
 beforeEach(() => {
-  sessionStorage.setItem(StorageKey.CONFIG, JSON.stringify(
-    {
+  sessionStorage.setItem(
+    StorageKey.CONFIG,
+    JSON.stringify({
       oidc: {
         authority: 'abc',
         clientId: '123'
       }
-    }
-  ));
+    })
+  );
 
   vi.clearAllMocks();
 });
@@ -30,7 +31,7 @@ describe('Navbar.vue', () => {
         stubs: {
           RouterLink: RouterLinkStub
         }
-      },
+      }
     });
     expect(wrapper).toBeTruthy();
   });
@@ -38,15 +39,18 @@ describe('Navbar.vue', () => {
   it('tests isAuthenticated true', () => {
     const wrapper = mount(Navbar, {
       global: {
-        plugins: [createTestingPinia({
-          initialState: {
-            auth: { isAuthenticated: true }
-          }
-        }), PrimeVue],
+        plugins: [
+          createTestingPinia({
+            initialState: {
+              auth: { isAuthenticated: true }
+            }
+          }),
+          PrimeVue
+        ],
         stubs: {
           RouterLink: RouterLinkStub
         }
-      },
+      }
     });
     const linkEle = wrapper.findAll('a');
     expect(linkEle).toHaveLength(3);
@@ -58,15 +62,18 @@ describe('Navbar.vue', () => {
   it('tests isAuthenticated false', async () => {
     const wrapper = mount(Navbar, {
       global: {
-        plugins: [createTestingPinia({
-          initialState: {
-            auth: { isAuthenticated: false }
-          }
-        }), PrimeVue],
+        plugins: [
+          createTestingPinia({
+            initialState: {
+              auth: { isAuthenticated: false }
+            }
+          }),
+          PrimeVue
+        ],
         stubs: {
           RouterLink: RouterLinkStub
         }
-      },
+      }
     });
     const linkEle = wrapper.findAll('a');
     expect(linkEle).toHaveLength(2);

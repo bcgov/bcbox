@@ -10,14 +10,15 @@ import type { SpyInstance } from 'vitest';
 beforeEach(() => {
   setActivePinia(createPinia());
 
-  sessionStorage.setItem(StorageKey.CONFIG, JSON.stringify(
-    {
+  sessionStorage.setItem(
+    StorageKey.CONFIG,
+    JSON.stringify({
       oidc: {
         authority: 'abc',
         clientId: '123'
       }
-    }
-  ));
+    })
+  );
 
   vi.clearAllMocks();
 });
@@ -27,7 +28,6 @@ afterEach(() => {
 });
 
 describe('Config Store', () => {
-
   let configService: ConfigService;
   let configStore: StoreGeneric;
 

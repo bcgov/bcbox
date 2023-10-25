@@ -73,6 +73,7 @@ const download = () => {
     <font-awesome-icon
       icon="fa-solid fa-download"
       class="mr-1"
-    /> Download
+    />
+    Download
   </Button>
 </template>

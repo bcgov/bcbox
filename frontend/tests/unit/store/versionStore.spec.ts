@@ -56,7 +56,6 @@ afterEach(() => {
 });
 
 describe('Version Store', () => {
-
   let appStore: StoreGeneric;
   let versionStore: StoreGeneric;
 
@@ -103,12 +102,11 @@ describe('Version Store', () => {
       expect(getMetadataSpy).toHaveBeenCalledTimes(1);
       expect(getMetadataSpy).toHaveBeenCalledWith(null, { versionId: '000' });
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Fetching metadata', new Error);
+      expect(mockToast).toHaveBeenCalledWith('Fetching metadata', new Error());
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(versionStore.getMetadata).toStrictEqual([]);
     });
   });
-
 
   describe('fetchTagging', () => {
     it('fetches the tags', async () => {
@@ -134,12 +132,11 @@ describe('Version Store', () => {
       expect(getTaggingSpy).toHaveBeenCalledTimes(1);
       expect(getTaggingSpy).toHaveBeenCalledWith({ versionId: '000' });
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Fetching tags', new Error);
+      expect(mockToast).toHaveBeenCalledWith('Fetching tags', new Error());
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(versionStore.getTagging).toStrictEqual([]);
     });
   });
-
 
   describe('fetchVersions', () => {
     it('fetches the versions', async () => {
@@ -165,12 +162,11 @@ describe('Version Store', () => {
       expect(getVersionsSpy).toHaveBeenCalledTimes(1);
       expect(getVersionsSpy).toHaveBeenCalledWith('000');
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Fetching versions', new Error);
+      expect(mockToast).toHaveBeenCalledWith('Fetching versions', new Error());
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(versionStore.getTagging).toStrictEqual([]);
     });
   });
-
 
   describe('findLatestVersionIdByObjectId', () => {
     it('returns latest version', async () => {
@@ -190,7 +186,6 @@ describe('Version Store', () => {
     });
   });
 
-
   describe('findMetadataByVersionId', () => {
     it('returns matching metadata', async () => {
       versionStore.metadata = [meta];
@@ -208,7 +203,6 @@ describe('Version Store', () => {
       expect(result).toStrictEqual(undefined);
     });
   });
-
 
   describe('findMetadataValue', () => {
     it('returns matching metadata', async () => {
@@ -228,7 +222,6 @@ describe('Version Store', () => {
     });
   });
 
-
   describe('findTaggingByVersionId', () => {
     it('returns matching metadata', async () => {
       versionStore.tagging = [tag];
@@ -247,7 +240,6 @@ describe('Version Store', () => {
     });
   });
 
-
   describe('findVersionById', () => {
     it('returns matching version', async () => {
       versionStore.versions = [version];
@@ -265,7 +257,6 @@ describe('Version Store', () => {
       expect(result).toStrictEqual(undefined);
     });
   });
-
 
   describe('findVersionsByObjectId', () => {
     it('returns matching versions', async () => {

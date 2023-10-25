@@ -34,11 +34,10 @@ const cancelSearchUsers = () => {
 };
 
 const removeObjectUser = (userId: string) => {
-  const managers = getMappedObjectToUserPermissions.value.filter( (x: UserPermissions) => x.manage );
-  if( managers.length === 1 && managers[0].userId === userId ) {
+  const managers = getMappedObjectToUserPermissions.value.filter((x: UserPermissions) => x.manage);
+  if (managers.length === 1 && managers[0].userId === userId) {
     removeManageAlert.show();
-  }
-  else {
+  } else {
     permissionStore.removeObjectUser(props.objectId, userId);
   }
 };
@@ -46,12 +45,12 @@ const removeObjectUser = (userId: string) => {
 const updateObjectPermission = (value: boolean, userId: string, permCode: string) => {
   if (value) {
     permissionStore.addObjectPermission(props.objectId, userId, permCode);
-  }
-  else {
-    const managers = getMappedObjectToUserPermissions.value.filter( (x: UserPermissions) => x.manage );
+  } else {
+    const managers = getMappedObjectToUserPermissions.value.filter((x: UserPermissions) => x.manage);
 
-    const userPerms: UserPermissions = getMappedObjectToUserPermissions.value
-      .find( (x: UserPermissions) => x.userId === userId ) as UserPermissions;
+    const userPerms: UserPermissions = getMappedObjectToUserPermissions.value.find(
+      (x: UserPermissions) => x.userId === userId
+    ) as UserPermissions;
 
     // When READ is unticked check if they are the last remaining user with MANAGE
     const lastManager = () => permCode === Permissions.READ && managers.length === 1 && userPerms.manage;
@@ -60,13 +59,12 @@ const updateObjectPermission = (value: boolean, userId: string, permCode: string
     const noManagers = () => permCode === Permissions.MANAGE && !managers.length;
 
     // Disallow removable of final MANAGE permission
-    if( lastManager() || noManagers() ) {
+    if (lastManager() || noManagers()) {
       removeManageAlert.show();
 
-      if( permCode === Permissions.READ ) userPerms.read = true;
-      if( permCode === Permissions.MANAGE ) userPerms.manage = true;
-    }
-    else {
+      if (permCode === Permissions.READ) userPerms.read = true;
+      if (permCode === Permissions.MANAGE) userPerms.manage = true;
+    } else {
       permissionStore.deleteObjectPermission(props.objectId, userId, permCode);
     }
   }
@@ -87,13 +85,12 @@ onBeforeMount(() => {
         <font-awesome-icon
           icon="fa-solid fa-user-plus"
           class="mr-1"
-        /> Add user
+        />
+        Add user
       </Button>
     </div>
     <div v-else>
-      <ObjectPermissionAddUser
-        @cancel-search-users="cancelSearchUsers"
-      />
+      <ObjectPermissionAddUser @cancel-search-users="cancelSearchUsers" />
     </div>
 
     <DataTable

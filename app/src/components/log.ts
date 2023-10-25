@@ -39,7 +39,7 @@ const log = createLogger({
   format: format.combine(
     format.errors({ stack: true }), // Force errors to show stacktrace
     format.timestamp(), // Add ISO timestamp to each entry
-    format.json(), // Force output to be in JSON format
+    format.json() // Force output to be in JSON format
   ),
   level: config.get('server.logLevel')
 });
@@ -51,10 +51,12 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 if (config.has('server.logFile')) {
-  log.add(new transports.File({
-    filename: config.get('server.logFile'),
-    handleExceptions: true
-  }));
+  log.add(
+    new transports.File({
+      filename: config.get('server.logFile'),
+      handleExceptions: true
+    })
+  );
 }
 
 /**
@@ -98,7 +100,7 @@ export const httpLogger = logger({
   responseWhitelist: [], // Suppress default value output
   // Skip logging kube-probe requests
   skip: (req) => !!req.get('user-agent')?.includes('kube-probe'),
-  winstonInstance: log,
+  winstonInstance: log
 });
 
 export default getLogger;

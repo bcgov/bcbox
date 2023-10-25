@@ -41,9 +41,10 @@ const confirmDelete = () => {
       rejectLabel: 'Cancel',
       accept: () => {
         props.ids?.forEach((id: string) => {
-          objectStore.deleteObject(id, props.versionId)
+          objectStore
+            .deleteObject(id, props.versionId)
             .then(() => emit('on-deleted-success', props.versionId))
-            .catch(() => { });
+            .catch(() => {});
         });
       }
     });
@@ -88,6 +89,7 @@ const confirmDelete = () => {
     <font-awesome-icon
       icon="fa-solid fa-trash"
       class="mr-1"
-    /> Delete
+    />
+    Delete
   </Button>
 </template>

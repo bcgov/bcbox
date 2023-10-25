@@ -8,4 +8,4 @@ export type UserPermissions = {
   update: boolean;
   delete: boolean;
   manage: boolean;
-}
+};

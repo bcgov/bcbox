@@ -36,7 +36,7 @@ export default {
    */
   bucketDeletePermission(bucketId: string, params: BucketDeletePermissionsOptions) {
     return comsAxios().delete(`${PATH}/${BUCKET}/${bucketId}`, {
-      params: params,
+      params: params
     });
   },
 
@@ -73,12 +73,12 @@ export default {
   },
 
   /**
- * @function objectDeletePermission
- * Deletes the given permission from the object
- * @param {string} objectId ID of the object to remove permissions from
- * @param {ObjectDeletePermissionsOptions} params Object containing the permission to remove
- * @returns {Promise} An axios response
- */
+   * @function objectDeletePermission
+   * Deletes the given permission from the object
+   * @param {string} objectId ID of the object to remove permissions from
+   * @param {ObjectDeletePermissionsOptions} params Object containing the permission to remove
+   * @returns {Promise} An axios response
+   */
   objectDeletePermission(objectId: string, params: ObjectDeletePermissionsOptions) {
     return comsAxios().delete(`${PATH}/${OBJECT}/${objectId}`, { params: params });
   },
@@ -102,5 +102,5 @@ export default {
    */
   objectGetPermissions(objectId: string, params?: ObjectGetPermissionsOptions) {
     return comsAxios().get(`${PATH}/${OBJECT}/${objectId}`, { params: params });
-  },
+  }
 };

@@ -10,7 +10,6 @@ beforeEach(() => {
 });
 
 describe('App Store', () => {
-
   let appStore: StoreGeneric;
 
   beforeEach(() => {

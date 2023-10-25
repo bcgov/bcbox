@@ -16,8 +16,8 @@ describe('ProgressBar.vue', () => {
   it('renders', () => {
     const wrapper = mount(ProgressBar, {
       global: {
-        plugins: [createTestingPinia(), PrimeVue],
-      },
+        plugins: [createTestingPinia(), PrimeVue]
+      }
     });
     expect(wrapper).toBeTruthy();
   });

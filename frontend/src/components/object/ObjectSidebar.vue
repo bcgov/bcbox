@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { watch } from 'vue';
-import {
-  ObjectMetadata,
-  ObjectProperties,
-  ObjectTag
-} from '@/components/object';
+import { ObjectMetadata, ObjectProperties, ObjectTag } from '@/components/object';
 import { Button } from '@/lib/primevue';
 import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore, useTagStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
@@ -34,14 +30,19 @@ const closeObjectInfo = async () => {
 
 const obj = objectStore.findObjectById(props.objectId);
 
-watch( props, () => {
-  if( obj &&
-     (obj.public || permissionStore.isObjectActionAllowed(obj.id, getUserId.value, Permissions.READ, obj.bucketId)))
-  {
-    tagStore.fetchTagging({objectId: props.objectId});
-    metadataStore.fetchMetadata({objectId: props.objectId});
-  }
-}, { immediate: true });
+watch(
+  props,
+  () => {
+    if (
+      obj &&
+      (obj.public || permissionStore.isObjectActionAllowed(obj.id, getUserId.value, Permissions.READ, obj.bucketId))
+    ) {
+      tagStore.fetchTagging({ objectId: props.objectId });
+      metadataStore.fetchMetadata({ objectId: props.objectId });
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -112,7 +113,7 @@ button {
   margin-top: 15px;
   text-indent: 10px;
 }
-.heading svg{
+.heading svg {
   color: $bcbox-primary;
 }
 </style>

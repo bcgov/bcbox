@@ -9,17 +9,17 @@ import type { Ref } from 'vue';
 import type { IdentityProvider } from '@/types';
 
 export type AuthStoreState = {
-  accessToken: Ref<string | undefined>,
-  expiresAt: Ref<number | undefined>,
-  identityId: Ref<string | undefined>,
-  idToken: Ref<string | undefined>,
-  isAuthenticated: Ref<boolean>,
-  profile: Ref<IdTokenClaims | undefined>,
-  refreshToken: Ref<string | undefined>,
-  scope: Ref<string | undefined>,
-  user: Ref<User | null>,
-  userId: Ref<string | undefined>
-}
+  accessToken: Ref<string | undefined>;
+  expiresAt: Ref<number | undefined>;
+  identityId: Ref<string | undefined>;
+  idToken: Ref<string | undefined>;
+  isAuthenticated: Ref<boolean>;
+  profile: Ref<IdTokenClaims | undefined>;
+  refreshToken: Ref<string | undefined>;
+  scope: Ref<string | undefined>;
+  user: Ref<User | null>;
+  userId: Ref<string | undefined>;
+};
 
 export const useAuthStore = defineStore('auth', () => {
   const configService = new ConfigService();
@@ -70,10 +70,9 @@ export const useAuthStore = defineStore('auth', () => {
     const user = await authService.getUser();
     const profile = user?.profile;
     const isAuthenticated = !!user && !user.expired;
-    const identityId = configService.getConfig().idpList
-      .map((provider: IdentityProvider) => profile
-        ? profile[provider.identityKey]
-        : undefined)
+    const identityId = configService
+      .getConfig()
+      .idpList.map((provider: IdentityProvider) => (profile ? profile[provider.identityKey] : undefined))
       .filter((item?: string) => item)[0];
 
     state.accessToken.value = user?.access_token;
@@ -85,9 +84,10 @@ export const useAuthStore = defineStore('auth', () => {
     state.refreshToken.value = user?.refresh_token;
     state.scope.value = user?.scope;
     state.user.value = user;
-    state.userId.value = (isAuthenticated && identityId)
-      ? (await userService.searchForUsers({ identityId: identityId })).data[0].userId
-      : undefined;
+    state.userId.value =
+      isAuthenticated && identityId
+        ? (await userService.searchForUsers({ identityId: identityId })).data[0].userId
+        : undefined;
   }
 
   async function init() {

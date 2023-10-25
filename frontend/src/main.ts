@@ -29,9 +29,11 @@ function initializeApp(): void {
 
   const app = createApp(App);
   const pinia = createPinia();
-  pinia.use(createPersistedState({
-    key: id => `bcbox.${id}`
-  }));
+  pinia.use(
+    createPersistedState({
+      key: (id) => `bcbox.${id}`
+    })
+  );
 
   app.use(pinia);
   app.use(getRouter());

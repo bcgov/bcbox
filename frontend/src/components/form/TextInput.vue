@@ -36,9 +36,7 @@ const { errorMessage, value } = useField<string>(toRef(props, 'name'));
       :disabled="disabled"
     />
     <small :id="`${name}-help`">{{ helpText }}</small>
-    <ErrorMessage
-      :name="name"
-    />
+    <ErrorMessage :name="name" />
   </div>
 </template>
 

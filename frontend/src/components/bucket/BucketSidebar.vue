@@ -35,24 +35,23 @@ const closeSidebarInfo = async () => {
 
 async function load() {
   await permissionStore.fetchBucketPermissions({
-    bucketId: props.sidebarInfo.bucketId,
+    bucketId: props.sidebarInfo.bucketId
   });
 
   const uniqueIds = [
     ...new Set(
       getBucketPermissions.value
-        .filter(
-          (x: BucketPermission) =>
-            x.bucketId === props.sidebarInfo.bucketId &&
-            x.permCode === Permissions.MANAGE
-        )
+        .filter((x: BucketPermission) => x.bucketId === props.sidebarInfo.bucketId && x.permCode === Permissions.MANAGE)
         .map((x: BucketPermission) => x.userId)
-    ),
+    )
   ];
 
   if (uniqueIds.length) {
     await userStore.fetchUsers({ userId: uniqueIds });
-    managedBy.value = userStore.findUsersById(uniqueIds).map( x => x.fullName ).join(', ');
+    managedBy.value = userStore
+      .findUsersById(uniqueIds)
+      .map((x) => x.fullName)
+      .join(', ');
   }
 }
 
@@ -87,22 +86,16 @@ watch(props, () => {
   <div class="pl-2 sidebar">
     <div class="grid details-grid grid-nogutter">
       <div class="col-12">
-        <h2>
-          Properties
-        </h2>
+        <h2>Properties</h2>
       </div>
       <div class="grid overflow-hidden">
-        <div class="col-fixed">
-          Bucket Name:
-        </div>
+        <div class="col-fixed">Bucket Name:</div>
         <div class="col wrap-block w-6">
           {{ props.sidebarInfo?.bucketName }}
         </div>
       </div>
       <div class="grid">
-        <div class="col-fixed">
-          Bucket ID:
-        </div>
+        <div class="col-fixed">Bucket ID:</div>
         <div class="col">
           {{ props.sidebarInfo?.bucketId }}
         </div>
@@ -110,14 +103,10 @@ watch(props, () => {
     </div>
     <div class="grid details-grid grid-nogutter">
       <div class="col-12">
-        <h2>
-          Access
-        </h2>
+        <h2>Access</h2>
       </div>
       <div class="grid">
-        <div class="col-fixed">
-          Managed by:
-        </div>
+        <div class="col-fixed">Managed by:</div>
         <div class="col">
           {{ managedBy }}
         </div>

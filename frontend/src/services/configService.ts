@@ -31,13 +31,16 @@ export default class ConfigService {
   public static async init(): Promise<ConfigService> {
     return new Promise((resolve, reject) => {
       if (storageType.getItem(StorageKey.CONFIG) === null) {
-        axios.get('/config').then(({ data }) => {
-          storageType.setItem(StorageKey.CONFIG, JSON.stringify(data));
-          resolve(new ConfigService());
-        }).catch(err => {
-          storageType.removeItem(StorageKey.CONFIG);
-          reject(`Failed to initialize configuration: ${err}`);
-        });
+        axios
+          .get('/config')
+          .then(({ data }) => {
+            storageType.setItem(StorageKey.CONFIG, JSON.stringify(data));
+            resolve(new ConfigService());
+          })
+          .catch((err) => {
+            storageType.removeItem(StorageKey.CONFIG);
+            reject(`Failed to initialize configuration: ${err}`);
+          });
       } else {
         resolve(new ConfigService());
       }

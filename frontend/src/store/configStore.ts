@@ -6,15 +6,15 @@ import { ConfigService } from '@/services';
 import type { Ref } from 'vue';
 
 export type ConfigStoreState = {
-  config: Ref<any | null>
-}
+  config: Ref<any | null>;
+};
 
 export const useConfigStore = defineStore('config', () => {
   const configService = new ConfigService();
 
   // State
   const state: ConfigStoreState = {
-    config: ref(null),
+    config: ref(null)
   };
 
   // Getters

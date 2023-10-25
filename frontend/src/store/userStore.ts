@@ -13,7 +13,7 @@ export type UserStoreState = {
   currentUser: Ref<User | null>;
   idps: Ref<Array<IdentityProvider>>;
   userSearch: Ref<Array<User>>;
-}
+};
 
 export const useUserStore = defineStore('user', () => {
   const toast = useToast();
@@ -25,13 +25,13 @@ export const useUserStore = defineStore('user', () => {
   const state: UserStoreState = {
     currentUser: ref(null),
     idps: ref([]),
-    userSearch: ref([]),
+    userSearch: ref([])
   };
 
   // Getters
   const getters = {
     getIdps: computed(() => state.idps.value),
-    getUserSearch: computed(() => state.userSearch.value),
+    getUserSearch: computed(() => state.userSearch.value)
   };
 
   // Actions
@@ -43,24 +43,21 @@ export const useUserStore = defineStore('user', () => {
       const response = (await userService.searchForUsers(params)).data.filter((x: User) => !!x.identityId);
 
       // Remove old values matching search parameters
-      const matches = (x: User) => (
+      const matches = (x: User) =>
         (!params.userId ||
           (Array.isArray(params.userId) && params.userId.some((y: string | undefined) => x.userId === y)) ||
           (!Array.isArray(params.userId) && params.userId === x.userId)) &&
         (!params.email || x.email === params.email) &&
         (!params.idp || x.idp === params.idp) &&
-        (!params.lastName || x.lastName === params.lastName)
-      );
+        (!params.lastName || x.lastName === params.lastName);
 
       const [, difference] = partition(state.userSearch.value, matches);
 
       // Merge and assign
       state.userSearch.value = difference.concat(response);
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('Searching users', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }

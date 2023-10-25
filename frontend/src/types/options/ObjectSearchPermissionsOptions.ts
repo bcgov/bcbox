@@ -4,4 +4,4 @@ export type ObjectSearchPermissionsOptions = {
   objectId?: string;
   permCode?: string;
   userId?: string;
-}
+};

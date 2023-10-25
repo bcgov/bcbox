@@ -4,4 +4,4 @@ export type IdentityProvider = {
   identityKey: string;
   idp: string;
   searchable: boolean;
-}
+};

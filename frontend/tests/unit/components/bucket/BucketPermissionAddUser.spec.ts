@@ -11,14 +11,15 @@ const mockToast = vi.fn();
 const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 beforeEach(() => {
-  sessionStorage.setItem(StorageKey.CONFIG, JSON.stringify(
-    {
+  sessionStorage.setItem(
+    StorageKey.CONFIG,
+    JSON.stringify({
       oidc: {
         authority: 'abc',
         clientId: '123'
       }
-    }
-  ));
+    })
+  );
 
   vi.clearAllMocks();
   useToastSpy.mockImplementation(() => ({ error: mockToast, info: mockToast, success: mockToast, warn: mockToast }));
@@ -40,13 +41,9 @@ describe('BucketPermissionAddUser.vue', async () => {
 
     const wrapper = shallowMount(BucketPermissionAddUser, {
       global: {
-        plugins: [
-          testingPinia,
-          PrimeVue,
-          ToastService,
-        ],
+        plugins: [testingPinia, PrimeVue, ToastService],
         stubs: ['font-awesome-icon']
-      },
+      }
     });
 
     expect(wrapper).toBeTruthy();

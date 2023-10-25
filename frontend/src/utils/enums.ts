@@ -4,10 +4,10 @@
 // Which way to display a button that can appear in multiple modes
 export enum ButtonMode {
   BUTTON = 'BUTTON',
-  ICON = 'ICON',
+  ICON = 'ICON'
 }
 
 export enum ExcludeTypes {
   METADATA = 'metadata',
-  TAGSET = 'tagset',
+  TAGSET = 'tagset'
 }

@@ -5,4 +5,4 @@ export type SearchUsersOptions = {
   lastName?: string;
   search?: string;
   userId?: Array<string | undefined>;
-}
+};

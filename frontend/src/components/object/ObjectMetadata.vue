@@ -43,7 +43,6 @@ const formData: Ref<ObjectMetadataTagFormType> = ref({
 });
 const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
 
-
 // Object
 const obj = objectStore.findObjectById(props.objectId);
 
@@ -79,10 +78,9 @@ const closeModal = () => {
 };
 
 async function load() {
-  if( props.versionId ) {
+  if (props.versionId) {
     objectMetadata.value = versionStore.findMetadataByVersionId(props.versionId);
-  }
-  else {
+  } else {
     objectMetadata.value = metadataStore.findMetadataByObjectId(props.objectId);
   }
 }
@@ -91,7 +89,7 @@ onMounted(() => {
   load();
 });
 
-watch([props, tsGetMetadata,vsGetMetadata] , () => {
+watch([props, tsGetMetadata, vsGetMetadata], () => {
   load();
 });
 </script>
@@ -99,9 +97,7 @@ watch([props, tsGetMetadata,vsGetMetadata] , () => {
 <template>
   <div class="grid details-grid grid-nogutter mb-2">
     <div class="col-12">
-      <h2>
-        Metadata
-      </h2>
+      <h2>Metadata</h2>
     </div>
     <GridRow
       v-for="meta in objectMetadata?.metadata"
@@ -111,8 +107,9 @@ watch([props, tsGetMetadata,vsGetMetadata] , () => {
     />
   </div>
   <div
-    v-if="editable &&
-      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, obj?.bucketId)"
+    v-if="
+      editable && permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, obj?.bucketId)
+    "
   >
     <Button
       outlined

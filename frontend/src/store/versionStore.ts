@@ -17,10 +17,10 @@ import type {
 } from '@/types';
 
 export type VersionStoreState = {
-  metadata: Ref<Array<Metadata>>,
-  tagging: Ref<Array<Tagging>>,
-  versions: Ref<Array<Version>>
-}
+  metadata: Ref<Array<Metadata>>;
+  tagging: Ref<Array<Tagging>>;
+  versions: Ref<Array<Version>>;
+};
 
 export const useVersionStore = defineStore('version', () => {
   const appStore = useAppStore();
@@ -48,19 +48,15 @@ export const useVersionStore = defineStore('version', () => {
       const response = (await versionService.getMetadata(null, params)).data;
 
       // Remove old values matching search parameters
-      const matches = (x: Metadata) => (
-        (!params.versionId || params.versionId === x.versionId)
-      );
+      const matches = (x: Metadata) => !params.versionId || params.versionId === x.versionId;
 
       const [, difference] = partition(state.metadata.value, matches);
 
       // Merge and assign
       state.metadata.value = difference.concat(response);
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('Fetching metadata', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -72,19 +68,15 @@ export const useVersionStore = defineStore('version', () => {
       const response = (await versionService.getObjectTagging(params)).data;
 
       // Remove old values matching search parameters
-      const matches = (x: Tagging) => (
-        (!params.versionId || params.versionId === x.versionId)
-      );
+      const matches = (x: Tagging) => !params.versionId || params.versionId === x.versionId;
 
       const [, difference] = partition(state.tagging.value, matches);
 
       // Merge and assign
       state.tagging.value = difference.concat(response);
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('Fetching tags', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -96,25 +88,22 @@ export const useVersionStore = defineStore('version', () => {
       const response = (await objectService.listObjectVersion(params.objectId)).data;
 
       // Remove old values matching search parameters
-      const matches = (x: Version) => (
-        (!params.objectId || x.objectId === params.objectId)
-      );
+      const matches = (x: Version) => !params.objectId || x.objectId === params.objectId;
 
       const [, difference] = partition(state.versions.value, matches);
 
       // Merge and assign
       state.versions.value = difference.concat(response);
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('Fetching versions', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
 
   function findLatestVersionIdByObjectId(objectId: string) {
-    return state.versions.value.filter((x: Version) => x.objectId === objectId)
+    return state.versions.value
+      .filter((x: Version) => x.objectId === objectId)
       .sort((a: Version, b: Version) => Date.parse(b.createdAt as string) - Date.parse(a.createdAt as string))[0]?.id;
   }
 
@@ -123,7 +112,7 @@ export const useVersionStore = defineStore('version', () => {
   }
 
   function findMetadataValue(versionId: string, key: string) {
-    return findMetadataByVersionId(versionId)?.metadata.find(x => x.key === key)?.value;
+    return findMetadataByVersionId(versionId)?.metadata.find((x) => x.key === key)?.value;
   }
 
   function findTaggingByVersionId(versionId: string) {
@@ -154,7 +143,7 @@ export const useVersionStore = defineStore('version', () => {
     findMetadataValue,
     findTaggingByVersionId,
     findVersionById,
-    findVersionsByObjectId,
+    findVersionsByObjectId
   };
 });
 

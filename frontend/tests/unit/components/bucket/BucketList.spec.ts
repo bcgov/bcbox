@@ -12,14 +12,15 @@ const mockToast = vi.fn();
 const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 beforeEach(() => {
-  sessionStorage.setItem(StorageKey.CONFIG, JSON.stringify(
-    {
+  sessionStorage.setItem(
+    StorageKey.CONFIG,
+    JSON.stringify({
       oidc: {
         authority: 'abc',
         clientId: '123'
       }
-    }
-  ));
+    })
+  );
 
   vi.clearAllMocks();
   useToastSpy.mockImplementation(() => ({ error: mockToast, info: mockToast, success: mockToast, warn: mockToast }));
@@ -41,13 +42,9 @@ describe('BucketList.vue', async () => {
 
     const wrapper = shallowMount(BucketList, {
       global: {
-        plugins: [
-          testingPinia,
-          PrimeVue,
-          ToastService,
-        ],
+        plugins: [testingPinia, PrimeVue, ToastService],
         stubs: ['font-awesome-icon']
-      },
+      }
     });
 
     expect(wrapper).toBeTruthy();
@@ -61,16 +58,9 @@ describe('BucketList.vue', async () => {
 
     const wrapper = mount(BucketList, {
       global: {
-        plugins: [
-          PrimeVue,
-          ToastService,
-          pinia,
-        ],
-        stubs: [
-          'font-awesome-icon',
-          'BucketTable'
-        ]
-      },
+        plugins: [PrimeVue, ToastService, pinia],
+        stubs: ['font-awesome-icon', 'BucketTable']
+      }
     });
 
     const button = wrapper.find('[data-test="connect-bucket"]');

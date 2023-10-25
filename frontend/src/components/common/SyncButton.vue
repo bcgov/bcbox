@@ -68,12 +68,15 @@ const onClick = () => {
       <span
         v-if="props.bucketId"
         class="p-dialog-title"
-      >Synchronize Bucket
+      >
+        Synchronize Bucket
       </span>
       <span
         v-else
         class="p-dialog-title"
-      >Synchronize File</span>
+      >
+        Synchronize File
+      </span>
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
@@ -81,16 +84,11 @@ const onClick = () => {
     </h3>
 
     <ul class="mb-4 ml-1.5">
-      <li v-if="props.bucketId">
-        This will schedule a synchronization of the bucket's contents
-      </li>
-      <li v-else>
-        This will schedule a synchronization of the file
-      </li>
+      <li v-if="props.bucketId">This will schedule a synchronization of the bucket's contents</li>
+      <li v-else>This will schedule a synchronization of the file</li>
       <li>
-        Use this if you are modifying it outside of BCBox,
-        such as in another software application,
-        and want to see those changes reflected in BCBox
+        Use this if you are modifying it outside of BCBox, such as in another software application, and want to see
+        those changes reflected in BCBox
       </li>
       <li>Synchronization duration is dependent on server load</li>
     </ul>

@@ -10,9 +10,7 @@ import { ExcludeTypes } from '@/utils/enums';
  * @returns {object} Object containing the non-matching key/value pairs in the source object
  */
 export function differential(source: any, comparer: any): any {
-  return Object.fromEntries(Object.entries(source)
-    .filter(([key, value]) => comparer[key] !== value)
-  );
+  return Object.fromEntries(Object.entries(source).filter(([key, value]) => comparer[key] !== value));
 }
 
 /**
@@ -33,14 +31,14 @@ export function isDebugMode(): boolean {
 export function joinPath(...items: Array<string>): string {
   if (items && items.length) {
     const parts: Array<string> = [];
-    items.forEach(p => {
-      if (p) p.split(DELIMITER).forEach(x => {
-        if (x && x.trim().length) parts.push(x);
-      });
+    items.forEach((p) => {
+      if (p)
+        p.split(DELIMITER).forEach((x) => {
+          if (x && x.trim().length) parts.push(x);
+        });
     });
     return parts.join(DELIMITER) ?? '';
-  }
-  else return '';
+  } else return '';
 }
 
 /**
@@ -72,15 +70,23 @@ export function partition<T>(
  * @param {object} data An object with metadata/tags from COMS
  * @returns {object} The response data with select metadata/tags from a configured list removed
  */
-export function excludeMetaTag(type: ExcludeTypes, data: [{
-  objectId: string,
-  metadata?: Array<{ key: string; value: string }>,
-  tagset?: Array<{ key: string; value: string }>
-}]){
+export function excludeMetaTag(
+  type: ExcludeTypes,
+  data: [
+    {
+      objectId: string;
+      metadata?: Array<{ key: string; value: string }>;
+      tagset?: Array<{ key: string; value: string }>;
+    }
+  ]
+) {
   // TODO: consider unit testing this function
   // array of selected tags/metadata (keys) to hide from UI
-  const excludeArray = new ConfigService()
-    .getConfig().exclude?.[type]?.split(',').map((s: string) => s.trim()) ?? [];
+  const excludeArray =
+    new ConfigService()
+      .getConfig()
+      .exclude?.[type]?.split(',')
+      .map((s: string) => s.trim()) ?? [];
   // filter COMS data
   return data.map((obj: any) => {
     return {
@@ -101,7 +107,7 @@ export function setDispositionHeader(filename: string) {
   const dispositionHeader = `attachment; filename="${filename}"`;
   const encodedFilename = encodeURIComponent(filename).replace(
     /[!'()*]/g,
-    (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+    (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`
   );
 
   if (filename === encodedFilename) {

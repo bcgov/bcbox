@@ -3,12 +3,7 @@ import { storeToRefs } from 'pinia';
 import { onUnmounted, ref, watch } from 'vue';
 
 import { Spinner } from '@/components/layout';
-import {
-  DeleteObjectButton,
-  DownloadObjectButton,
-  ObjectFilters,
-  ObjectPermission,
-} from '@/components/object';
+import { DeleteObjectButton, DownloadObjectButton, ObjectFilters, ObjectPermission } from '@/components/object';
 import { SyncButton } from '@/components/common';
 import { ShareObjectButton } from '@/components/object/share';
 import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch, useToast } from '@/lib/primevue';
@@ -54,7 +49,7 @@ const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
 const toast = useToast();
 
 const formatShortUuid = (uuid: string) => {
-  return uuid?.slice(0,8) ?? uuid;
+  return uuid?.slice(0, 8) ?? uuid;
 };
 
 const showInfo = async (id: string) => {
@@ -62,7 +57,7 @@ const showInfo = async (id: string) => {
 };
 
 const showPermissions = async (objectId: string) => {
-  await permissionStore.fetchObjectPermissions({objectId});
+  await permissionStore.fetchObjectPermissions({ objectId });
 
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
@@ -77,12 +72,13 @@ function onDeletedSuccess() {
   toast.success('File deleted');
 }
 
-watch( getObjects, async () => {
+watch(getObjects, async () => {
   // Filter object cache to this specific bucket
-  const objs: Array<COMSObjectDataSource> = getObjects.value
-    .filter( (x: COMSObject) => x.bucketId === props.bucketId ) as COMSObjectDataSource[];
+  const objs: Array<COMSObjectDataSource> = getObjects.value.filter(
+    (x: COMSObject) => x.bucketId === props.bucketId
+  ) as COMSObjectDataSource[];
 
-  tableData.value = objs.map( (x: COMSObjectDataSource) => {
+  tableData.value = objs.map((x: COMSObjectDataSource) => {
     x.lastUpdatedDate = x.updatedAt ?? x.createdAt;
     return x;
   });
@@ -148,9 +144,7 @@ const filters = ref({
           v-if="!useAppStore().getIsLoading"
           class="flex justify-content-center"
         >
-          <h3>
-            There are no objects associated with your account in this bucket.
-          </h3>
+          <h3>There are no objects associated with your account in this bucket.</h3>
         </div>
       </template>
       <template #loading>
@@ -168,9 +162,7 @@ const filters = ref({
         body-class="truncate"
       >
         <template #body="{ data }">
-          <div
-            v-tooltip.bottom="{ value: data.name }"
-          >
+          <div v-tooltip.bottom="{ value: data.name }">
             {{ data.name }}
           </div>
         </template>
@@ -181,9 +173,7 @@ const filters = ref({
         header="Object ID"
       >
         <template #body="{ data }">
-          <div
-            v-tooltip.bottom="{ value: data.id }"
-          >
+          <div v-tooltip.bottom="{ value: data.id }">
             {{ formatShortUuid(data.id) }}
           </div>
         </template>
@@ -205,10 +195,12 @@ const filters = ref({
         <template #body="{ data }">
           <InputSwitch
             v-model="data.public"
-            :disabled="!(
-              usePermissionStore().isUserElevatedRights() &&
-              permissionStore.isObjectActionAllowed(
-                data.id, getUserId, Permissions.MANAGE, props.bucketId as string))"
+            :disabled="
+              !(
+                usePermissionStore().isUserElevatedRights() &&
+                permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.MANAGE, props.bucketId as string)
+              )
+            "
             @change="togglePublic(data.id, data.public)"
           />
         </template>
@@ -220,18 +212,19 @@ const filters = ref({
         body-class="content-right action-buttons"
       >
         <template #body="{ data }">
-          <ShareObjectButton
-            :id="data.id"
-          />
+          <ShareObjectButton :id="data.id" />
           <DownloadObjectButton
-            v-if="data.public || permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.READ, props.bucketId as string)"
+            v-if="
+              data.public ||
+              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, props.bucketId as string)
+            "
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
           />
           <Button
-            v-if="permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.MANAGE, props.bucketId as string)"
+            v-if="
+              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.MANAGE, props.bucketId as string)
+            "
             class="p-button-lg p-button-text"
             aria-label="Object permissions"
             @click="showPermissions(data.id)"
@@ -240,8 +233,10 @@ const filters = ref({
           </Button>
           <SyncButton :object-id="data.id" />
           <Button
-            v-if="data.public || permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.READ, props.bucketId as string)"
+            v-if="
+              data.public ||
+              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, props.bucketId as string)
+            "
             class="p-button-lg p-button-rounded p-button-text"
             aria-label="Synchronize bucket"
             @click="showInfo(data.id)"
@@ -249,8 +244,9 @@ const filters = ref({
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
           <DeleteObjectButton
-            v-if="permissionStore.isObjectActionAllowed(
-              data.id, getUserId, Permissions.DELETE, props.bucketId as string)"
+            v-if="
+              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.DELETE, props.bucketId as string)
+            "
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
             @on-deleted-success="onDeletedSuccess"

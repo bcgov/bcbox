@@ -18,7 +18,7 @@ const bucket: Bucket = {
   endpoint: 'https://not.a.url',
   key: 'test',
   region: 'us-east-1',
-  secretAccessKey: '123',
+  secretAccessKey: '123'
 };
 
 const bucket2: Bucket = {
@@ -30,7 +30,7 @@ const bucket2: Bucket = {
   endpoint: 'https://not.a.url',
   key: 'test',
   region: 'us-east-1',
-  secretAccessKey: '456',
+  secretAccessKey: '456'
 };
 
 const readPerm = {
@@ -46,14 +46,15 @@ const useToastSpy = vi.spyOn(primevue, 'useToast');
 beforeEach(() => {
   setActivePinia(createPinia());
 
-  sessionStorage.setItem(StorageKey.CONFIG, JSON.stringify(
-    {
+  sessionStorage.setItem(
+    StorageKey.CONFIG,
+    JSON.stringify({
       oidc: {
         authority: 'abc',
         clientId: '123'
       }
-    }
-  ));
+    })
+  );
 
   vi.clearAllMocks();
 
@@ -65,7 +66,6 @@ afterEach(() => {
 });
 
 describe('Bucket Store', () => {
-
   let appStore: StoreGeneric;
   let bucketStore: StoreGeneric;
   let permissionStore: StoreGeneric;
@@ -92,7 +92,6 @@ describe('Bucket Store', () => {
     updateBucketSpy = vi.spyOn(bucketService, 'updateBucket');
   });
 
-
   describe('createBucket', () => {
     it('calls the service', async () => {
       createBucketSpy.mockReturnValue({ data: {} } as any);
@@ -106,12 +105,9 @@ describe('Bucket Store', () => {
     });
   });
 
-
   describe('fetchBuckets', () => {
     it('gets the bucket list', async () => {
-      permissionStore.bucketPermissions = [
-        readPerm
-      ];
+      permissionStore.bucketPermissions = [readPerm];
 
       searchBucketsSpy.mockReturnValue({ data: [bucket] } as any);
       fetchBucketPermissionsSpy.mockReturnValue([readPerm] as any);
@@ -128,9 +124,7 @@ describe('Bucket Store', () => {
     });
 
     it('does not change state on error', async () => {
-      permissionStore.bucketPermissions = [
-        readPerm
-      ];
+      permissionStore.bucketPermissions = [readPerm];
 
       searchBucketsSpy.mockImplementation(() => {
         throw new Error();
@@ -145,12 +139,11 @@ describe('Bucket Store', () => {
       expect(searchBucketsSpy).toHaveBeenCalledTimes(1);
       expect(searchBucketsSpy).toBeCalledWith({ bucketId: ['000'] });
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Fetching buckets', new Error);
+      expect(mockToast).toHaveBeenCalledWith('Fetching buckets', new Error());
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(bucketStore.getBuckets).toStrictEqual([]);
     });
   });
-
 
   describe('findBucketById', () => {
     it('returns a matching bucket', () => {
@@ -169,7 +162,6 @@ describe('Bucket Store', () => {
       expect(result).toStrictEqual(undefined);
     });
   });
-
 
   describe('updateBucket', () => {
     it('updates the bucket', async () => {
