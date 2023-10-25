@@ -20,9 +20,6 @@ module.exports = {
     SharedArrayBuffer: 'readonly',
     _: false
   },
-  parserOptions: {
-    ecmaVersion: 11
-  },
   plugins: ['@typescript-eslint'],
   rules: {
     'eol-last': ['error', 'always'],
