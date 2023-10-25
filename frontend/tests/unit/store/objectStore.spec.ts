@@ -118,18 +118,18 @@ describe('Object Store', () => {
   });
 
 
-  describe('deleteObjects', () => {
+  describe('deleteObject', () => {
     // TODO: Figure out why we can't mock fetchObjects here
     // TODO: Figure out why endIndeterminateLoadingSpy is only being called twice
-    it('deletes the objects', async () => {
+    it('deletes the object', async () => {
       objectStore.objects = [obj, obj2];
 
-      fetchObjectsSpy.mockImplementation(vi.fn());
+      deleteObjectSpy.mockImplementation(vi.fn());
 
-      await objectStore.deleteObjects([obj.id, obj2.id]);
+      await objectStore.deleteObject(obj.id);
 
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(3);
-      expect(deleteObjectSpy).toHaveBeenCalledTimes(2);
+      expect(deleteObjectSpy).toHaveBeenCalledTimes(1);
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(2);
     });
   });

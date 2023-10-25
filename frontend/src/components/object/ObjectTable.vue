@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref, watch } from 'vue';
+import { onUnmounted, ref, watch } from 'vue';
 
 import { Spinner } from '@/components/layout';
 import {
@@ -48,7 +48,6 @@ const { getUserId } = storeToRefs(useAuthStore());
 const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
 const permissionsObjectName: Ref<string | undefined> = ref('');
-const selectedObjects: Ref<Array<COMSObject>> = ref([]);
 const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
 
 // Actions
@@ -89,8 +88,9 @@ watch( getObjects, async () => {
   });
 });
 
-watch( selectedObjects, () => {
-  objectStore.setSelectedObjects(selectedObjects.value);
+// Clear selections when navigating away
+onUnmounted(() => {
+  objectStore.setSelectedObjects([]);
 });
 
 // Datatable filter(s)
@@ -105,7 +105,7 @@ const filters = ref({
 <template>
   <div>
     <DataTable
-      v-model:selection="selectedObjects"
+      v-model:selection="objectStore.selectedObjects"
       v-model:filters="filters"
       :loading="useAppStore().getIsLoading"
       :value="tableData"

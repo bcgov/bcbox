@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { Button, Dialog, useConfirm, useToast } from '@/lib/primevue';
+import { Button, Dialog, useConfirm } from '@/lib/primevue';
 import { useObjectStore } from '@/store/objectStore';
 import { ButtonMode } from '@/utils/enums';
 
@@ -29,7 +29,6 @@ const displayNoFileDialog = ref(false);
 
 // Actions
 const confirm = useConfirm();
-const toast = useToast();
 
 const confirmDelete = () => {
   if (props.ids.length) {
@@ -43,7 +42,7 @@ const confirmDelete = () => {
       accept: async () => {
         for( const id of props.ids){
           try {
-            await objectStore.deleteObjects([id], props.versionId);
+            await objectStore.deleteObject(id, props.versionId);
             emit('on-deleted-success', props.versionId);
           }
           catch{
@@ -59,10 +58,18 @@ const confirmDelete = () => {
 </script>
 
 <template>
-  <Dialog v-model:visible="displayNoFileDialog" header="No File Selected" :modal="true">
+  <Dialog
+    v-model:visible="displayNoFileDialog"
+    header="No File Selected"
+    :modal="true"
+  >
     <p>Please select at least one file from the list to delete.</p>
     <template #footer>
-      <Button label="Ok" autofocus @click="displayNoFileDialog = false" />
+      <Button
+        label="Ok"
+        autofocus
+        @click="displayNoFileDialog = false"
+      />
     </template>
   </Dialog>
 
