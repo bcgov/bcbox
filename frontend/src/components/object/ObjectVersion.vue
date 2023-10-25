@@ -7,7 +7,7 @@ import {
   DeleteObjectButton,
   DownloadObjectButton
 } from '@/components/object';
-import { Button, Column, DataTable, useToast } from '@/lib/primevue';
+import { Button, Column, DataTable } from '@/lib/primevue';
 import { useAppStore, useAuthStore, usePermissionStore, useUserStore, useVersionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
@@ -42,13 +42,11 @@ const tableData: Ref<Array<VersionDataSource>> = ref([]);
 
 // Actions
 const router = useRouter();
-const toast = useToast();
 
 // Highlight row for currently selected version
 const rowClass = (data: any) => [{ 'selected-row': data.id === props.versionId }];
 
 async function onDeletedSuccess(versionId: string) {
-  toast.success('File deleted');
   await versionStore.fetchVersions({ objectId: props.objectId });
 
   // Navigate to new latest version if deleting active version

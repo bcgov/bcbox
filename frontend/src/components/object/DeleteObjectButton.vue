@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { Button, Dialog, useConfirm, useToast } from '@/lib/primevue';
+import { Button, Dialog, useConfirm } from '@/lib/primevue';
 import { useObjectStore } from '@/store/objectStore';
 import { ButtonMode } from '@/utils/enums';
 
@@ -29,7 +29,6 @@ const displayNoFileDialog = ref(false);
 
 // Actions
 const confirm = useConfirm();
-const toast = useToast();
 
 const confirmDelete = () => {
   if (props.ids.length) {
@@ -37,17 +36,15 @@ const confirmDelete = () => {
     const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} ${item}s` : `this ${item}`;
     confirm.require({
       message: `Please confirm that you want to delete ${msgContext}.`,
-      header: `Delete ${props.ids.length > 1 ? item + 's' : item }`,
+      header: `Delete ${props.ids.length > 1 ? item + 's' : item}`,
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
-      accept: async () => {
-        try {
-          await objectStore.deleteObjects(props.ids, props.versionId);
-          emit('on-deleted-success', props.versionId);
-        } catch (error: any) {
-          toast.error(`Error deleting one or more ${item}s`);
-          emit('on-deleted-error');
-        }
+      accept: () => {
+        props.ids?.forEach((id: string) => {
+          objectStore.deleteObject(id, props.versionId)
+            .then(() => emit('on-deleted-success', props.versionId))
+            .catch(() => { });
+        });
       }
     });
   } else {

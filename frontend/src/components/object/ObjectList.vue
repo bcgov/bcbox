@@ -9,7 +9,7 @@ import {
   ObjectTable,
   ObjectUpload
 } from '@/components/object';
-import { Button, useToast } from '@/lib/primevue';
+import { Button } from '@/lib/primevue';
 import {
   useAuthStore,
   useBucketStore,
@@ -47,9 +47,6 @@ const selectedObjectIds = computed(() => {
   return getSelectedObjects.value.map((o) => o.id);
 });
 
-// Actions
-const toast = useToast();
-
 const showObjectInfo = async (objectId: string | undefined) => {
   objectInfoId.value = objectId;
 };
@@ -74,10 +71,6 @@ const closeUpload = () => {
 //     toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: error, life: 5000 });
 //   }
 // };
-
-function onDeletedSuccess() {
-  toast.success('File deleted');
-}
 
 onMounted(async () => {
   // Removed for now
@@ -123,7 +116,6 @@ onMounted(async () => {
         :disabled="displayUpload"
         :ids="selectedObjectIds"
         :mode="ButtonMode.BUTTON"
-        @on-deleted-success="onDeletedSuccess"
       />
     </div>
 

@@ -76,19 +76,18 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  async function deleteObjects(objectIds: Array<string>, versionId?: string) {
-    const bucketId = findObjectById(objectIds[0])?.bucketId;
+  async function deleteObject(objectId: string, versionId?: string) {
+    const bucketId = findObjectById(objectId)?.bucketId;
 
     try {
       appStore.beginIndeterminateLoading();
-      await Promise.all(
-        objectIds.map(async (id) => {
-          await objectService.deleteObject(id, versionId);
-        })
-      );
+      await objectService.deleteObject(objectId, versionId);
+      removeSelectedObject(objectId);
+      toast.success('Object deleted');
     }
     catch (error: any) {
-      toast.error('Deleting object', error);
+      toast.error('deleting object.');
+      throw error;
     }
     finally {
       fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
@@ -204,6 +203,12 @@ export const useObjectStore = defineStore('object', () => {
     state.selectedObjects.value = selected;
   }
 
+  function removeSelectedObject(removeSelected: string) {
+    state.selectedObjects.value = state.selectedObjects.value.filter((object) => {
+      return object.id != removeSelected;
+    });
+  }
+
   async function togglePublic(objectId: string, isPublic: boolean) {
     try {
       appStore.beginIndeterminateLoading();
@@ -273,11 +278,12 @@ export const useObjectStore = defineStore('object', () => {
 
     // Actions
     createObject,
-    deleteObjects,
+    deleteObject,
     downloadObject,
     fetchObjects,
     findObjectById,
     headObject,
+    removeSelectedObject,
     setSelectedObjects,
     syncObject,
     togglePublic,

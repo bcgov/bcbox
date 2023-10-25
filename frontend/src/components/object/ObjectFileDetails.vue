@@ -15,7 +15,7 @@ import {
   ObjectVersion
 } from '@/components/object';
 import { ShareObjectButton } from '@/components/object/share';
-import { Button, Dialog, Divider, useToast } from '@/lib/primevue';
+import { Button, Dialog, Divider } from '@/lib/primevue';
 import {
   useAuthStore,
   useMetadataStore,
@@ -60,7 +60,6 @@ const version: Ref<Version | undefined> = ref(undefined);
 
 // Actions
 const router = useRouter();
-const toast = useToast();
 
 const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
@@ -69,8 +68,6 @@ const showPermissions = async (objectId: string) => {
 };
 
 async function onDeletedSuccess(versionId: string) {
-  toast.success('File deleted');
-
   await Promise.all([
     objectStore.fetchObjects({objectId: props.objectId, userId: getUserId.value, bucketPerms: true}),
     versionStore.fetchVersions({ objectId: props.objectId })
