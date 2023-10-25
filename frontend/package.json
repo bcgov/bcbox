@@ -11,6 +11,7 @@
     "build:dts": "vue-tsc --declaration --emitDeclarationOnly",
     "clean": "rimraf coverage dist",
     "debug": "vite --mode debug",
+    "format": "npx prettier ./src --write",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --no-fix --ignore-path .gitignore",
     "lint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "preview": "vite preview",
