@@ -39,7 +39,7 @@ const confirmDelete = () => {
       header: `Delete ${props.ids.length > 1 ? item + 's' : item}`,
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
-      accept: async () => {
+      accept: () => {
         props.ids?.forEach((id: string) => {
           objectStore.deleteObject(id, props.versionId)
             .then(() => emit('on-deleted-success', props.versionId))
