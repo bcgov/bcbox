@@ -7,7 +7,8 @@ import { useConfigStore, useUserStore } from '@/store';
 import { Regex } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { IChangeEvent, IInputEvent } from '@/interfaces';
+import type { IInputEvent } from '@/interfaces';
+import type { DropdownChangeEvent } from '@/lib/primevue';
 import type { IdentityProvider, User, UserPermissions } from '@/types';
 
 // Props
@@ -54,7 +55,7 @@ const onCancel = () => {
   emit('cancel-search-users');
 };
 
-const onChange = (event: IChangeEvent) => {
+const onChange = (event: DropdownChangeEvent) => {
   if(isProxy(event.value)) {
     const user: User = event.value as User;
 
