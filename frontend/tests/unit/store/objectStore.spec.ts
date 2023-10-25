@@ -70,7 +70,7 @@ describe('Object Store', () => {
 
   let createObjectSpy: SpyInstance;
   let deleteObjectSpy: SpyInstance;
-  let fetchObjectsSpy: SpyInstance;
+  // let fetchObjectsSpy: SpyInstance;
   let getObjectSpy: SpyInstance;
   let searchObjectsSpy: SpyInstance;
 
@@ -85,7 +85,7 @@ describe('Object Store', () => {
 
     createObjectSpy = vi.spyOn(objectService, 'createObject');
     deleteObjectSpy = vi.spyOn(objectService, 'deleteObject');
-    fetchObjectsSpy = vi.spyOn(objectStore, 'fetchObjects');
+    // fetchObjectsSpy = vi.spyOn(objectStore, 'fetchObjects');
     getObjectSpy = vi.spyOn(objectService, 'getObject');
     searchObjectsSpy = vi.spyOn(objectService, 'searchObjects');
   });
