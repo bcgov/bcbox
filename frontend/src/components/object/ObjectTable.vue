@@ -96,6 +96,8 @@ const filters = ref({
   // @ts-ignore
   global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
+
+console.log(filters)
 </script>
 
 <template>
@@ -127,8 +129,15 @@ const filters = ref({
               v-model="filters['global'].value"
               placeholder="Search File Names"
             />
+            <Button
+              v-show="filters['global'].value != null"
+              class="ml-2 p-input-icon-clear-right"
+              icon="pi pi-times"
+              outlined
+              aria-label="Clear"
+              @click="filters['global'].value = null"
+            />
           </span>
-
           <Button
             class="ml-2"
             icon="pi pi-refresh"
@@ -279,3 +288,8 @@ const filters = ref({
     </Dialog>
   </div>
 </template>
+<style lang="scss" scoped>
+:deep(.p-inputtext) {
+  padding-right: 2.5rem;
+}
+</style>
