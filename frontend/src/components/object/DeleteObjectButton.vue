@@ -40,15 +40,11 @@ const confirmDelete = () => {
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
       accept: async () => {
-        for( const id of props.ids){
-          try {
-            await objectStore.deleteObject(id, props.versionId);
-            emit('on-deleted-success', props.versionId);
-          }
-          catch{
-            // intentionally left blank
-          }
-        }
+        props.ids?.forEach((id: string) => {
+          objectStore.deleteObject(id, props.versionId)
+            .then(() => emit('on-deleted-success', props.versionId))
+            .catch(() => { });
+        });
       }
     });
   } else {
