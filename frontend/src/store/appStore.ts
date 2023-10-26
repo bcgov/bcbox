@@ -4,12 +4,12 @@ import { computed, ref } from 'vue';
 import type { Ref } from 'vue';
 
 export type AppStoreState = {
-  loadingCalls: Ref<number>
-  loadingInterval: Ref<ReturnType<typeof setTimeout> | undefined>
-  loadingMode: Ref<'determinate' | 'indeterminate'>
-  loadingValue: Ref<number>,
-  uploadingCalls: Ref<number>
-}
+  loadingCalls: Ref<number>;
+  loadingInterval: Ref<ReturnType<typeof setTimeout> | undefined>;
+  loadingMode: Ref<'determinate' | 'indeterminate'>;
+  loadingValue: Ref<number>;
+  uploadingCalls: Ref<number>;
+};
 
 export const useAppStore = defineStore('app', () => {
   // State

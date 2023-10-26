@@ -35,7 +35,7 @@ const comsUrl = computed(() => {
   return `${getConfig.value.coms?.apiPath}/object/${props.id}`;
 });
 
-onMounted( () => {
+onMounted(() => {
   obj.value = objectStore.findObjectById(props.id);
 });
 </script>
@@ -61,13 +61,8 @@ onMounted( () => {
     </h3>
 
     <ul class="mb-4">
-      <li>
-        To share publicly or with a direct file link, you must set the file to
-        public in the object list
-      </li>
-      <li>
-        To share to a BCBox user, you must first apply permissions to them
-      </li>
+      <li>To share publicly or with a direct file link, you must set the file to public in the object list</li>
+      <li>To share to a BCBox user, you must first apply permissions to them</li>
     </ul>
 
     <TabView>

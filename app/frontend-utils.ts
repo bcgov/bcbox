@@ -1,15 +1,6 @@
 // This script attempts to gracefully rebuild and update bcbox-frontend if necessary
 /* eslint-disable no-console */
-import {
-  existsSync,
-  lstatSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  statSync,
-  writeFileSync
-} from 'fs';
+import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'fs';
 import { basename, join } from 'path';
 
 const FRONTEND_DIR = '../frontend';
@@ -155,7 +146,7 @@ export function copyDirRecursiveSync(source: string, target: string) {
   // Copy
   if (lstatSync(source).isDirectory()) {
     files = readdirSync(source);
-    files.forEach(file => {
+    files.forEach((file) => {
       const curSource = join(source, file);
       if (lstatSync(curSource).isDirectory()) {
         copyDirRecursiveSync(curSource, targetFolder);

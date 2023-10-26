@@ -1,6 +1,6 @@
 export const BucketConfig = Object.freeze({
   HEADER_NEW_BUCKET: 'Configure bucket',
-  TITLE_NEW_BUCKET: 'Use this form to configure a bucket to be used in BCBox for the first time.',
+  TITLE_NEW_BUCKET: 'Use this form to configure a bucket to be used in BCBox for the first time.'
 });
 
 /**
@@ -19,7 +19,7 @@ export const Permissions = Object.freeze({
   READ: 'READ',
   UPDATE: 'UPDATE',
   DELETE: 'DELETE',
-  MANAGE: 'MANAGE',
+  MANAGE: 'MANAGE'
 });
 
 export const Regex = Object.freeze({
@@ -59,5 +59,5 @@ export const ToastTimeout = Object.freeze({
 });
 
 export const ValidationMessages = Object.freeze({
-  REQUIRED: 'This field is required.',
+  REQUIRED: 'This field is required.'
 });

@@ -14,7 +14,7 @@ type FilterDisplayItem = {
   key: string;
   value: string;
   display?: string;
-}
+};
 
 // Props
 type Props = {
@@ -22,7 +22,7 @@ type Props = {
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  bucketId: undefined,
+  bucketId: undefined
 });
 
 // Store
@@ -40,20 +40,18 @@ const selectedMetadata: Ref<MetadataPair[]> = ref([]);
 const selectedTags: Ref<Tag[]> = ref([]);
 
 // Store subscriptions
-objectStore.$onAction(
-  ({name, args}) => {
-    // If someone calls fetchObjects to refresh the table, clear the filter
-    // unless supplied with filter(s)
-    if (name === 'fetchObjects') {
-      // Args are supplied from onAction as a single array so have to check how many to satisfy needed condition
-      // Might be a cleaner way of doing this...
-      if(args.length < 2) {
-        selectedMetadata.value = [];
-        selectedTags.value = [];
-      }
+objectStore.$onAction(({ name, args }) => {
+  // If someone calls fetchObjects to refresh the table, clear the filter
+  // unless supplied with filter(s)
+  if (name === 'fetchObjects') {
+    // Args are supplied from onAction as a single array so have to check how many to satisfy needed condition
+    // Might be a cleaner way of doing this...
+    if (args.length < 2) {
+      selectedMetadata.value = [];
+      selectedTags.value = [];
     }
   }
-);
+});
 
 // Computed
 const metadataValues = computed(() => {
@@ -62,17 +60,16 @@ const metadataValues = computed(() => {
     getUnfilteredObjectIds.value.some((obj) => obj === searchRes.objectId)
   );
 
-  return filteredVals
-    // Take the metadata for the objects, and flatten them into a single array
-    .flatMap((obj) => obj.metadata)
-    // Add a display property to each tag to be used by the multiselect
-    .map((val) => ({ ...val, display: `${val.key}:${val.value}` }))
-    // Unique by display property
-    .filter(
-      (val, index, self) =>
-        index === self.findIndex((t) => t.display === val.display)
-    )
-    .sort((a, b) => a.display.localeCompare(b.display));
+  return (
+    filteredVals
+      // Take the metadata for the objects, and flatten them into a single array
+      .flatMap((obj) => obj.metadata)
+      // Add a display property to each tag to be used by the multiselect
+      .map((val) => ({ ...val, display: `${val.key}:${val.value}` }))
+      // Unique by display property
+      .filter((val, index, self) => index === self.findIndex((t) => t.display === val.display))
+      .sort((a, b) => a.display.localeCompare(b.display))
+  );
 });
 
 const tagsetValues = computed(() => {
@@ -81,22 +78,21 @@ const tagsetValues = computed(() => {
     getUnfilteredObjectIds.value.some((obj) => obj === searchRes.objectId)
   );
 
-  return filteredVals
-    // Take the tags for the objects, and flatten them into a single array
-    .flatMap((obj) => obj.tagset)
-    // Add a display property to each tag to be used by the multiselect
-    .map((val) => ({ ...val, display: `${val.key}=${val.value}` }))
-    // Unique by display property
-    .filter(
-      (val, index, self) =>
-        index === self.findIndex((t) => t.display === val.display)
-    )
-    .sort((a, b) => a.display.localeCompare(b.display));
+  return (
+    filteredVals
+      // Take the tags for the objects, and flatten them into a single array
+      .flatMap((obj) => obj.tagset)
+      // Add a display property to each tag to be used by the multiselect
+      .map((val) => ({ ...val, display: `${val.key}=${val.value}` }))
+      // Unique by display property
+      .filter((val, index, self) => index === self.findIndex((t) => t.display === val.display))
+      .sort((a, b) => a.display.localeCompare(b.display))
+  );
 });
 
 // Actions
-const uncheckOther = (event: MultiSelectChangeEvent, modelValue: Ref<MetadataPair[] | Tag[]>) =>{
-  if(event.value.length > 1) {
+const uncheckOther = (event: MultiSelectChangeEvent, modelValue: Ref<MetadataPair[] | Tag[]>) => {
+  if (event.value.length > 1) {
     // Docs say value should be the current selected, but it's the whole list. Current is always the last one
     const selectedOption = event.value[event.value.length - 1];
     const tagKey = selectedOption.key;
@@ -120,12 +116,8 @@ const selectedTagsChanged = (event: MultiSelectChangeEvent) => {
 };
 const selectedFilterValuesChanged = () => {
   // Get the 'display' property out from selected tag and metadata
-  const metaToSearch: Array<MetadataPair> = selectedMetadata.value.map(
-    ({ ...meta }: any) => meta
-  );
-  const tagSetToSearch: Array<Tag> = selectedTags.value.map(
-    ({ ...tag }: any) => tag
-  );
+  const metaToSearch: Array<MetadataPair> = selectedMetadata.value.map(({ ...meta }: any) => meta);
+  const tagSetToSearch: Array<Tag> = selectedTags.value.map(({ ...tag }: any) => tag);
 
   // Search the object store with the tagset as a param and metadata as headers
   objectStore.fetchObjects(
@@ -151,7 +143,6 @@ const searchTagging = async () => {
   await tagStore.searchTagging();
   searching.value = false;
 };
-
 </script>
 
 <template>

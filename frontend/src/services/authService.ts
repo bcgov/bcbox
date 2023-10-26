@@ -49,7 +49,7 @@ export default class AuthService {
       redirect_uri: `${window.location.protocol}//${window.location.host}/oidc/callback`,
       loadUserInfo: true,
       post_logout_redirect_uri: `${window.location.protocol}//${window.location.host}/oidc/logout`,
-      userStore: new WebStorageStateStore({ store: window.localStorage }),
+      userStore: new WebStorageStateStore({ store: window.localStorage })
     };
   }
 

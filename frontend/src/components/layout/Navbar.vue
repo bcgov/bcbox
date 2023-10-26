@@ -10,16 +10,12 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
 </script>
 
 <template>
-  <nav
-    class="navigation-main"
-  >
+  <nav class="navigation-main">
     <Toolbar>
       <template #start>
         <ol class="list-none m-0 p-0 flex flex-row align-items-center font-semibold">
           <li class="mr-2">
-            <router-link :to="{ name: RouteNames.HOME }">
-              Home
-            </router-link>
+            <router-link :to="{ name: RouteNames.HOME }">Home</router-link>
           </li>
           <li
             v-if="getIsAuthenticated"
@@ -37,7 +33,9 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
               target="_blank"
               href="https://github.com/bcgov/bcbox/wiki"
               aria-label="BCBox help"
-            >Help</a>
+            >
+              Help
+            </a>
           </li>
         </ol>
       </template>

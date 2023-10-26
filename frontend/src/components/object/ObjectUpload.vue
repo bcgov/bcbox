@@ -53,7 +53,7 @@ const onUpload = async (event: any) => {
         try {
           appStore.beginUploading();
 
-          const data = formData.find( (x: ObjectMetadataTagFormType) => x.filename === file.name );
+          const data = formData.find((x: ObjectMetadataTagFormType) => x.filename === file.name);
 
           await objectStore.createObject(
             file,
@@ -65,8 +65,7 @@ const onUpload = async (event: any) => {
         } catch (error: any) {
           toast.error(`Failed to upload file ${file.name}`, error);
           failedFiles.value.push(file);
-        }
-        finally {
+        } finally {
           appStore.endUploading();
         }
       })
@@ -96,7 +95,7 @@ const onRemoveFailedFile = async (index: number) => {
 // Based on files prop from upload component, are we in ready to upload mode
 const noFilesChosen = (files?: Array<File>): boolean => !files?.length;
 
-const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => formData = values;
+const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => (formData = values);
 </script>
 
 <template>
@@ -117,7 +116,8 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
             <font-awesome-icon
               icon="fa-solid fa-plus"
               class="mr-1"
-            />Choose
+            />
+            Choose
           </Button>
           <Button
             :class="{ 'p-button-outlined': noFilesChosen(files) }"
@@ -127,19 +127,23 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
             <font-awesome-icon
               icon="fa-solid fa-upload"
               class="mr-1"
-            />Start upload
+            />
+            Start upload
           </Button>
           <Button
             class="p-button-outlined"
-            @click="() => {
-              clearCallback();
-              props.closeCallback();
-            }"
+            @click="
+              () => {
+                clearCallback();
+                props.closeCallback();
+              }
+            "
           >
             <font-awesome-icon
               icon="fa-solid fa-xmark"
               class="mr-1"
-            />Close
+            />
+            Close
           </Button>
         </div>
       </div>
@@ -150,9 +154,7 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
           icon="fa-solid fa-upload"
           class="border-2 border-dashed border-circle p-5 text-7xl text-400 border-400"
         />
-        <p class="mt-4 mb-0">
-          Drag and drop files here to select for upload. Then click "Start upload".
-        </p>
+        <p class="mt-4 mb-0">Drag and drop files here to select for upload. Then click "Start upload".</p>
       </div>
       <ObjectUploadFile
         :files="successfulFiles"

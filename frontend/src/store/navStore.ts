@@ -5,16 +5,16 @@ import type { Ref } from 'vue';
 import type { RouteLocationNormalized } from 'vue-router';
 
 export type NavStoreState = {
-  home: Ref<Object>,
-  items: Ref<Array<any>>
-}
+  home: Ref<Object>;
+  items: Ref<Array<any>>;
+};
 
 export const useNavStore = defineStore('nav', () => {
   // State
   const state: NavStoreState = {
     home: ref({
       label: 'Home',
-      to: '/',
+      to: '/'
     }),
     items: ref([])
   };
@@ -33,12 +33,10 @@ export const useNavStore = defineStore('nav', () => {
     if (navLink.path === '/') {
       // Clear if going to Home
       state.items.value = [];
-    }
-    else if (item >= 0) {
+    } else if (item >= 0) {
       // Navigating back to existing item, clear any items after
       state.items.value.splice(item + 1);
-    }
-    else if (navLink.meta?.breadcrumb) {
+    } else if (navLink.meta?.breadcrumb) {
       // Add new nav item
       state.items.value.push({ label: navLink.meta.breadcrumb, to: fullPath });
     }

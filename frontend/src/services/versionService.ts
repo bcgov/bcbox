@@ -13,9 +13,12 @@ export default {
    * @returns {Promise} An axios response
    */
   getMetadata(headers: any = {}, params: GetVersionMetadataOptions) {
-    return comsAxios().get(`${PATH}/metadata`, { headers: headers, params: params })
-      // filter out a configured list of select metadata
-      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.METADATA, response.data) }));
+    return (
+      comsAxios()
+        .get(`${PATH}/metadata`, { headers: headers, params: params })
+        // filter out a configured list of select metadata
+        .then((response) => ({ data: excludeMetaTag(ExcludeTypes.METADATA, response.data) }))
+    );
   },
 
   /**
@@ -24,8 +27,11 @@ export default {
    * @returns {Promise} An axios response
    */
   getObjectTagging(params: GetVersionTaggingOptions) {
-    return comsAxios().get(`${PATH}/tagging`, { params: params })
-      // filter out a configured list of select tags
-      .then((response) => ({ data: excludeMetaTag(ExcludeTypes.TAGSET, response.data) }));
-  },
+    return (
+      comsAxios()
+        .get(`${PATH}/tagging`, { params: params })
+        // filter out a configured list of select tags
+        .then((response) => ({ data: excludeMetaTag(ExcludeTypes.TAGSET, response.data) }))
+    );
+  }
 };

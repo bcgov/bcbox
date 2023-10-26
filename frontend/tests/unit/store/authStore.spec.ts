@@ -19,7 +19,6 @@ describe.skip('Auth Store', () => {
     // const oo = o();
     // const store = useAuthStore();
     // const userManager = AuthService.getUserManager();
-
     // const addAccessTokenExpiredSpy = jest.spyOn(userManager.events, 'addAccessTokenExpired');
     // const addAccessTokenExpiringSpy = jest.spyOn(userManager.events, 'addAccessTokenExpiring');
     // const addSilentRenewErrorSpy = jest.spyOn(userManager.events, 'addSilentRenewError');
@@ -28,7 +27,6 @@ describe.skip('Auth Store', () => {
     // const addUserSignedInSpy = jest.spyOn(userManager.events, 'addUserSignedIn');
     // const addUserSignedOutSpy = jest.spyOn(userManager.events, 'addUserSignedOut');
     // const addUserUnloadedSpy = jest.spyOn(userManager.events, 'addUserUnloaded');
-
     // addAccessTokenExpiredSpy.mockImplementation(() => {
     //   return jest.fn();
     // });
@@ -53,7 +51,6 @@ describe.skip('Auth Store', () => {
     // addUserUnloadedSpy.mockImplementation(() => {
     //   return jest.fn();
     // });
-
     // addAccessTokenExpiredSpy.mockReturnValue(noop);
     // addAccessTokenExpiringSpy.mockReturnValue(noop);
     // addSilentRenewErrorSpy.mockReturnValue(noop);
@@ -62,7 +59,6 @@ describe.skip('Auth Store', () => {
     // addUserSignedInSpy.mockReturnValue(noop);
     // addUserSignedOutSpy.mockReturnValue(noop);
     // addUserUnloadedSpy.mockReturnValue(noop);
-
     // store._registerEvents();
     // expect(addAccessTokenExpiredSpy).toHaveBeenCalledTimes(1);
     // expect(addAccessTokenExpiringSpy).toHaveBeenCalledTimes(1);

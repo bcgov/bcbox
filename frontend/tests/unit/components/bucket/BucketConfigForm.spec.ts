@@ -11,14 +11,15 @@ const mockToast = vi.fn();
 const useToastSpy = vi.spyOn(primevue, 'useToast');
 
 beforeEach(() => {
-  sessionStorage.setItem(StorageKey.CONFIG, JSON.stringify(
-    {
+  sessionStorage.setItem(
+    StorageKey.CONFIG,
+    JSON.stringify({
       oidc: {
         authority: 'abc',
         clientId: '123'
       }
-    }
-  ));
+    })
+  );
 
   vi.clearAllMocks();
   useToastSpy.mockImplementation(() => ({ error: mockToast, info: mockToast, success: mockToast, warn: mockToast }));
@@ -35,7 +36,7 @@ describe('BucketConfigForm.vue', () => {
         plugins: [PrimeVue, createTestingPinia(), ToastService],
         stubs: {
           RouterLink: RouterLinkStub
-        },
+        }
       },
       props: {}
     });
@@ -48,7 +49,7 @@ describe('BucketConfigForm.vue', () => {
         plugins: [PrimeVue, createTestingPinia(), ToastService],
         stubs: {
           RouterLink: RouterLinkStub
-        },
+        }
       },
       props: {}
     });
@@ -65,7 +66,7 @@ describe('BucketConfigForm.vue', () => {
         plugins: [PrimeVue, createTestingPinia(), ToastService],
         stubs: {
           RouterLink: RouterLinkStub
-        },
+        }
       },
       props: {}
     });

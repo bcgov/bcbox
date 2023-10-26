@@ -16,17 +16,15 @@ export default {
    */
   searchForUsers(params: SearchUsersOptions): Promise<AxiosResponse> {
     // Filter out SYSTEM_USER from userId param
-    const userIds = params.userId?.filter(id => id !== null && id !== SYSTEM_USER);
+    const userIds = params.userId?.filter((id) => id !== null && id !== SYSTEM_USER);
     // Drop userId param if it only contains the system user or assign back to params object, without duplicates
     if (userIds) {
       if (userIds.length === 0) {
         delete params.userId;
-      }
-      else {
+      } else {
         params.userId = [...new Set(userIds)];
       }
     }
-
 
     if (Object.keys(params).length) {
       return comsAxios().get(`${PATH}`, { params: params });
@@ -42,5 +40,5 @@ export default {
    */
   listIdps(): Promise<AxiosResponse> {
     return comsAxios().get(`${PATH}/idpList`);
-  },
+  }
 };

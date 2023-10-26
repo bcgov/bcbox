@@ -28,13 +28,20 @@ const managedBy: Ref<string | undefined> = ref();
 async function load() {
   await permissionStore.fetchObjectPermissions({ objectId: props.objectId });
 
-  const uniqueIds = [...new Set(getObjectPermissions.value
-    .filter((x: COMSObjectPermission) => x.objectId === props.objectId && x.permCode === Permissions.MANAGE)
-    .map((x: COMSObjectPermission) => x.userId))];
+  const uniqueIds = [
+    ...new Set(
+      getObjectPermissions.value
+        .filter((x: COMSObjectPermission) => x.objectId === props.objectId && x.permCode === Permissions.MANAGE)
+        .map((x: COMSObjectPermission) => x.userId)
+    )
+  ];
 
   if (uniqueIds.length) {
     await userStore.fetchUsers({ userId: uniqueIds });
-    managedBy.value = userStore.findUsersById(uniqueIds).map(x => x.fullName).join(', ');
+    managedBy.value = userStore
+      .findUsersById(uniqueIds)
+      .map((x) => x.fullName)
+      .join(', ');
   }
 }
 
@@ -53,14 +60,10 @@ watch(props, () => {
     class="grid details-grid grid-nogutter mb-2"
   >
     <div class="col-12">
-      <h2>
-        Access
-      </h2>
+      <h2>Access</h2>
     </div>
     <div class="grid">
-      <div class="col-fixed">
-        Managed by:
-      </div>
+      <div class="col-fixed">Managed by:</div>
       <div class="col">
         {{ managedBy }}
       </div>

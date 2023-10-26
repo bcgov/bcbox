@@ -54,10 +54,9 @@ const showModal = () => {
 };
 
 const submitModal = async (values: ObjectMetadataTagFormType) => {
-  if( values.tagset ) {
-    await tagStore.replaceTagging(props.objectId,  values.tagset, props.versionId);
-  }
-  else {
+  if (values.tagset) {
+    await tagStore.replaceTagging(props.objectId, values.tagset, props.versionId);
+  } else {
     await tagStore.deleteTagging(props.objectId, [], props.versionId);
   }
 
@@ -71,10 +70,9 @@ const closeModal = () => {
 };
 
 async function load() {
-  if( props.versionId ) {
+  if (props.versionId) {
     objectTagging.value = versionStore.findTaggingByVersionId(props.versionId);
-  }
-  else {
+  } else {
     objectTagging.value = tagStore.findTaggingByObjectId(props.objectId);
   }
 }
@@ -83,7 +81,7 @@ onMounted(() => {
   load();
 });
 
-watch( [props, tsGetTagging, vsGetTagging], () => {
+watch([props, tsGetTagging, vsGetTagging], () => {
   load();
 });
 </script>
@@ -91,9 +89,7 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
 <template>
   <div class="grid details-grid grid-nogutter mb-2">
     <div class="col-12">
-      <h2>
-        Tags
-      </h2>
+      <h2>Tags</h2>
     </div>
     <div
       v-for="tag in objectTagging?.tagset"
@@ -105,15 +101,16 @@ watch( [props, tsGetTagging, vsGetTagging], () => {
             value="Primary"
             rounded
           >
-            {{ tag.key + "=" + tag.value }}
+            {{ tag.key + '=' + tag.value }}
           </Tag>
         </div>
       </div>
     </div>
   </div>
   <div
-    v-if="editable &&
-      permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, obj?.bucketId)"
+    v-if="
+      editable && permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, obj?.bucketId)
+    "
   >
     <Button
       outlined

@@ -4,4 +4,4 @@ export type Tagging = {
   objectId?: string;
   tagset: Array<Tag>;
   versionId?: string;
-}
+};

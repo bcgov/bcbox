@@ -3,4 +3,4 @@ export type SearchBucketsOptions = {
   bucketName?: string;
   key?: string;
   active?: boolean;
-}
+};

@@ -15,7 +15,7 @@ const obj: COMSObject = {
   id: '000',
   name: 'object1',
   path: 'dev/test',
-  public: false,
+  public: false
 };
 
 const obj2: COMSObject = {
@@ -24,7 +24,7 @@ const obj2: COMSObject = {
   id: '111',
   name: 'object2',
   path: 'dev/test',
-  public: false,
+  public: false
 };
 
 const readPerm = {
@@ -40,14 +40,15 @@ const useToastSpy = vi.spyOn(primevue, 'useToast');
 beforeEach(() => {
   setActivePinia(createPinia());
 
-  sessionStorage.setItem(StorageKey.CONFIG, JSON.stringify(
-    {
+  sessionStorage.setItem(
+    StorageKey.CONFIG,
+    JSON.stringify({
       oidc: {
         authority: 'abc',
         clientId: '123'
       }
-    }
-  ));
+    })
+  );
 
   vi.clearAllMocks();
 
@@ -59,7 +60,6 @@ afterEach(() => {
 });
 
 describe('Object Store', () => {
-
   let appStore: StoreGeneric;
   let objectStore: StoreGeneric;
   let permissionStore: StoreGeneric;
@@ -117,7 +117,6 @@ describe('Object Store', () => {
     });
   });
 
-
   describe('deleteObject', () => {
     // TODO: Figure out why we can't mock fetchObjects here
     // TODO: Figure out why endIndeterminateLoadingSpy is only being called twice
@@ -133,7 +132,6 @@ describe('Object Store', () => {
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(2);
     });
   });
-
 
   describe('downloadObject', () => {
     it('gets the most recent object', async () => {
@@ -169,17 +167,14 @@ describe('Object Store', () => {
       expect(getObjectSpy).toHaveBeenCalledTimes(1);
       expect(getObjectSpy).toHaveBeenCalledWith(obj.id, undefined);
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Downloading object', new Error);
+      expect(mockToast).toHaveBeenCalledWith('Downloading object', new Error());
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
     });
   });
 
-
   describe('fetchObjects', () => {
     it('gets the object list', async () => {
-      permissionStore.objectPermissions = [
-        readPerm
-      ];
+      permissionStore.objectPermissions = [readPerm];
 
       searchObjectsSpy.mockResolvedValue({ data: [obj] } as any);
       fetchObjectPermissionsSpy.mockReturnValue([readPerm] as any);
@@ -190,20 +185,21 @@ describe('Object Store', () => {
       expect(fetchObjectPermissionsSpy).toHaveBeenCalledTimes(1);
       expect(fetchObjectPermissionsSpy).toBeCalledWith({ bucketId: '000', userId: '123', bucketPerms: true });
       expect(searchObjectsSpy).toHaveBeenCalledTimes(1);
-      expect(searchObjectsSpy).toBeCalledWith({
-        bucketId: ['000'],
-        objectId: ['000'],
-        deleteMarker: false,
-        latest: true
-      }, {});
+      expect(searchObjectsSpy).toBeCalledWith(
+        {
+          bucketId: ['000'],
+          objectId: ['000'],
+          deleteMarker: false,
+          latest: true
+        },
+        {}
+      );
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(objectStore.getObjects).toStrictEqual([obj]);
     });
 
     it('does not change state on error', async () => {
-      permissionStore.objectPermissions = [
-        readPerm
-      ];
+      permissionStore.objectPermissions = [readPerm];
 
       searchObjectsSpy.mockImplementation(() => {
         throw new Error();
@@ -216,19 +212,21 @@ describe('Object Store', () => {
       expect(fetchObjectPermissionsSpy).toHaveBeenCalledTimes(1);
       expect(fetchObjectPermissionsSpy).toBeCalledWith({ bucketId: '000', userId: '123', bucketPerms: true });
       expect(searchObjectsSpy).toHaveBeenCalledTimes(1);
-      expect(searchObjectsSpy).toBeCalledWith({
-        bucketId: ['000'],
-        objectId: ['000'],
-        deleteMarker: false,
-        latest: true
-      }, {});
+      expect(searchObjectsSpy).toBeCalledWith(
+        {
+          bucketId: ['000'],
+          objectId: ['000'],
+          deleteMarker: false,
+          latest: true
+        },
+        {}
+      );
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Fetching objects', new Error);
+      expect(mockToast).toHaveBeenCalledWith('Fetching objects', new Error());
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(objectStore.getObjects).toStrictEqual([]);
     });
   });
-
 
   describe('findObjectById', () => {
     it('returns a matching bucket', () => {
@@ -248,7 +246,6 @@ describe('Object Store', () => {
     });
   });
 
-
   describe('headObject', () => {
     it('calls the service', async () => {
       const headObjectSpy = vi.spyOn(objectService, 'headObject');
@@ -262,7 +259,6 @@ describe('Object Store', () => {
     });
   });
 
-
   describe('setSelectedObjects', () => {
     it('sets the state', () => {
       objectStore.setSelectedObjects([obj, obj2]);
@@ -270,7 +266,6 @@ describe('Object Store', () => {
       expect(objectStore.getSelectedObjects).toStrictEqual([obj, obj2]);
     });
   });
-
 
   describe('togglePublic', () => {
     it('calls the service', async () => {

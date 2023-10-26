@@ -11,61 +11,61 @@ const { getConfig } = storeToRefs(useConfigStore());
 <template>
   <div class="gov-footer flex justify-content-between">
     <div>
-      <Button
-        id="footer-home"
-      >
+      <Button id="footer-home">
         <a
           href="https://www.gov.bc.ca/"
           target="_blank"
-        >Home</a>
+        >
+          Home
+        </a>
       </Button>
-      <Button
-        id="footer-about"
-      >
+      <Button id="footer-about">
         <a
           href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca"
           target="_blank"
-        >About gov.bc.ca</a>
+        >
+          About gov.bc.ca
+        </a>
       </Button>
-      <Button
-        id="footer-disclaimer"
-      >
+      <Button id="footer-disclaimer">
         <a
           href="http://gov.bc.ca/disclaimer"
           target="_blank"
-        >Disclaimer</a>
+        >
+          Disclaimer
+        </a>
       </Button>
-      <Button
-        id="footer-privacy"
-      >
+      <Button id="footer-privacy">
         <a
           href="http://gov.bc.ca/privacy"
           target="_blank"
-        >Privacy</a>
+        >
+          Privacy
+        </a>
       </Button>
-      <Button
-        id="footer-accessibility"
-      >
+      <Button id="footer-accessibility">
         <a
           href="http://gov.bc.ca/webaccessibility"
           target="_blank"
-        >Accessibility</a>
+        >
+          Accessibility
+        </a>
       </Button>
-      <Button
-        id="footer-copyright"
-      >
+      <Button id="footer-copyright">
         <a
           href="http://gov.bc.ca/copyright"
           target="_blank"
-        >Copyright</a>
+        >
+          Copyright
+        </a>
       </Button>
-      <Button
-        id="footer-contact"
-      >
+      <Button id="footer-contact">
         <a
           href="https://www2.gov.bc.ca/gov/content/home/contact-us"
           target="_blank"
-        >Contact Us</a>
+        >
+          Contact Us
+        </a>
       </Button>
     </div>
     <div

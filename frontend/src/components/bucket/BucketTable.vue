@@ -45,7 +45,8 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
 
 const confirmDeleteBucket = (bucketId: string) => {
   confirm.require({
-    message: 'Are you sure you want to delete this bucket in BCBox? \
+    message:
+      'Are you sure you want to delete this bucket in BCBox? \
       This will drop all related objects and permissions from BCBox, \
       but the files will still remain in the actual bucket.',
     header: 'Delete bucket',
@@ -124,7 +125,7 @@ async function deleteBucket(bucketId: string) {
       >
         <template #body="{ data }">
           <Button
-            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.UPDATE )"
+            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.UPDATE)"
             class="p-button-lg p-button-text"
             aria-label="Configure bucket"
             @click="showBucketConfig(data)"
@@ -132,7 +133,7 @@ async function deleteBucket(bucketId: string) {
             <font-awesome-icon icon="fas fa-cog" />
           </Button>
           <Button
-            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.MANAGE )"
+            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.MANAGE)"
             class="p-button-lg p-button-text"
             aria-label="Bucket permissions"
             @click="showPermissions(data.bucketId, data.bucketName)"
@@ -141,7 +142,7 @@ async function deleteBucket(bucketId: string) {
           </Button>
           <SyncButton :bucket-id="data.bucketId" />
           <Button
-            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.READ )"
+            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.READ)"
             class="p-button-lg p-button-rounded p-button-text"
             aria-label="Bucket details"
             @click="showSidebarInfo(data.bucketId)"
@@ -149,7 +150,7 @@ async function deleteBucket(bucketId: string) {
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
           <Button
-            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.DELETE )"
+            v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.DELETE)"
             class="p-button-lg p-button-text p-button-danger"
             aria-label="Delete bucket"
             @click="confirmDeleteBucket(data.bucketId)"

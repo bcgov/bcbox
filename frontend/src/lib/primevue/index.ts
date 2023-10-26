@@ -27,3 +27,5 @@ export { default as Toolbar } from 'primevue/toolbar';
 export { useConfirm } from 'primevue/useconfirm';
 
 export { useToast } from './useToast';
+
+export type { DropdownChangeEvent } from 'primevue/dropdown';

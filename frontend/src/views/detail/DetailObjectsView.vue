@@ -9,8 +9,8 @@ import type { Ref } from 'vue';
 
 // Props
 type Props = {
-  objectId: string,
-  versionId?: string
+  objectId: string;
+  versionId?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -24,26 +24,23 @@ const versionStore = useVersionStore();
 const version: Ref<string | undefined> = ref(props.versionId);
 
 // Actions
-onBeforeMount( async () => {
+onBeforeMount(async () => {
   // Get the latest version if not defined
-  if( !version.value ) {
+  if (!version.value) {
     await versionStore.fetchVersions({ objectId: props.objectId });
     version.value = versionStore.findLatestVersionIdByObjectId(props.objectId);
   }
 });
 
-watch( [props], () => {
-  if( props.versionId ) {
+watch([props], () => {
+  if (props.versionId) {
     version.value = props.versionId;
   }
 });
-
 </script>
 
 <template>
-  <RequirePublicOrAuth
-    :object-id="props.objectId"
-  >
+  <RequirePublicOrAuth :object-id="props.objectId">
     <ObjectFileDetails
       v-if="props.objectId"
       :object-id="props.objectId"

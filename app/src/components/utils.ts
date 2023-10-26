@@ -13,7 +13,8 @@ const log = getLogger(module.filename);
 export function getGitRevision(): string {
   try {
     const gitDir = (() => {
-      let dir = '.git', i = 0;
+      let dir = '.git',
+        i = 0;
       while (!existsSync(join(__dirname, dir)) && i < 5) {
         dir = '../' + dir;
         i++;
@@ -22,22 +23,29 @@ export function getGitRevision(): string {
     })();
 
     const head = readFileSync(join(__dirname, `${gitDir}/HEAD`), 'utf8')
-      .toString().trim();
-    return (head.indexOf(':') === -1)
-      ? head
-      : readFileSync(join(__dirname, `${gitDir}/${head.substring(5)}`), 'utf8')
-        .toString().trim();
-  } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
+      .toString()
+      .trim();
+
+    let fileRead: string = '';
+    if (head.indexOf(':') === -1) {
+      fileRead = readFileSync(join(__dirname, `${gitDir}/${head.substring(5)}`), 'utf8')
+        .toString()
+        .trim();
+    }
+
+    return head.indexOf(':') === -1 ? head : (fileRead as string);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
     log.warn(err.message, { function: 'getGitRevision' });
     return '';
   }
 }
 
 /**
-* @function readIdpList
-* Acquires the list of identity providers to be used
-* @returns {object[]} A promise resolving to an array of idp provider objects
-*/
+ * @function readIdpList
+ * Acquires the list of identity providers to be used
+ * @returns {object[]} A promise resolving to an array of idp provider objects
+ */
 export function readIdpList(): object[] {
   const configDir = '../../config';
   const defaultFile = 'idplist-default.json';
@@ -53,4 +61,3 @@ export function readIdpList(): object[] {
 
   return idpList;
 }
-

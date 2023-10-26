@@ -10,8 +10,8 @@ import type { ObjectMetadataTagFormType } from '@/components/object/ObjectMetada
 
 // Props
 type Props = {
-  bucketId: string,
-  objectId: string
+  bucketId: string;
+  objectId: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -46,7 +46,10 @@ const confirmUpdate = () => {
     header: 'Upload new version',
     acceptLabel: 'Confirm',
     rejectLabel: 'Cancel',
-    accept: () => { onUpload(); closeModal(); }
+    accept: () => {
+      onUpload();
+      closeModal();
+    }
   });
 };
 
@@ -62,7 +65,7 @@ const onSelectFile = () => {
 
 const onUpload = async () => {
   try {
-    if( file.value ) {
+    if (file.value) {
       toast.info('File upload starting...');
       appStore.beginUploading();
 
@@ -122,7 +125,7 @@ const closeModal = () => {
     style="display: none"
     accept="*"
     @change="onChange"
-    @click="(event: any) => event.target.value = null"
+    @click="(event: any) => (event.target.value = null)"
   />
 
   <!-- eslint-disable vue/no-v-model-argument -->

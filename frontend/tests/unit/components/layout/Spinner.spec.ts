@@ -1,4 +1,3 @@
-
 import { mount } from '@vue/test-utils';
 
 import { ProgressSpinner } from '@/lib/primevue';
@@ -16,8 +15,8 @@ describe('ProgressSpinner.vue', () => {
   it('renders', () => {
     const wrapper = mount(ProgressSpinner, {
       global: {
-        plugins: [PrimeVue],
-      },
+        plugins: [PrimeVue]
+      }
     });
     expect(wrapper).toBeTruthy();
   });

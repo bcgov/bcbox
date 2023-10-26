@@ -90,17 +90,20 @@ onMounted(async () => {
         </h3>
 
         <Message severity="info">
-          Please contact <a
+          Please contact
+          <a
             href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701"
             target="_blank"
-          >NRIDS Optimization</a>
+          >
+            NRIDS Optimization
+          </a>
           (Natural Resource ministries) or your ministry's service desk if you need help with buckets.
         </Message>
 
         <Message severity="warn">
           If you intend to share files in your bucket with BCeID users, you are required to email
-          <a href="mailto:IDIM.Consulting@gov.bc.ca">IDIM.Consulting@gov.bc.ca</a> to share your
-          BCeID-related intentions and where you intend to advertise this.
+          <a href="mailto:IDIM.Consulting@gov.bc.ca">IDIM.Consulting@gov.bc.ca</a>
+          to share your BCeID-related intentions and where you intend to advertise this.
         </Message>
 
         <BucketConfigForm
@@ -132,7 +135,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-
 button {
   text-indent: 10px;
 }

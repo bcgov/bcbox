@@ -35,20 +35,19 @@ const formData: Ref<Array<ObjectMetadataTagFormType>> = ref(props.formData);
 // Actions
 const showModal = async (filename: string) => {
   initialModalData.value.filename = filename;
-  initialModalData.value.metadata = formData.value.find(x => x.filename === filename)?.metadata;
-  initialModalData.value.tagset = formData.value.find(x => x.filename === filename)?.tagset ;
+  initialModalData.value.metadata = formData.value.find((x) => x.filename === filename)?.metadata;
+  initialModalData.value.tagset = formData.value.find((x) => x.filename === filename)?.tagset;
 
   editing.value = true;
 };
 
 const submitModal = (values: ObjectMetadataTagFormType) => {
-  const idx = formData.value.findIndex( (x: ObjectMetadataTagFormType) => x.filename === values.filename);
+  const idx = formData.value.findIndex((x: ObjectMetadataTagFormType) => x.filename === values.filename);
 
-  if( idx >= 0 ) {
+  if (idx >= 0) {
     formData.value[idx].metadata = values.metadata;
     formData.value[idx].tagset = values.tagset;
-  }
-  else {
+  } else {
     formData.value.push(values);
   }
 
@@ -61,7 +60,6 @@ const submitModal = (values: ObjectMetadataTagFormType) => {
 const closeModal = () => {
   editing.value = false;
 };
-
 </script>
 
 <template>

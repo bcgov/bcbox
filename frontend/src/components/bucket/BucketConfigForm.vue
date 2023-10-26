@@ -52,7 +52,10 @@ const schema = object({
   bucket: string().max(255).required().label('Bucket'),
   bucketName: string().max(255).required().label('Bucket name'),
   endpoint: string().max(255).required().label('Endpoint'),
-  key: string().matches(/^[^\\]+$/, 'Sub-path must not contain backslashes').max(255).label('Key'),
+  key: string()
+    .matches(/^[^\\]+$/, 'Sub-path must not contain backslashes')
+    .max(255)
+    .label('Key'),
   secretAccessKey: string().max(255).required().label('Secret Access Key')
 });
 
@@ -66,17 +69,17 @@ const onSubmit = async (values: any) => {
       bucket: values.bucket,
       bucketName: values.bucketName,
       endpoint: values.endpoint,
-      secretAccessKey: values.secretAccessKey,
+      secretAccessKey: values.secretAccessKey
     } as Bucket;
 
     // Only add key for new configurations
-    if( !props.bucket && values.key && joinPath(values.key)) {
+    if (!props.bucket && values.key && joinPath(values.key)) {
       formBucket.key = joinPath(values.key);
     }
 
-    props.bucket ?
-      await bucketStore.updateBucket(props.bucket?.bucketId, differential(formBucket, initialValues)) :
-      await bucketStore.createBucket(formBucket);
+    props.bucket
+      ? await bucketStore.updateBucket(props.bucket?.bucketId, differential(formBucket, initialValues))
+      : await bucketStore.createBucket(formBucket);
 
     await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
     emit('submit-bucket-config');
@@ -157,7 +160,6 @@ const onCancel = () => {
 </template>
 
 <style lang="scss" scoped>
-
 :deep(.p-inputtext) {
   width: 100% !important;
 }

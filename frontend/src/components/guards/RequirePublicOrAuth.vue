@@ -10,7 +10,7 @@ import type { Ref } from 'vue';
 
 // Props
 type Props = {
-  objectId: string
+  objectId: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -25,17 +25,16 @@ const ready: Ref<boolean> = ref(false);
 // Actions
 const router = useRouter();
 
-onBeforeMount( async () => {
+onBeforeMount(async () => {
   let isPublic = false;
-  if( props.objectId ) {
+  if (props.objectId) {
     const head = await objectStore.headObject(props.objectId);
     isPublic = head?.status === 204;
   }
 
-  if( !isPublic && !getIsAuthenticated.value ) {
+  if (!isPublic && !getIsAuthenticated.value) {
     router.push({ name: RouteNames.LOGIN });
-  }
-  else {
+  } else {
     ready.value = true;
   }
 });

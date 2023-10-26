@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ProgressSpinner } from '@/lib/primevue';
-
 </script>
 
 <template>
   <ProgressSpinner
-    style="width: 50px;
-    height: 50px"
+    style="width: 50px; height: 50px"
     stroke-width="4"
   />
 </template>

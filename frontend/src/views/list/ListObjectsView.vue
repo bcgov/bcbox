@@ -13,7 +13,7 @@ import type { Bucket, BucketPermission } from '@/types';
 
 // Props
 type Props = {
-  bucketId?: string
+  bucketId?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -27,7 +27,7 @@ const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const ready: Ref<boolean> = ref(false);
-const bucket: Ref< Bucket | undefined > = ref(undefined);
+const bucket: Ref<Bucket | undefined> = ref(undefined);
 
 // Actions
 async function getBucketName() {
@@ -39,28 +39,25 @@ onErrorCaptured((e: Error) => {
   toast.error('Loading bucket', e.message);
 });
 
-onBeforeMount( async () => {
+onBeforeMount(async () => {
   const router = useRouter();
 
   const permResponse = await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
-  if( !permResponse.some( (x: BucketPermission) => x.bucketId === props.bucketId ) ) {
+  if (!permResponse.some((x: BucketPermission) => x.bucketId === props.bucketId)) {
     router.replace({ name: RouteNames.FORBIDDEN });
-  }
-  else {
+  } else {
     ready.value = true;
   }
 });
 
-onMounted( () => {
+onMounted(() => {
   getBucketName();
 });
 </script>
 
 <template>
   <div v-if="ready">
-    <h1>
-      Files
-    </h1>
+    <h1>Files</h1>
     <h2
       v-if="bucket"
       class="mb-3 flex overflow-hidden"
@@ -76,7 +73,7 @@ onMounted( () => {
 </template>
 
 <style scoped lang="scss">
-h2 svg{
+h2 svg {
   color: $bcbox-primary;
 }
 </style>

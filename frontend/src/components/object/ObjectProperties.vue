@@ -41,11 +41,11 @@ async function load() {
   await bucketStore.fetchBuckets({ bucketId: object.value?.bucketId });
   bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
 
-  if( props.fullView ) {
+  if (props.fullView) {
     objectMetadata.value = metadataStore.findMetadataByObjectId(object.value?.id as string);
-    await userStore.fetchUsers({userId:[object.value?.createdBy, object.value?.updatedBy]});
-    createdBy.value = getUserSearch.value.find( x => x.userId === object.value?.createdBy )?.fullName;
-    updatedBy.value = getUserSearch.value.find( x => x.userId === object.value?.updatedBy )?.fullName;
+    await userStore.fetchUsers({ userId: [object.value?.createdBy, object.value?.updatedBy] });
+    createdBy.value = getUserSearch.value.find((x) => x.userId === object.value?.createdBy)?.fullName;
+    updatedBy.value = getUserSearch.value.find((x) => x.userId === object.value?.updatedBy)?.fullName;
   }
 }
 
@@ -53,7 +53,7 @@ onMounted(() => {
   load();
 });
 
-watch( props, () => {
+watch(props, () => {
   load();
 });
 </script>
@@ -61,13 +61,11 @@ watch( props, () => {
 <template>
   <div class="grid details-grid grid-nogutter mb-2">
     <div class="col-12">
-      <h2>
-        Properties
-      </h2>
+      <h2>Properties</h2>
     </div>
 
     <GridRow
-      class=" overflow-hidden"
+      class="overflow-hidden"
       label="Name"
       :value="object?.name"
     />

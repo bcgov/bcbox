@@ -14,7 +14,7 @@ export type ObjectStoreState = {
   objects: Ref<Array<COMSObject>>;
   selectedObjects: Ref<Array<COMSObject>>; // All selected table row items
   unfilteredObjectIds: Ref<Array<string>>;
-}
+};
 
 export const useObjectStore = defineStore('object', () => {
   const toast = useToast();
@@ -28,27 +28,28 @@ export const useObjectStore = defineStore('object', () => {
   const state: ObjectStoreState = {
     objects: ref([]),
     selectedObjects: ref([]),
-    unfilteredObjectIds: ref([]),
+    unfilteredObjectIds: ref([])
   };
 
   // Getters
   const getters = {
     getObjects: computed(() => state.objects.value),
     getSelectedObjects: computed(() => state.selectedObjects.value),
-    getUnfilteredObjectIds: computed(() => state.unfilteredObjectIds.value),
+    getUnfilteredObjectIds: computed(() => state.unfilteredObjectIds.value)
   };
 
   // Actions
   async function createObject(
     object: any,
     headers: {
-      metadata?: Array<{ key: string; value: string }>,
+      metadata?: Array<{ key: string; value: string }>;
     },
     params: {
-      bucketId?: string,
-      tagset?: Array<{ key: string; value: string }>
+      bucketId?: string;
+      tagset?: Array<{ key: string; value: string }>;
     },
-    axiosOptions?: AxiosRequestConfig) {
+    axiosOptions?: AxiosRequestConfig
+  ) {
     try {
       appStore.beginIndeterminateLoading();
 
@@ -62,16 +63,13 @@ export const useObjectStore = defineStore('object', () => {
       }
 
       await objectService.createObject(object, headers, params, axiosOptions);
-    }
-    catch (error: any) {
+    } catch (error: any) {
       if (error?.response?.status === 409) {
         toast.error('Creating object', 'File already exists');
-      }
-      else {
+      } else {
         toast.error('Creating object', error);
       }
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -84,12 +82,10 @@ export const useObjectStore = defineStore('object', () => {
       await objectService.deleteObject(objectId, versionId);
       removeSelectedObject(objectId);
       toast.success('Object deleted');
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('deleting object.');
       throw error;
-    }
-    finally {
+    } finally {
       fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
       appStore.endIndeterminateLoading();
     }
@@ -99,11 +95,9 @@ export const useObjectStore = defineStore('object', () => {
     try {
       appStore.beginIndeterminateLoading();
       await objectService.getObject(objectId, versionId);
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('Downloading object', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -111,7 +105,8 @@ export const useObjectStore = defineStore('object', () => {
   async function fetchObjects(
     params: ObjectSearchPermissionsOptions = {},
     tagset?: Array<Tag>,
-    metadata?: Array<MetadataPair>) {
+    metadata?: Array<MetadataPair>
+  ) {
     try {
       appStore.beginIndeterminateLoading();
 
@@ -120,10 +115,12 @@ export const useObjectStore = defineStore('object', () => {
 
       if (permResponse) {
         const uniqueIds: Array<string> = [
-          ...new Set<string>(permResponse
-            .map((x: { objectId: string }) => x.objectId)
-            // Resolve API returning all objects with bucketPerms=true even when requesting single objectId
-            .filter((objectId: string) => !params.objectId || objectId === params.objectId))
+          ...new Set<string>(
+            permResponse
+              .map((x: { objectId: string }) => x.objectId)
+              // Resolve API returning all objects with bucketPerms=true even when requesting single objectId
+              .filter((objectId: string) => !params.objectId || objectId === params.objectId)
+          )
         ];
 
         let response = Array<COMSObject>();
@@ -136,22 +133,25 @@ export const useObjectStore = defineStore('object', () => {
             }
           }
 
-          response = await objectService.searchObjects({
-            bucketId: params.bucketId ? [params.bucketId] : undefined,
-            objectId: uniqueIds,
-            tagset: tagset ? tagset.reduce((acc, cur) => ({ ...acc, [cur.key]: cur.value }), {}) : undefined,
+          response = await objectService
+            .searchObjects(
+              {
+                bucketId: params.bucketId ? [params.bucketId] : undefined,
+                objectId: uniqueIds,
+                tagset: tagset ? tagset.reduce((acc, cur) => ({ ...acc, [cur.key]: cur.value }), {}) : undefined,
 
-            // Added to allow deletion of objects before versioning implementation
-            // TODO: Verify if needed after versioning implemented
-            deleteMarker: false,
-            latest: true
-          }, headers).then(r => r.data);
+                // Added to allow deletion of objects before versioning implementation
+                // TODO: Verify if needed after versioning implemented
+                deleteMarker: false,
+                latest: true
+              },
+              headers
+            )
+            .then((r) => r.data);
 
           // Remove old values matching search parameters
-          const matches = (x: COMSObject) => (
-            (!params.objectId || x.id === params.objectId) &&
-            (!params.bucketId || x.bucketId === params.bucketId)
-          );
+          const matches = (x: COMSObject) =>
+            (!params.objectId || x.id === params.objectId) && (!params.bucketId || x.bucketId === params.bucketId);
 
           const [, difference] = partition(state.objects.value, matches);
 
@@ -165,17 +165,14 @@ export const useObjectStore = defineStore('object', () => {
               .filter((x) => !params.bucketId || x.bucketId === params.bucketId)
               .map((o) => o.id);
           }
-        }
-        else {
+        } else {
           state.objects.value = response;
           state.unfilteredObjectIds.value = [];
         }
       }
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('Fetching objects', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -189,12 +186,10 @@ export const useObjectStore = defineStore('object', () => {
       appStore.beginIndeterminateLoading();
 
       // Return full response as data will always be No Content
-      return (await objectService.headObject(objectId));
-    }
-    catch (error: any) {
+      return await objectService.headObject(objectId);
+    } catch (error: any) {
       toast.error('Fetching head', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -213,11 +208,9 @@ export const useObjectStore = defineStore('object', () => {
     try {
       appStore.beginIndeterminateLoading();
       await objectService.togglePublic(objectId, isPublic);
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('Changing public state', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -226,10 +219,10 @@ export const useObjectStore = defineStore('object', () => {
     objectId: string,
     object: any,
     headers: {
-      metadata?: Array<MetadataPair>,
+      metadata?: Array<MetadataPair>;
     },
     params: {
-      tagset?: Array<Tag>
+      tagset?: Array<Tag>;
     },
     axiosOptions?: AxiosRequestConfig
   ) {
@@ -246,11 +239,9 @@ export const useObjectStore = defineStore('object', () => {
       }
 
       await objectService.updateObject(objectId, object, headers, params, axiosOptions);
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('Updating object', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -260,11 +251,9 @@ export const useObjectStore = defineStore('object', () => {
       appStore.beginIndeterminateLoading();
       await objectService.syncObject(objectId);
       toast.success('', 'Sync is in queue and will begin soon');
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('Unable to sync', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }

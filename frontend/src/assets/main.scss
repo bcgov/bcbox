@@ -1,6 +1,6 @@
-@import "./base.css";
-@import "./primevue.scss";
-@import "./variables.scss";
+@import './base.css';
+@import './primevue.scss';
+@import './variables.scss';
 
 #app {
   margin: 0 auto;
@@ -175,7 +175,7 @@ td .wrap-block {
 }
 
 .versions-table .p-datatable-table tbody tr:not(.selected-row) {
-  &:hover{
+  &:hover {
     background-color: $bcbox-highlight-background !important;
     cursor: pointer;
   }

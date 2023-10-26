@@ -10,12 +10,7 @@ import {
   ObjectUpload
 } from '@/components/object';
 import { Button } from '@/lib/primevue';
-import {
-  useAuthStore,
-  useBucketStore,
-  useObjectStore,
-  usePermissionStore
-} from '@/store';
+import { useAuthStore, useBucketStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 
@@ -23,7 +18,7 @@ import type { Ref } from 'vue';
 
 // Props
 type Props = {
-  bucketId?: string
+  bucketId?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -80,7 +75,6 @@ onMounted(async () => {
   // TODO: userId+bucketPerms bringing back deleted files??
   await objectStore.fetchObjects({ bucketId: props.bucketId, userId: getUserId.value, bucketPerms: true });
 });
-
 </script>
 
 <template>
@@ -105,7 +99,8 @@ onMounted(async () => {
         <font-awesome-icon
           icon="fa-solid fa-upload"
           class="mr-1"
-        /> Upload
+        />
+        Upload
       </Button>
       <DownloadObjectButton
         :disabled="displayUpload"

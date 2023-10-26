@@ -44,4 +44,3 @@ const { getConfig } = storeToRefs(useConfigStore());
     {{ getProfile }}
   </div>
 </template>
-

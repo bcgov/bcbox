@@ -10,8 +10,8 @@ import type { Ref } from 'vue';
 import type { Bucket, BucketSearchPermissionsOptions } from '@/types';
 
 export type BucketStoreState = {
-  buckets: Ref<Array<Bucket>>
-}
+  buckets: Ref<Array<Bucket>>;
+};
 
 export const useBucketStore = defineStore('bucket', () => {
   const toast = useToast();
@@ -36,8 +36,7 @@ export const useBucketStore = defineStore('bucket', () => {
       appStore.beginIndeterminateLoading();
 
       return (await bucketService.createBucket(bucket)).data;
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -47,8 +46,7 @@ export const useBucketStore = defineStore('bucket', () => {
       appStore.beginIndeterminateLoading();
 
       await bucketService.deleteBucket(bucketId);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -69,24 +67,19 @@ export const useBucketStore = defineStore('bucket', () => {
           response = (await bucketService.searchBuckets({ bucketId: uniqueIds })).data;
 
           // Remove old values matching search parameters
-          const matches = (x: Bucket) => (
-            (!params?.bucketId || x.bucketId === params.bucketId)
-          );
+          const matches = (x: Bucket) => !params?.bucketId || x.bucketId === params.bucketId;
 
           const [, difference] = partition(state.buckets.value, matches);
 
           // Merge and assign
           state.buckets.value = difference.concat(response);
-        }
-        else {
+        } else {
           state.buckets.value = response;
         }
       }
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('Fetching buckets', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -100,8 +93,7 @@ export const useBucketStore = defineStore('bucket', () => {
       appStore.beginIndeterminateLoading();
 
       return (await bucketService.updateBucket(bucketId, bucket)).data;
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -112,11 +104,9 @@ export const useBucketStore = defineStore('bucket', () => {
 
       await bucketService.syncBucket(bucketId);
       toast.success('', 'Sync is in queue and will begin soon');
-    }
-    catch (error: any) {
+    } catch (error: any) {
       toast.error('Unable to sync', error);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }

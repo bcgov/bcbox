@@ -7,7 +7,7 @@ describe('TextInput.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(TextInput, {
       props: {
-        name: 'test',
+        name: 'test'
       },
       global: {
         plugins: [PrimeVue]
@@ -21,7 +21,7 @@ describe('TextInput.vue', () => {
     const wrapper = shallowMount(TextInput, {
       props: {
         label: 'testlabel',
-        name: 'test',
+        name: 'test'
       },
       global: {
         plugins: [PrimeVue]
@@ -36,7 +36,7 @@ describe('TextInput.vue', () => {
     const wrapper = shallowMount(TextInput, {
       props: {
         helpText: 'some help text',
-        name: 'test',
+        name: 'test'
       },
       global: {
         plugins: [PrimeVue]
@@ -66,7 +66,7 @@ describe('TextInput.vue', () => {
     const wrapper = shallowMount(TextInput, {
       props: {
         disabled: true,
-        name: 'test',
+        name: 'test'
       },
       global: {
         plugins: [PrimeVue]

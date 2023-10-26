@@ -6,8 +6,8 @@ import { ButtonMode } from '@/utils/enums';
 
 // Props
 type Props = {
-  mode?: ButtonMode,
-  toCopy?: string
+  mode?: ButtonMode;
+  toCopy?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
 const toast = useToast();
 
 const copyToClipboard = () => {
-  if( props.toCopy ) {
+  if (props.toCopy) {
     navigator.clipboard.writeText(props.toCopy);
     toast.info('Copied to clipboard');
   }
@@ -32,9 +32,7 @@ const copyToClipboard = () => {
     class="p-button-rounded p-button-secondary p-button-outlined"
     @click="copyToClipboard"
   >
-    <font-awesome-icon
-      icon="fa fa-clipboard"
-    />
+    <font-awesome-icon icon="fa fa-clipboard" />
   </Button>
   <Button
     v-if="mode === ButtonMode.BUTTON"
@@ -44,6 +42,7 @@ const copyToClipboard = () => {
     <font-awesome-icon
       icon="fa fa-clipboard"
       class="mr-2"
-    /> Copy to clipboard
+    />
+    Copy to clipboard
   </Button>
 </template>

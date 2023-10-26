@@ -34,11 +34,10 @@ const cancelSearchUsers = () => {
 };
 
 const removeBucketUser = (userId: string) => {
-  const managers = getMappedBucketToUserPermissions.value.filter( (x: UserPermissions) => x.manage );
-  if( managers.length === 1 && managers[0].userId === userId ) {
+  const managers = getMappedBucketToUserPermissions.value.filter((x: UserPermissions) => x.manage);
+  if (managers.length === 1 && managers[0].userId === userId) {
     removeManageAlert.show();
-  }
-  else {
+  } else {
     permissionStore.removeBucketUser(props.bucketId, userId);
   }
 };
@@ -47,24 +46,24 @@ const updateBucketPermission = (value: boolean, userId: string, permCode: string
   if (value) {
     permissionStore.addBucketPermission(props.bucketId, userId, permCode);
   } else {
-    const managers = getMappedBucketToUserPermissions.value.filter( (x: UserPermissions) => x.manage );
+    const managers = getMappedBucketToUserPermissions.value.filter((x: UserPermissions) => x.manage);
 
     // Disallow removable of final MANAGE permission
-    if( permCode === Permissions.MANAGE && !managers.length ) {
+    if (permCode === Permissions.MANAGE && !managers.length) {
       removeManageAlert.show();
 
       // Set the value back as clicking will automatically change it
-      const perm: UserPermissions = getMappedBucketToUserPermissions.value
-        .find( (x: UserPermissions) => x.userId === userId ) as UserPermissions;
+      const perm: UserPermissions = getMappedBucketToUserPermissions.value.find(
+        (x: UserPermissions) => x.userId === userId
+      ) as UserPermissions;
       perm.manage = true;
-    }
-    else {
+    } else {
       permissionStore.deleteBucketPermission(props.bucketId, userId, permCode);
     }
   }
 };
 
-onBeforeMount( async () => {
+onBeforeMount(async () => {
   await permissionStore.fetchBucketPermissions({ bucketId: props.bucketId });
   await permissionStore.mapBucketToUserPermissions(props.bucketId);
 });
@@ -80,13 +79,12 @@ onBeforeMount( async () => {
         <font-awesome-icon
           icon="fa-solid fa-user-plus"
           class="mr-1"
-        /> Add user
+        />
+        Add user
       </Button>
     </div>
     <div v-else>
-      <BucketPermissionAddUser
-        @cancel-search-users="cancelSearchUsers"
-      />
+      <BucketPermissionAddUser @cancel-search-users="cancelSearchUsers" />
     </div>
 
     <DataTable

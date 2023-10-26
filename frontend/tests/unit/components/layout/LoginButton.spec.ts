@@ -11,19 +11,20 @@ import { RouteNames } from '@/utils/constants';
 vi.mock('vue-router', () => ({
   useRoute: vi.fn(),
   useRouter: vi.fn(() => ({
-    push: () => { }
+    push: () => {}
   }))
 }));
 
 beforeEach(() => {
-  sessionStorage.setItem(StorageKey.CONFIG, JSON.stringify(
-    {
+  sessionStorage.setItem(
+    StorageKey.CONFIG,
+    JSON.stringify({
       oidc: {
         authority: 'abc',
         clientId: '123'
       }
-    }
-  ));
+    })
+  );
 
   vi.clearAllMocks();
 });
@@ -36,12 +37,15 @@ describe('LoginButton.vue', () => {
   it('renders', () => {
     const wrapper = shallowMount(LoginButton, {
       global: {
-        plugins: [createTestingPinia({
-          initialState: {
-            auth: { user: {} }
-          }
-        }), PrimeVue],
-      },
+        plugins: [
+          createTestingPinia({
+            initialState: {
+              auth: { user: {} }
+            }
+          }),
+          PrimeVue
+        ]
+      }
     });
     expect(wrapper).toBeTruthy();
   });
@@ -50,12 +54,15 @@ describe('LoginButton.vue', () => {
     it('renders login button', () => {
       const wrapper = mount(LoginButton, {
         global: {
-          plugins: [createTestingPinia({
-            initialState: {
-              auth: { isAuthenticated: false }
-            }
-          }), PrimeVue],
-        },
+          plugins: [
+            createTestingPinia({
+              initialState: {
+                auth: { isAuthenticated: false }
+              }
+            }),
+            PrimeVue
+          ]
+        }
       });
 
       const btn = wrapper.getComponent({ name: 'Button' });
@@ -74,13 +81,16 @@ describe('LoginButton.vue', () => {
 
       const wrapper = shallowMount(LoginButton, {
         global: {
-          plugins: [createTestingPinia({
-            initialState: {
-              auth: { isAuthenticated: false }
-            }
-          }), PrimeVue],
-          stubs: ['router-link', 'router-view'],
-        },
+          plugins: [
+            createTestingPinia({
+              initialState: {
+                auth: { isAuthenticated: false }
+              }
+            }),
+            PrimeVue
+          ],
+          stubs: ['router-link', 'router-view']
+        }
       });
 
       const btn = wrapper.getComponent({ name: 'Button' });
@@ -90,17 +100,19 @@ describe('LoginButton.vue', () => {
     });
   });
 
-
   describe('authenticated', () => {
     it('renders logout button', () => {
       const wrapper = mount(LoginButton, {
         global: {
-          plugins: [createTestingPinia({
-            initialState: {
-              auth: { isAuthenticated: true }
-            }
-          }), PrimeVue],
-        },
+          plugins: [
+            createTestingPinia({
+              initialState: {
+                auth: { isAuthenticated: true }
+              }
+            }),
+            PrimeVue
+          ]
+        }
       });
 
       const btn = wrapper.getComponent({ name: 'Button' });
@@ -119,13 +131,16 @@ describe('LoginButton.vue', () => {
 
       const wrapper = shallowMount(LoginButton, {
         global: {
-          plugins: [createTestingPinia({
-            initialState: {
-              auth: { isAuthenticated: true }
-            }
-          }), PrimeVue],
-          stubs: ['router-link', 'router-view'],
-        },
+          plugins: [
+            createTestingPinia({
+              initialState: {
+                auth: { isAuthenticated: true }
+              }
+            }),
+            PrimeVue
+          ],
+          stubs: ['router-link', 'router-view']
+        }
       });
 
       const btn = wrapper.getComponent({ name: 'Button' });

@@ -36,13 +36,12 @@ const copyLinkToClipboard = () => {
       <font-awesome-icon
         icon="fa fa-clipboard"
         class="mr-2"
-      /> Copy Link
+      />
+      Copy Link
     </Button>
   </div>
 
-  <h2 class="mb-2">
-    QR Code
-  </h2>
+  <h2 class="mb-2">QR Code</h2>
   <qrcode-vue
     :value="shareLink"
     :size="250"

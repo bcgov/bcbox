@@ -17,11 +17,10 @@ const ready: Ref<boolean> = ref(false);
 // Actions
 const router = useRouter();
 
-onBeforeMount( async () => {
-  if( !getIsAuthenticated.value ) {
+onBeforeMount(async () => {
+  if (!getIsAuthenticated.value) {
     router.push({ name: RouteNames.LOGIN });
-  }
-  else {
+  } else {
     ready.value = true;
   }
 });
