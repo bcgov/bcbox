@@ -85,22 +85,27 @@ onBeforeMount(() => {
 
 <template>
   <div>
-    <div>
-      <h3>Public</h3>
-      <ul>
-        <li>This option toggles the file to be publicly available and accessible to anyone</li>
-        <li>To instead set explicit permissions, add users and use the options below</li>
-      </ul>
-      <InputSwitch
-        v-if="object"
-        v-model="object.public"
-        :disabled="!(
-          usePermissionStore().isUserElevatedRights() &&
-          permissionStore.isObjectActionAllowed(
-            objectId, getUserId, Permissions.MANAGE, object.bucketId as string))"
-        @change="togglePublic(objectId, object.public)"
-      />
+    <div class="flex flex-row gap-6 pb-3">
+      <div>
+        <h3>Public</h3>
+        <ul>
+          <li>This option toggles the file to be publicly available and accessible to anyone</li>
+          <li>To instead set explicit permissions, add users and use the options below</li>
+        </ul>
+      </div>
+      <div>
+        <InputSwitch
+          v-if="object"
+          v-model="object.public"
+          :disabled="!(
+            usePermissionStore().isUserElevatedRights() &&
+            permissionStore.isObjectActionAllowed(
+              objectId, getUserId, Permissions.MANAGE, object.bucketId as string))"
+          @change="togglePublic(objectId, object.public)"
+        />
+      </div>
     </div>
+
     <div v-if="!showSearchUsers">
       <Button
         class="mt-1 mb-4"
