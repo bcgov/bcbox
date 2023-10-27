@@ -107,6 +107,7 @@ const onClick = () => {
   </Dialog>
 
   <Button
+    v-tooltip.bottom="'Synchronize bucket'"
     class="p-button-lg p-button-text"
     aria-label="Synchronize bucket"
     @click="onClick"

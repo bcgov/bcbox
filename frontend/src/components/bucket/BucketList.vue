@@ -60,6 +60,7 @@ onMounted(async () => {
     <div class="flex justify-content-end">
       <Button
         v-if="usePermissionStore().isUserElevatedRights()"
+        v-tooltip.bottom="'Configure Bucket'"
         label="Primary"
         class="p-button-outlined mt-4"
         data-test="connect-bucket"

@@ -96,8 +96,6 @@ const filters = ref({
   // @ts-ignore
   global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
-
-console.log(filters)
 </script>
 
 <template>
@@ -131,6 +129,7 @@ console.log(filters)
             />
             <Button
               v-show="filters['global'].value != null"
+              v-tooltip.bottom="'Clear'"
               class="ml-2 p-input-icon-clear-right"
               icon="pi pi-times"
               outlined
@@ -138,7 +137,9 @@ console.log(filters)
               @click="filters['global'].value = null"
             />
           </span>
+
           <Button
+            v-tooltip.bottom="'Refresh'"
             class="ml-2"
             icon="pi pi-refresh"
             outlined
@@ -234,6 +235,7 @@ console.log(filters)
             v-if="
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.MANAGE, props.bucketId as string)
             "
+            v-tooltip.bottom="'Object permissions'"
             class="p-button-lg p-button-text"
             aria-label="Object permissions"
             @click="showPermissions(data.id)"
