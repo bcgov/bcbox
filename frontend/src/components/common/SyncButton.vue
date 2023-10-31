@@ -11,11 +11,13 @@ import type { Ref } from 'vue';
 type Props = {
   bucketId?: string;
   objectId?: string;
+  labelText?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   bucketId: '',
-  objectId: ''
+  objectId: '',
+  labelText:''
 });
 
 // State
@@ -107,9 +109,9 @@ const onClick = () => {
   </Dialog>
 
   <Button
-    v-tooltip.bottom="'Synchronize bucket'"
+    v-tooltip.bottom="{ value: labelText }"
     class="p-button-lg p-button-text"
-    aria-label="Synchronize bucket"
+    :aria-label="labelText"
     @click="onClick"
   >
     <font-awesome-icon icon="fa-solid fa-sync" />

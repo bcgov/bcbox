@@ -142,7 +142,10 @@ async function deleteBucket(bucketId: string) {
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
-          <SyncButton :bucket-id="data.bucketId" />
+          <SyncButton
+            label-text="Synchronize bucket"
+            :bucket-id="data.bucketId"
+          />
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.READ)"
             v-tooltip.bottom="'Bucket details'"

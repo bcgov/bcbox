@@ -72,6 +72,7 @@ const confirmDelete = () => {
 
   <Button
     v-if="props.mode === ButtonMode.ICON"
+    v-tooltip.bottom="'Delete object'"
     class="p-button-lg p-button-text p-button-danger"
     :disabled="props.disabled"
     aria-label="Delete object"
@@ -81,6 +82,7 @@ const confirmDelete = () => {
   </Button>
   <Button
     v-else
+    v-tooltip.bottom="'Delete object'"
     class="p-button-outlined p-button-danger"
     :disabled="props.disabled"
     aria-label="Delete object"

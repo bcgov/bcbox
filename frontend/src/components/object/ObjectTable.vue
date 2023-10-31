@@ -242,14 +242,18 @@ const filters = ref({
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
-          <SyncButton :object-id="data.id" />
+          <SyncButton
+            label-text="Synchronize file"
+            :object-id="data.id"
+          />
           <Button
             v-if="
               data.public ||
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, props.bucketId as string)
             "
+            v-tooltip.bottom="'Bucket detail'"
             class="p-button-lg p-button-rounded p-button-text"
-            aria-label="Synchronize bucket"
+            aria-label="Bucket detail"
             @click="showInfo(data.id)"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
