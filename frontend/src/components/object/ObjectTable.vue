@@ -125,10 +125,11 @@ const filters = ref({
             <i class="pi pi-search" />
             <InputText
               v-model="filters['global'].value"
+              class="searchInput"
               placeholder="Search File Names"
             />
             <Button
-              v-show="filters['global'].value != null"
+              v-show="filters['global'].value !== null"
               v-tooltip.bottom="'Clear'"
               class="ml-2 p-input-icon-clear-right"
               icon="pi pi-times"
@@ -251,9 +252,9 @@ const filters = ref({
               data.public ||
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, props.bucketId as string)
             "
-            v-tooltip.bottom="'Bucket detail'"
+            v-tooltip.bottom="'Object details'"
             class="p-button-lg p-button-rounded p-button-text"
-            aria-label="Bucket detail"
+            aria-label="Object details"
             @click="showInfo(data.id)"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
@@ -295,7 +296,7 @@ const filters = ref({
   </div>
 </template>
 <style lang="scss" scoped>
-:deep(.p-inputtext) {
+:deep(.searchInput.p-inputtext) {
   padding-right: 2.5rem;
 }
 </style>
