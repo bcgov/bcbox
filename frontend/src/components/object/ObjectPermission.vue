@@ -87,13 +87,13 @@ onBeforeMount(() => {
   <div>
     <div class="flex flex-row gap-6 pb-3">
       <div>
-        <h3>Public</h3>
+        <h3 class="pb-1">Public</h3>
         <ul>
           <li>This option toggles the file to be publicly available and accessible to anyone</li>
           <li>To instead set explicit permissions, add users and use the options below</li>
         </ul>
       </div>
-      <div>
+      <div class="ml-4">
         <InputSwitch
           v-if="object"
           v-model="object.public"
@@ -104,6 +104,10 @@ onBeforeMount(() => {
           @change="togglePublic(objectId, object.public)"
         />
       </div>
+    </div>
+
+    <div class="mt-1 mb-2">
+      <h3>User Permissions</h3>
     </div>
 
     <div v-if="!showSearchUsers">
