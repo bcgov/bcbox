@@ -55,6 +55,7 @@ const download = () => {
 
   <Button
     v-if="props.mode === ButtonMode.ICON"
+    v-tooltip.bottom="'Download object'"
     class="p-button-lg p-button-text"
     :disabled="props.disabled"
     aria-label="Download object"

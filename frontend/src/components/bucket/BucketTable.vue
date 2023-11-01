@@ -126,6 +126,7 @@ async function deleteBucket(bucketId: string) {
         <template #body="{ data }">
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.UPDATE)"
+            v-tooltip.bottom="'Configure bucket'"
             class="p-button-lg p-button-text"
             aria-label="Configure bucket"
             @click="showBucketConfig(data)"
@@ -134,15 +135,20 @@ async function deleteBucket(bucketId: string) {
           </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.MANAGE)"
+            v-tooltip.bottom="'Bucket permissions'"
             class="p-button-lg p-button-text"
             aria-label="Bucket permissions"
             @click="showPermissions(data.bucketId, data.bucketName)"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
-          <SyncButton :bucket-id="data.bucketId" />
+          <SyncButton
+            label-text="Synchronize bucket"
+            :bucket-id="data.bucketId"
+          />
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.READ)"
+            v-tooltip.bottom="'Bucket details'"
             class="p-button-lg p-button-rounded p-button-text"
             aria-label="Bucket details"
             @click="showSidebarInfo(data.bucketId)"
@@ -151,6 +157,7 @@ async function deleteBucket(bucketId: string) {
           </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(data.bucketId, getUserId, Permissions.DELETE)"
+            v-tooltip.bottom="'Delete bucket'"
             class="p-button-lg p-button-text p-button-danger"
             aria-label="Delete bucket"
             @click="confirmDeleteBucket(data.bucketId)"

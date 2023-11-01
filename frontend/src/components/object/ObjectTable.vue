@@ -125,11 +125,22 @@ const filters = ref({
             <i class="pi pi-search" />
             <InputText
               v-model="filters['global'].value"
+              class="searchInput"
               placeholder="Search File Names"
+            />
+            <Button
+              v-show="filters['global'].value !== null"
+              v-tooltip.bottom="'Clear'"
+              class="ml-2 p-input-icon-clear-right"
+              icon="pi pi-times"
+              outlined
+              aria-label="Clear"
+              @click="filters['global'].value = null"
             />
           </span>
 
           <Button
+            v-tooltip.bottom="'Refresh'"
             class="ml-2"
             icon="pi pi-refresh"
             outlined
@@ -225,20 +236,25 @@ const filters = ref({
             v-if="
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.MANAGE, props.bucketId as string)
             "
+            v-tooltip.bottom="'Object permissions'"
             class="p-button-lg p-button-text"
             aria-label="Object permissions"
             @click="showPermissions(data.id)"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
-          <SyncButton :object-id="data.id" />
+          <SyncButton
+            label-text="Synchronize file"
+            :object-id="data.id"
+          />
           <Button
             v-if="
               data.public ||
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, props.bucketId as string)
             "
+            v-tooltip.bottom="'Object details'"
             class="p-button-lg p-button-rounded p-button-text"
-            aria-label="Synchronize bucket"
+            aria-label="Object details"
             @click="showInfo(data.id)"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
@@ -279,3 +295,8 @@ const filters = ref({
     </Dialog>
   </div>
 </template>
+<style lang="scss" scoped>
+:deep(.searchInput.p-inputtext) {
+  padding-right: 2.5rem;
+}
+</style>
