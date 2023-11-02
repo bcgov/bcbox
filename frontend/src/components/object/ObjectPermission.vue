@@ -3,9 +3,9 @@ import { storeToRefs } from 'pinia';
 import { onBeforeMount, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import ObjectPermissionAddUser from '@/components/object/ObjectPermissionAddUser.vue';
+import { ObjectPermissionAddUser, ObjectPublicToggle } from '@/components/object';
 import { useAlert } from '@/composables/useAlert';
-import {Button, Checkbox, Column, DataTable, InputSwitch} from '@/lib/primevue';
+import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
@@ -27,7 +27,7 @@ const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const showSearchUsers: Ref<boolean> = ref(false);
-const object: Ref<COMSObject|undefined> = ref(undefined);
+const object: Ref<COMSObject | undefined> = ref(undefined);
 
 // Actions
 const removeManageAlert = useAlert('Warning', 'Cannot remove last user with MANAGE permission.');
@@ -73,10 +73,6 @@ const updateObjectPermission = (value: boolean, userId: string, permCode: string
   }
 };
 
-const togglePublic = async (objectId: string, isPublic: boolean) => {
-  await objectStore.togglePublic(objectId, isPublic);
-};
-
 onBeforeMount(() => {
   permissionStore.mapObjectToUserPermissions(props.objectId);
   object.value = objectStore.findObjectById(props.objectId);
@@ -94,14 +90,12 @@ onBeforeMount(() => {
         </ul>
       </div>
       <div class="ml-4">
-        <InputSwitch
-          v-if="object"
-          v-model="object.public"
-          :disabled="!(
-            usePermissionStore().isUserElevatedRights() &&
-            permissionStore.isObjectActionAllowed(
-              objectId, getUserId, Permissions.MANAGE, object.bucketId as string))"
-          @change="togglePublic(objectId, object.public)"
+        <ObjectPublicToggle
+          v-if="object && getUserId"
+          :bucket-id="object.bucketId"
+          :object-id="object.id"
+          :object-public="object.public"
+          :user-id="getUserId"
         />
       </div>
     </div>

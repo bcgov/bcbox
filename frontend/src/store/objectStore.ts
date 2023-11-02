@@ -208,6 +208,8 @@ export const useObjectStore = defineStore('object', () => {
     try {
       appStore.beginIndeterminateLoading();
       await objectService.togglePublic(objectId, isPublic);
+      const obj = findObjectById(objectId);
+      if (obj) obj.public = isPublic;
     } catch (error: any) {
       toast.error('Changing public state', error);
     } finally {
