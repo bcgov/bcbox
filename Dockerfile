@@ -1,5 +1,5 @@
 ARG APP_ROOT=/opt/app-root/src
-ARG BASE_IMAGE=docker.io/node:18.18.2-alpine
+ARG BASE_IMAGE=docker.io/node:20.9.0-alpine
 
 #
 # Build the frontend
