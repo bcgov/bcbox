@@ -26,14 +26,13 @@ export function getGitRevision(): string {
       .toString()
       .trim();
 
-    let fileRead: string = '';
     if (head.indexOf(':') === -1) {
-      fileRead = readFileSync(join(__dirname, `${gitDir}/${head.substring(5)}`), 'utf8')
+      return head;
+    } else {
+      return readFileSync(join(__dirname, `${gitDir}/${head.substring(5)}`), 'utf8')
         .toString()
         .trim();
     }
-
-    return head.indexOf(':') === -1 ? head : (fileRead as string);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     log.warn(err.message, { function: 'getGitRevision' });
