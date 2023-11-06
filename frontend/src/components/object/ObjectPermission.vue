@@ -89,20 +89,17 @@ onBeforeMount(() => {
           <li>To instead set explicit permissions, add users and use the options below</li>
         </ul>
       </div>
-      <div class="ml-4">
-        <ObjectPublicToggle
-          v-if="object && getUserId"
-          :bucket-id="object.bucketId"
-          :object-id="object.id"
-          :object-public="object.public"
-          :user-id="getUserId"
-        />
-      </div>
+      <ObjectPublicToggle
+        v-if="object && getUserId"
+        class="ml-4"
+        :bucket-id="object.bucketId"
+        :object-id="object.id"
+        :object-public="object.public"
+        :user-id="getUserId"
+      />
     </div>
 
-    <div class="mt-1 mb-2">
-      <h3>User Permissions</h3>
-    </div>
+    <h3 class="mt-1 mb-2">User Permissions</h3>
 
     <div v-if="!showSearchUsers">
       <Button
