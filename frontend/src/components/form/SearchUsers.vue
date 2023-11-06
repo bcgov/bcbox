@@ -152,7 +152,7 @@ onMounted(() => {
           :option-label="(option) => getUserDropdownLabel(option)"
           editable
           :placeholder="userSearchPlaceholder"
-          class="mt-1 mb-4 usersearch"
+          class="mt-1 mb-4"
           :class="invalidSelectedUser ? 'p-invalid' : ''"
           @input="onInput"
           @change="onChange"
@@ -177,6 +177,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .p-dropdown {
-  width: 60%;
+  width: 100%;
 }
 </style>
