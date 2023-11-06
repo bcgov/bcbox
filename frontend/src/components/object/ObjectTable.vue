@@ -3,10 +3,16 @@ import { storeToRefs } from 'pinia';
 import { onUnmounted, ref, watch } from 'vue';
 
 import { Spinner } from '@/components/layout';
-import { DeleteObjectButton, DownloadObjectButton, ObjectFilters, ObjectPermission } from '@/components/object';
+import {
+  DeleteObjectButton,
+  DownloadObjectButton,
+  ObjectFilters,
+  ObjectPermission,
+  ObjectPublicToggle
+} from '@/components/object';
 import { SyncButton } from '@/components/common';
 import { ShareObjectButton } from '@/components/object/share';
-import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, InputSwitch, useToast } from '@/lib/primevue';
+import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, useToast } from '@/lib/primevue';
 import { useAuthStore, useAppStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
@@ -62,10 +68,6 @@ const showPermissions = async (objectId: string) => {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
   permissionsObjectName.value = objectStore.findObjectById(objectId)?.name;
-};
-
-const togglePublic = async (objectId: string, isPublic: boolean) => {
-  await objectStore.togglePublic(objectId, isPublic);
 };
 
 function onDeletedSuccess() {
@@ -204,15 +206,12 @@ const filters = ref({
         header="Public"
       >
         <template #body="{ data }">
-          <InputSwitch
-            v-model="data.public"
-            :disabled="
-              !(
-                usePermissionStore().isUserElevatedRights() &&
-                permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.MANAGE, props.bucketId as string)
-              )
-            "
-            @change="togglePublic(data.id, data.public)"
+          <ObjectPublicToggle
+            v-if="props.bucketId && getUserId"
+            :bucket-id="props.bucketId"
+            :object-id="data.id"
+            :object-public="data.public"
+            :user-id="getUserId"
           />
         </template>
       </Column>

@@ -98,7 +98,7 @@ const onReset = () => {
 
 watch(selectedIDP, () => {
   if (selectedIDP.value?.searchable) {
-    userSearchPlaceholder.value = `Enter an existing ${selectedIDP.value?.name} user's name or email address`;
+    userSearchPlaceholder.value = `Enter the full name or email address of an existing ${selectedIDP.value?.name}`;
   } else {
     userSearchPlaceholder.value = `Enter an existing user's ${selectedIDP.value?.name} email address`;
   }
@@ -144,35 +144,39 @@ onMounted(() => {
       />
     </div>
 
-    <Dropdown
-      v-model="userSearchInput"
-      :options="userSearch"
-      :option-label="(option) => getUserDropdownLabel(option)"
-      editable
-      :placeholder="userSearchPlaceholder"
-      class="mt-1 mb-4"
-      :class="invalidSelectedUser ? 'p-invalid' : ''"
-      @input="onInput"
-      @change="onChange"
-    />
-    <Button
-      label="Add"
-      class="mt-1 mb-4 ml-3"
-      icon="pi pi-check"
-      :disabled="!selectedUser"
-      @click="onAdd"
-    />
-    <Button
-      label="Cancel"
-      class="p-button-outlined mt-1 mb-4 ml-3"
-      icon="pi pi-times"
-      @click="onCancel"
-    />
+    <div class="flex">
+      <div class="flex flex-auto">
+        <Dropdown
+          v-model="userSearchInput"
+          :options="userSearch"
+          :option-label="(option) => getUserDropdownLabel(option)"
+          editable
+          :placeholder="userSearchPlaceholder"
+          class="mt-1 mb-4"
+          :class="invalidSelectedUser ? 'p-invalid' : ''"
+          @input="onInput"
+          @change="onChange"
+        />
+      </div>
+      <Button
+        label="Add"
+        class="mt-1 mb-4 ml-3"
+        icon="pi pi-check"
+        :disabled="!selectedUser"
+        @click="onAdd"
+      />
+      <Button
+        label="Cancel"
+        class="p-button-outlined mt-1 mb-4 ml-3"
+        icon="pi pi-times"
+        @click="onCancel"
+      />
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .p-dropdown {
-  width: 60%;
+  width: 100%;
 }
 </style>

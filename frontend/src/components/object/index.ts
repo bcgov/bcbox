@@ -9,6 +9,7 @@ export { default as ObjectMetadataTagForm } from './ObjectMetadataTagForm.vue';
 export { default as ObjectPermission } from './ObjectPermission.vue';
 export { default as ObjectPermissionAddUser } from './ObjectPermissionAddUser.vue';
 export { default as ObjectProperties } from './ObjectProperties.vue';
+export { default as ObjectPublicToggle } from './ObjectPublicToggle.vue';
 export { default as ObjectSidebar } from './ObjectSidebar.vue';
 export { default as ObjectTable } from './ObjectTable.vue';
 export { default as ObjectTag } from './ObjectTag.vue';

@@ -3,14 +3,14 @@ import { storeToRefs } from 'pinia';
 import { onBeforeMount, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import ObjectPermissionAddUser from '@/components/object/ObjectPermissionAddUser.vue';
+import { ObjectPermissionAddUser, ObjectPublicToggle } from '@/components/object';
 import { useAlert } from '@/composables/useAlert';
 import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
-import { usePermissionStore } from '@/store';
+import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { UserPermissions } from '@/types';
+import type { COMSObject, UserPermissions } from '@/types';
 
 // Props
 type Props = {
@@ -20,11 +20,14 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {});
 
 // Store
+const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const { getMappedObjectToUserPermissions } = storeToRefs(permissionStore);
+const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const showSearchUsers: Ref<boolean> = ref(false);
+const object: Ref<COMSObject | undefined> = ref(undefined);
 
 // Actions
 const removeManageAlert = useAlert('Warning', 'Cannot remove last user with MANAGE permission.');
@@ -72,11 +75,32 @@ const updateObjectPermission = (value: boolean, userId: string, permCode: string
 
 onBeforeMount(() => {
   permissionStore.mapObjectToUserPermissions(props.objectId);
+  object.value = objectStore.findObjectById(props.objectId);
 });
 </script>
 
 <template>
   <div>
+    <div class="flex flex-row gap-6 pb-3">
+      <div>
+        <h3 class="pb-1">Public</h3>
+        <ul>
+          <li>This option toggles the file to be publicly available and accessible to anyone</li>
+          <li>To instead set explicit permissions, add users and use the options below</li>
+        </ul>
+      </div>
+      <ObjectPublicToggle
+        v-if="object && getUserId"
+        class="ml-4"
+        :bucket-id="object.bucketId"
+        :object-id="object.id"
+        :object-public="object.public"
+        :user-id="getUserId"
+      />
+    </div>
+
+    <h3 class="mt-1 mb-2">User Permissions</h3>
+
     <div v-if="!showSearchUsers">
       <Button
         class="mt-1 mb-4"
