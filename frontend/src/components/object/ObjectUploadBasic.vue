@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 import { ObjectMetadataTagForm } from '@/components/object';
 import { Button, Dialog, useConfirm, useToast } from '@/lib/primevue';
-import { useAppStore, useMetadataStore, useObjectStore, useTagStore } from '@/store';
+import { useAppStore, useMetadataStore, useObjectStore, useTagStore, useVersionStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { ObjectMetadataTagFormType } from '@/components/object/ObjectMetadataTagForm.vue';
@@ -24,6 +24,7 @@ const appStore = useAppStore();
 const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const tagStore = useTagStore();
+const versionStore = useVersionStore();
 
 // State
 const fileInput: Ref<any> = ref(null);
@@ -41,8 +42,13 @@ const confirm = useConfirm();
 const toast = useToast();
 
 const confirmUpdate = () => {
+  let confirmMessage =  'Please confirm that you want to upload a new version.';
+  if (versionStore.findS3VersionByObjectId(props.objectId) === null) {
+    confirmMessage = 'This is a non-versioned bucket. ' +
+      'Uploading a new version will overwrite the current version.';
+  }
   confirm.require({
-    message: 'Please confirm that you want to upload a new version.',
+    message: confirmMessage,
     header: 'Upload new version',
     acceptLabel: 'Confirm',
     rejectLabel: 'Cancel',
