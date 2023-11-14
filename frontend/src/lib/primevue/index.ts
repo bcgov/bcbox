@@ -23,6 +23,7 @@ export { default as TabPanel } from 'primevue/tabpanel';
 export { default as Tag } from 'primevue/tag';
 export { default as Toast } from 'primevue/toast';
 export { default as Toolbar } from 'primevue/toolbar';
+export { default as TreeTable } from 'primevue/treetable';
 
 export { useConfirm } from 'primevue/useconfirm';
 

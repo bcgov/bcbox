@@ -46,4 +46,4 @@ WORKDIR ${APP_ROOT}/app
 RUN npm ci --omit=dev
 
 EXPOSE ${APP_PORT}
-CMD ["npm", "run", "start"]
+CMD ["node", "./bin/www"]
