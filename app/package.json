@@ -24,6 +24,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@types/compression": "^1.7.5",
+    "@types/config": "^3.3.3",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.9.0",
     "api-problem": "^9.0.2",
     "axios": "^1.6.0",
     "compression": "^1.7.4",
@@ -35,11 +40,6 @@
     "winston-transport": "^4.6.0"
   },
   "devDependencies": {
-    "@types/compression": "^1.7.4",
-    "@types/config": "^3.3.2",
-    "@types/express": "^4.17.20",
-    "@types/jest": "^29.5.7",
-    "@types/node": "^20.8.10",
     "@typescript-eslint/eslint-plugin": "^6.9.1",
     "@typescript-eslint/parser": "^6.9.1",
     "eslint": "^8.52.0",
