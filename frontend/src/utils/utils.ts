@@ -14,6 +14,25 @@ export function differential(source: any, comparer: any): any {
 }
 
 /**
+ * @function isAtPath
+ * Predicate function determining if the `path` is a non-directory member of the `prefix` path
+ * @param {string} prefix The base "folder"
+ * @param {string} path The "file" to check
+ * @returns {boolean} True if path is member of prefix. False in all other cases.
+ */
+export function isAtPath(prefix: string, path: string) {
+  if (prefix === path) return true; // Matching strings are always at the at the path
+  if (path.endsWith(DELIMITER)) return false; // Trailing slashes references the folder
+
+  const pathParts = path.split(DELIMITER).filter((part) => part);
+  const prefixParts = prefix.split(DELIMITER).filter((part) => part);
+  return (
+    prefixParts.every((part, i) => pathParts[i] === part) &&
+    pathParts.filter((part) => !prefixParts.includes(part)).length === 1
+  );
+}
+
+/**
  * @function isDebugMode
  * Checks if the app is currently running in debug mode
  * @returns {boolean} True if in debug, false otherwise

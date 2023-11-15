@@ -7,15 +7,24 @@ import { Spinner } from '@/components/layout';
 import { SyncButton } from '@/components/common';
 import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
-import { Permissions, RouteNames } from '@/utils/constants';
+import { DELIMITER, Permissions, RouteNames } from '@/utils/constants';
+import { joinPath } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { Bucket } from '@/types';
 
 // Types
+type DummyTreeData = {
+  bucket: string;
+  bucketName: string;
+  dummy: boolean;
+  endpoint: string;
+  key: string;
+};
+
 type BucketTreeNode = {
   key: string;
-  data: Bucket;
+  data: Bucket | DummyTreeData;
   children: Array<BucketTreeNode>;
 };
 
@@ -35,7 +44,9 @@ const permissionBucketName: Ref<string> = ref('');
 const emit = defineEmits(['show-bucket-config', 'show-sidebar-info']);
 
 // Actions
+const bucketTreeNodeMap = new Map<string, BucketTreeNode>();
 const confirm = useConfirm();
+const endpointMap = new Map<string, Array<Bucket>>();
 
 const showSidebarInfo = async (id: number) => {
   emit('show-sidebar-info', id);
@@ -69,67 +80,111 @@ async function deleteBucket(bucketId: string) {
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 }
 
-function getBucketPath(bucket: Bucket): string {
-  return `${bucket.bucket}/${bucket.key}`;
+// Returns a full canonical path to a Bucket or fake tree data
+function getBucketPath(bucket: Bucket | DummyTreeData): string {
+  return `${bucket.endpoint}/${bucket.bucket}/${bucket.key}`;
 }
 
-// Assumes the tree node paths have been pre sorted
-function findParent(
-  tree: Array<BucketTreeNode> | undefined,
-  node: BucketTreeNode | undefined,
-  parentPath: string
-): BucketTreeNode | undefined {
-  if (tree) {
-    let parent;
-    for (const root of tree) {
-      parent = findParent(undefined, root, parentPath);
-      if (parent) break;
+// Finds the nearest direct path to node
+// Assumes the endpointMap paths have been pre sorted
+function findParent(parentPath: string): BucketTreeNode | undefined {
+  if (bucketTreeNodeMap.has(parentPath)) return bucketTreeNodeMap.get(parentPath);
+
+  return undefined;
+}
+
+// Finds the nearest indirect path to node
+// Assumes the endpointMap paths have been pre sorted
+function findNearestNeighbour(node: BucketTreeNode): BucketTreeNode | undefined {
+  const prefixParts = getBucketPath(node.data)
+    .split(DELIMITER)
+    .filter((part) => part);
+
+  for (let i = prefixParts.length; i >= 0; --i) {
+    let path = joinPath(...prefixParts.slice(0, i));
+
+    // Fix broken endpoints caused by delimiter splitting
+    path = path.replace('http:/', 'http://');
+    path = path.replace('https:/', 'https://');
+
+    if (bucketTreeNodeMap.has(path)) {
+      return bucketTreeNodeMap.get(path);
     }
-    return parent;
   }
 
-  if (node) {
-    if (getBucketPath(node.data) === parentPath) {
-      return node;
-    }
+  return undefined;
+}
 
-    for (const child of node.children) {
-      const found = findParent(tree, child, parentPath);
-      if (found) return found;
-    }
+// Creates the fake paths necessary between neighbour and node to mimic a folder hierarchy
+// Returns the final node created
+function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
+  const neighbourParts = getBucketPath(neighbour.data)
+    .split(DELIMITER)
+    .filter((part) => part);
 
-    return undefined;
+  const nodeParts = getBucketPath(node.data)
+    .split(DELIMITER)
+    .filter((part) => part);
+
+  const dummyNodes = new Array<BucketTreeNode>();
+
+  for (let i = neighbourParts.length + 1; i < nodeParts.length; ++i) {
+    let fullPath = joinPath(...nodeParts.slice(0, i));
+    let key = joinPath(...nodeParts.slice(2, i));
+
+    // Fix broken endpoints caused by delimiter splitting
+    fullPath = fullPath.replace('http:/', 'http://');
+    fullPath = fullPath.replace('https:/', 'https://');
+
+    dummyNodes.push({
+      key: fullPath,
+      data: {
+        bucket: node.data.bucket,
+        bucketName: nodeParts[i - 1],
+        dummy: true,
+        endpoint: node.data.endpoint,
+        key: key
+      },
+      children: new Array()
+    });
   }
+
+  let current = neighbour;
+  for (const dummy of dummyNodes) {
+    current.children.push(dummy);
+    current = dummy;
+    bucketTreeNodeMap.set(dummy.key, dummy);
+  }
+
+  return current;
 }
 
 watch(getBuckets, () => {
   // Split buckets into arrays based on endpoint
-  const matrix: Array<Array<Bucket>> = [];
+  endpointMap.clear();
   for (const bucket of getBuckets.value) {
-    const col = matrix.find((x: Array<Bucket>) => x[0].endpoint === bucket.endpoint);
-    if (col) {
-      col.push(bucket);
-    } else {
-      matrix.push(new Array(bucket));
+    if (!endpointMap.has(`${bucket.endpoint}/${bucket.bucket}`)) {
+      endpointMap.set(`${bucket.endpoint}/${bucket.bucket}`, new Array<Bucket>());
     }
+    endpointMap.get(`${bucket.endpoint}/${bucket.bucket}`)?.push(bucket);
   }
 
   // Sort arrays by path
-  for (const col of matrix) {
-    col.sort((a: Bucket, b: Bucket) => {
-      if (`${a.bucket}/${a.key}` < `${b.bucket}/${b.key}`) return -1;
-      if (`${a.bucket}/${a.key}` > `${b.bucket}/${b.key}`) return 1;
-      return 0;
-    });
+  for (const i of endpointMap) {
+    i[1].sort((a: Bucket, b: Bucket) => getBucketPath(a).localeCompare(getBucketPath(b)));
   }
 
-  // Build the tree
+  // Build the tree for each endpoint
+  // First looks for a direct parent node
+  // If not found it looks for the nearest neighbour to build 'dummy' nodes to mimic a folder hierarchy
+  // If that somehow fails it adds the node to the root to ensure its still visible
   const tree: Array<BucketTreeNode> = [];
-  for (const col of matrix) {
-    for (const row of col) {
+  for (const col of endpointMap) {
+    for (const row of col[1]) {
       const path = getBucketPath(row);
       const parentPath = path.substring(0, path.lastIndexOf('/'));
-      const parent = findParent(tree, undefined, parentPath);
+      const parent = findParent(parentPath);
+
       const node: BucketTreeNode = {
         key: getBucketPath(row),
         data: row,
@@ -139,8 +194,15 @@ watch(getBuckets, () => {
       if (parent) {
         parent.children.push(node);
       } else {
-        tree.push(node);
+        const neighbour = findNearestNeighbour(node);
+        if (neighbour) {
+          createDummyNodes(neighbour, node).children.push(node);
+        } else {
+          tree.push(node);
+        }
       }
+
+      bucketTreeNodeMap.set(getBucketPath(node.data), node);
     }
   }
 
@@ -185,20 +247,37 @@ watch(getBuckets, () => {
       >
         <template #body="{ node }">
           <span class="row-head mr-2">
-            <font-awesome-icon icon="fa-solid fa-box-open" />
+            <font-awesome-icon
+              v-if="!node.data.dummy"
+              icon="fa-solid fa-box-open"
+            />
+            <font-awesome-icon
+              v-else
+              icon="fa-solid fa-folder"
+            />
           </span>
           <span
             v-if="node.data.bucketName.length > 150"
             v-tooltip.bottom="{ value: node.data.bucketName }"
           >
-            <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: node.data.bucketId } }">
+            <span v-if="node.data.dummy">
               {{ node.data.bucketName }}
-            </router-link>
+            </span>
+            <span v-else>
+              <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: node.data.bucketId } }">
+                {{ node.data.bucketName }}
+              </router-link>
+            </span>
           </span>
           <span v-else>
-            <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: node.data.bucketId } }">
+            <span v-if="node.data.dummy">
               {{ node.data.bucketName }}
-            </router-link>
+            </span>
+            <span v-else>
+              <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: node.data.bucketId } }">
+                {{ node.data.bucketName }}
+              </router-link>
+            </span>
           </span>
         </template>
       </Column>
@@ -209,46 +288,48 @@ watch(getBuckets, () => {
         body-class="content-right action-buttons"
       >
         <template #body="{ node }">
-          <Button
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.UPDATE)"
-            v-tooltip.bottom="'Configure bucket'"
-            class="p-button-lg p-button-text"
-            aria-label="Configure bucket"
-            @click="showBucketConfig(node.data)"
-          >
-            <font-awesome-icon icon="fas fa-cog" />
-          </Button>
-          <Button
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
-            v-tooltip.bottom="'Bucket permissions'"
-            class="p-button-lg p-button-text"
-            aria-label="Bucket permissions"
-            @click="showPermissions(node.data.bucketId, node.data.bucketName)"
-          >
-            <font-awesome-icon icon="fa-solid fa-users" />
-          </Button>
-          <SyncButton
-            label-text="Synchronize bucket"
-            :bucket-id="node.data.bucketId"
-          />
-          <Button
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
-            v-tooltip.bottom="'Bucket details'"
-            class="p-button-lg p-button-rounded p-button-text"
-            aria-label="Bucket details"
-            @click="showSidebarInfo(node.data.bucketId)"
-          >
-            <font-awesome-icon icon="fa-solid fa-circle-info" />
-          </Button>
-          <Button
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.DELETE)"
-            v-tooltip.bottom="'Delete bucket'"
-            class="p-button-lg p-button-text p-button-danger"
-            aria-label="Delete bucket"
-            @click="confirmDeleteBucket(node.data.bucketId)"
-          >
-            <font-awesome-icon icon="fa-solid fa-trash" />
-          </Button>
+          <span v-if="!node.data.dummy">
+            <Button
+              v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.UPDATE)"
+              v-tooltip.bottom="'Configure bucket'"
+              class="p-button-lg p-button-text"
+              aria-label="Configure bucket"
+              @click="showBucketConfig(node.data)"
+            >
+              <font-awesome-icon icon="fas fa-cog" />
+            </Button>
+            <Button
+              v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
+              v-tooltip.bottom="'Bucket permissions'"
+              class="p-button-lg p-button-text"
+              aria-label="Bucket permissions"
+              @click="showPermissions(node.data.bucketId, node.data.bucketName)"
+            >
+              <font-awesome-icon icon="fa-solid fa-users" />
+            </Button>
+            <SyncButton
+              label-text="Synchronize bucket"
+              :bucket-id="node.data.bucketId"
+            />
+            <Button
+              v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
+              v-tooltip.bottom="'Bucket details'"
+              class="p-button-lg p-button-rounded p-button-text"
+              aria-label="Bucket details"
+              @click="showSidebarInfo(node.data.bucketId)"
+            >
+              <font-awesome-icon icon="fa-solid fa-circle-info" />
+            </Button>
+            <Button
+              v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.DELETE)"
+              v-tooltip.bottom="'Delete bucket'"
+              class="p-button-lg p-button-text p-button-danger"
+              aria-label="Delete bucket"
+              @click="confirmDeleteBucket(node.data.bucketId)"
+            >
+              <font-awesome-icon icon="fa-solid fa-trash" />
+            </Button>
+          </span>
         </template>
       </Column>
     </TreeTable>
