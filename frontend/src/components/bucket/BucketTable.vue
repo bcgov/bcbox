@@ -2,31 +2,17 @@
 import { storeToRefs } from 'pinia';
 import { ref, watch } from 'vue';
 
-import BucketPermission from '@/components/bucket/BucketPermission.vue';
+import { BucketPermission, BucketTableBucketName } from '@/components/bucket';
 import { Spinner } from '@/components/layout';
 import { SyncButton } from '@/components/common';
 import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
-import { DELIMITER, Permissions, RouteNames } from '@/utils/constants';
+import { DELIMITER, Permissions } from '@/utils/constants';
 import { joinPath } from '@/utils/utils';
 
+import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import type { Ref } from 'vue';
-import type { Bucket } from '@/types';
-
-// Types
-type DummyTreeData = {
-  bucket: string;
-  bucketName: string;
-  dummy: boolean;
-  endpoint: string;
-  key: string;
-};
-
-type BucketTreeNode = {
-  key: string;
-  data: Bucket | DummyTreeData;
-  children: Array<BucketTreeNode>;
-};
+import type { Bucket, BucketTreeNode, BucketTreeNodeDummyData } from '@/types';
 
 // Store
 const bucketStore = useBucketStore();
@@ -36,6 +22,7 @@ const { getUserId } = storeToRefs(useAuthStore());
 const { getBuckets } = storeToRefs(bucketStore);
 
 // State
+const expandedKeys: Ref<TreeTableExpandedKeys> = ref({});
 const treeData: Ref<Array<any>> = ref([]);
 const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsBucketId: Ref<string> = ref('');
@@ -81,8 +68,15 @@ async function deleteBucket(bucketId: string) {
 }
 
 // Returns a full canonical path to a Bucket or fake tree data
-function getBucketPath(bucket: Bucket | DummyTreeData): string {
+function getBucketPath(bucket: Bucket | BucketTreeNodeDummyData): string {
   return `${bucket.endpoint}/${bucket.bucket}/${bucket.key}`;
+}
+
+// Get the full path to the first part of its key
+function getFirstKeyPartPath(node: BucketTreeNode): string {
+  const parts = node.data.key.split(DELIMITER).filter((part) => part);
+
+  return `${node.data.endpoint}/${node.data.bucket}/${parts[0]}`;
 }
 
 // Finds the nearest direct path to node
@@ -111,6 +105,11 @@ function findNearestNeighbour(node: BucketTreeNode): BucketTreeNode | undefined 
       return bucketTreeNodeMap.get(path);
     }
   }
+
+  // Failed to find anything based on key
+  // Is there a bucket mounted at the root?
+  if (bucketTreeNodeMap.has(`${node.data.endpoint}/${node.data.bucket}//`))
+    return bucketTreeNodeMap.get(`${node.data.endpoint}/${node.data.bucket}//`);
 
   return undefined;
 }
@@ -145,7 +144,8 @@ function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
         endpoint: node.data.endpoint,
         key: key
       },
-      children: new Array()
+      children: new Array(),
+      isRoot: false
     });
   }
 
@@ -160,8 +160,12 @@ function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
 }
 
 watch(getBuckets, () => {
-  // Split buckets into arrays based on endpoint
+  // Make sure everything is clear for a rebuild
   endpointMap.clear();
+  bucketTreeNodeMap.clear();
+  expandedKeys.value = {};
+
+  // Split buckets into arrays based on endpoint
   for (const bucket of getBuckets.value) {
     if (!endpointMap.has(`${bucket.endpoint}/${bucket.bucket}`)) {
       endpointMap.set(`${bucket.endpoint}/${bucket.bucket}`, new Array<Bucket>());
@@ -188,7 +192,8 @@ watch(getBuckets, () => {
       const node: BucketTreeNode = {
         key: getBucketPath(row),
         data: row,
-        children: new Array()
+        children: new Array(),
+        isRoot: false
       };
 
       if (parent) {
@@ -198,7 +203,29 @@ watch(getBuckets, () => {
         if (neighbour) {
           createDummyNodes(neighbour, node).children.push(node);
         } else {
-          tree.push(node);
+          if (node.data.key !== '/') {
+            // Top level bucket not at root so create dummy hierarchy to reach it
+            const rootFullPath = getFirstKeyPartPath(node);
+            const rootKey = node.data.key.split(DELIMITER).filter((part) => part)[0];
+            const dummyRootNode: BucketTreeNode = {
+              key: rootFullPath,
+              data: {
+                bucket: node.data.bucket,
+                bucketName: rootKey,
+                dummy: true,
+                endpoint: node.data.endpoint,
+                key: rootKey
+              },
+              children: new Array(),
+              isRoot: true
+            };
+            tree.push(dummyRootNode);
+            bucketTreeNodeMap.set(rootFullPath, dummyRootNode);
+            createDummyNodes(dummyRootNode, node).children.push(node);
+          } else {
+            node.isRoot = true;
+            tree.push(node);
+          }
         }
       }
 
@@ -206,7 +233,12 @@ watch(getBuckets, () => {
     }
   }
 
-  // Update state
+  // Expand all nodes and set tree state
+  let _expandedKeys = { ...expandedKeys.value };
+  for (const nodes of bucketTreeNodeMap) {
+    _expandedKeys[nodes[0]] = true;
+  }
+  expandedKeys.value = _expandedKeys;
   treeData.value = tree;
 });
 </script>
@@ -216,6 +248,7 @@ watch(getBuckets, () => {
     <TreeTable
       :loading="getIsLoading"
       :value="treeData"
+      :expanded-keys="expandedKeys"
       data-key="bucketId"
       class="p-treetable-sm"
       responsive-layout="scroll"
@@ -260,24 +293,10 @@ watch(getBuckets, () => {
             v-if="node.data.bucketName.length > 150"
             v-tooltip.bottom="{ value: node.data.bucketName }"
           >
-            <span v-if="node.data.dummy">
-              {{ node.data.bucketName }}
-            </span>
-            <span v-else>
-              <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: node.data.bucketId } }">
-                {{ node.data.bucketName }}
-              </router-link>
-            </span>
+            <BucketTableBucketName :node="node" />
           </span>
           <span v-else>
-            <span v-if="node.data.dummy">
-              {{ node.data.bucketName }}
-            </span>
-            <span v-else>
-              <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: node.data.bucketId } }">
-                {{ node.data.bucketName }}
-              </router-link>
-            </span>
+            <BucketTableBucketName :node="node" />
           </span>
         </template>
       </Column>
