@@ -126,7 +126,9 @@ export const useVersionStore = defineStore('version', () => {
   function findVersionsByObjectId(objectId: string) {
     return state.versions.value.filter((x: Version) => x.objectId === objectId);
   }
-
+  function findS3VersionByObjectId(objectId: string) {
+    return state.versions.value.filter((x: Version) => x.objectId === objectId)[0]?.s3VersionId;
+  }
   return {
     // State
     ...state,
@@ -143,7 +145,8 @@ export const useVersionStore = defineStore('version', () => {
     findMetadataValue,
     findTaggingByVersionId,
     findVersionById,
-    findVersionsByObjectId
+    findVersionsByObjectId,
+    findS3VersionByObjectId,
   };
 });
 
