@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<Props>(), {});
 </script>
 
 <template>
-  <span v-if="(props.node.data as any).dummy">
+  <span v-if="props.node.data.dummy">
     {{ props.node.data.bucketName }}
     <span
       v-if="node.isRoot"
@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<Props>(), {});
     </span>
   </span>
   <span v-else>
-    <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: (props.node.data as any).bucketId } }">
+    <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: props.node.data.bucketId } }">
       {{ node.data.bucketName }}
     </router-link>
     <span

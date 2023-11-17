@@ -2,15 +2,11 @@ import type { Bucket } from '@/types';
 
 export type BucketTreeNode = {
   key: string;
-  data: Bucket | BucketTreeNodeDummyData;
+  data: BucketTreeNodeData;
   isRoot: boolean;
   children: Array<BucketTreeNode>;
 };
 
-export type BucketTreeNodeDummyData = {
-  bucket: string;
-  bucketName: string;
+export type BucketTreeNodeData = {
   dummy: boolean;
-  endpoint: string;
-  key: string;
-};
+} & Bucket;

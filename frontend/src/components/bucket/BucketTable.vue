@@ -12,7 +12,7 @@ import { joinPath } from '@/utils/utils';
 
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import type { Ref } from 'vue';
-import type { Bucket, BucketTreeNode, BucketTreeNodeDummyData } from '@/types';
+import type { Bucket, BucketTreeNode } from '@/types';
 
 // Store
 const bucketStore = useBucketStore();
@@ -23,10 +23,10 @@ const { getBuckets } = storeToRefs(bucketStore);
 
 // State
 const expandedKeys: Ref<TreeTableExpandedKeys> = ref({});
-const treeData: Ref<Array<any>> = ref([]);
 const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsBucketId: Ref<string> = ref('');
 const permissionBucketName: Ref<string> = ref('');
+const treeData: Ref<Array<BucketTreeNode>> = ref([]);
 
 const emit = defineEmits(['show-bucket-config', 'show-sidebar-info']);
 
@@ -67,28 +67,22 @@ async function deleteBucket(bucketId: string) {
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 }
 
-// Returns a full canonical path to a Bucket or fake tree data
-function getBucketPath(bucket: Bucket | BucketTreeNodeDummyData): string {
+/** Returns a full canonical path to a Bucket or fake tree data */
+function getBucketPath(bucket: Bucket): string {
   return `${bucket.endpoint}/${bucket.bucket}/${bucket.key}`;
 }
 
-// Get the full path to the first part of its key
+/** Get the full path to the first part of its key */
 function getFirstKeyPartPath(node: BucketTreeNode): string {
   const parts = node.data.key.split(DELIMITER).filter((part) => part);
 
   return `${node.data.endpoint}/${node.data.bucket}/${parts[0]}`;
 }
 
-// Finds the nearest direct path to node
-// Assumes the endpointMap paths have been pre sorted
-function findParent(parentPath: string): BucketTreeNode | undefined {
-  if (bucketTreeNodeMap.has(parentPath)) return bucketTreeNodeMap.get(parentPath);
-
-  return undefined;
-}
-
-// Finds the nearest indirect path to node
-// Assumes the endpointMap paths have been pre sorted
+/**
+ * Finds the nearest indirect path to node \
+ * Assumes the endpointMap paths have been pre sorted
+ */
 function findNearestNeighbour(node: BucketTreeNode): BucketTreeNode | undefined {
   const prefixParts = getBucketPath(node.data)
     .split(DELIMITER)
@@ -98,24 +92,23 @@ function findNearestNeighbour(node: BucketTreeNode): BucketTreeNode | undefined 
     let path = joinPath(...prefixParts.slice(0, i));
 
     // Fix broken endpoints caused by delimiter splitting
-    path = path.replace('http:/', 'http://');
-    path = path.replace('https:/', 'https://');
+    path = path.replace(/^https?:\//i, (match) => `${match}/`);
 
     if (bucketTreeNodeMap.has(path)) {
       return bucketTreeNodeMap.get(path);
     }
   }
 
-  // Failed to find anything based on key
-  // Is there a bucket mounted at the root?
-  if (bucketTreeNodeMap.has(`${node.data.endpoint}/${node.data.bucket}//`))
-    return bucketTreeNodeMap.get(`${node.data.endpoint}/${node.data.bucket}//`);
-
-  return undefined;
+  // Failed to find anything based on key so check root
+  // Double // at end required as the key of a bucket is stored as '/'
+  // Undefined if not found
+  return bucketTreeNodeMap.get(`${node.data.endpoint}/${node.data.bucket}//`);
 }
 
-// Creates the fake paths necessary between neighbour and node to mimic a folder hierarchy
-// Returns the final node created
+/**
+ * Creates the fake paths necessary between neighbour and node to mimic a folder hierarchy \
+ * Returns the final node created
+ */
 function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
   const neighbourParts = getBucketPath(neighbour.data)
     .split(DELIMITER)
@@ -132,17 +125,21 @@ function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
     let key = joinPath(...nodeParts.slice(2, i));
 
     // Fix broken endpoints caused by delimiter splitting
-    fullPath = fullPath.replace('http:/', 'http://');
-    fullPath = fullPath.replace('https:/', 'https://');
+    fullPath = fullPath.replace(/^https?:\//i, (match) => `${match}/`);
 
     dummyNodes.push({
       key: fullPath,
       data: {
+        accessKeyId: '',
+        active: false,
         bucket: node.data.bucket,
+        bucketId: '',
         bucketName: nodeParts[i - 1],
         dummy: true,
         endpoint: node.data.endpoint,
-        key: key
+        key: key,
+        region: '',
+        secretAccessKey: ''
       },
       children: new Array(),
       isRoot: false
@@ -187,11 +184,11 @@ watch(getBuckets, () => {
     for (const row of col[1]) {
       const path = getBucketPath(row);
       const parentPath = path.substring(0, path.lastIndexOf('/'));
-      const parent = findParent(parentPath);
+      const parent = bucketTreeNodeMap.get(parentPath);
 
       const node: BucketTreeNode = {
         key: getBucketPath(row),
-        data: row,
+        data: { ...row, dummy: false },
         children: new Array(),
         isRoot: false
       };
@@ -210,11 +207,16 @@ watch(getBuckets, () => {
             const dummyRootNode: BucketTreeNode = {
               key: rootFullPath,
               data: {
+                accessKeyId: '',
+                active: false,
                 bucket: node.data.bucket,
+                bucketId: '',
                 bucketName: rootKey,
                 dummy: true,
                 endpoint: node.data.endpoint,
-                key: rootKey
+                key: rootKey,
+                region: '',
+                secretAccessKey: ''
               },
               children: new Array(),
               isRoot: true
@@ -234,11 +236,7 @@ watch(getBuckets, () => {
   }
 
   // Expand all nodes and set tree state
-  let _expandedKeys = { ...expandedKeys.value };
-  for (const nodes of bucketTreeNodeMap) {
-    _expandedKeys[nodes[0]] = true;
-  }
-  expandedKeys.value = _expandedKeys;
+  bucketTreeNodeMap.forEach((_v, k) => (expandedKeys.value[k] = true));
   treeData.value = tree;
 });
 </script>
