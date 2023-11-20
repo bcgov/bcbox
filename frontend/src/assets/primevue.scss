@@ -2,7 +2,14 @@
   justify-content: center;
 }
 
+// For datatables
 .header-right .p-column-header-content {
+  justify-content: right;
+}
+
+// For treetables
+.header-right .p-column-title {
+  display: flex;
   justify-content: right;
 }
 
@@ -20,6 +27,48 @@
     &:nth-child(even) {
       background-color: $bcbox-table-stripe-background;
     }
+  }
+
+  tbody {
+    tr {
+      &.p-highlight {
+        background: $bcbox-highlight-background !important;
+      }
+
+      &:focus {
+        outline: none !important;
+      }
+    }
+  }
+
+  .p-checkbox {
+    .p-checkbox-box.p-highlight {
+      background-color: $bcbox-primary;
+      border-color: $bcbox-primary !important;
+
+      &:hover {
+        background-color: darken($bcbox-primary, 20%) !important;
+      }
+    }
+  }
+
+  .p-column-title {
+    font-weight: bold;
+  }
+
+  .p-paginator {
+    justify-content: right;
+  }
+
+  .action-buttons .p-button.p-button-lg {
+    padding: 0;
+    margin-left: 1rem;
+  }
+}
+
+.p-treetable {
+  .p-treetable-thead > tr > th {
+    background-color: transparent !important;
   }
 
   tbody {

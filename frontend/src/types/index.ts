@@ -1,5 +1,6 @@
 export type { Bucket } from './Bucket';
 export type { BucketPermission } from './BucketPermission';
+export type { BucketTreeNode, BucketTreeNodeData } from './BucketTreeNode';
 export type { COMSObject } from './COMSObject';
 export type { COMSObjectPermission } from './COMSObjectPermission';
 export type { IdentityProvider } from './IdentityProvider';

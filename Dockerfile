@@ -42,8 +42,7 @@ WORKDIR ${APP_ROOT}
 # Install Application
 RUN chown -R 1001:0 ${APP_ROOT}
 USER 1001
-WORKDIR ${APP_ROOT}/app
 RUN npm ci --omit=dev
 
 EXPOSE ${APP_PORT}
-CMD ["npm", "run", "start"]
+CMD ["node", "-r", "ts-node/register", "./bin/www"]
