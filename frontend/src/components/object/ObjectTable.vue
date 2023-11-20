@@ -101,7 +101,7 @@ const filters = ref({
 </script>
 
 <template>
-  <div>
+  <div class="object-table">
     <DataTable
       v-model:selection="objectStore.selectedObjects"
       v-model:filters="filters"
@@ -157,7 +157,7 @@ const filters = ref({
           v-if="!useAppStore().getIsLoading"
           class="flex justify-content-center"
         >
-          <h3>There are no objects associated with your account in this bucket.</h3>
+          <h4>There are no objects associated with your account in this bucket.</h4>
         </div>
       </template>
       <template #loading>
@@ -171,7 +171,6 @@ const filters = ref({
         field="name"
         :sortable="true"
         header="Name"
-        header-style="width: 25%"
         body-class="truncate"
       >
         <template #body="{ data }">
@@ -184,6 +183,7 @@ const filters = ref({
         field="id"
         :sortable="true"
         header="Object ID"
+        style="width: 150px"
       >
         <template #body="{ data }">
           <div v-tooltip.bottom="{ value: data.id }">
@@ -194,6 +194,7 @@ const filters = ref({
       <Column
         field="lastUpdatedDate"
         header="Updated date"
+        style="width: 300px"
         :sortable="true"
         :hidden="props.objectInfoId ? true : false"
       >
@@ -204,6 +205,7 @@ const filters = ref({
       <Column
         field="publicSharing"
         header="Public"
+        style="width: 100px"
       >
         <template #body="{ data }">
           <ObjectPublicToggle
@@ -217,9 +219,9 @@ const filters = ref({
       </Column>
       <Column
         header="Actions"
-        header-style="width: 250px"
-        header-class="header-right"
-        body-class="content-right action-buttons"
+        style="width: 250px"
+        header-class="header-right flex justify-content-end"
+        body-class="content-right action-buttons justify-content-end"
       >
         <template #body="{ data }">
           <ShareObjectButton :id="data.id" />

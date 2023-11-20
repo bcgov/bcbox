@@ -65,32 +65,25 @@ watch(props, () => {
 </script>
 
 <template>
-  <div class="flex justify-content-start">
-    <div class="flex col align-items-center pl-0">
-      <font-awesome-icon
-        icon="fa-solid fa-circle-info"
-        style="font-size: 2rem"
-      />
-      <h1>Bucket details</h1>
-    </div>
-    <div class="col-fixed align-items-center">
+  <div class="side-panel pl-4">
+    <div class="flex panel-header align-items-start">
+      <font-awesome-icon icon="fa-solid fa-circle-info" />
+      <h1 class="mt-0 ml-3 flex-grow-1">Bucket details</h1>
       <Button
-        class="p-button-lg p-button-rounded p-button-text black"
+        class="p-button-text pt-0"
         @click="closeSidebarInfo"
       >
-        <font-awesome-icon icon="fa-solid fa-xmark" />
+        <font-awesome-icon icon="fa-xmark" />
       </Button>
     </div>
-  </div>
 
-  <div class="pl-2 sidebar">
     <div class="grid details-grid grid-nogutter">
       <div class="col-12">
         <h2>Properties</h2>
       </div>
       <div class="grid overflow-hidden">
         <div class="col-fixed">Bucket Name:</div>
-        <div class="col wrap-block w-6">
+        <div class="col wrap-block">
           {{ props.sidebarInfo?.bucketName }}
         </div>
       </div>
@@ -114,17 +107,3 @@ watch(props, () => {
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-h1 {
-  padding-left: 1rem;
-}
-
-h2 {
-  font-weight: bold;
-}
-
-.black {
-  color: black;
-}
-</style>

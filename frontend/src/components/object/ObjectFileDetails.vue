@@ -138,17 +138,17 @@ watch([props, getObjects], async () => {
 
 <template>
   <div v-if="obj">
-    <div class="grid pol-0">
+    <div class="grid grid-nogutter">
       <div class="col-12">
-        <h1 class="pl-1 heading">File details</h1>
+        <h1 class="heading">File details</h1>
       </div>
       <div class="flex col justify-content-start">
         <div class="flex col align-items-center heading">
           <font-awesome-icon
             icon="fa-solid fa-circle-info"
-            style="font-size: 2rem"
+            class="text-3xl pr-3"
           />
-          <h2 class="pl-1">
+          <h2 class="">
             {{ obj.name }}
           </h2>
         </div>
@@ -200,7 +200,7 @@ watch([props, getObjects], async () => {
         />
       </div>
       <Divider layout="vertical" />
-      <div class="flex flex-column w-6 gap-3 py-5">
+      <div class="flex flex-column w-6 gap-4 xl:pl-3 py-5">
         <div class="flex flex-row-reverse">
           <ObjectUploadBasic
             v-if="permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, bucketId)"

@@ -1,9 +1,17 @@
-// General font/etc colors
+/* --------- variable overrides for primevue--------- */
+// ref: https://primevue.org/colors/
+:root {
+  --text-color: #495057;
+  --primary-color: #036;
+}
+
+/* -------- custom css variables --------- */
+// buttons, links
 $bcbox-primary: #036;
 $bcbox-link-text: #1a5a96;
 $bcbox-link-text-hover: #00f;
 $bcbox-outline-on-primary: #fff;
 
-// Panel/row/etc backgrounds
+// highlighted sections, table rows
 $bcbox-highlight-background: #d9e1e8;
 $bcbox-table-stripe-background: #f2f2f2;

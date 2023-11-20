@@ -6,6 +6,7 @@ import { join } from 'path';
 import Problem from 'api-problem';
 import querystring from 'querystring';
 
+import { name as appName, version as appVersion } from './package.json';
 import { getLogger, httpLogger } from './src/components/log';
 import { getGitRevision, readIdpList } from './src/components/utils';
 
@@ -64,9 +65,9 @@ appRouter.get('/api', (_req: Request, res: Response): void => {
     res.status(200).json({
       app: {
         gitRev: state.gitRev,
-        name: process.env.npm_package_name,
+        name: appName,
         nodeVersion: process.version,
-        version: process.env.npm_package_version
+        version: appVersion
       },
       endpoints: ['/api/v1'],
       versions: [1]
@@ -91,7 +92,7 @@ app.use((err: Problem, _req: Request, res: Response, _next: () => void): void =>
     err.send(res, null);
   } else {
     new Problem(500, 'Server Error', {
-      detail: (err.message) ? err.message : err
+      detail: err.message ? err.message : err
     }).send(res);
   }
 });

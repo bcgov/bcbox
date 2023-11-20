@@ -1,13 +1,75 @@
-@import './base.css';
-@import './primevue.scss';
-@import './variables.scss';
-
-#app {
-  margin: 0 auto;
-  font-weight: normal;
+:root {
+  font-size: 16px;
 }
 
-// ----- links and buttons:
+body,
+body::before,
+body::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--text-color);
+  background: white;
+  transition:
+    color 0.5s,
+    background-color 0.5s;
+  font-family:
+    BCSans,
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Fira Sans",
+    "Droid Sans",
+    "Helvetica Neue",
+    sans-serif;
+  font-weight: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* text */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  padding: 0;
+  font-weight: 600;
+  // line-height: 1.2em;
+}
+
+h1 {
+  font-size: 2.074rem;
+}
+h2 {
+  font-size: 1.728rem;
+}
+h3 {
+  font-size: 1.44rem;
+}
+h4 {
+  font-size: 1.2rem;
+}
+h5 {
+  font-size: 1.1rem;
+}
+
+p {
+  line-height: 1.5rem;
+  margin-top: 0;
+}
+
 a,
 a:visited {
   color: $bcbox-link-text;
@@ -17,20 +79,14 @@ a:visited {
   }
 }
 
-.p-button,
-.p-inputswitch-slider {
-  &:hover {
-    opacity: 0.8;
-  }
-}
-// underline button text
-.p-button:hover {
-  text-decoration: underline;
-}
-// don't underline button icons
-.p-button .p-button-icon:before {
-  text-decoration: none;
+.wrap-block {
   display: inline-block;
+  overflow-wrap: break-word;
+  width: 100%;
+
+  td {
+    width: inherit;
+  }
 }
 
 .truncate {
@@ -47,130 +103,143 @@ a:visited {
   text-indent: 0 !important;
 }
 
-// -------- layout
-
-.content-center {
-  text-align: center !important;
-}
-
-.content-right {
-  text-align: right !important;
-}
-
-.permissions-modal {
-  width: 800px;
-}
-
-// details page / sidebar
-.details-grid {
-  h2 {
-    margin-bottom: 1rem;
-  }
-  .col-fixed {
-    width: 150px; // label column
-  }
-  // make datatable look like grid
-  .p-datatable {
-    thead th {
-      padding-top: 0;
-    }
-    // highlight the row for the currently selected version
-    tr.selected-row {
-      background-color: $bcbox-highlight-background !important;
-    }
-    td {
-      padding: 0.5rem;
-    }
-    th:first-child,
-    td:first-child {
-      padding-left: 0;
-    }
-  }
-}
-.details-value-column {
-  width: 40rem;
-}
-.sidebar .details-value-column {
-  width: 20rem;
-}
-// eof details page / sidebar
-
-// wrap text
-.wrap-block {
-  display: inline-block;
-  overflow-wrap: break-word;
-  width: 100%;
-}
-td .wrap-block {
-  width: inherit;
-}
-
-// --------- Info/settings dialog modals
-.bcbox-info-dialog {
-  &.p-dialog {
-    .p-dialog-header {
-      padding-bottom: 0;
-
-      .svg-inline--fa {
-        color: $bcbox-primary;
-        font-size: 1.8rem;
-        padding-right: 0.75rem;
-        padding-top: 0.15rem;
-      }
-
-      .p-dialog-title {
-        flex-grow: 1;
-        font-size: 1.8rem;
-        font-weight: bold;
-      }
-    }
-
-    .bcbox-info-dialog-subhead {
-      font-weight: normal;
-      margin-bottom: 1.5rem;
-      padding-left: 3.1rem;
-      @extend .wrap-block;
-    }
-  }
-}
-
 .drop-shadow {
   box-shadow: 0 6px 6px -1px rgb(145, 145, 145);
 }
 
-.gov-footer {
-  background-color: #003366 !important;
-  border-top: 2px solid #fcba19;
-  flex-shrink: 0;
-  min-height: 2.5rem;
-  min-width: 100%;
-  padding-bottom: 0;
-  padding-top: 0;
-
-  a {
-    color: #ffffff;
-    font-size: 1rem;
-    text-decoration: none;
-    &:focus {
-      outline: none;
-    }
+/* layout */
+.layout-main {
+  margin: 1rem;
+  @media screen and (min-width: 992px) {
+    margin: 1rem 5rem 1rem 5rem;
   }
-
-  .button > span {
-    color: #ffffff;
-    font-size: 1rem;
-    font-weight: normal;
-    text-decoration: none;
-    text-transform: none;
+  @media screen and (min-width: 1600px) {
+    margin: 1rem 10% 1rem 10%;
   }
 }
 
-// ---------- datatables
+/* footer */
+.gov-footer {
+  background-color: #003366 !important;
+  border-top: 2px solid #fcba19;
+  a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    color: #ffffff;
+    font-size: 1rem;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+    &:focus {
+      outline: none;
+    }
+    &:visited {
+      color: #ffffff;
+    }
+  }
 
-.p-datatable {
-  .p-datatable-loading-overlay {
+  & > div:last-child {
+    order: 1;
+  }
+  .version {
+    color: #ffffff;
+    float: right;
+  }
+}
+
+/* buttons */
+.p-button:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+.p-button .p-button-icon:before {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.p-button {
+  &:not(.p-button-secondary, .p-button-success, .p-button-info, .p-button-warning, .p-button-help, .p-button-danger) {
+    color: $bcbox-primary;
+    &:not(.p-button-outlined, .p-button-text) {
+      background-color: $bcbox-primary;
+      border-color: $bcbox-primary;
+      color: $bcbox-outline-on-primary;
+    }
+  }
+}
+
+.p-button-outlined {
+  border-width: 2px;
+}
+.p-confirm-dialog-reject {
+  border: 2px solid $bcbox-primary;
+}
+
+/* checkboxes, radios, input switches */
+.p-checkbox-checked .p-checkbox-box,
+.p-checkbox-box.p-highlight,
+.p-radiobutton-checked .p-radiobutton-box,
+.p-inputswitch-checked .p-inputswitch-slider:not(.p-disabled) {
+  background-color: $bcbox-primary;
+  border-color: $bcbox-primary;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+.p-tag {
+  background-color: $bcbox-primary;
+  font-size: 1rem;
+  padding: 0.25rem 0.75rem;
+  font-weight: 400;
+}
+
+/* datatable */
+.p-datatable,
+.p-treetable {
+  .p-datatable-loading-overlay,
+  .p-treetable-loading-overlay {
     background: white;
     opacity: 0.8;
+  }
+
+  thead > tr > th {
+    background-color: transparent !important;
+  }
+
+  &.p-datatable-striped tbody > tr {
+    &:nth-child(even) {
+      background-color: $bcbox-table-stripe-background;
+    }
+  }
+
+  tbody {
+    tr {
+      &.p-highlight,
+      &.selected-row {
+        background: $bcbox-highlight-background !important;
+      }
+      &:focus {
+        outline: none !important;
+      }
+    }
+  }
+
+  .p-column-title {
+    font-weight: bold;
+  }
+
+  .p-paginator {
+    justify-content: right;
+  }
+
+  .action-buttons {
+    text-align: right;
+  }
+  .action-buttons .p-button {
+    padding: 0;
+    margin-left: 1rem;
+    font-size: 1.25rem;
   }
 }
 
@@ -180,7 +249,91 @@ td .wrap-block {
     cursor: pointer;
   }
 }
+
 .p-input-icon-clear-right {
   position: absolute !important;
   right: 0rem;
+}
+
+/* modals */
+.bcbox-info-dialog {
+  .p-dialog-header {
+    padding-bottom: 0;
+
+    .svg-inline--fa {
+      color: $bcbox-primary;
+      font-size: 1.8rem;
+      padding-right: 0.75rem;
+      border: 0;
+    }
+
+    .p-dialog-title {
+      flex-grow: 1;
+      @extend h2;
+    }
+  }
+
+  .bcbox-info-dialog-subhead {
+    font-weight: normal;
+    margin-bottom: 1.5rem;
+    padding-left: 3.1rem;
+    @extend .wrap-block;
+  }
+}
+
+.p-confirm-dialog {
+  max-width: 50%;
+}
+
+.p-dialog-footer {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: left;
+}
+
+/* side panel */
+
+.side-panel {
+  .panel-header {
+    margin-bottom: 1.5rem;
+
+    & > .svg-inline--fa {
+      color: $bcbox-primary;
+      margin-top: 0.4rem;
+      font-size: 1.7rem;
+    }
+    .p-button .svg-inline--fa {
+      margin-top: 0.5rem;
+      font-size: 1.2rem;
+    }
+  }
+  h1 {
+    font-size: 1.728rem;
+  }
+  h2 {
+    font-size: 1.44rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* details grid */
+
+.details-grid {
+  h2 {
+    margin-bottom: 1rem;
+  }
+  .col-fixed {
+    width: 150px; // label column
+  }
+  .details-value-column {
+    width: 40rem;
+  }
+  .sidebar .details-value-column {
+    width: 20rem;
+  }
+}
+
+/* share modal */
+a.p-tabview-header-action {
+  text-decoration: none;
 }

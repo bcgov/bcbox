@@ -91,6 +91,7 @@ onMounted(async () => {
     <div>
       <Button
         v-if="permissionStore.isBucketActionAllowed(props.bucketId as string, getUserId, Permissions.CREATE)"
+        v-tooltip.bottom="'Upload object'"
         class="mr-2"
         :disabled="displayUpload"
         aria-label="Show object"
@@ -127,8 +128,7 @@ onMounted(async () => {
       </div>
       <div
         v-if="objectInfoId"
-        class="flex-shrink-0 ml-3"
-        style="max-width: 33%; min-width: 33%"
+        class="flex-shrink-1 w-4"
       >
         <ObjectSidebar
           :object-id="objectInfoId"

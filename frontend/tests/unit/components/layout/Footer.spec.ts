@@ -40,14 +40,15 @@ describe('Footer.vue', () => {
     expect(wrapper).toBeTruthy();
   });
 
-  it('contains 7 buttons', () => {
+  it('contains 7 links', () => {
     const wrapper = mount(Footer, {
       global: {
         plugins: [createTestingPinia(), PrimeVue]
       }
     });
 
-    const btn = wrapper.findAll('button');
-    expect(btn).toHaveLength(7);
+    console.log('a', wrapper);
+    const links = wrapper.findAll('a');
+    expect(links).toHaveLength(7);
   });
 });

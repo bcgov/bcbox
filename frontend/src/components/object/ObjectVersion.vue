@@ -91,7 +91,7 @@ watch(getVersions, async () => {
 </script>
 
 <template>
-  <div class="grid details-grid grid-nogutter mb-2">
+  <div class="grid grid-nogutter mb-2">
     <div class="col-12">
       <h2>Versions</h2>
     </div>
@@ -120,8 +120,8 @@ watch(getVersions, async () => {
         <Column
           field="versionNumber"
           header="Version"
-          header-style="width: 3em"
-          body-class="content-center"
+          header-style="width: 5em"
+          body-style="text-align: center"
         >
           <template #body="{ data }">
             {{ data.versionNumber }}
@@ -153,9 +153,9 @@ watch(getVersions, async () => {
         </Column>
         <Column
           header="Actions"
-          header-style="width: 34%"
-          header-class="header-right"
-          body-class="content-right action-buttons"
+          header-class="header-right flex justify-content-end"
+          body-class="content-right action-buttons justify-content-end"
+          header-style="width: 8em"
         >
           <template #body="{ data }">
             <DownloadObjectButton
@@ -183,8 +183,12 @@ watch(getVersions, async () => {
                 )
               "
               :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objectId: props.objectId, versionId: data.id } }"
+              class="action-link"
             >
-              <Button class="p-button-lg p-button-rounded p-button-text">
+              <Button
+                class="p-button-lg p-button-rounded p-button-text"
+                v-tooltip.bottom="'Version details'"
+              >
                 <font-awesome-icon icon="fa-solid fa-circle-info" />
               </Button>
             </router-link>

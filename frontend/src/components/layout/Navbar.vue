@@ -10,7 +10,7 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
 </script>
 
 <template>
-  <nav class="navigation-main">
+  <nav class="navigation-main lg:px-7">
     <Toolbar>
       <template #start>
         <ol class="list-none m-0 p-0 flex flex-row align-items-center font-semibold">
@@ -58,7 +58,6 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
   background-color: #38598a;
   color: #fcba19;
   display: flex;
-  padding: 0rem 3rem 0rem 3rem;
   width: 100%;
   box-shadow: 0 6px 8px -4px #b3b1b3;
   -webkit-box-shadow: 0 6px 8px -4px #b3b1b3;

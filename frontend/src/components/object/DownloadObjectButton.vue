@@ -65,6 +65,7 @@ const download = () => {
   </Button>
   <Button
     v-else
+    v-tooltip.bottom="'Download object'"
     class="mr-2"
     outlined
     :disabled="props.disabled"
