@@ -30,7 +30,7 @@ const copyLinkToClipboard = () => {
       :value="props.shareLink"
     />
     <Button
-      class="p-button-outlined p-button-secondary"
+      class="p-button-outlined p-button-primary"
       @click="copyLinkToClipboard"
     >
       <font-awesome-icon

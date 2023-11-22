@@ -50,7 +50,7 @@ appRouter.get('/config', (_req: Request, res: Response, next: (err: unknown) => 
       ...config.get('frontend'),
       gitRev: state.gitRev,
       idpList: state.idpList,
-      version: process.env.npm_package_version
+      version: appVersion
     });
   } catch (err) {
     next(err);

@@ -190,13 +190,13 @@ onBeforeMount(() => {
       </span>
 
       <Button
-        class="mt-5"
+        class="mt-5 mr-2"
         label="Save"
         type="submit"
         icon="pi pi-check"
       />
       <Button
-        class="p-button-text mt-2"
+        class="p-button-outlined mt-2"
         label="Cancel"
         icon="pi pi-times"
         @click="onCancel"

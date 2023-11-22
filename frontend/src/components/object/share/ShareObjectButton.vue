@@ -90,7 +90,7 @@ onMounted(() => {
 
   <Button
     v-tooltip.bottom="'Share object'"
-    class="p-button-lg p-button-text"
+    class="p-button-lg p-button-text primary"
     aria-label="Share object"
     @click="displayShareDialog = true"
   >

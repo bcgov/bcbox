@@ -130,7 +130,6 @@ watch(getVersions, async () => {
         <Column
           field="updatedAt"
           header="Creation date"
-          header-style="width: 33%"
         >
           <template #body="{ data }">
             <div>
@@ -143,7 +142,6 @@ watch(getVersions, async () => {
         <Column
           field="createdBy"
           header="Created by"
-          header-style="width: 33%"
         >
           <template #body="{ data }">
             <div>
@@ -153,10 +151,13 @@ watch(getVersions, async () => {
         </Column>
         <Column
           header="Actions"
-          header-class="header-right flex justify-content-end"
+          header-class="header-right"
+          body-class="action-buttons"
+        >
+          <!--           header-class="header-right flex justify-content-end"
           body-class="content-right action-buttons justify-content-end"
           header-style="width: 8em"
-        >
+-->
           <template #body="{ data }">
             <DownloadObjectButton
               v-if="
@@ -186,8 +187,8 @@ watch(getVersions, async () => {
               class="action-link"
             >
               <Button
-                class="p-button-lg p-button-rounded p-button-text"
                 v-tooltip.bottom="'Version details'"
+                class="p-button-lg p-button-rounded p-button-text"
               >
                 <font-awesome-icon icon="fa-solid fa-circle-info" />
               </Button>

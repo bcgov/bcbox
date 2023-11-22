@@ -47,7 +47,6 @@ describe('Footer.vue', () => {
       }
     });
 
-    console.log('a', wrapper);
     const links = wrapper.findAll('a');
     expect(links).toHaveLength(7);
   });

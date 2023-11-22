@@ -30,6 +30,7 @@ body {
     "Droid Sans",
     "Helvetica Neue",
     sans-serif;
+  line-height: 1.6;
   font-weight: normal;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -66,7 +67,6 @@ h5 {
 }
 
 p {
-  line-height: 1.5rem;
   margin-top: 0;
 }
 
@@ -114,7 +114,7 @@ a:visited {
     margin: 1rem 5rem 1rem 5rem;
   }
   @media screen and (min-width: 1600px) {
-    margin: 1rem 10% 1rem 10%;
+    margin: 1rem 15% 1rem 15%;
   }
 }
 
@@ -159,6 +159,7 @@ a:visited {
 }
 
 .p-button {
+  border-width: 2px;
   &:not(.p-button-secondary, .p-button-success, .p-button-info, .p-button-warning, .p-button-help, .p-button-danger) {
     color: $bcbox-primary;
     &:not(.p-button-outlined, .p-button-text) {
@@ -233,9 +234,20 @@ a:visited {
     justify-content: right;
   }
 
+  .header-center .p-column-header-content {
+    justify-content: center;
+  }
+  .content-center {
+    text-align: center !important;
+  }
+  .header-right .p-column-header-content {
+    justify-content: right;
+  }
   .action-buttons {
     text-align: right;
+    // width: 150px;
   }
+
   .action-buttons .p-button {
     padding: 0;
     margin-left: 1rem;
@@ -257,6 +269,7 @@ a:visited {
 
 /* modals */
 .bcbox-info-dialog {
+  width: 800px;
   .p-dialog-header {
     padding-bottom: 0;
 
@@ -289,6 +302,13 @@ a:visited {
   display: flex;
   flex-direction: row-reverse;
   justify-content: left;
+}
+
+.p-tabview-header.p-disabled .p-tabview-nav-link {
+  color: gray;
+}
+.p-tabview-header:not(.p-disabled) .p-tabview-nav-link {
+  border-color: $bcbox-link-text;
 }
 
 /* side panel */

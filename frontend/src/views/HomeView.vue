@@ -13,7 +13,7 @@ const { getConfig } = storeToRefs(useConfigStore());
 
 <template>
   <div class="grid">
-    <div class="text-center col-12 lg:col-10 lg:col-offset-1">
+    <div class="text-center">
       <Message
         v-if="getConfig?.notificationBanner"
         severity="warn"
@@ -57,7 +57,7 @@ const { getConfig } = storeToRefs(useConfigStore());
 
         <img
           src="@/assets/images/home_1.png"
-          class="border-1 drop-shadow w-6 sm:col-10 my-6 flex align-items-center"
+          class="border-1 drop-shadow w-8 sm:col-10 mt-5 mb-8 flex align-items-center"
           alt="Screenshot of BCBox's file list interface:
             a list of example files and possible actions including Upload, Download and Delete."
         />
@@ -87,7 +87,7 @@ const { getConfig } = storeToRefs(useConfigStore());
       </div>
 
       <div class="grid mb-4 text-left">
-        <div class="col-6">
+        <div class="col-6 pr-5">
           <h3 class="mb-3">Manage access and share</h3>
           <p class="text-xl">
             You can assign custom permissions to other users through IDIR or BCeID authentication.
@@ -98,7 +98,7 @@ const { getConfig } = storeToRefs(useConfigStore());
             information without the consent of your Ministry Privacy Officer.
           </p>
         </div>
-        <div class="col-6 pl-5">
+        <div class="col-6">
           <img
             src="@/assets/images/home_3.png"
             class="border-1 drop-shadow"
@@ -124,12 +124,12 @@ const { getConfig } = storeToRefs(useConfigStore());
 
         <router-link :to="{ name: RouteNames.LIST_BUCKETS }">
           <Button>
-            {{ getIsAuthenticated ? 'Go to My Buckets' : 'Log in to BCBox' }}
+            {{ getIsAuthenticated ? 'Go to My Buckets' : 'Log in to get started' }}
           </Button>
         </router-link>
 
         <h2 class="mt-8 mb-4">Terms of Use</h2>
-        <div class="text-left">
+        <div class="text-left text-xl">
           <ul>
             <li>
               It is your responsibility to comply with the

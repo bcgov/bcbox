@@ -262,7 +262,7 @@ watch(getBuckets, () => {
         v-if="!getIsLoading"
         class="flex justify-content-center"
       >
-        <h4>There are no buckets associated with your account.</h4>
+        <h3>There are no buckets associated with your account.</h3>
       </div>
     </template>
     <template #loadingicon>
@@ -299,9 +299,9 @@ watch(getBuckets, () => {
     </Column>
     <Column
       header="Actions"
+      header-class="text-right"
+      body-class="action-buttons"
       style="width: 250px"
-      header-class="header-right flex justify-content-end"
-      body-class="content-right action-buttons justify-content-end"
     >
       <template #body="{ node }">
         <span v-if="!node.data.dummy">
@@ -355,7 +355,7 @@ watch(getBuckets, () => {
     v-model:visible="permissionsVisible"
     :draggable="false"
     :modal="true"
-    class="bcbox-info-dialog permissions-modal"
+    class="bcbox-info-dialog"
   >
     <!-- eslint-enable vue/no-v-model-argument -->
     <template #header>

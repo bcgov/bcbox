@@ -157,7 +157,7 @@ const filters = ref({
           v-if="!useAppStore().getIsLoading"
           class="flex justify-content-center"
         >
-          <h4>There are no objects associated with your account in this bucket.</h4>
+          <h3>There are no objects associated with your account in this bucket.</h3>
         </div>
       </template>
       <template #loading>
@@ -171,6 +171,7 @@ const filters = ref({
         field="name"
         :sortable="true"
         header="Name"
+        header-style="min-width: 25%"
         body-class="truncate"
       >
         <template #body="{ data }">
@@ -219,9 +220,9 @@ const filters = ref({
       </Column>
       <Column
         header="Actions"
-        style="width: 250px"
-        header-class="header-right flex justify-content-end"
-        body-class="content-right action-buttons justify-content-end"
+        header-style="min-width: 270px"
+        header-class="header-right"
+        body-class="action-buttons"
       >
         <template #body="{ data }">
           <ShareObjectButton :id="data.id" />
@@ -277,7 +278,7 @@ const filters = ref({
       v-model:visible="permissionsVisible"
       :draggable="false"
       :modal="true"
-      class="bcbox-info-dialog permissions-modal"
+      class="bcbox-info-dialog"
     >
       <!-- eslint-enable vue/no-v-model-argument -->
       <template #header>
