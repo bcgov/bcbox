@@ -46,29 +46,30 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
-    <div>
-      <h1>Select a bucket</h1>
-      <h2>Buckets are containers for storing objects.</h2>
-      <Message
-        v-if="getConfig?.notificationBanner"
-        severity="warn"
-      >
-        {{ getConfig?.notificationBanner }}
-      </Message>
+  <Message
+    v-if="getConfig?.notificationBanner"
+    severity="warn"
+  >
+    {{ getConfig?.notificationBanner }}
+  </Message>
+
+  <div class="flex flex-wrap">
+    <div class="flex-grow-1">
+      <h1 class="">Select a bucket</h1>
+      <h4 class="mb-4">Buckets are containers for storing objects.</h4>
     </div>
-    <div class="flex justify-content-end">
+
+    <div class="flex-none align-items-right">
       <Button
         v-if="usePermissionStore().isUserElevatedRights()"
-        label="Primary"
-        class="p-button-outlined mt-4"
+        label="Connect bucket to BCBox"
+        class="p-button-outlined my-4"
         data-test="connect-bucket"
         aria-label="Configure bucket"
+        icon="pi pi-plus"
         @click="showBucketConfig()"
-      >
-        <font-awesome-icon icon="fa-solid fa-plus" />
-        Connect bucket to BCBox
-      </Button>
+      />
+
       <!-- Bucket config dialog -->
       <Dialog
         class="bcbox-info-dialog"
@@ -113,29 +114,22 @@ onMounted(async () => {
         />
       </Dialog>
     </div>
-    <div class="flex">
-      <div class="flex-grow-1">
-        <BucketTable
-          @show-sidebar-info="showSidebarInfo"
-          @show-bucket-config="showBucketConfig"
-        />
-      </div>
-      <div
-        v-if="sidebarInfo"
-        class="flex-shrink-0 ml-3"
-        style="max-width: 33%; min-width: 33%"
-      >
-        <BucketSidebar
-          :sidebar-info="sidebarInfo"
-          @close-sidebar-info="closeSidebarInfo"
-        />
-      </div>
+  </div>
+  <div class="flex">
+    <div class="flex-grow-1">
+      <BucketTable
+        @show-sidebar-info="showSidebarInfo"
+        @show-bucket-config="showBucketConfig"
+      />
+    </div>
+    <div
+      v-if="sidebarInfo"
+      class="flex-shrink-0 w-4 pl-4 max-w-28rem"
+    >
+      <BucketSidebar
+        :sidebar-info="sidebarInfo"
+        @close-sidebar-info="closeSidebarInfo"
+      />
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-button {
-  text-indent: 10px;
-}
-</style>

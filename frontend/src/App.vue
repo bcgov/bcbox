@@ -44,15 +44,28 @@ onErrorCaptured((e: Error) => {
 </script>
 
 <template>
-  <ConfirmDialog />
-  <ProgressLoader v-if="getIsLoading" />
-  <Toast />
-  <AppLayout>
-    <template #nav>
-      <Navbar />
-    </template>
-    <template #main>
-      <RouterView v-if="ready" />
-    </template>
-  </AppLayout>
+  <div class="container">
+    <ConfirmDialog />
+    <ProgressLoader v-if="getIsLoading" />
+    <Toast />
+
+    <AppLayout>
+      <template #nav>
+        <Navbar />
+      </template>
+      <template #main>
+        <RouterView v-if="ready" />
+      </template>
+    </AppLayout>
+  </div>
 </template>
+
+<style scoped>
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+}
+</style>

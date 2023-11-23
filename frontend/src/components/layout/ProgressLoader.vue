@@ -22,6 +22,7 @@ const { getLoadingMode, getLoadingValue } = storeToRefs(appStore);
 <style lang="scss" scoped>
 .app-loader {
   position: fixed;
+  top: 0;
   width: 100%;
   z-index: 999;
 

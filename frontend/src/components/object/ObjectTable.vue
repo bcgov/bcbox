@@ -101,7 +101,7 @@ const filters = ref({
 </script>
 
 <template>
-  <div>
+  <div class="object-table">
     <DataTable
       v-model:selection="objectStore.selectedObjects"
       v-model:filters="filters"
@@ -171,7 +171,7 @@ const filters = ref({
         field="name"
         :sortable="true"
         header="Name"
-        header-style="width: 25%"
+        header-style="min-width: 25%"
         body-class="truncate"
       >
         <template #body="{ data }">
@@ -184,6 +184,7 @@ const filters = ref({
         field="id"
         :sortable="true"
         header="Object ID"
+        style="width: 150px"
       >
         <template #body="{ data }">
           <div v-tooltip.bottom="{ value: data.id }">
@@ -194,6 +195,7 @@ const filters = ref({
       <Column
         field="lastUpdatedDate"
         header="Updated date"
+        style="width: 300px"
         :sortable="true"
         :hidden="props.objectInfoId ? true : false"
       >
@@ -204,6 +206,7 @@ const filters = ref({
       <Column
         field="publicSharing"
         header="Public"
+        style="width: 100px"
       >
         <template #body="{ data }">
           <ObjectPublicToggle
@@ -217,9 +220,9 @@ const filters = ref({
       </Column>
       <Column
         header="Actions"
-        header-style="width: 250px"
+        header-style="min-width: 270px"
         header-class="header-right"
-        body-class="content-right action-buttons"
+        body-class="action-buttons"
       >
         <template #body="{ data }">
           <ShareObjectButton :id="data.id" />
@@ -275,7 +278,7 @@ const filters = ref({
       v-model:visible="permissionsVisible"
       :draggable="false"
       :modal="true"
-      class="bcbox-info-dialog permissions-modal"
+      class="bcbox-info-dialog"
     >
       <!-- eslint-enable vue/no-v-model-argument -->
       <template #header>

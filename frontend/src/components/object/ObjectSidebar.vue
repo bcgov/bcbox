@@ -46,25 +46,18 @@ watch(
 </script>
 
 <template>
-  <div class="flex justify-content-start">
-    <div class="flex col align-items-center heading">
-      <font-awesome-icon
-        icon="fa-solid fa-circle-info"
-        style="font-size: 2rem"
-      />
-      <h1>File details</h1>
-    </div>
-    <div>
+  <div class="side-panel pl-4 pt-2">
+    <div class="flex panel-header align-items-start">
+      <font-awesome-icon icon="fa-solid fa-circle-info" />
+      <h1 class="mt-0 flex-grow-1">File details</h1>
       <Button
-        class="black"
-        icon="pi pi-times"
-        text
-        rounded
+        class="p-button-rounded p-button-text pt-0 mt-0"
         @click="closeObjectInfo"
-      />
+      >
+        <font-awesome-icon icon="fa-xmark" />
+      </Button>
     </div>
-  </div>
-  <div class="pl-2 sidebar">
+
     <ObjectProperties
       :object-id="props.objectId"
       :full-view="false"

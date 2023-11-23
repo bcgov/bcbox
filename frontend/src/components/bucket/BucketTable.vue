@@ -242,138 +242,136 @@ watch(getBuckets, () => {
 </script>
 
 <template>
-  <div>
-    <TreeTable
-      :loading="getIsLoading"
-      :value="treeData"
-      :expanded-keys="expandedKeys"
-      data-key="bucketId"
-      class="p-treetable-sm"
-      responsive-layout="scroll"
-      :paginator="true"
-      :rows="10"
-      paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-      current-page-report-template="{first}-{last} of {totalRecords}"
-      :rows-per-page-options="[10, 20, 50]"
-      sort-field="bucketName"
-      :sort-order="1"
+  <TreeTable
+    :loading="getIsLoading"
+    :value="treeData"
+    :expanded-keys="expandedKeys"
+    data-key="bucketId"
+    class="p-treetable-sm"
+    responsive-layout="scroll"
+    :paginator="true"
+    :rows="10"
+    paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
+    current-page-report-template="{first}-{last} of {totalRecords}"
+    :rows-per-page-options="[10, 20, 50]"
+    sort-field="bucketName"
+    :sort-order="1"
+  >
+    <template #empty>
+      <div
+        v-if="!getIsLoading"
+        class="flex justify-content-center"
+      >
+        <h3>There are no buckets associated with your account.</h3>
+      </div>
+    </template>
+    <template #loadingicon>
+      <Spinner />
+    </template>
+    <Column
+      field="bucketName"
+      header="Bucket Name"
+      header-style="padding-left: 50px"
+      body-class="truncate"
+      expander
     >
-      <template #empty>
-        <div
-          v-if="!getIsLoading"
-          class="flex justify-content-center"
+      <template #body="{ node }">
+        <span class="row-head mr-2">
+          <font-awesome-icon
+            v-if="!node.data.dummy"
+            icon="fa-solid fa-box-open"
+          />
+          <font-awesome-icon
+            v-else
+            icon="fa-solid fa-folder"
+          />
+        </span>
+        <span
+          v-if="node.data.bucketName.length > 150"
+          v-tooltip.bottom="{ value: node.data.bucketName }"
         >
-          <h3>There are no buckets associated with your account.</h3>
-        </div>
+          <BucketTableBucketName :node="node" />
+        </span>
+        <span v-else>
+          <BucketTableBucketName :node="node" />
+        </span>
       </template>
-      <template #loadingicon>
-        <Spinner />
-      </template>
-      <Column
-        field="bucketName"
-        header="Bucket Name"
-        header-style="padding-left: 50px"
-        body-class="truncate"
-        expander
-      >
-        <template #body="{ node }">
-          <span class="row-head mr-2">
-            <font-awesome-icon
-              v-if="!node.data.dummy"
-              icon="fa-solid fa-box-open"
-            />
-            <font-awesome-icon
-              v-else
-              icon="fa-solid fa-folder"
-            />
-          </span>
-          <span
-            v-if="node.data.bucketName.length > 150"
-            v-tooltip.bottom="{ value: node.data.bucketName }"
-          >
-            <BucketTableBucketName :node="node" />
-          </span>
-          <span v-else>
-            <BucketTableBucketName :node="node" />
-          </span>
-        </template>
-      </Column>
-      <Column
-        header="Actions"
-        header-style="width: 250px"
-        header-class="header-right"
-        body-class="content-right action-buttons"
-      >
-        <template #body="{ node }">
-          <span v-if="!node.data.dummy">
-            <Button
-              v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.UPDATE)"
-              v-tooltip.bottom="'Configure bucket'"
-              class="p-button-lg p-button-text"
-              aria-label="Configure bucket"
-              @click="showBucketConfig(node.data)"
-            >
-              <font-awesome-icon icon="fas fa-cog" />
-            </Button>
-            <Button
-              v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
-              v-tooltip.bottom="'Bucket permissions'"
-              class="p-button-lg p-button-text"
-              aria-label="Bucket permissions"
-              @click="showPermissions(node.data.bucketId, node.data.bucketName)"
-            >
-              <font-awesome-icon icon="fa-solid fa-users" />
-            </Button>
-            <SyncButton
-              label-text="Synchronize bucket"
-              :bucket-id="node.data.bucketId"
-            />
-            <Button
-              v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
-              v-tooltip.bottom="'Bucket details'"
-              class="p-button-lg p-button-rounded p-button-text"
-              aria-label="Bucket details"
-              @click="showSidebarInfo(node.data.bucketId)"
-            >
-              <font-awesome-icon icon="fa-solid fa-circle-info" />
-            </Button>
-            <Button
-              v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.DELETE)"
-              v-tooltip.bottom="'Delete bucket'"
-              class="p-button-lg p-button-text p-button-danger"
-              aria-label="Delete bucket"
-              @click="confirmDeleteBucket(node.data.bucketId)"
-            >
-              <font-awesome-icon icon="fa-solid fa-trash" />
-            </Button>
-          </span>
-        </template>
-      </Column>
-    </TreeTable>
-
-    <!-- eslint-disable vue/no-v-model-argument -->
-    <Dialog
-      v-model:visible="permissionsVisible"
-      :draggable="false"
-      :modal="true"
-      class="bcbox-info-dialog permissions-modal"
+    </Column>
+    <Column
+      header="Actions"
+      header-class="text-right"
+      body-class="action-buttons"
+      style="width: 250px"
     >
-      <!-- eslint-enable vue/no-v-model-argument -->
-      <template #header>
-        <font-awesome-icon
-          icon="fas fa-users"
-          fixed-width
-        />
-        <span class="p-dialog-title">Bucket Permissions</span>
+      <template #body="{ node }">
+        <span v-if="!node.data.dummy">
+          <Button
+            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.UPDATE)"
+            v-tooltip.bottom="'Configure bucket'"
+            class="p-button-lg p-button-text"
+            aria-label="Configure bucket"
+            @click="showBucketConfig(node.data)"
+          >
+            <font-awesome-icon icon="fas fa-cog" />
+          </Button>
+          <Button
+            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
+            v-tooltip.bottom="'Bucket permissions'"
+            class="p-button-lg p-button-text"
+            aria-label="Bucket permissions"
+            @click="showPermissions(node.data.bucketId, node.data.bucketName)"
+          >
+            <font-awesome-icon icon="fa-solid fa-users" />
+          </Button>
+          <SyncButton
+            label-text="Synchronize bucket"
+            :bucket-id="node.data.bucketId"
+          />
+          <Button
+            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
+            v-tooltip.bottom="'Bucket details'"
+            class="p-button-lg p-button-rounded p-button-text"
+            aria-label="Bucket details"
+            @click="showSidebarInfo(node.data.bucketId)"
+          >
+            <font-awesome-icon icon="fa-solid fa-circle-info" />
+          </Button>
+          <Button
+            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.DELETE)"
+            v-tooltip.bottom="'Delete bucket'"
+            class="p-button-lg p-button-text p-button-danger"
+            aria-label="Delete bucket"
+            @click="confirmDeleteBucket(node.data.bucketId)"
+          >
+            <font-awesome-icon icon="fa-solid fa-trash" />
+          </Button>
+        </span>
       </template>
+    </Column>
+  </TreeTable>
 
-      <h3 class="bcbox-info-dialog-subhead">
-        {{ permissionBucketName }}
-      </h3>
+  <!-- eslint-disable vue/no-v-model-argument -->
+  <Dialog
+    v-model:visible="permissionsVisible"
+    :draggable="false"
+    :modal="true"
+    class="bcbox-info-dialog"
+  >
+    <!-- eslint-enable vue/no-v-model-argument -->
+    <template #header>
+      <font-awesome-icon
+        icon="fas fa-users"
+        fixed-width
+      />
+      <span class="p-dialog-title">Bucket Permissions</span>
+    </template>
 
-      <BucketPermission :bucket-id="permissionsBucketId" />
-    </Dialog>
-  </div>
+    <h3 class="bcbox-info-dialog-subhead">
+      {{ permissionBucketName }}
+    </h3>
+
+    <BucketPermission :bucket-id="permissionsBucketId" />
+  </Dialog>
 </template>
 
 <style scoped lang="scss">

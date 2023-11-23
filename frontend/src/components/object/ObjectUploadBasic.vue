@@ -42,10 +42,9 @@ const confirm = useConfirm();
 const toast = useToast();
 
 const confirmUpdate = () => {
-  let confirmMessage =  'Please confirm that you want to upload a new version.';
+  let confirmMessage = 'Please confirm that you want to upload a new version.';
   if (versionStore.findS3VersionByObjectId(props.objectId) === null) {
-    confirmMessage = 'This is a non-versioned bucket. ' +
-      'Uploading a new version will overwrite the current version.';
+    confirmMessage = 'This is a non-versioned bucket. ' + 'Uploading a new version will overwrite the current version.';
   }
   confirm.require({
     message: confirmMessage,
@@ -139,7 +138,7 @@ const closeModal = () => {
     v-model:visible="editing"
     :draggable="false"
     :modal="true"
-    class="bcbox-info-dialog permissions-modal"
+    class="bcbox-info-dialog"
   >
     <!-- eslint-enable vue/no-v-model-argument -->
     <template #header>

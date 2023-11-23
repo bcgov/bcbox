@@ -129,7 +129,7 @@ watch([props, tsGetTagging, vsGetTagging], () => {
     v-model:visible="editing"
     :draggable="false"
     :modal="true"
-    class="bcbox-info-dialog permissions-modal"
+    class="bcbox-info-dialog"
   >
     <!-- eslint-enable vue/no-v-model-argument -->
     <template #header>
