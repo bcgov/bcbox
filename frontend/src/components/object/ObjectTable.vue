@@ -46,6 +46,7 @@ const { getObjects } = storeToRefs(objectStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
+const selectAll = ref(false);
 const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
 const permissionsObjectName: Ref<string | undefined> = ref('');
@@ -54,27 +55,37 @@ const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
 // Actions
 const toast = useToast();
 
-const formatShortUuid = (uuid: string) => {
-  return uuid?.slice(0, 8) ?? uuid;
-};
+function clearSelected() {
+  selectAll.value = false;
+  objectStore.setSelectedObjects([]);
+}
 
-const showInfo = async (id: string) => {
-  emit('show-object-info', id);
-};
+const formatShortUuid = (uuid: string) => uuid?.slice(0, 8) ?? uuid;
+const onDeletedSuccess = () => toast.success('File deleted');
 
-const showPermissions = async (objectId: string) => {
+function selectCurrentPage() {
+  objectStore.setSelectedObjects(
+    tableData.value.filter((object) => {
+      return Array.from(document.querySelectorAll('[data-objectId]'))
+        .map((x) => x.getAttribute('data-objectId'))
+        .includes(object.id);
+    })
+  );
+}
+
+const showInfo = (id: string) => emit('show-object-info', id);
+
+async function showPermissions(objectId: string) {
   await permissionStore.fetchObjectPermissions({ objectId });
 
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
   permissionsObjectName.value = objectStore.findObjectById(objectId)?.name;
-};
-
-function onDeletedSuccess() {
-  toast.success('File deleted');
 }
 
 watch(getObjects, async () => {
+  clearSelected();
+
   // Filter object cache to this specific bucket
   const objs: Array<COMSObjectDataSource> = getObjects.value.filter(
     (x: COMSObject) => x.bucketId === props.bucketId
@@ -118,6 +129,21 @@ const filters = ref({
       sort-field="lastUpdatedDate"
       :sort-order="-1"
       :global-filter-fields="['name']"
+      :select-all="selectAll"
+      @select-all-change="
+        (e) => {
+          selectAll = e.checked;
+          if (e.checked) {
+            selectCurrentPage();
+          } else {
+            objectStore.setSelectedObjects([]);
+          }
+        }
+      "
+      @page="clearSelected"
+      @update:sort-order="clearSelected"
+      @update:sort-field="clearSelected"
+      @update:rows="clearSelected"
     >
       <template #header>
         <div class="flex justify-content-end">
@@ -129,6 +155,7 @@ const filters = ref({
               v-model="filters['global'].value"
               class="searchInput"
               placeholder="Search File Names"
+              @input="clearSelected()"
             />
             <Button
               v-show="filters['global'].value !== null"
@@ -137,7 +164,12 @@ const filters = ref({
               icon="pi pi-times"
               outlined
               aria-label="Clear"
-              @click="filters['global'].value = null"
+              @click="
+                () => {
+                  filters['global'].value = null;
+                  clearSelected();
+                }
+              "
             />
           </span>
 
@@ -187,7 +219,10 @@ const filters = ref({
         style="width: 150px"
       >
         <template #body="{ data }">
-          <div v-tooltip.bottom="{ value: data.id }">
+          <div
+            v-tooltip.bottom="{ value: data.id }"
+            :data-objectId="data.id"
+          >
             {{ formatShortUuid(data.id) }}
           </div>
         </template>
