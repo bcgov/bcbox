@@ -67,13 +67,6 @@ async function deleteBucket(bucketId: string) {
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 }
 
-/** Get the full path to the first part of its key */
-function getFirstKeyPartPath(node: BucketTreeNode): string {
-  const parts = node.data.key.split(DELIMITER).filter((part) => part);
-
-  return `${node.data.endpoint}/${node.data.bucket}/${parts[0]}`;
-}
-
 /**
  * Finds the nearest indirect path to node \
  * Assumes the endpointMap paths have been pre sorted
@@ -197,8 +190,7 @@ watch(getBuckets, () => {
         } else {
           if (node.data.key !== '/') {
             // Top level bucket not at root so create dummy hierarchy to reach it
-            const rootFullPath = getFirstKeyPartPath(node);
-            const rootKey = node.data.key.split(DELIMITER).filter((part) => part)[0];
+            const rootFullPath = `${node.data.endpoint}/${node.data.bucket}//`;
             const dummyRootNode: BucketTreeNode = {
               key: rootFullPath,
               data: {
@@ -206,10 +198,10 @@ watch(getBuckets, () => {
                 active: false,
                 bucket: node.data.bucket,
                 bucketId: '',
-                bucketName: rootKey,
+                bucketName: node.data.bucket,
                 dummy: true,
                 endpoint: node.data.endpoint,
-                key: rootKey,
+                key: '/',
                 region: '',
                 secretAccessKey: ''
               },

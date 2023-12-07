@@ -38,6 +38,5 @@ const props = withDefaults(defineProps<Props>(), {});
 .bucket-subtext {
   font-size: small;
   color: gray;
-  font-style: italic;
 }
 </style>
