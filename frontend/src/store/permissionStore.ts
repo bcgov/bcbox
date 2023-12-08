@@ -66,14 +66,6 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  function addBucketUser(user: UserPermissions) {
-    try {
-      getters.getMappedBucketToUserPermissions.value.push(user);
-    } catch (error: any) {
-      toast.error('Adding bucket user', error);
-    }
-  }
-
   async function addObjectPermission(objectId: string, userId: string, permCode: string) {
     try {
       appStore.beginIndeterminateLoading();
@@ -89,14 +81,6 @@ export const usePermissionStore = defineStore('permission', () => {
       await fetchObjectPermissions();
       await mapObjectToUserPermissions(objectId);
       appStore.endIndeterminateLoading();
-    }
-  }
-
-  function addObjectUser(user: UserPermissions) {
-    try {
-      getters.getMappedObjectToUserPermissions.value.push(user);
-    } catch (error: any) {
-      toast.error('Adding object user', error);
     }
   }
 
@@ -327,9 +311,7 @@ export const usePermissionStore = defineStore('permission', () => {
 
     // Actions
     addBucketPermission,
-    addBucketUser,
     addObjectPermission,
-    addObjectUser,
     deleteBucketPermission,
     deleteObjectPermission,
     fetchBucketPermissions,
