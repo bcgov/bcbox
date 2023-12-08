@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { ref, watch } from 'vue';
 
-import { BucketPermission, BucketTableBucketName } from '@/components/bucket';
+import { BucketChildConfig, BucketPermission, BucketTableBucketName } from '@/components/bucket';
 import { Spinner } from '@/components/layout';
 import { SyncButton } from '@/components/common';
 import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
@@ -292,6 +292,10 @@ watch(getBuckets, () => {
     >
       <template #body="{ node }">
         <span v-if="!node.data.dummy">
+          <BucketChildConfig
+            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
+            :parent-bucket-id="node.data.bucketId"
+          />
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.UPDATE)"
             v-tooltip.bottom="'Configure bucket'"

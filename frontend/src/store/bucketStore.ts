@@ -41,6 +41,33 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
+  async function createBucketChild(parentBucketId: string, subKey: string, bucketName: string) {
+    // try {
+    appStore.beginIndeterminateLoading();
+
+    // 422 key length too long
+    // 409 if child bucket exias
+    // 409 if credentials aret valid
+    bucketService
+      .createBucketChild(parentBucketId, subKey, bucketName)
+      .then((result) => {
+        console.log('ok');
+        return result;
+      })
+      .catch((response) => {
+        console.log('error:', response);
+        if (response.status === 409 && response.title === 'Conflict') {
+          return response.detail;
+        }
+        if (response.status === 422) {
+          return response.data.detail;
+        }
+      })
+      .finally(() => {
+        appStore.endIndeterminateLoading();
+      });
+  }
+
   async function deleteBucket(bucketId: string) {
     try {
       appStore.beginIndeterminateLoading();
@@ -120,6 +147,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
     // Actions
     createBucket,
+    createBucketChild,
     deleteBucket,
     fetchBuckets,
     findBucketById,
