@@ -114,10 +114,7 @@ onBeforeMount(() => {
       </Button>
     </div>
     <div v-else>
-      <ObjectPermissionAddUser
-        :object-id="props.objectId"
-        @cancel-search-users="cancelSearchUsers"
-      />
+      <ObjectPermissionAddUser @cancel-search-users="cancelSearchUsers" />
     </div>
 
     <DataTable

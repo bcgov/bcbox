@@ -84,10 +84,7 @@ onBeforeMount(async () => {
       </Button>
     </div>
     <div v-else>
-      <BucketPermissionAddUser
-        :bucket-id="props.bucketId"
-        @cancel-search-users="cancelSearchUsers"
-      />
+      <BucketPermissionAddUser @cancel-search-users="cancelSearchUsers" />
     </div>
 
     <DataTable

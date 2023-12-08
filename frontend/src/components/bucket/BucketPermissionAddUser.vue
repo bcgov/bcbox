@@ -1,22 +1,30 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
+
 import SearchUsers from '@/components/form/SearchUsers.vue';
-import { Permissions } from '@/utils/constants';
-import { usePermissionStore } from '@/store';
+import { useConfigStore, usePermissionStore } from '@/store';
 
 import type { User } from '@/types';
 
-type Props = {
-  bucketId: string;
-};
-
-const props = withDefaults(defineProps<Props>(), {});
-
 // Store
+const { getConfig } = storeToRefs(useConfigStore());
 const permissionStore = usePermissionStore();
 
 // Actions
 const onAdd = (selectedUser: User) => {
-  permissionStore.addBucketPermission(props.bucketId, selectedUser.userId, Permissions.READ);
+  const idp = getConfig.value.idpList.find((idp: any) => idp.idp === selectedUser?.idp);
+
+  permissionStore.addBucketUser({
+    userId: selectedUser.userId,
+    idpName: idp?.name,
+    elevatedRights: idp?.elevatedRights,
+    fullName: selectedUser.fullName,
+    create: false,
+    read: false,
+    update: false,
+    delete: false,
+    manage: false
+  });
 };
 </script>
 
