@@ -143,7 +143,9 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  async function fetchBucketPermissions(params: BucketSearchPermissionsOptions = {}): Promise<void> {
+  async function fetchBucketPermissions(
+    params: BucketSearchPermissionsOptions = {}
+  ): Promise<Array<BucketPermission> | void> {
     try {
       appStore.beginIndeterminateLoading();
 
