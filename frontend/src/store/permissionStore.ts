@@ -202,13 +202,13 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  function isBucketActionAllowed(bucketId: string, userId?: string, permCode?: string): Boolean {
+  function isBucketActionAllowed(bucketId: string, userId?: string, permCode?: string): boolean {
     return state.bucketPermissions.value.some(
       (x: BucketPermission) => x.bucketId === bucketId && x.userId === userId && x.permCode === permCode
     );
   }
 
-  function isObjectActionAllowed(objectId: string, userId?: string, permCode?: string, bucketId?: string): Boolean {
+  function isObjectActionAllowed(objectId: string, userId?: string, permCode?: string, bucketId?: string): boolean {
     const bucketPerm = state.bucketPermissions.value.some(
       (x: BucketPermission) => x.bucketId === bucketId && x.userId === userId && x.permCode === permCode
     );
@@ -220,7 +220,7 @@ export const usePermissionStore = defineStore('permission', () => {
     return bucketPerm || objectPerm;
   }
 
-  function isUserElevatedRights(): Boolean {
+  function isUserElevatedRights(): boolean {
     const idp = getConfig.value.idpList.find(
       (provider: IdentityProvider) => provider.idp === getProfile.value?.identity_provider
     );

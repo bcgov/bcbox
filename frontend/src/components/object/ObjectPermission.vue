@@ -30,46 +30,19 @@ const showSearchUsers: Ref<boolean> = ref(false);
 const object: Ref<COMSObject | undefined> = ref(undefined);
 
 // Actions
-const removeManageAlert = useAlert('Warning', 'Cannot remove last user with MANAGE permission.');
-
 const cancelSearchUsers = () => {
   showSearchUsers.value = false;
 };
 
 const removeObjectUser = (userId: string) => {
-  const managers = getMappedObjectToUserPermissions.value.filter((x: UserPermissions) => x.manage);
-  if (managers.length === 1 && managers[0].userId === userId) {
-    removeManageAlert.show();
-  } else {
-    permissionStore.removeObjectUser(props.objectId, userId);
-  }
+  permissionStore.removeObjectUser(props.objectId, userId);
 };
 
 const updateObjectPermission = (value: boolean, userId: string, permCode: string) => {
   if (value) {
     permissionStore.addObjectPermission(props.objectId, userId, permCode);
   } else {
-    const managers = getMappedObjectToUserPermissions.value.filter((x: UserPermissions) => x.manage);
-
-    const userPerms: UserPermissions = getMappedObjectToUserPermissions.value.find(
-      (x: UserPermissions) => x.userId === userId
-    ) as UserPermissions;
-
-    // When READ is unticked check if they are the last remaining user with MANAGE
-    const lastManager = () => permCode === Permissions.READ && managers.length === 1 && userPerms.manage;
-
-    // Due to 2-way binding we check if there are no managers left when MANAGE is unticked
-    const noManagers = () => permCode === Permissions.MANAGE && !managers.length;
-
-    // Disallow removable of final MANAGE permission
-    if (lastManager() || noManagers()) {
-      removeManageAlert.show();
-
-      if (permCode === Permissions.READ) userPerms.read = true;
-      if (permCode === Permissions.MANAGE) userPerms.manage = true;
-    } else {
-      permissionStore.deleteObjectPermission(props.objectId, userId, permCode);
-    }
+    permissionStore.deleteObjectPermission(props.objectId, userId, permCode);
   }
 };
 
