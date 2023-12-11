@@ -4,13 +4,12 @@ import { onBeforeMount, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { ObjectPermissionAddUser, ObjectPublicToggle } from '@/components/object';
-import { useAlert } from '@/composables/useAlert';
 import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { COMSObject, UserPermissions } from '@/types';
+import type { COMSObject } from '@/types';
 
 // Props
 type Props = {
