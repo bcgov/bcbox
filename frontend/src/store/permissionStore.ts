@@ -62,9 +62,9 @@ export const usePermissionStore = defineStore('permission', () => {
     } finally {
       await fetchBucketPermissions();
 
-      const initialPerms = state.mappedBucketToUserPermissions.value;
+      const initialPerms = [...state.mappedBucketToUserPermissions.value];
       await mapBucketToUserPermissions(bucketId);
-      const afterPerms = state.mappedBucketToUserPermissions.value;
+      const afterPerms = [...state.mappedBucketToUserPermissions.value];
 
       const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
       state.mappedBucketToUserPermissions.value = state.mappedBucketToUserPermissions.value.concat(results);
@@ -95,9 +95,9 @@ export const usePermissionStore = defineStore('permission', () => {
     } finally {
       await fetchObjectPermissions();
 
-      const initialPerms = state.mappedObjectToUserPermissions.value;
+      const initialPerms = [...state.mappedObjectToUserPermissions.value];
       await mapObjectToUserPermissions(objectId);
-      const afterPerms = state.mappedObjectToUserPermissions.value;
+      const afterPerms = [...state.mappedObjectToUserPermissions.value];
 
       const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
       state.mappedObjectToUserPermissions.value = state.mappedObjectToUserPermissions.value.concat(results);
@@ -317,9 +317,9 @@ export const usePermissionStore = defineStore('permission', () => {
   async function removeBucketUserPermsHandler(bucketId: string, userId: string): Promise<void> {
     await fetchBucketPermissions();
 
-    const initialPerms = state.mappedBucketToUserPermissions.value.filter(({ userId: id }) => id !== userId);
+    const initialPerms = [...state.mappedBucketToUserPermissions.value.filter(({ userId: id }) => id !== userId)];
     await mapBucketToUserPermissions(bucketId);
-    const afterPerms = state.mappedBucketToUserPermissions.value;
+    const afterPerms = [...state.mappedBucketToUserPermissions.value];
 
     const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
     state.mappedBucketToUserPermissions.value = state.mappedBucketToUserPermissions.value.concat(results);
@@ -346,9 +346,9 @@ export const usePermissionStore = defineStore('permission', () => {
   async function removeObjectUserPermsHandler(objectId: string, userId: string): Promise<void> {
     await fetchObjectPermissions();
 
-    const initialPerms = state.mappedObjectToUserPermissions.value.filter(({ userId: id }) => id !== userId);
+    const initialPerms = [...state.mappedObjectToUserPermissions.value.filter(({ userId: id }) => id !== userId)];
     await mapObjectToUserPermissions(objectId);
-    const afterPerms = state.mappedObjectToUserPermissions.value;
+    const afterPerms = [...state.mappedObjectToUserPermissions.value];
 
     const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
     state.mappedObjectToUserPermissions.value = state.mappedObjectToUserPermissions.value.concat(results);
