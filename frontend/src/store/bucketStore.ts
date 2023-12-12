@@ -44,8 +44,12 @@ export const useBucketStore = defineStore('bucket', () => {
   async function createBucketChild(parentBucketId: string, subKey: string, bucketName: string) {
     try {
       appStore.beginIndeterminateLoading();
-      return await bucketService.createBucketChild(parentBucketId, subKey, bucketName);
+      const response = await bucketService.createBucketChild(parentBucketId, subKey, bucketName);
+      // push new bucket to store
+      state.buckets.value.push(response.data);
+      return response;
     } finally {
+      state.buckets.value.push();
       appStore.endIndeterminateLoading();
     }
   }

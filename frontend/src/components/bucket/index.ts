@@ -1,4 +1,4 @@
-export { default as BucketChildConfig } from './BucketChildCOnfig.vue';
+export { default as BucketChildConfig } from './BucketChildConfig.vue';
 export { default as BucketConfigForm } from './BucketConfigForm.vue';
 export { default as BucketList } from './BucketList.vue';
 export { default as BucketPermission } from './BucketPermission.vue';
