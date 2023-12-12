@@ -7,35 +7,26 @@ import { object, string } from 'yup';
 import TextInput from '@/components/form/TextInput.vue';
 import { Button, Dialog, Message, useToast } from '@/lib/primevue';
 import { useBucketStore } from '@/store';
-// import { differential, joinPath } from '@/utils/utils';
 
 import type { Ref } from 'vue';
-// import type { Bucket } from '@/types';
-
-// export type BucketChildForm = {
-//   bucketName?: string;
-//   subKey?: string;
-// };
 
 // Props
 const props = defineProps<{
   parentBucketId: string;
 }>();
 
+const validationMessages: Ref<Array<string>> = ref([]);
+
 // Store
 const bucketStore = useBucketStore();
-// const { getUserId } = storeToRefs(useAuthStore());
 
 // Form validation schema
 const schema = object({
-  bucketName: string()
-    .max(255)
-    // .required()
-    .label('Folder name'),
+  bucketName: string().max(255).required().label('Folder name'),
   subKey: string()
     .matches(/^[^\\]+$/, 'Sub-path must not contain backslashes')
     .max(255)
-    // .required()
+    .required()
     .label('Folder sub-path')
 });
 
@@ -48,19 +39,17 @@ const showDialog = (x: boolean) => {
 
 const onSubmit = async (values: any) => {
   try {
-    // data
     const formData = {
       bucketName: values.bucketName,
       subKey: values.subKey
     };
     // call service
     await bucketStore.createBucketChild(props.parentBucketId, formData.subKey, formData.bucketName);
-    // close dialog
     showDialog(false);
-    // show toast
     toast.success('Adding Folder to a bucket', 'Folder configuration successful');
   } catch (error: any) {
-    toast.error('Adding Folder to a bucket', error);
+    validationMessages.value = [];
+    validationMessages.value.push(error.response.data.detail);
   }
 };
 const onCancel = () => {
@@ -100,6 +89,13 @@ const onCancel = () => {
         :validation-schema="schema"
         @submit="onSubmit"
       >
+        <Message
+          v-for="msg of validationMessages"
+          :key="msg"
+          severity="error"
+        >
+          {{ msg }}
+        </Message>
         <TextInput
           name="subKey"
           label="Sub-path"

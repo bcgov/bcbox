@@ -31,18 +31,10 @@ export default {
    * @param {string} parentBucketId ID of parent COMS 'bucket'
    * @param {string} subKey 'sub-folder' name (last part of the key)
    * @param {string} bucketName Display name for the mapped sub-folder
-   * @returns {Promise} An axios response or error details
+   * @returns {Promise} An axios response
    */
-  async createBucketChild(parentBucketId: string, subKey: string, bucketName: string) {
-    await comsAxios()
-      .patch(`${BUCKET_PATH}/cff69387-b598-4042-814b-a91714147daa`, { a: 'a', key: '' })
-      // .put(`${BUCKET_PATH}/${parentBucketId}`, { subKey, bucketName })
-      .then((result) => {
-        return result;
-      })
-      .catch((error) => {
-        return Promise.reject(error.response);
-      });
+  createBucketChild(parentBucketId: string, subKey: string, bucketName: string) {
+    return comsAxios().put(`${BUCKET_PATH}/${parentBucketId}/child`, { subKey, bucketName });
   },
 
   /**
