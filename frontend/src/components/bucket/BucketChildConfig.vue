@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { Form } from 'vee-validate';
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { object, string } from 'yup';
 
 import TextInput from '@/components/form/TextInput.vue';
 import { Button, Dialog, Message, useToast } from '@/lib/primevue';
-import { useBucketStore } from '@/store';
+import { useAuthStore, useBucketStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { Bucket } from '@/types';
@@ -16,17 +16,17 @@ const props = defineProps<{
   parentBucket: Bucket;
 }>();
 
-const validationMessages: Ref<Array<string>> = ref([]);
-
 // Store
 const bucketStore = useBucketStore();
+const { getUserId } = storeToRefs(useAuthStore());
 
-// Form validation schema
+// Form validation
+const validationMessages: Ref<Array<string>> = ref([]);
 const schema = object({
   bucketName: string().required().max(255).label('Folder display name'),
   subKey: string()
     .required()
-    .matches(/[^/\\]+$/, 'Folder sub-path must not contain back or forward slashes')
+    .matches(/^[^/\\]+$/, 'Folder sub-path must not contain back or forward slashes')
     .label('Folder sub-path')
 });
 
@@ -45,6 +45,8 @@ const onSubmit = async (values: any) => {
     };
     // create bucket
     await bucketStore.createBucketChild(props.parentBucket.bucketId, formData.subKey, formData.bucketName);
+    // refresh stores
+    await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
     showDialog(false);
     toast.success('Adding Folder to a bucket', 'Folder configuration successful');
   } catch (error: any) {
@@ -79,7 +81,7 @@ const onCancel = () => {
         icon="fas fa-cog"
         fixed-width
       />
-      <span class="p-dialog-title">Add Folder to bucket</span>
+      <span class="p-dialog-title">Add folder to bucket</span>
     </template>
 
     <h3 class="bcbox-info-dialog-subhead mb-0">{{ props.parentBucket.bucketName }}</h3>
@@ -125,9 +127,3 @@ const onCancel = () => {
     </Form>
   </Dialog>
 </template>
-
-<style lang="scss" scoped>
-:deep(.p-inputtext) {
-  width: 100% !important;
-}
-</style>
