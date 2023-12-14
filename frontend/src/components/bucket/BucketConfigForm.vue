@@ -100,11 +100,7 @@ const onSubmit = async (values: any) => {
     toast.success('Configuring bucket', 'Bucket configuration successful');
 
     if ((bucketChanges.accessKeyId || bucketChanges.secretAccessKey) && hasChildren) {
-      toast.info(
-        'Any child buckets?',
-        "Don't forget to update their credentials too, if you're managing them in BCBox",
-        { life: 10000 }
-      );
+      toast.info('Buckets under this bucket', 'Remember to update their credentials where applicable', { life: 10000 });
     }
   } catch (error: any) {
     toast.error('Configuring bucket', error);
