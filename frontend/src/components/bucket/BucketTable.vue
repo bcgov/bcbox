@@ -8,7 +8,7 @@ import { SyncButton } from '@/components/common';
 import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { DELIMITER, Permissions } from '@/utils/constants';
-import { joinPath } from '@/utils/utils';
+import { getBucketPath, joinPath } from '@/utils/utils';
 
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import type { Ref } from 'vue';
@@ -65,11 +65,6 @@ const confirmDeleteBucket = (bucketId: string) => {
 async function deleteBucket(bucketId: string) {
   await bucketStore.deleteBucket(bucketId);
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
-}
-
-/** Returns a full canonical path to a Bucket or fake tree data */
-function getBucketPath(bucket: Bucket): string {
-  return `${bucket.endpoint}/${bucket.bucket}/${bucket.key}`;
 }
 
 /** Get the full path to the first part of its key */

@@ -1,6 +1,7 @@
 import { DELIMITER } from '@/utils/constants';
 import ConfigService from '@/services/configService';
 import { ExcludeTypes } from '@/utils/enums';
+import type { Bucket } from '@/types';
 
 /**
  * @function differential
@@ -115,4 +116,14 @@ export function setDispositionHeader(filename: string) {
   } else {
     return dispositionHeader.concat(`; filename*=UTF-8''${encodedFilename}`);
   }
+}
+
+/**
+ * @function getBucketPath
+ * Returns a full canonical path to a Bucket
+ * @param {Bucket} bucket COMS bucket
+ * @returns {string} full canonical path to bucket
+ */
+export function getBucketPath(bucket: Bucket): string {
+  return `${bucket.endpoint}/${bucket.bucket}/${bucket.key}`;
 }

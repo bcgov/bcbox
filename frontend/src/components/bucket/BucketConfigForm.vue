@@ -7,7 +7,7 @@ import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
 import { Button, useToast } from '@/lib/primevue';
 import { useAuthStore, useBucketStore } from '@/store';
-import { differential, joinPath } from '@/utils/utils';
+import { differential, getBucketPath, joinPath } from '@/utils/utils';
 
 import type { Bucket } from '@/types';
 
@@ -77,14 +77,31 @@ const onSubmit = async (values: any) => {
       formBucket.key = joinPath(values.key);
     }
 
+    const bucketChanges = differential(formBucket, initialValues);
+
     props.bucket
-      ? await bucketStore.updateBucket(props.bucket?.bucketId, differential(formBucket, initialValues))
+      ? await bucketStore.updateBucket(props.bucket?.bucketId, bucketChanges)
       : await bucketStore.createBucket(formBucket);
 
     await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+
+    // trim trailing "//", if present
+    // (modifying getBucketPath() instead seems to break nested bucket display [PR-146])
+    const currBucketPath = getBucketPath(initialValues as Bucket).endsWith('//')
+      ? getBucketPath(initialValues as Bucket).slice(0, -1)
+      : getBucketPath(initialValues as Bucket);
+
+    const hasChildren = bucketStore.buckets.some(
+      (b) => getBucketPath(b).includes(currBucketPath) && getBucketPath(b) !== currBucketPath
+    );
+
     emit('submit-bucket-config');
 
     toast.success('Configuring bucket', 'Bucket configuration successful');
+
+    if ((bucketChanges.accessKeyId || bucketChanges.secretAccessKey) && hasChildren) {
+      toast.info('Buckets under this bucket', 'Remember to update their credentials where applicable', { life: 10000 });
+    }
   } catch (error: any) {
     toast.error('Configuring bucket', error);
   }
