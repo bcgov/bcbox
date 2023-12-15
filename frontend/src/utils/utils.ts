@@ -127,3 +127,14 @@ export function setDispositionHeader(filename: string) {
 export function getBucketPath(bucket: Bucket): string {
   return `${bucket.endpoint}/${bucket.bucket}/${bucket.key}`;
 }
+
+/**
+ * @function getLastSegment
+ * Returns the last segment of a path, ignoring trailing slashes
+ * @param {string} path full path (eg: http://abc.com/bucket/)
+ * @returns {string} last segment of a path (eg: bucket)
+ */
+export function getLastSegment(path: string) {
+  const p = path.replace(/\/+$/, '');
+  return p.slice(p.lastIndexOf('/') + 1);
+}

@@ -144,92 +144,88 @@ function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
   return current;
 }
 
-watch(
-  getBuckets,
-  () => {
-    // Make sure everything is clear for a rebuild
-    endpointMap.clear();
-    bucketTreeNodeMap.clear();
-    expandedKeys.value = {};
+watch(getBuckets, () => {
+  // Make sure everything is clear for a rebuild
+  endpointMap.clear();
+  bucketTreeNodeMap.clear();
+  expandedKeys.value = {};
 
-    // Split buckets into arrays based on endpoint
-    for (const bucket of getBuckets.value) {
-      if (!endpointMap.has(`${bucket.endpoint}/${bucket.bucket}`)) {
-        endpointMap.set(`${bucket.endpoint}/${bucket.bucket}`, new Array<Bucket>());
-      }
-      endpointMap.get(`${bucket.endpoint}/${bucket.bucket}`)?.push(bucket);
+  // Split buckets into arrays based on endpoint
+  for (const bucket of getBuckets.value) {
+    if (!endpointMap.has(`${bucket.endpoint}/${bucket.bucket}`)) {
+      endpointMap.set(`${bucket.endpoint}/${bucket.bucket}`, new Array<Bucket>());
     }
+    endpointMap.get(`${bucket.endpoint}/${bucket.bucket}`)?.push(bucket);
+  }
 
-    // Sort arrays by path
-    for (const i of endpointMap) {
-      i[1].sort((a: Bucket, b: Bucket) => getBucketPath(a).localeCompare(getBucketPath(b)));
-    }
+  // Sort arrays by path
+  for (const i of endpointMap) {
+    i[1].sort((a: Bucket, b: Bucket) => getBucketPath(a).localeCompare(getBucketPath(b)));
+  }
 
-    // Build the tree for each endpoint
-    // First looks for a direct parent node
-    // If not found it looks for the nearest neighbour to build 'dummy' nodes to mimic a folder hierarchy
-    // If that somehow fails it adds the node to the root to ensure its still visible
-    const tree: Array<BucketTreeNode> = [];
-    for (const col of endpointMap) {
-      for (const row of col[1]) {
-        const path = getBucketPath(row);
-        const parentPath = path.substring(0, path.lastIndexOf('/'));
-        const parent = bucketTreeNodeMap.get(parentPath);
+  // Build the tree for each endpoint
+  // First looks for a direct parent node
+  // If not found it looks for the nearest neighbour to build 'dummy' nodes to mimic a folder hierarchy
+  // If that somehow fails it adds the node to the root to ensure its still visible
+  const tree: Array<BucketTreeNode> = [];
+  for (const col of endpointMap) {
+    for (const row of col[1]) {
+      const path = getBucketPath(row);
+      const parentPath = path.substring(0, path.lastIndexOf('/'));
+      const parent = bucketTreeNodeMap.get(parentPath);
 
-        const node: BucketTreeNode = {
-          key: getBucketPath(row),
-          data: { ...row, dummy: false },
-          children: new Array(),
-          isRoot: false
-        };
+      const node: BucketTreeNode = {
+        key: getBucketPath(row),
+        data: { ...row, dummy: false },
+        children: new Array(),
+        isRoot: false
+      };
 
-        if (parent) {
-          parent.children.push(node);
+      if (parent) {
+        parent.children.push(node);
+      } else {
+        const neighbour = findNearestNeighbour(node);
+        if (neighbour) {
+          createDummyNodes(neighbour, node).children.push(node);
         } else {
-          const neighbour = findNearestNeighbour(node);
-          if (neighbour) {
-            createDummyNodes(neighbour, node).children.push(node);
+          if (node.data.key !== '/') {
+            // Top level bucket not at root so create dummy hierarchy to reach it
+            const rootFullPath = `${node.data.endpoint}/${node.data.bucket}//`;
+            const dummyRootNode: BucketTreeNode = {
+              key: rootFullPath,
+              data: {
+                accessKeyId: '',
+                active: false,
+                bucket: node.data.bucket,
+                bucketId: '',
+                bucketName: node.data.bucket,
+                dummy: true,
+                endpoint: node.data.endpoint,
+                key: '/',
+                region: '',
+                secretAccessKey: ''
+              },
+              children: new Array(),
+              isRoot: true
+            };
+            tree.push(dummyRootNode);
+            bucketTreeNodeMap.set(rootFullPath, dummyRootNode);
+            createDummyNodes(dummyRootNode, node).children.push(node);
           } else {
-            if (node.data.key !== '/') {
-              // Top level bucket not at root so create dummy hierarchy to reach it
-              const rootFullPath = `${node.data.endpoint}/${node.data.bucket}//`;
-              const dummyRootNode: BucketTreeNode = {
-                key: rootFullPath,
-                data: {
-                  accessKeyId: '',
-                  active: false,
-                  bucket: node.data.bucket,
-                  bucketId: '',
-                  bucketName: node.data.bucket,
-                  dummy: true,
-                  endpoint: node.data.endpoint,
-                  key: '/',
-                  region: '',
-                  secretAccessKey: ''
-                },
-                children: new Array(),
-                isRoot: true
-              };
-              tree.push(dummyRootNode);
-              bucketTreeNodeMap.set(rootFullPath, dummyRootNode);
-              createDummyNodes(dummyRootNode, node).children.push(node);
-            } else {
-              node.isRoot = true;
-              tree.push(node);
-            }
+            node.isRoot = true;
+            tree.push(node);
           }
         }
-
-        bucketTreeNodeMap.set(getBucketPath(node.data), node);
       }
-    }
 
-    // Expand all nodes and set tree state
-    bucketTreeNodeMap.forEach((_v, k) => (expandedKeys.value[k] = true));
-    treeData.value = tree;
-  },
-  { deep: true }
-);
+      bucketTreeNodeMap.set(getBucketPath(node.data), node);
+    }
+  }
+
+  // Expand all nodes and set tree state
+  bucketTreeNodeMap.forEach((_v, k) => (expandedKeys.value[k] = true));
+  treeData.value = tree;
+});
 </script>
 
 <template>

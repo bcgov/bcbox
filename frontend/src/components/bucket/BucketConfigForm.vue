@@ -86,7 +86,6 @@ const onSubmit = async (values: any) => {
     await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 
     // trim trailing "//", if present
-    // (modifying getBucketPath() instead seems to break nested bucket display [PR-146])
     const currBucketPath = getBucketPath(initialValues as Bucket).endsWith('//')
       ? getBucketPath(initialValues as Bucket).slice(0, -1)
       : getBucketPath(initialValues as Bucket);
