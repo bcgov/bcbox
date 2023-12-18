@@ -26,6 +26,18 @@ export default {
   },
 
   /**
+   * @function createBucketChild
+   * Creates a bucket
+   * @param {string} parentBucketId ID of parent COMS 'bucket'
+   * @param {string} subKey 'sub-folder' name (last part of the key)
+   * @param {string} bucketName Display name for the mapped sub-folder
+   * @returns {Promise} An axios response
+   */
+  createBucketChild(parentBucketId: string, subKey: string, bucketName: string) {
+    return comsAxios().put(`${BUCKET_PATH}/${parentBucketId}/child`, { subKey, bucketName });
+  },
+
+  /**
    * @function deleteBucket
    * Deletes a bucket
    * This is a COMS DB delete only. The S3 bucket remains intact

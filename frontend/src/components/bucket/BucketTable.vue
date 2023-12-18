@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { ref, watch } from 'vue';
 
-import { BucketPermission, BucketTableBucketName } from '@/components/bucket';
+import { BucketChildConfig, BucketPermission, BucketTableBucketName } from '@/components/bucket';
 import { Spinner } from '@/components/layout';
 import { SyncButton } from '@/components/common';
 import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
@@ -65,13 +65,6 @@ const confirmDeleteBucket = (bucketId: string) => {
 async function deleteBucket(bucketId: string) {
   await bucketStore.deleteBucket(bucketId);
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
-}
-
-/** Get the full path to the first part of its key */
-function getFirstKeyPartPath(node: BucketTreeNode): string {
-  const parts = node.data.key.split(DELIMITER).filter((part) => part);
-
-  return `${node.data.endpoint}/${node.data.bucket}/${parts[0]}`;
 }
 
 /**
@@ -197,8 +190,7 @@ watch(getBuckets, () => {
         } else {
           if (node.data.key !== '/') {
             // Top level bucket not at root so create dummy hierarchy to reach it
-            const rootFullPath = getFirstKeyPartPath(node);
-            const rootKey = node.data.key.split(DELIMITER).filter((part) => part)[0];
+            const rootFullPath = `${node.data.endpoint}/${node.data.bucket}//`;
             const dummyRootNode: BucketTreeNode = {
               key: rootFullPath,
               data: {
@@ -206,10 +198,10 @@ watch(getBuckets, () => {
                 active: false,
                 bucket: node.data.bucket,
                 bucketId: '',
-                bucketName: rootKey,
+                bucketName: node.data.bucket,
                 dummy: true,
                 endpoint: node.data.endpoint,
-                key: rootKey,
+                key: '/',
                 region: '',
                 secretAccessKey: ''
               },
@@ -296,10 +288,14 @@ watch(getBuckets, () => {
       header="Actions"
       header-class="text-right"
       body-class="action-buttons"
-      style="width: 250px"
+      style="width: 280px"
     >
       <template #body="{ node }">
         <span v-if="!node.data.dummy">
+          <BucketChildConfig
+            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
+            :parent-bucket="node.data"
+          />
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.UPDATE)"
             v-tooltip.bottom="'Configure bucket'"

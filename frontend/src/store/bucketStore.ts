@@ -41,6 +41,15 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
+  async function createBucketChild(parentBucketId: string, subKey: string, bucketName: string) {
+    try {
+      appStore.beginIndeterminateLoading();
+      return await bucketService.createBucketChild(parentBucketId, subKey, bucketName);
+    } finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   async function deleteBucket(bucketId: string) {
     try {
       appStore.beginIndeterminateLoading();
@@ -120,6 +129,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
     // Actions
     createBucket,
+    createBucketChild,
     deleteBucket,
     fetchBuckets,
     findBucketById,

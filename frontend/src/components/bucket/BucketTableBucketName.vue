@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { RouteNames } from '@/utils/constants';
+import { getBucketPath, getLastSegment } from '@/utils/utils';
 
 import type { BucketTreeNode } from '@/types';
 
@@ -15,29 +16,34 @@ const props = withDefaults(defineProps<Props>(), {});
   <span v-if="props.node.data.dummy">
     {{ props.node.data.bucketName }}
     <span
-      v-if="node.isRoot"
-      class="bucket-subtext pl-1"
+      v-if="props.node.data.key === '/'"
+      class="pl-2 text-xs"
     >
-      {{ node.data.bucket }}
+      {{ props.node.data.bucketName }}
+    </span>
+    <span
+      v-else
+      class="pl-2 text-xs"
+    >
+      {{ '/' + props.node.data.bucketName }}
     </span>
   </span>
+
   <span v-else>
     <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: props.node.data.bucketId } }">
-      {{ node.data.bucketName }}
+      {{ props.node.data.bucketName }}
     </router-link>
     <span
-      v-if="node.isRoot"
-      class="bucket-subtext pl-2"
+      v-if="props.node.data.key === '/'"
+      class="pl-2 text-xs"
     >
-      {{ node.data.bucket }}
+      {{ getLastSegment(getBucketPath(props.node.data)) }}
+    </span>
+    <span
+      v-else
+      class="pl-2 text-xs"
+    >
+      {{ '/' + getLastSegment(getBucketPath(props.node.data)) }}
     </span>
   </span>
 </template>
-
-<style scoped lang="scss">
-.bucket-subtext {
-  font-size: small;
-  color: gray;
-  font-style: italic;
-}
-</style>
