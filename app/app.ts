@@ -1,12 +1,15 @@
 import compression from 'compression';
 import config from 'config';
+import cors from 'cors';
 import express from 'express';
+import helmet from 'helmet';
 import { join } from 'path';
 // @ts-expect-error api-problem lacks a defined interface; code still works fine
 import Problem from 'api-problem';
 import querystring from 'querystring';
 
 import { name as appName, version as appVersion } from './package.json';
+import { DEFAULTCORS } from './src/components/constants';
 import { getLogger, httpLogger } from './src/components/log';
 import { getGitRevision, readIdpList } from './src/components/utils';
 
@@ -24,8 +27,22 @@ const state = {
 const appRouter = express.Router();
 const app = express();
 app.use(compression());
+app.use(cors(DEFAULTCORS));
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        'default-src': [
+          "'self'", // eslint-disable-line
+          new URL(config.get('frontend.oidc.authority')).origin,
+          new URL(config.get('frontend.coms.apiPath')).origin
+        ]
+      }
+    }
+  })
+);
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
