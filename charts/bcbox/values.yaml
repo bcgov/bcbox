@@ -2,26 +2,35 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# -- Number of pod replicas running in the deployment
 replicaCount: 2
 
 image:
+  # -- Default image repository
   repository: ghcr.io/bcgov
+  # -- Default image pull policy
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # -- Overrides the image tag whose default is the chart appVersion.
   tag: ~
 
+# -- Specify docker-registry secret names as an array
 imagePullSecrets: []
+# -- String to partially override fullname
 nameOverride: ~
+# -- String to fully override fullname
 fullnameOverride: ~
 
-# DeploymentConfig pre-hook failure behavior
+# -- DeploymentConfig pre-hook failure behavior
 failurePolicy: Retry
 
+# -- Annotations for app pods
 podAnnotations: {}
 
+# -- Privilege and access control settings
 podSecurityContext: {}
   # fsGroup: 2000
 
+# -- Privilege and access control settings
 securityContext: {}
   # capabilities:
   #   drop:
@@ -31,9 +40,10 @@ securityContext: {}
   # runAsUser: 1000
 
 autoscaling:
+  # -- Specifies whether the Horizontal Pod Autoscaler should be created
   enabled: false
 
-  # Directly modify scaling behavior and frequency
+  # -- Behavior configures the scaling behavior of the target in both Up and Down directions (scaleUp and scaleDown fields respectively).
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 120
@@ -55,24 +65,30 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   enabled: false
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
+  # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ~
 
 networkPolicy:
+  # -- Specifies whether a network policy should be created
   enabled: true
 
 service:
+  # -- Service type
   type: ClusterIP
+  # -- Service port
   port: 8080
+  # -- Service port name
   portName: http
 
 route:
+  # -- Specifies whether a route should be created
   enabled: true
+  # -- Annotations to add to the route
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
@@ -89,22 +105,26 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
+    # -- Limit Peak CPU (in millicores ex. 1000m)
     cpu: 200m
+    # -- Limit Peak Memory (in gigabytes Gi or megabytes Mi ex. 2Gi)
     memory: 256Mi
   requests:
+    # -- Requested CPU (in millicores ex. 500m)
     cpu: 10m
+    # -- Requested Memory (in gigabytes Gi or megabytes Mi ex. 500Mi)
     memory: 128Mi
 
 config:
-  # Set to true if you want to let Helm manage and overwrite your configmaps.
+  # -- Set to true if you want to let Helm manage and overwrite your configmaps.
   enabled: false
 
-  # This should be set to true if and only if you require configmaps and secrets to be release
+  # -- This should be set to true if and only if you require configmaps and secrets to be release
   # scoped. In the event you want all instances in the same namespace to share a similar
   # configuration, this should be set to false
   releaseScoped: false
 
-  # These values will be wholesale added to the configmap as is; refer to the bcbox
+  # -- These values will be wholesale added to the configmap as is; refer to the bcbox
   # documentation for what each of these values mean and whether you need them defined.
   # Ensure that all values are represented explicitly as strings, as non-string values will
   # not translate over as expected into container environment variables.
