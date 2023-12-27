@@ -93,8 +93,7 @@ appRouter.get('/api', (_req: Request, res: Response): void => {
 });
 
 // Host the static frontend assets
-// This route assumes being executed from '/sbin'
-appRouter.use('/', express.static(join(__dirname, '../dist')));
+appRouter.use('/', express.static(join(__dirname, 'dist')));
 
 // Mount application endpoints
 app.use('/', appRouter);
