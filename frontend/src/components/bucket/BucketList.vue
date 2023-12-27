@@ -41,6 +41,11 @@ const closeBucketConfig = () => {
 };
 
 onMounted(async () => {
+  while (!getUserId.value) {
+    await new Promise((r) => {
+      setTimeout(r, 500);
+    });
+  }
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 });
 </script>
