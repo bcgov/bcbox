@@ -57,6 +57,7 @@ COPY --from=app ${APP_ROOT}/sbin ${APP_ROOT}/sbin
 COPY --from=frontend ${APP_ROOT}/dist ${APP_ROOT}/dist
 COPY .git ${APP_ROOT}/.git
 COPY app/config ${APP_ROOT}/config
+COPY app/config ${APP_ROOT}/sbin/config
 COPY app/package.json app/package-lock.json ${APP_ROOT}
 WORKDIR ${APP_ROOT}
 
