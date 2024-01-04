@@ -42,10 +42,6 @@ const { getConfig } = storeToRefs(useConfigStore());
         <a href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701">NRIDS Optimization</a>
         (NRM only) or your ministry's service desk to get credentials for a bucket. Then come back, log in, and add it
         in BCBox.
-        <br />
-        <br />
-        If you already have a bucket from outside of BCBox, you can't yet work on existing files from that bucket in
-        BCBox, but we are currently working to make this possible through synchronization.
       </p>
 
       <div class="flex flex-column justify-content-center align-items-center mb-4">
