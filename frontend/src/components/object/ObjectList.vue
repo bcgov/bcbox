@@ -72,8 +72,6 @@ onMounted(async () => {
   // updateBreadcrumb();
 
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
-  // TODO: userId+bucketPerms bringing back deleted files??
-  await objectStore.fetchObjects({ bucketId: props.bucketId, userId: getUserId.value, bucketPerms: true });
 });
 </script>
 

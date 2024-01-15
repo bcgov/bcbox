@@ -9,6 +9,7 @@ import { partition } from '@/utils/utils';
 import type { AxiosRequestConfig } from 'axios';
 import type { Ref } from 'vue';
 import type { COMSObject, MetadataPair, ObjectSearchPermissionsOptions, Tag } from '@/types';
+import type { boolean } from 'yup';
 
 export type ObjectStoreState = {
   objects: Ref<Array<COMSObject>>;
@@ -110,66 +111,39 @@ export const useObjectStore = defineStore('object', () => {
     try {
       appStore.beginIndeterminateLoading();
 
-      // Get a unique list of object IDs the user has access to
-      const permResponse = await permissionStore.fetchObjectPermissions(params);
-
-      if (permResponse) {
-        const uniqueIds: Array<string> = [
-          ...new Set<string>(
-            permResponse
-              .map((x: { objectId: string }) => x.objectId)
-              // Resolve API returning all objects with bucketPerms=true even when requesting single objectId
-              .filter((objectId: string) => !params.objectId || objectId === params.objectId)
-          )
-        ];
-
-        let response = Array<COMSObject>();
-        if (uniqueIds.length) {
-          // If metadata specified, search for objects with matching metadata
-          const headers: Record<string, string> = {};
-          if (metadata?.length) {
-            for (const meta of metadata) {
-              headers[`x-amz-meta-${meta.key}`] = meta.value;
-            }
-          }
-
-          response = await objectService
-            .searchObjects(
-              {
-                bucketId: params.bucketId ? [params.bucketId] : undefined,
-                objectId: uniqueIds,
-                tagset: tagset ? tagset.reduce((acc, cur) => ({ ...acc, [cur.key]: cur.value }), {}) : undefined,
-
-                // Added to allow deletion of objects before versioning implementation
-                // TODO: Verify if needed after versioning implemented
-                deleteMarker: false,
-                latest: true
-              },
-              headers
-            )
-            .then((r) => r.data);
-
-          // Remove old values matching search parameters
-          const matches = (x: COMSObject) =>
-            (!params.objectId || x.id === params.objectId) && (!params.bucketId || x.bucketId === params.bucketId);
-
-          const [, difference] = partition(state.objects.value, matches);
-
-          // Merge and assign
-          state.objects.value = difference.concat(response);
-
-          // Track all the object IDs in this bucket that the user would have access to in the table
-          // (even if filters are applied)
-          if (!tagset?.length && !metadata?.length) {
-            state.unfilteredObjectIds.value = state.objects.value
-              .filter((x) => !params.bucketId || x.bucketId === params.bucketId)
-              .map((o) => o.id);
-          }
-        } else {
-          state.objects.value = response;
-          state.unfilteredObjectIds.value = [];
+      // If metadata specified, search for objects with matching metadata
+      const headers: Record<string, string> = {};
+      if (metadata?.length) {
+        for (const meta of metadata) {
+          headers[`x-amz-meta-${meta.key}`] = meta.value;
         }
       }
+
+      const response = await objectService
+        .searchObjects(
+          {
+            bucketId: params.bucketId ? [params.bucketId] : undefined,
+            tagset: tagset ? tagset.reduce((acc, cur) => ({ ...acc, [cur.key]: cur.value }), {}) : undefined,
+            deleteMarker: false,
+            latest: true,
+            permissions: params.permissions,
+            page: params.page,
+            limit: params.limit
+          },
+          headers
+        )
+        .then((r) => r.data);
+
+      console.log(response);
+
+      // Remove old values matching search parameters
+      const matches = (x: COMSObject) =>
+        (!params.objectId || x.id === params.objectId) && (!params.bucketId || x.bucketId === params.bucketId);
+
+      const [, difference] = partition(state.objects.value, matches);
+
+      // Merge and assign
+      state.objects.value = difference.concat(response);
     } catch (error: any) {
       toast.error('Fetching objects', error);
     } finally {

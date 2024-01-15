@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onUnmounted, ref, watch } from 'vue';
+import { onUnmounted, onMounted, ref, watch } from 'vue';
 
 import { Spinner } from '@/components/layout';
 import {
@@ -54,6 +54,22 @@ const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
 
 // Actions
 const toast = useToast();
+
+function getData(permissions: any, page: any, limit: any) {
+  return objectStore.fetchObjects({
+    bucketId: props.bucketId,
+    userId: getUserId.value,
+    bucketPerms: true,
+    permissions: permissions,
+    page: page,
+    limit: limit
+  });
+}
+
+onMounted(() => {
+  // get page 1 data into store
+  getData(true, 1, 3);
+});
 
 function clearSelected() {
   selectAll.value = false;
@@ -122,10 +138,10 @@ const filters = ref({
       class="p-datatable-sm"
       responsive-layout="scroll"
       :paginator="true"
-      :rows="10"
+      :rows="3"
       paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
       current-page-report-template="{first}-{last} of {totalRecords}"
-      :rows-per-page-options="[10, 20, 50]"
+      :rows-per-page-options="[3, 20, 50]"
       sort-field="lastUpdatedDate"
       :sort-order="-1"
       :global-filter-fields="['name']"
@@ -180,7 +196,7 @@ const filters = ref({
             outlined
             rounded
             aria-label="Filter"
-            @click="objectStore.fetchObjects({ bucketId: props.bucketId, userId: getUserId, bucketPerms: true })"
+            @click="getData(true, 1, 3)"
           />
         </div>
       </template>
