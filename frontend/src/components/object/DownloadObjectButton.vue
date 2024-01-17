@@ -28,8 +28,9 @@ const displayNoFileDlg = ref(false);
 const download = () => {
   if (props.ids.length) {
     // For now we are looping the supplied IDs (if multiple selected) until there is a batching feature
-    props.ids.forEach((i) => {
-      objectStore.downloadObject(i, props.versionId);
+    props.ids.forEach(async (i) => {
+      var url = await objectStore.downloadObject(i, props.versionId);
+      window.open(url, '_blank');
     });
   } else {
     displayNoFileDlg.value = true;

@@ -138,8 +138,7 @@ export default {
         }
       })
       .then((response) => {
-        const url = response.data;
-        window.open(url, '_blank');
+        return response.data;
       });
   },
 

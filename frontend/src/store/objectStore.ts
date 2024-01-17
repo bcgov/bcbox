@@ -94,7 +94,7 @@ export const useObjectStore = defineStore('object', () => {
   async function downloadObject(objectId: string, versionId?: string) {
     try {
       appStore.beginIndeterminateLoading();
-      await objectService.getObject(objectId, versionId);
+      return await objectService.getObject(objectId, versionId);
     } catch (error: any) {
       toast.error('Downloading object', error);
     } finally {
