@@ -133,11 +133,11 @@ describe('Object Store', () => {
     });
   });
 
-  describe('downloadObject', () => {
+  describe('getObjectUrl', () => {
     it('gets the most recent object', async () => {
       getObjectSpy.mockReturnValue({} as any);
 
-      await objectStore.downloadObject(obj.id);
+      await objectStore.getObjectUrl(obj.id);
 
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(getObjectSpy).toHaveBeenCalledTimes(1);
@@ -148,7 +148,7 @@ describe('Object Store', () => {
     it('gets the object by version', async () => {
       getObjectSpy.mockReturnValue({} as any);
 
-      await objectStore.downloadObject(obj.id, '1');
+      await objectStore.getObjectUrl(obj.id, '1');
 
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(getObjectSpy).toHaveBeenCalledTimes(1);
@@ -161,7 +161,7 @@ describe('Object Store', () => {
         throw new Error();
       });
 
-      await objectStore.downloadObject(obj.id);
+      await objectStore.getObjectUrl(obj.id);
 
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(getObjectSpy).toHaveBeenCalledTimes(1);

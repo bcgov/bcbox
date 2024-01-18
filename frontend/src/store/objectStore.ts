@@ -91,10 +91,10 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  async function downloadObject(objectId: string, versionId?: string) {
+  async function getObjectUrl(objectId: string, versionId?: string) {
     try {
       appStore.beginIndeterminateLoading();
-      return await objectService.getObject(objectId, versionId);
+      return objectService.getObject(objectId, versionId).then((response) => response.data);
     } catch (error: any) {
       toast.error('Downloading object', error);
     } finally {
@@ -270,7 +270,7 @@ export const useObjectStore = defineStore('object', () => {
     // Actions
     createObject,
     deleteObject,
-    downloadObject,
+    getObjectUrl,
     fetchObjects,
     findObjectById,
     headObject,
