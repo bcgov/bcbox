@@ -39,6 +39,9 @@ const searching = ref(false);
 const selectedMetadata: Ref<MetadataPair[]> = ref([]);
 const selectedTags: Ref<Tag[]> = ref([]);
 
+// Emits
+const emit = defineEmits(['selectedFilters']);
+
 // Store subscriptions
 objectStore.$onAction(({ name, args }) => {
   // If someone calls fetchObjects to refresh the table, clear the filter
@@ -118,7 +121,7 @@ const selectedFilterValuesChanged = () => {
   // Get the 'display' property out from selected tag and metadata
   const metaToSearch: Array<MetadataPair> = selectedMetadata.value.map(({ ...meta }: any) => meta);
   const tagSetToSearch: Array<Tag> = selectedTags.value.map(({ ...tag }: any) => tag);
-
+  emit('selectedFilters', { metaToSearch, tagSetToSearch });
   // Search the object store with the tagset as a param and metadata as headers
   objectStore.fetchObjects(
     {
