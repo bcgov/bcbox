@@ -9,4 +9,9 @@ export type SearchObjectsOptions = {
   active?: boolean;
   deleteMarker?: boolean;
   latest?: boolean;
+  permissions?: boolean;
+  page?: number;
+  limit?: number;
+  sort?: string;
+  order?: string;
 };

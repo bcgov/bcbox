@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onUnmounted, ref, watch } from 'vue';
+import { onUnmounted, onMounted, ref } from 'vue';
 
 import { Spinner } from '@/components/layout';
 import {
@@ -13,10 +13,11 @@ import {
 import { SyncButton } from '@/components/common';
 import { ShareObjectButton } from '@/components/object/share';
 import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, useToast } from '@/lib/primevue';
-import { useAuthStore, useAppStore, useObjectStore, usePermissionStore } from '@/store';
+import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 import { formatDateLong } from '@/utils/formatters';
+import { objectService } from '@/services';
 
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
@@ -24,6 +25,10 @@ import type { COMSObject } from '@/types';
 type COMSObjectDataSource = {
   lastUpdatedDate?: string;
 } & COMSObject;
+
+type DataTableObjectSource = {
+  [key: string]: any;
+};
 
 // Props
 type Props = {
@@ -52,6 +57,12 @@ const permissionsObjectId = ref('');
 const permissionsObjectName: Ref<string | undefined> = ref('');
 const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
 
+const loading = ref(false);
+const lazyParams: Ref<DataTableObjectSource> = ref({});
+const totalRecords = ref(0);
+const first = ref(0);
+const selectedObjects: any = ref();
+
 // Actions
 const toast = useToast();
 
@@ -61,7 +72,10 @@ function clearSelected() {
 }
 
 const formatShortUuid = (uuid: string) => uuid?.slice(0, 8) ?? uuid;
-const onDeletedSuccess = () => toast.success('File deleted');
+const onDeletedSuccess = () => {
+  toast.success('File deleted');
+  loadLazyData();
+};
 
 function selectCurrentPage() {
   objectStore.setSelectedObjects(
@@ -82,21 +96,39 @@ async function showPermissions(objectId: string) {
   permissionsObjectId.value = objectId;
   permissionsObjectName.value = objectStore.findObjectById(objectId)?.name;
 }
-
-watch(getObjects, async () => {
-  clearSelected();
-
-  // Filter object cache to this specific bucket
-  const objs: Array<COMSObjectDataSource> = getObjects.value.filter(
-    (x: COMSObject) => x.bucketId === props.bucketId
-  ) as COMSObjectDataSource[];
-
-  tableData.value = objs.map((x: COMSObjectDataSource) => {
-    x.lastUpdatedDate = x.updatedAt ?? x.createdAt;
-    return x;
-  });
+onMounted(() => {
+  loading.value = true;
+  lazyParams.value = {
+    first: 0,
+    rows: 10,
+    sortField: null,
+    sortOrder: null,
+    filters: filters.value
+  };
+  loadLazyData();
 });
 
+const loadLazyData = (event?: any) => {
+  lazyParams.value = { ...lazyParams.value, first: event?.first || first.value };
+  objectService
+    .searchObjects({
+      bucketId: props.bucketId ? [props.bucketId] : undefined,
+      deleteMarker: false,
+      latest: true,
+      permissions: true,
+      page: lazyParams.value.page ? lazyParams.value.page + 1 : 1,
+      limit: lazyParams.value.rows
+    })
+    .then((r: any) => {
+      tableData.value = r.data;
+      totalRecords.value = +r?.headers['x-total-rows'];
+      loading.value = false;
+    });
+};
+const onPage = (event: any) => {
+  lazyParams.value = event;
+  loadLazyData(event);
+};
 // Clear selections when navigating away
 onUnmounted(() => {
   objectStore.setSelectedObjects([]);
@@ -114,17 +146,17 @@ const filters = ref({
 <template>
   <div class="object-table">
     <DataTable
-      v-model:selection="objectStore.selectedObjects"
+      v-model:selection="selectedObjects"
       v-model:filters="filters"
-      :loading="useAppStore().getIsLoading"
-      :value="tableData"
+      lazy
+      :loading="loading"
+      v-model:value="tableData"
+      :total-records="totalRecords"
       data-key="id"
       class="p-datatable-sm"
       responsive-layout="scroll"
       :paginator="true"
       :rows="10"
-      paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-      current-page-report-template="{first}-{last} of {totalRecords}"
       :rows-per-page-options="[10, 20, 50]"
       sort-field="lastUpdatedDate"
       :sort-order="-1"
@@ -140,7 +172,7 @@ const filters = ref({
           }
         }
       "
-      @page="clearSelected"
+      @page="onPage($event)"
       @update:sort-order="clearSelected"
       @update:sort-field="clearSelected"
       @update:rows="clearSelected"
@@ -186,7 +218,7 @@ const filters = ref({
       </template>
       <template #empty>
         <div
-          v-if="!useAppStore().getIsLoading"
+          v-if="!loading"
           class="flex justify-content-center"
         >
           <h3>There are no objects associated with your account in this bucket.</h3>
@@ -235,7 +267,7 @@ const filters = ref({
         :hidden="props.objectInfoId ? true : false"
       >
         <template #body="{ data }">
-          {{ formatDateLong(data.lastUpdatedDate) }}
+          {{ formatDateLong(data.updatedAt ?? data.createdAt) }}
         </template>
       </Column>
       <Column
