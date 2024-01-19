@@ -127,20 +127,15 @@ export default {
    * Get an object
    * @param {string} objectId The id for the object to get
    * @param {string} versionId An optional versionId
+   * @returns {Promise} An axios response
    */
   getObject(objectId: string, versionId?: string) {
-    // Running in 'url' download mode only, could add options for other modes if needed
-    return comsAxios()
-      .get(`${PATH}/${objectId}`, {
-        params: {
-          versionId: versionId,
-          download: 'url'
-        }
-      })
-      .then((response) => {
-        const url = response.data;
-        window.open(url, '_blank');
-      });
+    return comsAxios().get(`${PATH}/${objectId}`, {
+      params: {
+        versionId: versionId,
+        download: 'url'
+      }
+    });
   },
 
   /**

@@ -2,9 +2,11 @@
 import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { Button, Dialog } from '@/lib/primevue';
+import { Button, Dialog, useToast } from '@/lib/primevue';
 import { useObjectStore } from '@/store';
 import { ButtonMode } from '@/utils/enums';
+
+const toast = useToast();
 
 // Props
 type Props = {
@@ -28,9 +30,19 @@ const displayNoFileDlg = ref(false);
 const download = () => {
   if (props.ids.length) {
     // For now we are looping the supplied IDs (if multiple selected) until there is a batching feature
-    props.ids.forEach((i) => {
-      objectStore.downloadObject(i, props.versionId);
-    });
+    let alerted = false;
+    for (let i of props.ids) {
+      // get S3 url
+      objectStore.getObjectUrl(i, props.versionId).then((url) => {
+        // open new tab, window or save dialog
+        const newTab = window.open(url, '_blank');
+        // if browser blocked new tab
+        if (newTab === null && !alerted) {
+          toast.warn('Downloading Objects', 'Your browser blocked multiple new tabs from opening.', { life: 0 });
+          alerted = true;
+        }
+      });
+    }
   } else {
     displayNoFileDlg.value = true;
   }
