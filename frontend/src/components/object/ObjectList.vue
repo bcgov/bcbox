@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import {
   DeleteObjectButton,
@@ -10,7 +10,7 @@ import {
   ObjectUpload
 } from '@/components/object';
 import { Button } from '@/lib/primevue';
-import { useAuthStore, useBucketStore, useObjectStore, usePermissionStore } from '@/store';
+import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 
@@ -25,8 +25,6 @@ const props = withDefaults(defineProps<Props>(), {
   bucketId: undefined
 });
 
-// Store
-const bucketStore = useBucketStore();
 //const navStore = useNavStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();

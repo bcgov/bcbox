@@ -12,7 +12,7 @@ import {
 } from '@/components/object';
 import { SyncButton } from '@/components/common';
 import { ShareObjectButton } from '@/components/object/share';
-import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, useToast } from '@/lib/primevue';
+import { Button, Column, DataTable, Dialog, InputText, useToast } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
@@ -49,7 +49,6 @@ const permissionStore = usePermissionStore();
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
-const selectAll = ref(false);
 const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
 const permissionsObjectName: Ref<string | undefined> = ref('');
@@ -73,16 +72,6 @@ const onDeletedSuccess = () => {
   toast.success('File deleted');
   loadLazyData();
 };
-
-function selectCurrentPage() {
-  objectStore.setSelectedObjects(
-    tableData.value.filter((object) => {
-      return Array.from(document.querySelectorAll('[data-objectId]'))
-        .map((x) => x.getAttribute('data-objectId'))
-        .includes(object.id);
-    })
-  );
-}
 
 const showInfo = (id: string) => emit('show-object-info', id);
 
@@ -131,7 +120,6 @@ const loadLazyData = (event?: any) => {
 
       // add to object store
       r.data.forEach((o: COMSObject) => {
-        console.log(o);
         objectStore.$patch((state) => {
           state.objects.push(o);
         });
@@ -191,12 +179,12 @@ const selectedFilters = (payload: any) => {
   <div class="object-table">
     <DataTable
       ref="dt"
+      v-model:value="tableData"
       v-model:selection="selectedObjects"
       v-model:filters="filters"
       lazy
       paginator
       :loading="loading"
-      v-model:value="tableData"
       :total-records="totalRecords"
       data-key="id"
       class="p-datatable-sm"
@@ -205,7 +193,7 @@ const selectedFilters = (payload: any) => {
       :rows-per-page-options="[10, 20, 50]"
       sort-field="updatedAt"
       :sort-order="-1"
-      filterDisplay="row"
+      filter-display="row"
       :global-filter-fields="['name']"
       :first="first"
       update:filters
