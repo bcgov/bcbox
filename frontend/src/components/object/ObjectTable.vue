@@ -66,12 +66,6 @@ const filters = ref({
   meta: { value: undefined, matchMode: 'contains' }
 });
 
-const loading = ref(false);
-const lazyParams: Ref<DataTableObjectSource> = ref({});
-const totalRecords = ref(0);
-const first = ref(0);
-const selectedObjects: any = ref();
-
 // Actions
 const toast = useToast();
 const formatShortUuid = (uuid: string) => uuid?.slice(0, 8) ?? uuid;
@@ -134,6 +128,19 @@ const loadLazyData = (event?: any) => {
       tableData.value = r.data;
       totalRecords.value = +r?.headers['x-total-rows'];
       loading.value = false;
+
+      // add to object store
+      r.data.forEach((o: COMSObject) => {
+        console.log(o);
+        objectStore.$patch((state) => {
+          state.objects.push(o);
+        });
+      });
+      return r.data;
+    })
+    // add objects' permissions to store
+    .then((objects: Array<COMSObjectDataSource>) => {
+      permissionStore.fetchObjectPermissions({ objectId: objects.map((o: COMSObject) => o.id) });
     });
 };
 const onPage = (event?: any) => {
