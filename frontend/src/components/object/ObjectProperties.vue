@@ -13,12 +13,12 @@ import type { Bucket, COMSObject, Metadata } from '@/types';
 // Props
 type Props = {
   objectId: string;
-  versionId?: string;
+  // versionId?: string;
   fullView: boolean;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  versionId: undefined
+  // versionId: undefined
 });
 
 // Store
@@ -38,11 +38,12 @@ const updatedBy: Ref<string | undefined> = ref(undefined);
 // Actions
 async function load() {
   object.value = objectStore.findObjectById(props.objectId);
-  await bucketStore.fetchBuckets({ bucketId: object.value?.bucketId });
-  bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
 
   if (props.fullView) {
-    objectMetadata.value = metadataStore.findMetadataByObjectId(object.value?.id as string);
+    // to get bucket name
+    await bucketStore.fetchBuckets({ bucketId: object.value?.bucketId });
+    bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
+
     await userStore.fetchUsers({ userId: [object.value?.createdBy, object.value?.updatedBy] });
     createdBy.value = getUserSearch.value.find((x) => x.userId === object.value?.createdBy)?.fullName;
     updatedBy.value = getUserSearch.value.find((x) => x.userId === object.value?.updatedBy)?.fullName;
