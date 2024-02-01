@@ -29,11 +29,6 @@ const { getUserId } = storeToRefs(useAuthStore());
 const ready: Ref<boolean> = ref(false);
 const bucket: Ref<Bucket | undefined> = ref(undefined);
 
-// Actions
-async function getBucketName() {
-  bucket.value = props.bucketId ? await bucketStore.findBucketById(props.bucketId) : undefined;
-}
-
 onErrorCaptured((e: Error) => {
   const toast = useToast();
   toast.error('Loading bucket', e.message);
@@ -42,16 +37,18 @@ onErrorCaptured((e: Error) => {
 onBeforeMount(async () => {
   const router = useRouter();
 
-  const permResponse = await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
-  if (!permResponse?.some((x: BucketPermission) => x.bucketId === props.bucketId)) {
-    router.replace({ name: RouteNames.FORBIDDEN });
-  } else {
+  // fetch bucktes (which is already scoped by cur user's permissions) and populates bucket and permissions in store
+  const bucketResponse = await bucketStore.fetchBuckets({
+    bucketId: props.bucketId,
+    userId: getUserId.value,
+    objectPerms: true
+  });
+  if (bucketResponse?.length) {
+    bucket.value = bucketResponse[0];
     ready.value = true;
+  } else {
+    router.replace({ name: RouteNames.FORBIDDEN });
   }
-});
-
-onMounted(() => {
-  getBucketName();
 });
 </script>
 

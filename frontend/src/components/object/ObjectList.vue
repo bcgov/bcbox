@@ -57,24 +57,6 @@ const showUpload = () => {
 const closeUpload = () => {
   displayUpload.value = false;
 };
-
-// const updateBreadcrumb = async () => {
-//   try {
-//     const bucket = await bucketStore.getBucketInfo(props.bucketId as string);
-//     navStore.replace('__listObjectsDynamic', bucket?.bucketName ?? 'Unknown bucket');
-//   } catch (error: any) {
-//     toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: error, life: 5000 });
-//   }
-// };
-
-onMounted(async () => {
-  // Removed for now
-  // updateBreadcrumb();
-
-  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
-  // TODO: userId+bucketPerms bringing back deleted files??
-  await objectStore.fetchObjects({ bucketId: props.bucketId, userId: getUserId.value, bucketPerms: true });
-});
 </script>
 
 <template>
