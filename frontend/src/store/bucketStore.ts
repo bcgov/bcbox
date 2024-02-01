@@ -59,33 +59,39 @@ export const useBucketStore = defineStore('bucket', () => {
       appStore.endIndeterminateLoading();
     }
   }
-
+  /**
+   * function does the following in order:
+   * - fetches bucket permissions
+   *   (fetchBucketPermissions() also add bucket permissions to the permission store)
+   * - pass bucketId's of buckets with a permission to searchBuckets()
+   * - add buckets to store (skipping existing matches)
+   * @param params search parameters
+   * @returns an array of matching buckets found
+   */
   async function fetchBuckets(params?: BucketSearchPermissionsOptions) {
     try {
       appStore.beginIndeterminateLoading();
 
       // Get a unique list of bucket IDs the user has access to
       const permResponse = await permissionStore.fetchBucketPermissions(params);
+      // if permissions found
       if (permResponse) {
         const uniqueIds: Array<string> = [
           ...new Set<string>(permResponse.map((x: { bucketId: string }) => x.bucketId))
         ];
 
         let response = Array<Bucket>();
-        if (uniqueIds.length) {
-          response = (await bucketService.searchBuckets({ bucketId: uniqueIds })).data;
+        response = (await bucketService.searchBuckets({ bucketId: uniqueIds })).data;
 
-          // Remove old values matching search parameters
-          const matches = (x: Bucket) => !params?.bucketId || x.bucketId === params.bucketId;
+        // Remove old values matching search parameters
+        const matches = (x: Bucket) => !params?.bucketId || x.bucketId === params.bucketId;
 
-          const [, difference] = partition(state.buckets.value, matches);
+        const [, difference] = partition(state.buckets.value, matches);
 
-          // Merge and assign
-          state.buckets.value = difference.concat(response);
-        } else {
-          state.buckets.value = response;
-        }
-      }
+        // Merge and assign
+        state.buckets.value = difference.concat(response);
+        return response;
+      } else return [];
     } catch (error: any) {
       toast.error('Fetching buckets', error);
     } finally {

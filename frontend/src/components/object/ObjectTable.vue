@@ -120,12 +120,26 @@ const loadLazyData = (event?: any) => {
       limit: lazyParams.value.rows
     })
     .then((r: any) => {
+      // set as table data
       tableData.value = r.data;
       totalRecords.value = +r?.headers['x-total-rows'];
       loading.value = false;
+
+      // add to object store
+      r.data.forEach((o: COMSObject) => {
+        console.log(o);
+        objectStore.$patch((state) => {
+          state.objects.push(o);
+        });
+      });
+      return r.data;
+    })
+    // add permissions to store
+    .then((objects: Array<COMSObjectDataSource>) => {
+      permissionStore.fetchObjectPermissions({ objectId: objects.map((o: COMSObject) => o.id) });
     });
 };
-const onPage = (event: any) => {
+const onPage = (event) => {
   lazyParams.value = event;
   loadLazyData(event);
 };
