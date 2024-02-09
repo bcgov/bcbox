@@ -28,11 +28,10 @@ const closeObjectInfo = async () => {
   emit('close-object-info');
 };
 
-const obj = objectStore.findObjectById(props.objectId);
-
 watch(
   props,
   () => {
+    const obj = objectStore.findObjectById(props.objectId);
     if (
       obj &&
       (obj.public || permissionStore.isObjectActionAllowed(obj.id, getUserId.value, Permissions.READ, obj.bucketId))

@@ -35,8 +35,13 @@ const bucketTreeNodeMap = new Map<string, BucketTreeNode>();
 const confirm = useConfirm();
 const endpointMap = new Map<string, Array<Bucket>>();
 
-const showSidebarInfo = async (id: number) => {
+// access bucketId from parent
+// const dataId = defineModel('dataId', { type: String });
+// const dataId: Ref<string | undefined> = ref(undefined);
+
+const showSidebarInfo = (id: string) => {
   emit('show-sidebar-info', id);
+  // dataId.value = id;
 };
 
 const showBucketConfig = async (bucket: Bucket) => {
