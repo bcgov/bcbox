@@ -125,7 +125,8 @@ const loadLazyData = (event?: any) => {
 
       // add to object store
       r.data.forEach((o: COMSObject) => {
-        console.log(o);
+        // patch will add to existing values instead of replacing all
+        // may be able to just replace all and only store objects currently visible in datatable
         objectStore.$patch((state) => {
           state.objects.push(o);
         });

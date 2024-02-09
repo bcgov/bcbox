@@ -10,7 +10,8 @@ export type { Permission } from './Permission';
 export type { Tagging } from './Tagging';
 export type { Tag } from './Tag';
 export type { User } from './User';
-export type { UserPermissions } from './UserPermissions';
+export type { UserBucketPermissions } from './UserBucketPermissions';
+export type { UserObjectPermissions } from './UserObjectPermissions';
 export type { Version } from './Version';
 
 export type { BucketAddPermissionsOptions } from './options/BucketAddPermissionsOptions';
