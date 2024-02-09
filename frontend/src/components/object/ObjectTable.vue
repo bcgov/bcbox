@@ -65,12 +65,6 @@ const filters = ref({
   meta: { value: undefined, matchMode: 'contains' }
 });
 
-const loading = ref(false);
-const lazyParams: Ref<DataTableObjectSource> = ref({});
-const totalRecords = ref(0);
-const first = ref(0);
-const selectedObjects: any = ref();
-
 // Actions
 const toast = useToast();
 const formatShortUuid = (uuid: string) => uuid?.slice(0, 8) ?? uuid;

@@ -14,17 +14,16 @@ import type {
   COMSObjectPermission,
   ObjectSearchPermissionsOptions,
   IdentityProvider,
-  Permission,
   User,
-  UserPermissions
+  UserBucketPermissions,
+  UserObjectPermissions
 } from '@/types';
 
 export type PermissionStoreState = {
   bucketPermissions: Ref<Array<BucketPermission>>;
-  mappedBucketToUserPermissions: Ref<Array<UserPermissions>>;
-  mappedObjectToUserPermissions: Ref<Array<UserPermissions>>;
+  mappedBucketToUserPermissions: Ref<Array<UserBucketPermissions>>;
+  mappedObjectToUserPermissions: Ref<Array<UserObjectPermissions>>;
   objectPermissions: Ref<Array<COMSObjectPermission>>;
-  permissions: Ref<Array<Permission>>;
 };
 
 export const usePermissionStore = defineStore('permission', () => {
@@ -39,8 +38,7 @@ export const usePermissionStore = defineStore('permission', () => {
     bucketPermissions: ref([]),
     mappedBucketToUserPermissions: ref([]),
     mappedObjectToUserPermissions: ref([]),
-    objectPermissions: ref([]),
-    permissions: ref([])
+    objectPermissions: ref([])
   };
 
   // Getters
@@ -48,8 +46,7 @@ export const usePermissionStore = defineStore('permission', () => {
     getBucketPermissions: computed(() => state.bucketPermissions.value),
     getMappedBucketToUserPermissions: computed(() => state.mappedBucketToUserPermissions.value),
     getMappedObjectToUserPermissions: computed(() => state.mappedObjectToUserPermissions.value),
-    getObjectPermissions: computed(() => state.objectPermissions.value),
-    getPermissions: computed(() => state.permissions.value)
+    getObjectPermissions: computed(() => state.objectPermissions.value)
   };
 
   // Actions
@@ -73,7 +70,7 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  function addBucketUser(user: UserPermissions): void {
+  function addBucketUser(user: UserBucketPermissions): void {
     try {
       getters.getMappedBucketToUserPermissions.value.push(user);
     } catch (error: any) {
@@ -106,7 +103,7 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  function addObjectUser(user: UserPermissions): void {
+  function addObjectUser(user: UserObjectPermissions): void {
     try {
       getters.getMappedObjectToUserPermissions.value.push(user);
     } catch (error: any) {
@@ -114,7 +111,7 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  async function deleteBucketPermission(bucketId: string, userId: string, permCode: string): Promise<void>{
+  async function deleteBucketPermission(bucketId: string, userId: string, permCode: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
       await permissionService.bucketDeletePermission(bucketId, { userId, permCode });
@@ -239,11 +236,12 @@ export const usePermissionStore = defineStore('permission', () => {
         return bucketPerms.some((perm: BucketPermission) => perm.userId === userId && perm.permCode === permission);
       };
 
-      const userPermissions: UserPermissions[] = [];
+      const userPermissions: UserBucketPermissions[] = [];
       uniqueUsers.forEach((user: User) => {
         const idp = getConfig.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
 
         userPermissions.push({
+          bucketId: bucketId,
           userId: user.userId,
           idpName: idp?.name,
           elevatedRights: idp?.elevatedRights,
@@ -275,11 +273,12 @@ export const usePermissionStore = defineStore('permission', () => {
         return objectPerms.some((perm: COMSObjectPermission) => perm.userId === userId && perm.permCode === permission);
       };
 
-      const userPermissions: UserPermissions[] = [];
+      const userPermissions: UserObjectPermissions[] = [];
       uniqueUsers.forEach((user: User) => {
         const idp = getConfig.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
 
         userPermissions.push({
+          objectId: objectId,
           userId: user.userId,
           idpName: idp?.name,
           elevatedRights: idp?.elevatedRights,
