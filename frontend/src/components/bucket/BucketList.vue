@@ -16,14 +16,17 @@ const { getUserId } = storeToRefs(useAuthStore());
 const { getConfig } = storeToRefs(useConfigStore());
 
 // State
-const sidebarInfo: Ref<Bucket | undefined> = ref(undefined);
+const sidebarInfo: Ref<string | undefined> = ref(undefined);
 const displayBucketConfig: Ref<boolean> = ref(false);
 const bucketConfigTitle: Ref<string> = ref(BucketConfig.TITLE_NEW_BUCKET);
 const bucketToUpdate: Ref<Bucket | undefined> = ref(undefined);
 
+// const dataId = defineModel('dataId', { type: String });
+// const dataId: Ref<string | undefined> = ref(undefined);
+
 // Actions
-const showSidebarInfo = async (bucketId: string) => {
-  sidebarInfo.value = bucketStore.findBucketById(bucketId);
+const showSidebarInfo = (bucketId: string) => {
+  sidebarInfo.value = bucketId;
 };
 
 const closeSidebarInfo = () => {
@@ -117,6 +120,7 @@ onMounted(async () => {
   </div>
   <div class="flex">
     <div class="flex-grow-1">
+      <!-- v-model:dataId="dataId"-->
       <BucketTable
         @show-sidebar-info="showSidebarInfo"
         @show-bucket-config="showBucketConfig"
@@ -127,8 +131,8 @@ onMounted(async () => {
       class="flex-shrink-0 w-4 pl-4 max-w-28rem"
     >
       <BucketSidebar
-        :sidebar-info="sidebarInfo"
         @close-sidebar-info="closeSidebarInfo"
+        v-model:bucketId="sidebarInfo"
       />
     </div>
   </div>
