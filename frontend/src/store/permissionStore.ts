@@ -14,7 +14,6 @@ import type {
   COMSObjectPermission,
   ObjectSearchPermissionsOptions,
   IdentityProvider,
-  Permission,
   User,
   UserPermissions
 } from '@/types';
@@ -24,7 +23,6 @@ export type PermissionStoreState = {
   mappedBucketToUserPermissions: Ref<Array<UserPermissions>>;
   mappedObjectToUserPermissions: Ref<Array<UserPermissions>>;
   objectPermissions: Ref<Array<COMSObjectPermission>>;
-  permissions: Ref<Array<Permission>>;
 };
 
 export const usePermissionStore = defineStore('permission', () => {
@@ -39,8 +37,7 @@ export const usePermissionStore = defineStore('permission', () => {
     bucketPermissions: ref([]),
     mappedBucketToUserPermissions: ref([]),
     mappedObjectToUserPermissions: ref([]),
-    objectPermissions: ref([]),
-    permissions: ref([])
+    objectPermissions: ref([])
   };
 
   // Getters
@@ -48,39 +45,35 @@ export const usePermissionStore = defineStore('permission', () => {
     getBucketPermissions: computed(() => state.bucketPermissions.value),
     getMappedBucketToUserPermissions: computed(() => state.mappedBucketToUserPermissions.value),
     getMappedObjectToUserPermissions: computed(() => state.mappedObjectToUserPermissions.value),
-    getObjectPermissions: computed(() => state.objectPermissions.value),
-    getPermissions: computed(() => state.permissions.value)
+    getObjectPermissions: computed(() => state.objectPermissions.value)
   };
 
   // Actions
   async function addBucketPermission(bucketId: string, userId: string, permCode: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
-      await permissionService.bucketAddPermissions(bucketId, [{ userId, permCode }]);
+      const newPermission = (await permissionService.bucketAddPermissions(bucketId, [{ userId, permCode }])).data[0];
+      // add new permission to store
+      state.bucketPermissions.value.push(newPermission);
+      // map new permission
+      var foundIndex = state.mappedBucketToUserPermissions.value.findIndex((x) => x.userId === userId);
+      state.mappedBucketToUserPermissions.value[foundIndex][permCode.toLowerCase()] = true;
     } catch (error: any) {
       toast.error('Adding bucket permission', error);
     } finally {
-      await fetchBucketPermissions();
-
-      const initialPerms = [...state.mappedBucketToUserPermissions.value];
-      await mapBucketToUserPermissions(bucketId);
-      const afterPerms = [...state.mappedBucketToUserPermissions.value];
-
-      const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
-      state.mappedBucketToUserPermissions.value = state.mappedBucketToUserPermissions.value.concat(results);
-
       appStore.endIndeterminateLoading();
     }
   }
 
   function addBucketUser(user: UserPermissions): void {
     try {
-      getters.getMappedBucketToUserPermissions.value.push(user);
+      state.mappedBucketToUserPermissions.value.push(user);
     } catch (error: any) {
       toast.error('Adding bucket user', error);
     }
   }
 
+  // TODO: follow same patter as addBucketPermission() above
   async function addObjectPermission(objectId: string, userId: string, permCode: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
@@ -108,20 +101,24 @@ export const usePermissionStore = defineStore('permission', () => {
 
   function addObjectUser(user: UserPermissions): void {
     try {
-      getters.getMappedObjectToUserPermissions.value.push(user);
+      state.getMappedObjectToUserPermissions.value.push(user);
     } catch (error: any) {
       toast.error('Adding object user', error);
     }
   }
 
-  async function deleteBucketPermission(bucketId: string, userId: string, permCode: string): Promise<void>{
+  async function deleteBucketPermission(bucketId: string, userId: string, permCode: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
-      await permissionService.bucketDeletePermission(bucketId, { userId, permCode });
+      const deletedPerm = (await permissionService.bucketDeletePermission(bucketId, { userId, permCode })).data;
+      // remove from store
+      state.bucketPermissions.value = state.bucketPermissions.value.filter((p) => p.id !== deletedPerm[0].id);
+      // un-map
+      var userIndex = state.mappedBucketToUserPermissions.value.findIndex((x) => x.userId === userId);
+      state.mappedBucketToUserPermissions.value[userIndex][permCode.toLowerCase()] = false;
     } catch (error: any) {
       toast.error('Deleting bucket permission', error);
     } finally {
-      await removeBucketUserPermsHandler(bucketId, userId);
       appStore.endIndeterminateLoading();
     }
   }
@@ -129,16 +126,15 @@ export const usePermissionStore = defineStore('permission', () => {
   async function deleteObjectPermission(objectId: string, userId: string, permCode: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
-      await permissionService.objectDeletePermission(objectId, { userId, permCode });
-
-      if (permCode === Permissions.READ) {
-        const forceToggleOnRead: Array<string> = [Permissions.UPDATE, Permissions.DELETE, Permissions.MANAGE];
-        await permissionService.objectDeletePermission(objectId, { userId, permCode: forceToggleOnRead });
-      }
+      const deletedPerm = (await permissionService.objectDeletePermission(objectId, { userId, permCode })).data;
+      // remove from store
+      state.objectPermissions.value = state.objectPermissions.value.filter((p) => p.id !== deletedPerm[0].id);
+      // un-map
+      var userIndex = state.mappedObjectToUserPermissions.value.findIndex((x) => x.userId === userId);
+      state.mappedObjectToUserPermissions.value[userIndex][permCode.toLowerCase()] = false;
     } catch (error: any) {
       toast.error('Deleting object permission', error);
     } finally {
-      await removeObjectUserPermsHandler(objectId, userId);
       appStore.endIndeterminateLoading();
     }
   }
@@ -231,32 +227,59 @@ export const usePermissionStore = defineStore('permission', () => {
   async function mapBucketToUserPermissions(bucketId: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
-      const bucketPerms = state.bucketPermissions.value.filter((x: BucketPermission) => x.bucketId === bucketId);
-      const uniqueIds = [...new Set(bucketPerms.map((x: BucketPermission) => x.userId))];
-      const uniqueUsers: Array<User> = (await userService.searchForUsers({ userId: uniqueIds })).data;
-
+      // get a list of perms for this bucket from state that arent already mapped
+      const newBucketPerms = state.bucketPermissions.value.filter(
+        (x: BucketPermission) =>
+          x.bucketId === bucketId &&
+          !state.mappedBucketToUserPermissions.value.some(
+            (mapped) => mapped.userId === x.userId && mapped[x.permCode.toLowerCase()]
+          )
+      );
+      // new unique userId's
+      const newUserIds = [
+        ...new Set(
+          newBucketPerms
+            .filter((x) => !state.mappedBucketToUserPermissions.value.some((mapped) => (mapped.userId = x.userId)))
+            .map((x: BucketPermission) => x.userId)
+        )
+      ];
+      let newUsers: Array<User> = [];
+      if (newUserIds.length) {
+        // get each user from COMS
+        newUsers = (await userService.searchForUsers({ userId: newUserIds })).data;
+      }
       const hasPermission = (userId: string, permission: string) => {
-        return bucketPerms.some((perm: BucketPermission) => perm.userId === userId && perm.permCode === permission);
+        return newBucketPerms.some((perm: BucketPermission) => perm.userId === userId && perm.permCode === permission);
       };
-
-      const userPermissions: UserPermissions[] = [];
-      uniqueUsers.forEach((user: User) => {
-        const idp = getConfig.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
-
-        userPermissions.push({
-          userId: user.userId,
-          idpName: idp?.name,
-          elevatedRights: idp?.elevatedRights,
-          fullName: user.fullName,
-          create: hasPermission(user.userId, Permissions.CREATE),
-          read: hasPermission(user.userId, Permissions.READ),
-          update: hasPermission(user.userId, Permissions.UPDATE),
-          delete: hasPermission(user.userId, Permissions.DELETE),
-          manage: hasPermission(user.userId, Permissions.MANAGE)
-        });
+      // map perms
+      let donePerms: Array<string> = [];
+      newBucketPerms.forEach((perm) => {
+        // if user not already mapped add new user object
+        if (!state.mappedBucketToUserPermissions.value.some((mapped) => mapped.userId === perm.userId)) {
+          const idp = getConfig.value.idpList.find(
+            (idp: IdentityProvider) => idp.idp === newUsers.find((u) => u.userId === perm.userId)?.idp
+          );
+          const fullName = newUsers.find((u) => u.userId === perm.userId).fullName;
+          state.mappedBucketToUserPermissions.value.push({
+            userId: perm.userId,
+            idpName: idp?.name,
+            elevatedRights: idp?.elevatedRights,
+            fullName: fullName,
+            create: hasPermission(perm.userId, Permissions.CREATE),
+            read: hasPermission(perm.userId, Permissions.READ),
+            update: hasPermission(perm.userId, Permissions.UPDATE),
+            delete: hasPermission(perm.userId, Permissions.DELETE),
+            manage: hasPermission(perm.userId, Permissions.MANAGE)
+          });
+          // mark all perms for this user as done
+          donePerms.concat(newBucketPerms.filter((np) => np.userId === perm.userId).map((p) => p.id));
+        }
+        // else user already mapped so just patch the permission
+        else if (!donePerms.includes(perm.id)) {
+          state.mappedBucketToUserPermissions.value.find((m) => m.userId === perm.userId)[perm.permCode.toLowerCase()] =
+            true;
+        }
       });
-
-      state.mappedBucketToUserPermissions.value = userPermissions;
     } catch (error: any) {
       toast.error('Mapping bucket permissions to user permissions', error);
     } finally {
@@ -267,32 +290,61 @@ export const usePermissionStore = defineStore('permission', () => {
   async function mapObjectToUserPermissions(objectId: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
-      const objectPerms = state.objectPermissions.value.filter((x: COMSObjectPermission) => x.objectId === objectId);
-      const uniqueIds = [...new Set(objectPerms.map((x: COMSObjectPermission) => x.userId))];
-      const uniqueUsers: Array<User> = (await userService.searchForUsers({ userId: uniqueIds })).data;
-
+      // get a list of perms for this object from state that arent already mapped
+      const newObjectPerms = state.objectPermissions.value.filter(
+        (x: COMSObjectPermission) =>
+          x.objectId === objectId &&
+          !state.mappedObjectToUserPermissions.value.some(
+            (mapped) => mapped.userId === x.userId && mapped[x.permCode.toLowerCase()]
+          )
+      );
+      // new unique userId's
+      const newUserIds = [
+        ...new Set(
+          newObjectPerms
+            .filter((x) => !state.mappedObjectToUserPermissions.value.some((mapped) => (mapped.userId = x.userId)))
+            .map((x: COMSObjectPermission) => x.userId)
+        )
+      ];
+      let newUsers: Array<User> = [];
+      if (newUserIds.length) {
+        // get each user from COMS
+        newUsers = (await userService.searchForUsers({ userId: newUserIds })).data;
+      }
       const hasPermission = (userId: string, permission: string) => {
-        return objectPerms.some((perm: COMSObjectPermission) => perm.userId === userId && perm.permCode === permission);
+        return newObjectPerms.some(
+          (perm: COMSObjectPermission) => perm.userId === userId && perm.permCode === permission
+        );
       };
-
-      const userPermissions: UserPermissions[] = [];
-      uniqueUsers.forEach((user: User) => {
-        const idp = getConfig.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
-
-        userPermissions.push({
-          userId: user.userId,
-          idpName: idp?.name,
-          elevatedRights: idp?.elevatedRights,
-          fullName: user.fullName,
-          create: hasPermission(user.userId, Permissions.CREATE),
-          read: hasPermission(user.userId, Permissions.READ),
-          update: hasPermission(user.userId, Permissions.UPDATE),
-          delete: hasPermission(user.userId, Permissions.DELETE),
-          manage: hasPermission(user.userId, Permissions.MANAGE)
-        });
+      // map perms
+      let donePerms: Array<string> = [];
+      newObjectPerms.forEach((perm) => {
+        // if user not already mapped add new user object
+        if (!state.mappedObjectToUserPermissions.value.some((mapped) => mapped.userId === perm.userId)) {
+          const idp = getConfig.value.idpList.find(
+            (idp: IdentityProvider) => idp.idp === newUsers.find((u) => u.userId === perm.userId)?.idp
+          );
+          const fullName = newUsers.find((u) => u.userId === perm.userId).fullName;
+          state.mappedObjectToUserPermissions.value.push({
+            userId: perm.userId,
+            idpName: idp?.name,
+            elevatedRights: idp?.elevatedRights,
+            fullName: fullName,
+            create: hasPermission(perm.userId, Permissions.CREATE),
+            read: hasPermission(perm.userId, Permissions.READ),
+            update: hasPermission(perm.userId, Permissions.UPDATE),
+            delete: hasPermission(perm.userId, Permissions.DELETE),
+            manage: hasPermission(perm.userId, Permissions.MANAGE)
+          });
+          // mark all perms for this user as done
+          donePerms.concat(newObjectPerms.filter((np) => np.userId === perm.userId).map((p) => p.id));
+        }
+        // else user already mapped so just patch the permission
+        else if (!donePerms.includes(perm.id)) {
+          state.mappedObjectToUserPermissions.value.find((m) => m.userId === perm.userId)[perm.permCode.toLowerCase()] =
+            true;
+        }
       });
-
-      state.mappedObjectToUserPermissions.value = userPermissions;
     } catch (error: any) {
       toast.error('Mapping bucket permissions to user permissions', error);
     } finally {
@@ -303,55 +355,43 @@ export const usePermissionStore = defineStore('permission', () => {
   async function removeBucketUser(bucketId: string, userId: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
-      for (const value of Object.values(Permissions)) {
-        await permissionService.bucketDeletePermission(bucketId, { userId, permCode: value });
-      }
+      const oldPerms = (
+        await permissionService.bucketDeletePermission(bucketId, { userId, permCode: Object.values(Permissions) })
+      ).data;
+      // remove from store
+      state.bucketPermissions.value = state.bucketPermissions.value.filter(
+        (p) => !oldPerms.some((old) => old.id === p.id)
+      );
+      // un-map
+      state.mappedBucketToUserPermissions.value = state.mappedBucketToUserPermissions.value.filter(
+        (x) => x.userId !== userId
+      );
     } catch (error: any) {
       toast.error('Removing bucket user', error);
     } finally {
-      await removeBucketUserPermsHandler(bucketId, userId);
       appStore.endIndeterminateLoading();
     }
-  }
-
-  async function removeBucketUserPermsHandler(bucketId: string, userId: string): Promise<void> {
-    await fetchBucketPermissions();
-
-    const initialPerms = [...state.mappedBucketToUserPermissions.value.filter(({ userId: id }) => id !== userId)];
-    await mapBucketToUserPermissions(bucketId);
-    const afterPerms = [...state.mappedBucketToUserPermissions.value];
-
-    const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
-    state.mappedBucketToUserPermissions.value = state.mappedBucketToUserPermissions.value.concat(results);
   }
 
   async function removeObjectUser(objectId: string, userId: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
-
-      for (const value of Object.values(Permissions)) {
-        await permissionService.objectDeletePermission(objectId, {
-          userId,
-          permCode: value
-        });
-      }
+      const oldPerms = (
+        await permissionService.objectDeletePermission(objectId, { userId, permCode: Object.values(Permissions) })
+      ).data;
+      // remove from store
+      state.objectPermissions.value = state.objectPermissions.value.filter(
+        (p) => !oldPerms.some((old) => old.id === p.id)
+      );
+      // un-map
+      state.mappedObjectToUserPermissions.value = state.mappedObjectToUserPermissions.value.filter(
+        (x) => x.userId !== userId
+      );
     } catch (error: any) {
       toast.error('Removing object user', error);
     } finally {
-      await removeObjectUserPermsHandler(objectId, userId);
       appStore.endIndeterminateLoading();
     }
-  }
-
-  async function removeObjectUserPermsHandler(objectId: string, userId: string): Promise<void> {
-    await fetchObjectPermissions();
-
-    const initialPerms = [...state.mappedObjectToUserPermissions.value.filter(({ userId: id }) => id !== userId)];
-    await mapObjectToUserPermissions(objectId);
-    const afterPerms = [...state.mappedObjectToUserPermissions.value];
-
-    const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
-    state.mappedObjectToUserPermissions.value = state.mappedObjectToUserPermissions.value.concat(results);
   }
 
   return {
