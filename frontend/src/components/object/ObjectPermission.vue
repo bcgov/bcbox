@@ -86,11 +86,14 @@ onBeforeMount(() => {
       </Button>
     </div>
     <div v-else>
-      <ObjectPermissionAddUser @cancel-search-users="cancelSearchUsers" />
+      <ObjectPermissionAddUser
+        @cancel-search-users="cancelSearchUsers"
+        :object-id="props.objectId"
+      />
     </div>
 
     <DataTable
-      :value="getMappedObjectToUserPermissions"
+      :value="getMappedObjectToUserPermissions(objectId)"
       data-key="userId"
       class="p-datatable-sm"
       responsive-layout="scroll"

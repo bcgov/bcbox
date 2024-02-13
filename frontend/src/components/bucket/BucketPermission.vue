@@ -34,7 +34,9 @@ const cancelSearchUsers = () => {
 };
 
 const removeBucketUser = (userId: string) => {
-  const managers = getMappedBucketToUserPermissions.value.filter((x: UserPermissions) => x.manage);
+  const managers = getMappedBucketToUserPermissions
+    .value(props.bucketId)
+    .filter((x: UserPermissions) => x.manage && x.id === props.bucketId);
   if (managers.length === 1 && managers[0].userId === userId) {
     removeManageAlert.show();
   } else {
@@ -46,16 +48,18 @@ const updateBucketPermission = (value: boolean, userId: string, permCode: string
   if (value) {
     permissionStore.addBucketPermission(props.bucketId, userId, permCode);
   } else {
-    const managers = getMappedBucketToUserPermissions.value.filter((x: UserPermissions) => x.manage);
+    const managers = getMappedBucketToUserPermissions
+      .value(props.bucketId)
+      .filter((x: UserPermissions) => x.manage && x.id === props.bucketId);
 
     // Disallow removable of final MANAGE permission
     if (permCode === Permissions.MANAGE && !managers.length) {
       removeManageAlert.show();
 
       // Set the value back as clicking will automatically change it
-      const perm: UserPermissions = getMappedBucketToUserPermissions.value.find(
-        (x: UserPermissions) => x.userId === userId
-      ) as UserPermissions;
+      const perm: UserPermissions = getMappedBucketToUserPermissions
+        .value(props.bucketId)
+        .find((x: UserPermissions) => x.userId === userId && x.id === props.bucketId) as UserPermissions;
       perm.manage = true;
     } else {
       permissionStore.deleteBucketPermission(props.bucketId, userId, permCode);
@@ -84,11 +88,14 @@ onBeforeMount(async () => {
       </Button>
     </div>
     <div v-else>
-      <BucketPermissionAddUser @cancel-search-users="cancelSearchUsers" />
+      <BucketPermissionAddUser
+        @cancel-search-users="cancelSearchUsers"
+        :bucket-id="props.bucketId"
+      />
     </div>
 
     <DataTable
-      :value="getMappedBucketToUserPermissions"
+      :value="getMappedBucketToUserPermissions(props.bucketId)"
       data-key="bucketId"
       class="p-datatable-sm"
       responsive-layout="scroll"
