@@ -1,5 +1,4 @@
-export type UserBucketPermissions = {
-  bucketId: string;
+export type UserPermissions = {
   userId: string;
   idpName?: string;
   elevatedRights?: boolean;
