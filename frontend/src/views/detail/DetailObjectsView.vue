@@ -45,6 +45,7 @@ watch([props], () => {
       v-if="props.objectId"
       :object-id="props.objectId"
       :version-id="version"
+      @on-upload-new-version="(vId: string) => (version = vId)"
     />
     <div v-else>
       <h3>No object or version provided</h3>

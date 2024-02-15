@@ -74,7 +74,7 @@ const onUpload = async () => {
       toast.info('File upload starting...');
       appStore.beginUploading();
 
-      await objectStore.updateObject(
+      const response = await objectStore.updateObject(
         props.objectId,
         file.value,
         { metadata: objectMetadata },
@@ -85,7 +85,11 @@ const onUpload = async () => {
       // No finally block as we need this called before potential navigation
       appStore.endUploading();
 
-      emit('on-file-uploaded');
+      // update object in store which other components will react to
+      await objectStore.fetchObjects({ objectId: props.objectId });
+      // emit new versionId to parent component
+
+      emit('on-file-uploaded', response?.data.versionId);
       toast.success('File uploaded');
     }
   } catch (error: any) {

@@ -239,8 +239,8 @@ export const useObjectStore = defineStore('object', () => {
           }
         }
       }
-
-      await objectService.updateObject(objectId, object, headers, params, axiosOptions);
+      // ok for an action to return a value
+      return await objectService.updateObject(objectId, object, headers, params, axiosOptions);
     } catch (error: any) {
       toast.error('Updating object', error);
     } finally {

@@ -85,22 +85,20 @@ async function onDeletedSuccess(versionId: string) {
   }
 }
 
-async function onFileUploaded() {
-  await Promise.all([
-    objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true }),
-    versionStore.fetchVersions({ objectId: props.objectId })
-  ]);
+// Emits (can be replaced with defineModel() macro)
+const emit = defineEmits(['on-upload-new-version']);
 
-  // Obtaining the version id and passing it to the route forces a destruct/construct of the component
-  // Easier approach than attempting to in-place refresh all the data
-  router.push({
-    name: RouteNames.DETAIL_OBJECTS,
-    query: {
-      objectId: props.objectId,
-      versionId: versionStore.findLatestVersionIdByObjectId(props.objectId)
-    }
-  });
+async function onFileUploaded(vId: string) {
+  // emit the new versionId to parent view and it should trigger watch on prop.versionId in this component
+  emit('on-upload-new-version', vId);
 }
+
+// we could subscibe to store actions invoked from other components
+// objectStore.$onAction(({ name, args }) => {
+//   if (name === 'fetchObjects') {
+//     console.log('fetchObjects called', args);
+//   }
+// });
 
 onBeforeMount(async () => {
   if (props.objectId) {

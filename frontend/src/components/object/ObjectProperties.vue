@@ -11,15 +11,11 @@ import type { Ref } from 'vue';
 import type { Bucket, COMSObject, Metadata } from '@/types';
 
 // Props
-type Props = {
+const props = defineProps<{
   objectId: string;
   versionId?: string;
   fullView: boolean;
-};
-
-const props = withDefaults(defineProps<Props>(), {
-  versionId: undefined
-});
+}>();
 
 // Store
 const bucketStore = useBucketStore();
@@ -50,10 +46,6 @@ async function load() {
 }
 
 onMounted(() => {
-  load();
-});
-
-watch(props, () => {
   load();
 });
 </script>
