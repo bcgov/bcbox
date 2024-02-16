@@ -30,7 +30,6 @@ const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const tagStore = useTagStore();
 const { getMetadataSearchResults } = storeToRefs(useMetadataStore());
-const { getUnfilteredObjectIds } = storeToRefs(useObjectStore());
 const { getTagSearchResults } = storeToRefs(useTagStore());
 const { getUserId } = storeToRefs(useAuthStore());
 
@@ -58,11 +57,7 @@ objectStore.$onAction(({ name, args }) => {
 
 // Computed
 const metadataValues = computed(() => {
-  // Filter out any tags that don't have an objectID that exist in getUnfilteredObjectIds
-  const filteredVals = getMetadataSearchResults.value.filter((searchRes) =>
-    getUnfilteredObjectIds.value.some((obj) => obj === searchRes.objectId)
-  );
-
+  const filteredVals = getMetadataSearchResults.value;
   return (
     filteredVals
       // Take the metadata for the objects, and flatten them into a single array
@@ -76,10 +71,7 @@ const metadataValues = computed(() => {
 });
 
 const tagsetValues = computed(() => {
-  // Filter out any tags that don't have an objectID that exist in getUnfilteredObjectIds
-  const filteredVals = getTagSearchResults.value.filter((searchRes) =>
-    getUnfilteredObjectIds.value.some((obj) => obj === searchRes.objectId)
-  );
+  const filteredVals = getTagSearchResults.value;
 
   return (
     filteredVals
@@ -137,13 +129,13 @@ const selectedFilterValuesChanged = () => {
 
 const searchMetadata = async () => {
   searching.value = true;
-  await metadataStore.searchMetadata();
+  await metadataStore.searchMetadata([], props.bucketId);
   searching.value = false;
 };
 
 const searchTagging = async () => {
   searching.value = true;
-  await tagStore.searchTagging();
+  await tagStore.searchTagging([], props.bucketId);
   searching.value = false;
 };
 </script>

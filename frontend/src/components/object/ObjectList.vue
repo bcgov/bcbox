@@ -35,6 +35,7 @@ const { getUserId } = storeToRefs(useAuthStore());
 // State
 const displayUpload = ref(false);
 const objectInfoId: Ref<string | undefined> = ref(undefined);
+const objectTableKey = ref(0);
 
 const selectedObjectIds = computed(() => {
   return getSelectedObjects.value.map((o) => o.id);
@@ -54,6 +55,11 @@ const showUpload = () => {
 
 const closeUpload = () => {
   displayUpload.value = false;
+  objectTableKey.value += 1;
+};
+
+const onDeletedSuccess = () => {
+  objectTableKey.value += 1;
 };
 </script>
 
@@ -92,6 +98,7 @@ const closeUpload = () => {
         :disabled="displayUpload"
         :ids="selectedObjectIds"
         :mode="ButtonMode.BUTTON"
+        @on-deleted-success="onDeletedSuccess"
       />
     </div>
 
@@ -101,6 +108,7 @@ const closeUpload = () => {
     >
       <div class="flex-grow-1">
         <ObjectTable
+          :key="objectTableKey"
           :bucket-id="props.bucketId"
           :object-info-id="objectInfoId"
           @show-object-info="showObjectInfo"
