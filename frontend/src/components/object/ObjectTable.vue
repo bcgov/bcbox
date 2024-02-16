@@ -18,6 +18,7 @@ import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 import { formatDateLong } from '@/utils/formatters';
 import { objectService } from '@/services';
+
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
 
@@ -58,7 +59,6 @@ const loading = ref(false);
 const lazyParams: Ref<DataTableObjectSource> = ref({});
 const totalRecords = ref(0);
 const first = ref(0);
-const selectedObjects: any = ref();
 const filters = ref({
   name: { value: undefined, matchMode: 'contains' },
   tags: { value: undefined, matchMode: 'contains' },
@@ -82,6 +82,7 @@ async function showPermissions(objectId: string) {
   permissionsObjectId.value = objectId;
   permissionsObjectName.value = objectStore.findObjectById(objectId)?.name;
 }
+
 onMounted(() => {
   loading.value = true;
   lazyParams.value = {
@@ -117,7 +118,6 @@ const loadLazyData = (event?: any) => {
       tableData.value = r.data;
       totalRecords.value = +r?.headers['x-total-rows'];
       loading.value = false;
-
       // add to object store
       r.data.forEach((o: COMSObject) => {
         objectStore.$patch((state) => {
@@ -131,20 +131,24 @@ const loadLazyData = (event?: any) => {
       permissionStore.fetchObjectPermissions({ objectId: objects.map((o: COMSObject) => o.id) });
     });
 };
+
 const onPage = (event?: any) => {
   lazyParams.value = event;
   loadLazyData(event);
 };
+
 const onSort = (event?: any) => {
   lazyParams.value = event;
   loadLazyData(event);
 };
+
 const onFilter = (event?: any) => {
   lazyParams.value.filters = filters;
   // Seems to be a bug as current page is not being reset when filter trigger
   dt.value.resetPage();
   loadLazyData(event);
 };
+
 // Clear selections when navigating away
 onUnmounted(() => {
   objectStore.setSelectedObjects([]);
@@ -180,7 +184,7 @@ const selectedFilters = (payload: any) => {
     <DataTable
       ref="dt"
       v-model:value="tableData"
-      v-model:selection="selectedObjects"
+      v-model:selection="objectStore.selectedObjects"
       v-model:filters="filters"
       lazy
       paginator
@@ -189,11 +193,10 @@ const selectedFilters = (payload: any) => {
       data-key="id"
       class="p-datatable-sm"
       responsive-layout="scroll"
-      :rows="3"
+      :rows="10"
       :rows-per-page-options="[10, 20, 50]"
       sort-field="updatedAt"
       :sort-order="-1"
-      filter-display="row"
       :global-filter-fields="['name']"
       :first="first"
       update:filters
@@ -232,9 +235,9 @@ const selectedFilters = (payload: any) => {
           </span>
 
           <Button
-            v-tooltip.bottom="'Refresh'"
+            v-tooltip.bottom="'Search'"
             class="ml-2"
-            icon="pi pi-refresh"
+            icon="pi pi-search"
             outlined
             rounded
             aria-label="Filter"
