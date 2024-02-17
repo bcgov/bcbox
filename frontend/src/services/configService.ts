@@ -54,11 +54,25 @@ export default class ConfigService {
    */
   public getConfig(): any | undefined {
     try {
-      const cfgString = storageType.getItem(StorageKey.CONFIG);
-      return cfgString ? JSON.parse(cfgString) : undefined;
+      let cfgString = storageType.getItem(StorageKey.CONFIG);
+      if (cfgString === null) {
+        // eslint-disable-next-line no-console
+        console.warn('Configuration missing. Attempting to reacquire...');
+        axios
+          .get('/config')
+          .then(({ data }) => {
+            storageType.setItem(StorageKey.CONFIG, JSON.stringify(data));
+            cfgString = data;
+          })
+          .catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error(`Failed to reacquire configuration: ${err}`);
+          });
+      }
+      return JSON.parse(cfgString as string);
     } catch (err: unknown) {
       // eslint-disable-next-line no-console
-      console.error(`Missing configuration: ${err}`);
+      console.error(`Unparseable configuration: ${err}`);
       return undefined;
     }
   }
