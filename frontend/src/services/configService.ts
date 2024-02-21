@@ -32,7 +32,12 @@ export default class ConfigService {
     return new Promise((resolve, reject) => {
       if (storageType.getItem(StorageKey.CONFIG) === null) {
         axios
-          .get('/config')
+          .get('/config', {
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            }
+          })
           .then(({ data }) => {
             storageType.setItem(StorageKey.CONFIG, JSON.stringify(data));
             resolve(new ConfigService());
@@ -59,7 +64,12 @@ export default class ConfigService {
         // eslint-disable-next-line no-console
         console.warn('Configuration missing. Attempting to reacquire...');
         axios
-          .get('/config')
+          .get('/config', {
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            }
+          })
           .then(({ data }) => {
             storageType.setItem(StorageKey.CONFIG, JSON.stringify(data));
             cfgString = data;
