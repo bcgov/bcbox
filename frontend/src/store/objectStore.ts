@@ -33,6 +33,7 @@ export const useObjectStore = defineStore('object', () => {
 
   // Getters
   const getters = {
+    getObject: computed(() => (id: string) => state.objects.value.find((obj) => obj.id === id)),
     getObjects: computed(() => state.objects.value),
     getSelectedObjects: computed(() => state.selectedObjects.value),
     getUnfilteredObjectIds: computed(() => state.unfilteredObjectIds.value)
@@ -75,7 +76,7 @@ export const useObjectStore = defineStore('object', () => {
   }
 
   async function deleteObject(objectId: string, versionId?: string) {
-    const bucketId = findObjectById(objectId)?.bucketId;
+    const bucketId = getters.getObject.value(objectId)?.bucketId;
 
     try {
       appStore.beginIndeterminateLoading();
@@ -177,10 +178,6 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  function findObjectById(objectId: string) {
-    return state.objects.value.find((x) => x.id === objectId);
-  }
-
   async function headObject(objectId: string) {
     try {
       appStore.beginIndeterminateLoading();
@@ -212,7 +209,7 @@ export const useObjectStore = defineStore('object', () => {
     try {
       appStore.beginIndeterminateLoading();
       await objectService.togglePublic(objectId, isPublic);
-      const obj = findObjectById(objectId);
+      const obj = getters.getObject.value(objectId);
       if (obj) obj.public = isPublic;
     } catch (error: any) {
       toast.error('Changing public state', error);
@@ -276,7 +273,6 @@ export const useObjectStore = defineStore('object', () => {
     deleteObject,
     getObjectUrl,
     fetchObjects,
-    findObjectById,
     headObject,
     removeSelectedObject,
     setObjects,
