@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onBeforeMount, ref, watch } from 'vue';
+import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import {
@@ -18,6 +18,7 @@ import { ShareObjectButton } from '@/components/object/share';
 import { Button, Dialog, Divider } from '@/lib/primevue';
 import {
   useAuthStore,
+  useBucketStore,
   useMetadataStore,
   useObjectStore,
   usePermissionStore,
@@ -28,7 +29,6 @@ import { Permissions, RouteNames } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
-import type { COMSObject, Version } from '@/types';
 
 // Props
 type Props = {
@@ -40,98 +40,79 @@ const props = withDefaults(defineProps<Props>(), {
   versionId: undefined
 });
 
+const router = useRouter();
+
 // Store
+const bucketStore = useBucketStore();
 const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const tagStore = useTagStore();
 const versionStore = useVersionStore();
-const { getObjects } = storeToRefs(objectStore);
+
 const { getUserId } = storeToRefs(useAuthStore());
+const { getObject } = storeToRefs(objectStore);
+const { getVersionsByObjectId, getLatestVersionIdByObjectId } = storeToRefs(versionStore);
 
 // State
-const bucketId: Ref<string> = ref('');
-const latestVersionId: Ref<string | undefined> = ref(undefined);
-const obj: Ref<COMSObject | undefined> = ref(undefined);
+const obj = computed((): any => getObject.value(props.objectId));
+const latestVersionId = computed(() => getLatestVersionIdByObjectId.value(props.objectId));
+const versionId = computed(() => props.versionId ?? latestVersionId.value);
 const permissionsVisible: Ref<boolean> = ref(false);
-const permissionsObjectId: Ref<string> = ref('');
-const permissionsObjectName: Ref<string | undefined> = ref('');
-const version: Ref<Version | undefined> = ref(undefined);
 
-// Actions
-const router = useRouter();
-
-const showPermissions = async (objectId: string) => {
-  permissionsVisible.value = true;
-  permissionsObjectId.value = objectId;
-  permissionsObjectName.value = obj.value?.name;
-};
-
-async function onDeletedSuccess(versionId: string) {
-  await Promise.all([
-    objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true }),
-    versionStore.fetchVersions({ objectId: props.objectId })
-  ]);
-
-  // Navigate to new latest version if deleting active version
-  if (props.versionId === versionId) {
-    router.push({
-      name: RouteNames.DETAIL_OBJECTS,
-      query: {
-        objectId: props.objectId,
-        versionId: versionStore.findLatestVersionIdByObjectId(props.objectId)
-      }
-    });
-  }
-}
-
-async function onFileUploaded() {
-  await Promise.all([
-    objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true }),
-    versionStore.fetchVersions({ objectId: props.objectId })
-  ]);
-
-  // Obtaining the version id and passing it to the route forces a destruct/construct of the component
-  // Easier approach than attempting to in-place refresh all the data
+function onDeletedSuccess() {
   router.push({
     name: RouteNames.DETAIL_OBJECTS,
     query: {
       objectId: props.objectId,
-      versionId: versionStore.findLatestVersionIdByObjectId(props.objectId)
+      versionId: latestVersionId.value
+    }
+  });
+}
+
+function onFileUploaded(newVersionId: string) {
+  // Navigate to new version
+  router.push({
+    name: RouteNames.DETAIL_OBJECTS,
+    query: {
+      objectId: props.objectId,
+      versionId: newVersionId
     }
   });
 }
 
 onBeforeMount(async () => {
-  if (props.objectId) {
-    const head = await objectStore.headObject(props.objectId);
-    let isPublic = head?.status === 204;
+  const head = await objectStore.headObject(props.objectId);
+  const isPublic = head?.status === 204;
 
-    await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
-    await objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true });
-    obj.value = objectStore.findObjectById(props.objectId);
-    const bucketId = obj.value?.bucketId;
-
-    if (
-      !isPublic &&
-      (!obj.value || !permissionStore.isObjectActionAllowed(obj.value.id, getUserId.value, Permissions.READ, bucketId))
-    ) {
-      router.replace({ name: RouteNames.FORBIDDEN });
-    }
+  await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
+  await objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true });
+  if (
+    !isPublic &&
+    (!obj.value ||
+      !permissionStore.isObjectActionAllowed(obj.value.id, getUserId.value, Permissions.READ, obj.value.bucketId))
+  ) {
+    router.replace({ name: RouteNames.FORBIDDEN });
+  }
+  // fetch data for child components
+  await bucketStore.fetchBuckets({ bucketId: obj.value.bucketId });
+  await versionStore.fetchVersions({ objectId: props.objectId });
+  await metadataStore.fetchMetadata({ objectId: props.objectId });
+  await tagStore.fetchTagging({ objectId: props.objectId });
+  if (props.versionId) {
+    await versionStore.fetchTagging({ versionId: props.versionId });
+    await versionStore.fetchMetadata({ versionId: props.versionId });
   }
 });
 
-watch([props, getObjects], async () => {
+// refresh data from COMS
+watch([props], async () => {
+  await versionStore.fetchVersions({ objectId: props.objectId });
   await metadataStore.fetchMetadata({ objectId: props.objectId });
-  tagStore.fetchTagging({ objectId: props.objectId });
-  obj.value = objectStore.findObjectById(props.objectId);
-  bucketId.value = obj.value?.bucketId || '';
-  latestVersionId.value = versionStore.findLatestVersionIdByObjectId(props.objectId);
-
+  await tagStore.fetchTagging({ objectId: props.objectId });
   if (props.versionId) {
+    await versionStore.fetchTagging({ versionId: props.versionId });
     await versionStore.fetchMetadata({ versionId: props.versionId });
-    versionStore.fetchTagging({ versionId: props.versionId });
-    version.value = versionStore.findVersionById(props.versionId);
   }
 });
 </script>
@@ -157,27 +138,28 @@ watch([props, getObjects], async () => {
           <ShareObjectButton :id="props.objectId" />
           <DownloadObjectButton
             v-if="
-              obj.public || permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.READ, bucketId)
+              obj.public ||
+              permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.READ, obj.bucketId)
             "
             :mode="ButtonMode.ICON"
             :ids="[props.objectId]"
             :version-id="props.versionId"
           />
           <Button
-            v-if="permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.MANAGE, bucketId)"
+            v-if="permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.MANAGE, obj.bucketId)"
             v-tooltip.bottom="'Object permissions'"
             class="p-button-lg p-button-text"
             aria-label="Object permissions"
-            @click="showPermissions(props.objectId)"
+            @click="permissionsVisible = true"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
           <DeleteObjectButton
-            v-if="permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.DELETE, bucketId)"
+            v-if="permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.DELETE, obj.bucketId)"
             :mode="ButtonMode.ICON"
             :ids="[props.objectId]"
             :version-id="props.versionId"
-            :disabled="versionStore.findVersionsByObjectId(props.objectId).length === 1"
+            :disabled="getVersionsByObjectId(props.objectId).length === 1"
             @on-deleted-success="onDeletedSuccess"
           />
         </div>
@@ -188,14 +170,14 @@ watch([props, getObjects], async () => {
       <div class="flex flex-column w-6 gap-3 py-5">
         <ObjectProperties
           :object-id="props.objectId"
-          :version-id="props.versionId"
+          :version-id="versionId"
           :full-view="true"
         />
         <ObjectAccess :object-id="props.objectId" />
         <ObjectMetadata
           :editable="props.versionId === latestVersionId"
           :object-id="props.objectId"
-          :version-id="props.versionId"
+          :version-id="versionId"
           @on-file-uploaded="onFileUploaded"
         />
       </div>
@@ -203,21 +185,20 @@ watch([props, getObjects], async () => {
       <div class="flex flex-column w-6 gap-4 xl:pl-3 py-5">
         <div class="flex flex-row-reverse">
           <ObjectUploadBasic
-            v-if="permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, bucketId)"
-            :bucket-id="bucketId"
+            v-if="permissionStore.isObjectActionAllowed(props.objectId, getUserId, Permissions.UPDATE, obj.bucketId)"
+            :bucket-id="obj.bucketId"
             :object-id="props.objectId"
             @on-file-uploaded="onFileUploaded"
           />
         </div>
         <ObjectVersion
-          v-if="props.versionId"
-          :bucket-id="bucketId"
+          :bucket-id="obj?.bucketId"
           :object-id="props.objectId"
-          :version-id="props.versionId"
+          :version-id="versionId"
         />
         <ObjectTag
           :object-id="props.objectId"
-          :version-id="props.versionId"
+          :version-id="versionId"
           @on-file-uploaded="onFileUploaded"
         />
       </div>
@@ -241,10 +222,10 @@ watch([props, getObjects], async () => {
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
-      {{ permissionsObjectName }}
+      {{ obj?.name }}
     </h3>
 
-    <ObjectPermission :object-id="permissionsObjectId" />
+    <ObjectPermission :object-id="props.objectId" />
   </Dialog>
 </template>
 

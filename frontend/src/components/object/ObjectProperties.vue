@@ -8,7 +8,7 @@ import { RouteNames } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
-import type { Bucket, COMSObject, User } from '@/types';
+import type { Bucket, COMSObject } from '@/types';
 
 // Props
 type Props = {
@@ -21,14 +21,15 @@ const props = withDefaults(defineProps<Props>(), {});
 const bucketStore = useBucketStore();
 const objectStore = useObjectStore();
 const userStore = useUserStore();
+
+const { getBucket } = storeToRefs(bucketStore);
+const { getObject } = storeToRefs(objectStore);
 const { getUser } = storeToRefs(userStore);
 
-// note: if re-assigning a getter, it needs to be a computed
-const object: Ref<COMSObject | undefined> = computed(() => objectStore.getObject(props.objectId));
-const bucket: Ref<Bucket | undefined> = computed(() => bucketStore.getBucket(object.value?.bucketId as string));
-
-const createdBy: Ref<User | undefined> = computed(() => getUser.value(object.value?.createdBy)?.fullName);
-const updatedBy: Ref<User | undefined> = computed(() => getUser.value(object.value?.updatedBy)?.fullName);
+const object: Ref<COMSObject> = computed((): any => getObject.value(props.objectId));
+const bucket: Ref<Bucket | undefined> = computed(() => getBucket.value(object.value?.bucketId as string));
+const createdBy: Ref<string | undefined> = computed(() => getUser.value(object.value.createdBy)?.fullName);
+const updatedBy: Ref<string | undefined> = computed(() => getUser.value(object.value?.updatedBy)?.fullName);
 
 onMounted(() => {
   userStore.fetchUsers({ userId: [object.value?.createdBy, object.value?.updatedBy] });

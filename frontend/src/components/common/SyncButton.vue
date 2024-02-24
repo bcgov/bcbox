@@ -17,7 +17,7 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {
   bucketId: '',
   objectId: '',
-  labelText:''
+  labelText: ''
 });
 
 // State
@@ -47,9 +47,9 @@ const onSubmit = () => {
 const onClick = () => {
   displaySyncDialog.value = true;
   if (props.bucketId) {
-    name.value = bucketStore.findBucketById(props.bucketId)?.bucketName ?? '';
+    name.value = bucketStore.getBucket(props.bucketId)?.bucketName ?? '';
   } else if (props.objectId) {
-    name.value = objectStore.findObjectById(props.objectId)?.name ?? '';
+    name.value = objectStore.getObject(props.objectId)?.name ?? '';
   }
 };
 </script>

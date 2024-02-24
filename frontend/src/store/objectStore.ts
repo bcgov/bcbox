@@ -241,7 +241,8 @@ export const useObjectStore = defineStore('object', () => {
         }
       }
 
-      await objectService.updateObject(objectId, object, headers, params, axiosOptions);
+      const newObject = await objectService.updateObject(objectId, object, headers, params, axiosOptions);
+      return newObject.data.versionId;
     } catch (error: any) {
       toast.error('Updating object', error);
     } finally {

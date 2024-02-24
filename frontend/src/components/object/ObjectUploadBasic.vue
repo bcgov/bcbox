@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { ObjectMetadataTagForm } from '@/components/object';
 import { Button, Dialog, useConfirm, useToast } from '@/lib/primevue';
@@ -27,6 +28,10 @@ const tagStore = useTagStore();
 const versionStore = useVersionStore();
 
 // State
+const { getObject } = storeToRefs(objectStore);
+const { getTaggingByObjectId } = storeToRefs(tagStore);
+const { getMetadataByObjectId } = storeToRefs(metadataStore);
+
 const fileInput: Ref<any> = ref(null);
 const file: Ref<File | undefined> = ref(undefined);
 
@@ -74,7 +79,7 @@ const onUpload = async () => {
       toast.info('File upload starting...');
       appStore.beginUploading();
 
-      await objectStore.updateObject(
+      const newVersion = await objectStore.updateObject(
         props.objectId,
         file.value,
         { metadata: objectMetadata },
@@ -85,7 +90,7 @@ const onUpload = async () => {
       // No finally block as we need this called before potential navigation
       appStore.endUploading();
 
-      emit('on-file-uploaded');
+      emit('on-file-uploaded', newVersion);
       toast.success('File uploaded');
     }
   } catch (error: any) {
@@ -95,9 +100,9 @@ const onUpload = async () => {
 };
 
 const showModal = () => {
-  formData.value.filename = objectStore.findObjectById(props.objectId)?.name ?? '';
-  formData.value.metadata = metadataStore.findMetadataByObjectId(props.objectId)?.metadata;
-  formData.value.tagset = tagStore.findTaggingByObjectId(props.objectId)?.tagset;
+  formData.value.filename = getObject.value(props.objectId)?.name ?? '';
+  formData.value.metadata = getMetadataByObjectId.value(props.objectId)?.metadata;
+  formData.value.tagset = getTaggingByObjectId.value(props.objectId)?.tagset;
 
   editing.value = true;
 };

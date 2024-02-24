@@ -83,7 +83,7 @@ async function showPermissions(objectId: string) {
 
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
-  permissionsObjectName.value = objectStore.findObjectById(objectId)?.name;
+  permissionsObjectName.value = objectStore.getObject(objectId)?.name;
 }
 
 onMounted(() => {

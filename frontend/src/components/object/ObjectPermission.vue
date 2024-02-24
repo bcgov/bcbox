@@ -47,7 +47,7 @@ const updateObjectPermission = (value: boolean, userId: string, permCode: string
 
 onBeforeMount(() => {
   permissionStore.mapObjectToUserPermissions(props.objectId);
-  object.value = objectStore.findObjectById(props.objectId);
+  object.value = objectStore.getObject(props.objectId);
 });
 </script>
 

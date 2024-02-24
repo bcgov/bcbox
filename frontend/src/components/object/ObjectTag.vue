@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 import { ObjectMetadataTagForm } from '@/components/object';
 import { Button, Dialog, Tag } from '@/lib/primevue';
@@ -32,24 +32,23 @@ const tagStore = useTagStore();
 const versionStore = useVersionStore();
 const permissionStore = usePermissionStore();
 const { getUserId } = storeToRefs(useAuthStore());
-const { getTagging: tsGetTagging } = storeToRefs(tagStore);
-const { getTagging: vsGetTagging } = storeToRefs(versionStore);
+const { getTaggingByVersionId } = storeToRefs(versionStore);
+const { getTaggingByObjectId } = storeToRefs(tagStore);
 
 // State
+const obj = computed(() => objectStore.getObject(props.objectId));
+const objectTagging: Ref<Tagging | undefined> = computed(() => {
+  return props.versionId ? getTaggingByVersionId.value(props.versionId) : getTaggingByObjectId.value(props.objectId);
+});
 const editing: Ref<boolean> = ref(false);
 const formData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
 });
-const objectTagging: Ref<Tagging | undefined> = ref(undefined);
-
-// Object
-const obj = objectStore.findObjectById(props.objectId);
 
 // Actions
 const showModal = () => {
-  formData.value.filename = obj?.name ?? '';
+  formData.value.filename = obj.value?.name ?? '';
   formData.value.tagset = objectTagging.value?.tagset;
-
   editing.value = true;
 };
 
@@ -59,31 +58,13 @@ const submitModal = async (values: ObjectMetadataTagFormType) => {
   } else {
     await tagStore.deleteTagging(props.objectId, [], props.versionId);
   }
-
   emit('on-file-uploaded');
-
   closeModal();
 };
 
 const closeModal = () => {
   editing.value = false;
 };
-
-async function load() {
-  if (props.versionId) {
-    objectTagging.value = versionStore.findTaggingByVersionId(props.versionId);
-  } else {
-    objectTagging.value = tagStore.findTaggingByObjectId(props.objectId);
-  }
-}
-
-onMounted(() => {
-  load();
-});
-
-watch([props, tsGetTagging, vsGetTagging], () => {
-  load();
-});
 </script>
 
 <template>

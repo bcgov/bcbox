@@ -126,17 +126,17 @@ describe('User Store', () => {
     it('empties the search state', async () => {
       userStore.userSearch = [user];
 
-      expect(userStore.getUserSearch).toStrictEqual([user]);
+      expect(userStore.getUsers(['000'])).toStrictEqual([user]);
       userStore.clearSearch();
-      expect(userStore.getUserSearch).toStrictEqual([]);
+      expect(userStore.getUsers()).toStrictEqual([]);
     });
   });
 
-  describe('findUsersById', () => {
+  describe('getUsers', () => {
     it('returns the correct subset', async () => {
       userStore.userSearch = [user, user2];
 
-      const result = userStore.findUsersById(['000']);
+      const result = userStore.getUsers(['000']);
       expect(result).toStrictEqual([user]);
     });
   });

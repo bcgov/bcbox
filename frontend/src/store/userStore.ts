@@ -32,9 +32,11 @@ export const useUserStore = defineStore('user', () => {
   const getters = {
     getIdps: computed(() => state.idps.value),
     // returns a single User for provided user ID
-    getUser: computed((): any => (userId: String) => state.userSearch.value.find((x: User) => userId === x.userId)),
+    getUser: computed(
+      () => (userId: string | undefined) => state.userSearch.value.find((x: User) => userId === x.userId)
+    ),
     // returns an array of Users corresponding to provided user IDs
-    getUsers: computed((): any => (userIds: Array<string> | undefined) => {
+    getUsers: computed(() => (userIds: Array<string> | undefined) => {
       if (userIds && userIds.length) {
         return state.userSearch.value.filter((x: User) => {
           return userIds.includes(x.userId);

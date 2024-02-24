@@ -145,11 +145,11 @@ describe('Bucket Store', () => {
     });
   });
 
-  describe('findBucketById', () => {
+  describe('getBucket', () => {
     it('returns a matching bucket', () => {
       bucketStore.buckets = [bucket];
 
-      const result = bucketStore.findBucketById('000');
+      const result = bucketStore.getBucket('000');
 
       expect(result).toStrictEqual(bucket);
     });
@@ -157,7 +157,7 @@ describe('Bucket Store', () => {
     it('returns undefined when no matching bucket is found', () => {
       bucketStore.buckets = [bucket];
 
-      const result = bucketStore.findBucketById('foo');
+      const result = bucketStore.getBucket('foo');
 
       expect(result).toStrictEqual(undefined);
     });

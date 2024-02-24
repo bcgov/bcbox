@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 import GridRow from '@/components/form/GridRow.vue';
 import { ObjectMetadataTagForm } from '@/components/object';
@@ -33,18 +33,18 @@ const versionStore = useVersionStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const { getUserId } = storeToRefs(useAuthStore());
-const { getMetadata: tsGetMetadata } = storeToRefs(metadataStore);
-const { getMetadata: vsGetMetadata } = storeToRefs(versionStore);
+const { getMetadataByVersionId } = storeToRefs(versionStore);
+const { getMetadataByObjectId } = storeToRefs(metadataStore);
 
 // State
+const obj = computed(() => objectStore.getObject(props.objectId));
+const objectMetadata: Ref<Metadata | undefined> = computed(() =>
+  props.versionId ? getMetadataByVersionId.value(props.versionId) : getMetadataByObjectId.value(props.objectId)
+);
 const editing: Ref<boolean> = ref(false);
 const formData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
 });
-const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
-
-// Object
-const obj = objectStore.findObjectById(props.objectId);
 
 // Actions
 const confirm = useConfirm();
@@ -60,7 +60,7 @@ const confirmUpdate = (values: ObjectMetadataTagFormType) => {
 };
 
 const showModal = () => {
-  formData.value.filename = obj?.name ?? '';
+  formData.value.filename = obj.value?.name ?? '';
   formData.value.metadata = objectMetadata.value?.metadata;
 
   editing.value = true;
@@ -76,22 +76,6 @@ const submitModal = async (values: ObjectMetadataTagFormType) => {
 const closeModal = () => {
   editing.value = false;
 };
-
-async function load() {
-  if (props.versionId) {
-    objectMetadata.value = versionStore.findMetadataByVersionId(props.versionId);
-  } else {
-    objectMetadata.value = metadataStore.findMetadataByObjectId(props.objectId);
-  }
-}
-
-onMounted(() => {
-  load();
-});
-
-watch([props, tsGetMetadata, vsGetMetadata], () => {
-  load();
-});
 </script>
 
 <template>

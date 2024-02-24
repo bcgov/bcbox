@@ -36,7 +36,7 @@ const comsUrl = computed(() => {
 });
 
 onMounted(() => {
-  obj.value = objectStore.findObjectById(props.id);
+  obj.value = objectStore.getObject(props.id);
 });
 </script>
 

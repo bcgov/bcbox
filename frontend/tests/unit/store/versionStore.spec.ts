@@ -30,6 +30,7 @@ const version: Version = {
   mimeType: 'image/jpg',
   objectId: '000',
   s3VersionId: 's3123',
+  isLatest: true,
   createdAt: '2023-05-01T22:18:12.553Z'
 };
 
@@ -39,6 +40,7 @@ const versionOld: Version = {
   mimeType: 'image/jpg',
   objectId: '000',
   s3VersionId: 's2000',
+  isLatest: false,
   createdAt: '2022-05-01T18:25:42.462Z'
 };
 
@@ -168,11 +170,11 @@ describe('Version Store', () => {
     });
   });
 
-  describe('findLatestVersionIdByObjectId', () => {
+  describe('getLatestVersionIdByObjectId', () => {
     it('returns latest version', async () => {
       versionStore.versions = [versionOld, version];
 
-      const result = versionStore.findLatestVersionIdByObjectId('000');
+      const result = versionStore.getLatestVersionIdByObjectId('000');
 
       expect(result).toStrictEqual('123');
     });
@@ -180,17 +182,17 @@ describe('Version Store', () => {
     it('returns undefined when no matches found', async () => {
       versionStore.versions = [versionOld, version];
 
-      const result = versionStore.findLatestVersionIdByObjectId('111');
+      const result = versionStore.getLatestVersionIdByObjectId('111');
 
       expect(result).toStrictEqual(undefined);
     });
   });
 
-  describe('findMetadataByVersionId', () => {
+  describe('getMetadataByVersionId', () => {
     it('returns matching metadata', async () => {
       versionStore.metadata = [meta];
 
-      const result = versionStore.findMetadataByVersionId('000');
+      const result = versionStore.getMetadataByVersionId('000');
 
       expect(result).toStrictEqual(meta);
     });
@@ -198,7 +200,7 @@ describe('Version Store', () => {
     it('returns undefined when no match found', async () => {
       versionStore.metadata = [meta];
 
-      const result = versionStore.findMetadataByVersionId('111');
+      const result = versionStore.getMetadataByVersionId('111');
 
       expect(result).toStrictEqual(undefined);
     });
@@ -222,29 +224,11 @@ describe('Version Store', () => {
     });
   });
 
-  describe('findTaggingByVersionId', () => {
-    it('returns matching metadata', async () => {
-      versionStore.tagging = [tag];
-
-      const result = versionStore.findTaggingByVersionId('000');
-
-      expect(result).toStrictEqual(tag);
-    });
-
-    it('returns undefined when no match found', async () => {
-      versionStore.tagging = [tag];
-
-      const result = versionStore.findTaggingByVersionId('111');
-
-      expect(result).toStrictEqual(undefined);
-    });
-  });
-
-  describe('findVersionById', () => {
+  describe('getVersion', () => {
     it('returns matching version', async () => {
       versionStore.versions = [version];
 
-      const result = versionStore.findVersionById('123');
+      const result = versionStore.getVersion('123');
 
       expect(result).toStrictEqual(version);
     });
@@ -252,17 +236,17 @@ describe('Version Store', () => {
     it('returns undefined when no match found', async () => {
       versionStore.versions = [version];
 
-      const result = versionStore.findVersionById('100');
+      const result = versionStore.getVersion('100');
 
       expect(result).toStrictEqual(undefined);
     });
   });
 
-  describe('findVersionsByObjectId', () => {
+  describe('getVersionsByObjectId', () => {
     it('returns matching versions', async () => {
       versionStore.versions = [version];
 
-      const result = versionStore.findVersionsByObjectId('000');
+      const result = versionStore.getVersionsByObjectId('000');
 
       expect(result).toStrictEqual([version]);
     });
@@ -270,7 +254,7 @@ describe('Version Store', () => {
     it('returns empty array when no matches found', async () => {
       versionStore.versions = [version];
 
-      const result = versionStore.findVersionsByObjectId('999');
+      const result = versionStore.getVersionsByObjectId('999');
 
       expect(result).toStrictEqual([]);
     });

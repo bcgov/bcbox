@@ -35,9 +35,22 @@ export const useVersionStore = defineStore('version', () => {
 
   // Getters
   const getters = {
+    getVersion: computed(() => (id: string) => state.versions.value.find((v) => v.id === id)),
+    getVersions: computed(() => state.versions.value),
+    getVersionsByObjectId: computed(
+      () => (objectId: string) => state.versions.value.filter((x: Version) => x.objectId === objectId)
+    ),
+    getLatestVersionIdByObjectId: computed(
+      () => (objectId: string) => state.versions.value.find((x: Version) => x.objectId === objectId && x.isLatest)?.id
+    ),
     getMetadata: computed(() => state.metadata.value),
+    getMetadataByVersionId: computed(
+      () => (versionId: string) => state.metadata.value.find((x: Metadata) => x.versionId === versionId)
+    ),
     getTagging: computed(() => state.tagging.value),
-    getVersions: computed(() => state.versions.value)
+    getTaggingByVersionId: computed(
+      () => (versionId: string) => state.tagging.value.find((x: Tagging) => x.versionId === versionId)
+    )
   };
 
   // Actions
@@ -74,6 +87,7 @@ export const useVersionStore = defineStore('version', () => {
 
       // Merge and assign
       state.tagging.value = difference.concat(response);
+      // NOTE: seems to be adding duplicates
     } catch (error: any) {
       toast.error('Fetching tags', error);
     } finally {
@@ -101,31 +115,10 @@ export const useVersionStore = defineStore('version', () => {
     }
   }
 
-  function findLatestVersionIdByObjectId(objectId: string) {
-    return state.versions.value
-      .filter((x: Version) => x.objectId === objectId)
-      .sort((a: Version, b: Version) => Date.parse(b.createdAt as string) - Date.parse(a.createdAt as string))[0]?.id;
-  }
-
-  function findMetadataByVersionId(versionId: string) {
-    return state.metadata.value.find((x: Metadata) => x.versionId === versionId);
-  }
-
   function findMetadataValue(versionId: string, key: string) {
-    return findMetadataByVersionId(versionId)?.metadata.find((x) => x.key === key)?.value;
+    return getters.getMetadataByVersionId.value(versionId)?.metadata.find((x) => x.key === key)?.value;
   }
 
-  function findTaggingByVersionId(versionId: string) {
-    return state.tagging.value.find((x: Tagging) => x.versionId === versionId);
-  }
-
-  function findVersionById(versionId: string) {
-    return state.versions.value.find((x: Version) => x.id === versionId);
-  }
-
-  function findVersionsByObjectId(objectId: string) {
-    return state.versions.value.filter((x: Version) => x.objectId === objectId);
-  }
   function findS3VersionByObjectId(objectId: string) {
     return state.versions.value.filter((x: Version) => x.objectId === objectId)[0]?.s3VersionId;
   }
@@ -140,13 +133,8 @@ export const useVersionStore = defineStore('version', () => {
     fetchMetadata,
     fetchTagging,
     fetchVersions,
-    findLatestVersionIdByObjectId,
-    findMetadataByVersionId,
     findMetadataValue,
-    findTaggingByVersionId,
-    findVersionById,
-    findVersionsByObjectId,
-    findS3VersionByObjectId,
+    findS3VersionByObjectId
   };
 });
 
