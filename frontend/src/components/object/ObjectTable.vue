@@ -104,7 +104,6 @@ const loadLazyData = (event?: any) => {
         bucketId: props.bucketId ? [props.bucketId] : undefined,
         deleteMarker: false,
         latest: true,
-        permissions: true,
         page: lazyParams.value?.page ? ++lazyParams.value.page : 1,
         name: lazyParams.value?.filters?.name.value,
         limit: lazyParams.value.rows,
@@ -117,16 +116,12 @@ const loadLazyData = (event?: any) => {
     .then((r: any) => {
       tableData.value = r.data;
       totalRecords.value = +r?.headers['x-total-rows'];
+      // add objects to store
+      objectStore.setObjects(r.data);
       loading.value = false;
-      // add to object store
-      r.data.forEach((o: COMSObject) => {
-        objectStore.$patch((state) => {
-          state.objects.push(o);
-        });
-      });
       return r.data;
     })
-    // add objects' permissions to store
+    // add object permissions to store
     .then((objects: Array<COMSObjectDataSource>) => {
       permissionStore.fetchObjectPermissions({ objectId: objects.map((o: COMSObject) => o.id) });
     });
