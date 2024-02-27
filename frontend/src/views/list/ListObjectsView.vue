@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onBeforeMount, onErrorCaptured, onMounted, ref } from 'vue';
+import { onBeforeMount, onErrorCaptured, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { ObjectList } from '@/components/object';
 import { useToast } from '@/lib/primevue';
-import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
+import { useAuthStore, useBucketStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { Bucket, BucketPermission } from '@/types';
+import type { Bucket } from '@/types';
 
 // Props
 type Props = {
@@ -22,7 +22,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const bucketStore = useBucketStore();
-const permissionStore = usePermissionStore();
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
@@ -37,7 +36,7 @@ onErrorCaptured((e: Error) => {
 onBeforeMount(async () => {
   const router = useRouter();
 
-  // fetch bucktes (which is already scoped by cur user's permissions) and populates bucket and permissions in store
+  // fetch buckets (which is already scoped by cur user's permissions) and populates bucket and permissions in store
   const bucketResponse = await bucketStore.fetchBuckets({
     bucketId: props.bucketId,
     userId: getUserId.value,

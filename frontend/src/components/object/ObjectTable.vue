@@ -30,6 +30,9 @@ type DataTableObjectSource = {
   [key: string]: any;
 };
 
+type DataTableFilter = {
+  [key: string]: { value: any; matchMode: string };
+};
 // Props
 type Props = {
   bucketId?: string;
@@ -54,12 +57,12 @@ const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
 const permissionsObjectName: Ref<string | undefined> = ref('');
 const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
-const dt = ref();
-const loading = ref(false);
+const lazyDataTable = ref();
+const loading: Ref<boolean> = ref(false);
 const lazyParams: Ref<DataTableObjectSource> = ref({});
-const totalRecords = ref(0);
-const first = ref(0);
-const filters = ref({
+const totalRecords: Ref<number> = ref(0);
+const first: Ref<number> = ref(0);
+const filters: Ref<DataTableFilter> = ref({
   name: { value: undefined, matchMode: 'contains' },
   tags: { value: undefined, matchMode: 'contains' },
   meta: { value: undefined, matchMode: 'contains' }
@@ -87,9 +90,9 @@ onMounted(() => {
   loading.value = true;
   lazyParams.value = {
     first: 0,
-    rows: dt.value.rows,
+    rows: lazyDataTable.value.rows,
     sortField: 'updatedAt',
-    page: dt.value.page,
+    page: lazyDataTable.value.page,
     sortOrder: 'desc',
     filters: filters
   };
@@ -140,7 +143,7 @@ const onSort = (event?: any) => {
 const onFilter = (event?: any) => {
   lazyParams.value.filters = filters;
   // Seems to be a bug as current page is not being reset when filter trigger
-  dt.value.resetPage();
+  lazyDataTable.value.resetPage();
   loadLazyData(event);
 };
 
@@ -151,9 +154,7 @@ onUnmounted(() => {
 
 const selectedFilters = (payload: any) => {
   filters.value.meta.value = payload.metaToSearch
-    .flatMap((o: any) => {
-      return { [o.key]: o.value };
-    })
+    .flatMap((o: any) => ({ [o.key]: o.value }))
     .reduce((r: any, c: any) => {
       const key = Object.keys(c)[0];
       const value = c[key];
@@ -161,9 +162,7 @@ const selectedFilters = (payload: any) => {
       return r;
     }, {});
   filters.value.tags.value = payload.tagSetToSearch
-    .flatMap((o: any) => {
-      return { [o.key]: o.value };
-    })
+    .flatMap((o: any) => ({ [o.key]: o.value }))
     .reduce((r: any, c: any) => {
       const key = Object.keys(c)[0];
       const value = c[key];
@@ -177,7 +176,7 @@ const selectedFilters = (payload: any) => {
 <template>
   <div class="object-table">
     <DataTable
-      ref="dt"
+      ref="lazyDataTable"
       v-model:value="tableData"
       v-model:selection="objectStore.selectedObjects"
       v-model:filters="filters"
