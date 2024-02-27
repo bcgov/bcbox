@@ -82,11 +82,11 @@ export const useTagStore = defineStore('tag', () => {
     }
   }
 
-  async function searchTagging(tagset: Array<Tag> = []) {
+  async function searchTagging(tagset: Array<Tag> = [], bucketId?: string) {
     try {
       state.tagSearchResults.value = [];
       // await new Promise((resolve) => setTimeout(resolve, 4000));
-      const response = (await objectService.searchTagging(tagset)).data;
+      const response = (await objectService.searchTagging(tagset, bucketId)).data;
       state.tagSearchResults.value = response;
     } catch (error: any) {
       toast.error('Searching tags', error);

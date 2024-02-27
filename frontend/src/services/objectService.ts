@@ -192,11 +192,13 @@ export default {
    * @function searchMetadata
    * Gets a list of tags matching the given parameters
    * @param {Object} headers Optional request headers
+   * @param {bucketId}  bucketId optional
    * @returns {Promise} An axios response
    */
-  searchMetadata(headers: { metadata?: Array<MetadataPair> }) {
+  searchMetadata(headers: { metadata?: Array<MetadataPair> }, bucketId?: string) {
     const config = {
-      headers: {}
+      headers: {},
+      params: { bucketId: bucketId }
     };
 
     // Map the metadata if required
@@ -220,7 +222,6 @@ export default {
    * @returns {Promise} An axios response
    */
   async searchObjects(params: SearchObjectsOptions = {}, headers: any = {}) {
-    // remove objectId array if its first element is undefined
     if (params.objectId && params.objectId[0] === undefined) delete params.objectId;
 
     if (params.objectId) {
@@ -275,14 +276,16 @@ export default {
    * @function searchTagging
    * Gets a list of tags matching the given parameters
    * @param {Array<Tag>} tagset Query parameters to search on
+   * @param {bucketId} bucketId optional
    * @returns {Promise} An axios response
    */
-  searchTagging(tagset: Array<Tag>) {
+  searchTagging(tagset: Array<Tag>, bucketId?: string) {
     return (
       comsAxios()
         .get(`${PATH}/tagging`, {
           params: {
-            tagset: Object.fromEntries(tagset.map((x: { key: string; value: string }) => [x.key, x.value]))
+            tagset: Object.fromEntries(tagset.map((x: { key: string; value: string }) => [x.key, x.value])),
+            bucketId: bucketId
           }
         })
         // filter out a configured list of select tags

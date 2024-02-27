@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onUnmounted, ref, watch } from 'vue';
+import { onUnmounted, onMounted, ref } from 'vue';
 
 import { Spinner } from '@/components/layout';
 import {
@@ -12,11 +12,12 @@ import {
 } from '@/components/object';
 import { SyncButton } from '@/components/common';
 import { ShareObjectButton } from '@/components/object/share';
-import { Button, Column, DataTable, Dialog, FilterMatchMode, InputText, useToast } from '@/lib/primevue';
-import { useAuthStore, useAppStore, useObjectStore, usePermissionStore } from '@/store';
+import { Button, Column, DataTable, Dialog, InputText, useToast } from '@/lib/primevue';
+import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 import { formatDateLong } from '@/utils/formatters';
+import { objectService } from '@/services';
 
 import type { Ref } from 'vue';
 import type { COMSObject } from '@/types';
@@ -25,6 +26,13 @@ type COMSObjectDataSource = {
   lastUpdatedDate?: string;
 } & COMSObject;
 
+type DataTableObjectSource = {
+  [key: string]: any;
+};
+
+type DataTableFilter = {
+  [key: string]: { value: any; matchMode: string };
+};
 // Props
 type Props = {
   bucketId?: string;
@@ -42,36 +50,31 @@ const emit = defineEmits(['show-object-info']);
 // Store
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
-const { getObjects } = storeToRefs(objectStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
-const selectAll = ref(false);
 const permissionsVisible = ref(false);
 const permissionsObjectId = ref('');
 const permissionsObjectName: Ref<string | undefined> = ref('');
 const tableData: Ref<Array<COMSObjectDataSource>> = ref([]);
+const lazyDataTable = ref();
+const loading: Ref<boolean> = ref(false);
+const lazyParams: Ref<DataTableObjectSource> = ref({});
+const totalRecords: Ref<number> = ref(0);
+const first: Ref<number> = ref(0);
+const filters: Ref<DataTableFilter> = ref({
+  name: { value: undefined, matchMode: 'contains' },
+  tags: { value: undefined, matchMode: 'contains' },
+  meta: { value: undefined, matchMode: 'contains' }
+});
 
 // Actions
 const toast = useToast();
-
-function clearSelected() {
-  selectAll.value = false;
-  objectStore.setSelectedObjects([]);
-}
-
 const formatShortUuid = (uuid: string) => uuid?.slice(0, 8) ?? uuid;
-const onDeletedSuccess = () => toast.success('File deleted');
-
-function selectCurrentPage() {
-  objectStore.setSelectedObjects(
-    tableData.value.filter((object) => {
-      return Array.from(document.querySelectorAll('[data-objectId]'))
-        .map((x) => x.getAttribute('data-objectId'))
-        .includes(object.id);
-    })
-  );
-}
+const onDeletedSuccess = () => {
+  toast.success('File deleted');
+  loadLazyData();
+};
 
 const showInfo = (id: string) => emit('show-object-info', id);
 
@@ -83,82 +86,137 @@ async function showPermissions(objectId: string) {
   permissionsObjectName.value = objectStore.findObjectById(objectId)?.name;
 }
 
-watch(getObjects, async () => {
-  clearSelected();
-
-  // Filter object cache to this specific bucket
-  const objs: Array<COMSObjectDataSource> = getObjects.value.filter(
-    (x: COMSObject) => x.bucketId === props.bucketId
-  ) as COMSObjectDataSource[];
-
-  tableData.value = objs.map((x: COMSObjectDataSource) => {
-    x.lastUpdatedDate = x.updatedAt ?? x.createdAt;
-    return x;
-  });
+onMounted(() => {
+  loading.value = true;
+  lazyParams.value = {
+    first: 0,
+    rows: lazyDataTable.value.rows,
+    sortField: 'updatedAt',
+    page: lazyDataTable.value.page,
+    sortOrder: 'desc',
+    filters: filters
+  };
+  loadLazyData();
 });
+
+const loadLazyData = (event?: any) => {
+  lazyParams.value = { ...lazyParams.value, first: event?.first || first.value, page: event?.page || 0 };
+  objectService
+    .searchObjects(
+      {
+        bucketId: props.bucketId ? [props.bucketId] : undefined,
+        deleteMarker: false,
+        latest: true,
+        page: lazyParams.value?.page ? ++lazyParams.value.page : 1,
+        name: lazyParams.value?.filters?.name.value ? lazyParams.value?.filters?.name.value : undefined,
+        limit: lazyParams.value.rows,
+        sort: lazyParams.value.sortField,
+        order: lazyParams.value.sortOrder === 1 ? 'asc' : 'desc',
+        tagset: lazyParams.value?.filters?.tags.value
+      },
+      lazyParams.value?.filters?.meta.value //Header
+    )
+    .then((r: any) => {
+      tableData.value = r.data;
+      totalRecords.value = +r?.headers['x-total-rows'];
+      // add objects to store
+      objectStore.setObjects(r.data);
+      loading.value = false;
+      return r.data;
+    })
+    // add object permissions to store
+    .then((objects: Array<COMSObjectDataSource>) => {
+      permissionStore.fetchObjectPermissions({ objectId: objects.map((o: COMSObject) => o.id) });
+    });
+};
+
+const onPage = (event?: any) => {
+  lazyParams.value = event;
+  loadLazyData(event);
+};
+
+const onSort = (event?: any) => {
+  lazyParams.value = event;
+  loadLazyData(event);
+};
+
+const onFilter = (event?: any) => {
+  lazyParams.value.filters = filters;
+  // Seems to be a bug as current page is not being reset when filter trigger
+  lazyDataTable.value.resetPage();
+  loadLazyData(event);
+};
 
 // Clear selections when navigating away
 onUnmounted(() => {
   objectStore.setSelectedObjects([]);
 });
 
-// Datatable filter(s)
-const filters = ref({
-  // Need this till PrimeVue gets it together to un-break this again
-  // TODO: Revisit with PrimeVue 2.37+
-  // @ts-ignore
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-});
+const selectedFilters = (payload: any) => {
+  filters.value.meta.value = payload.metaToSearch
+    .flatMap((o: any) => ({ [o.key]: o.value }))
+    .reduce((r: any, c: any) => {
+      const key = Object.keys(c)[0];
+      const value = c[key];
+      r['x-amz-meta-' + key] = value;
+      return r;
+    }, {});
+  filters.value.tags.value = payload.tagSetToSearch
+    .flatMap((o: any) => ({ [o.key]: o.value }))
+    .reduce((r: any, c: any) => {
+      const key = Object.keys(c)[0];
+      const value = c[key];
+      r[key] = value;
+      return r;
+    }, {});
+  lazyParams.value.filters = filters;
+  loadLazyData();
+};
 </script>
 
 <template>
   <div class="object-table">
     <DataTable
+      ref="lazyDataTable"
+      v-model:value="tableData"
       v-model:selection="objectStore.selectedObjects"
       v-model:filters="filters"
-      :loading="useAppStore().getIsLoading"
-      :value="tableData"
+      lazy
+      paginator
+      :loading="loading"
+      :total-records="totalRecords"
       data-key="id"
       class="p-datatable-sm"
       responsive-layout="scroll"
-      :paginator="true"
-      :rows="10"
-      paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-      current-page-report-template="{first}-{last} of {totalRecords}"
-      :rows-per-page-options="[10, 20, 50]"
-      sort-field="lastUpdatedDate"
+      :rows="3"
+      :rows-per-page-options="[3, 20, 50]"
+      sort-field="updatedAt"
       :sort-order="-1"
       :global-filter-fields="['name']"
-      :select-all="selectAll"
-      @select-all-change="
-        (e) => {
-          selectAll = e.checked;
-          if (e.checked) {
-            selectCurrentPage();
-          } else {
-            objectStore.setSelectedObjects([]);
-          }
-        }
-      "
-      @page="clearSelected"
-      @update:sort-order="clearSelected"
-      @update:sort-field="clearSelected"
-      @update:rows="clearSelected"
+      :first="first"
+      update:filters
+      update:page
+      @page="onPage($event)"
+      @sort="onSort($event)"
+      @filter="onFilter($event)"
     >
       <template #header>
         <div class="flex justify-content-end">
-          <ObjectFilters :bucket-id="props.bucketId" />
+          <ObjectFilters
+            :bucket-id="props.bucketId"
+            @selected-filters="selectedFilters"
+          />
 
           <span class="p-input-icon-left ml-4">
             <i class="pi pi-search" />
             <InputText
-              v-model="filters['global'].value"
+              v-model="filters.name.value"
               class="searchInput"
               placeholder="Search File Names"
-              @input="clearSelected()"
+              @keyup.enter="loadLazyData"
             />
             <Button
-              v-show="filters['global'].value !== null"
+              v-show="filters.name.value !== undefined"
               v-tooltip.bottom="'Clear'"
               class="ml-2 p-input-icon-clear-right"
               icon="pi pi-times"
@@ -166,27 +224,26 @@ const filters = ref({
               aria-label="Clear"
               @click="
                 () => {
-                  filters['global'].value = null;
-                  clearSelected();
+                  filters.name.value = undefined;
                 }
               "
             />
           </span>
 
           <Button
-            v-tooltip.bottom="'Refresh'"
+            v-tooltip.bottom="'Search'"
             class="ml-2"
-            icon="pi pi-refresh"
+            icon="pi pi-search"
             outlined
             rounded
             aria-label="Filter"
-            @click="objectStore.fetchObjects({ bucketId: props.bucketId, userId: getUserId, bucketPerms: true })"
+            @click="onFilter()"
           />
         </div>
       </template>
       <template #empty>
         <div
-          v-if="!useAppStore().getIsLoading"
+          v-if="!loading"
           class="flex justify-content-center"
         >
           <h3>There are no objects associated with your account in this bucket.</h3>
@@ -201,7 +258,7 @@ const filters = ref({
       />
       <Column
         field="name"
-        :sortable="true"
+        sortable
         header="Name"
         header-style="min-width: 25%"
         body-class="truncate"
@@ -214,7 +271,7 @@ const filters = ref({
       </Column>
       <Column
         field="id"
-        :sortable="true"
+        sortable
         header="Object ID"
         style="width: 150px"
       >
@@ -228,14 +285,13 @@ const filters = ref({
         </template>
       </Column>
       <Column
-        field="lastUpdatedDate"
+        field="updatedAt"
         header="Updated date"
         style="width: 300px"
-        :sortable="true"
-        :hidden="props.objectInfoId ? true : false"
+        sortable
       >
         <template #body="{ data }">
-          {{ formatDateLong(data.lastUpdatedDate) }}
+          {{ formatDateLong(data.updatedAt ?? data.createdAt) }}
         </template>
       </Column>
       <Column

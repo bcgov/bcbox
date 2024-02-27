@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import {
   DeleteObjectButton,
@@ -10,7 +10,7 @@ import {
   ObjectUpload
 } from '@/components/object';
 import { Button } from '@/lib/primevue';
-import { useAuthStore, useBucketStore, useObjectStore, usePermissionStore } from '@/store';
+import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 
@@ -25,8 +25,6 @@ const props = withDefaults(defineProps<Props>(), {
   bucketId: undefined
 });
 
-// Store
-const bucketStore = useBucketStore();
 //const navStore = useNavStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
@@ -37,6 +35,7 @@ const { getUserId } = storeToRefs(useAuthStore());
 // State
 const displayUpload = ref(false);
 const objectInfoId: Ref<string | undefined> = ref(undefined);
+const objectTableKey = ref(0);
 
 const selectedObjectIds = computed(() => {
   return getSelectedObjects.value.map((o) => o.id);
@@ -56,25 +55,12 @@ const showUpload = () => {
 
 const closeUpload = () => {
   displayUpload.value = false;
+  objectTableKey.value += 1;
 };
 
-// const updateBreadcrumb = async () => {
-//   try {
-//     const bucket = await bucketStore.getBucketInfo(props.bucketId as string);
-//     navStore.replace('__listObjectsDynamic', bucket?.bucketName ?? 'Unknown bucket');
-//   } catch (error: any) {
-//     toast.add({ severity: 'error', summary: 'Unable to load bucket information.', detail: error, life: 5000 });
-//   }
-// };
-
-onMounted(async () => {
-  // Removed for now
-  // updateBreadcrumb();
-
-  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
-  // TODO: userId+bucketPerms bringing back deleted files??
-  await objectStore.fetchObjects({ bucketId: props.bucketId, userId: getUserId.value, bucketPerms: true });
-});
+const onDeletedSuccess = () => {
+  objectTableKey.value += 1;
+};
 </script>
 
 <template>
@@ -112,6 +98,7 @@ onMounted(async () => {
         :disabled="displayUpload"
         :ids="selectedObjectIds"
         :mode="ButtonMode.BUTTON"
+        @on-deleted-success="onDeletedSuccess"
       />
     </div>
 
@@ -121,6 +108,7 @@ onMounted(async () => {
     >
       <div class="flex-grow-1">
         <ObjectTable
+          :key="objectTableKey"
           :bucket-id="props.bucketId"
           :object-info-id="objectInfoId"
           @show-object-info="showObjectInfo"

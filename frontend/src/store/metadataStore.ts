@@ -87,10 +87,10 @@ export const useMetadataStore = defineStore('metadata', () => {
     }
   }
 
-  async function searchMetadata(metadataSet: Array<MetadataPair> = []) {
+  async function searchMetadata(metadataSet: Array<MetadataPair> = [], bucketId?: string) {
     try {
       state.metadataSearchResults.value = [];
-      const response = (await objectService.searchMetadata({ metadata: metadataSet })).data;
+      const response = (await objectService.searchMetadata({ metadata: metadataSet }, bucketId)).data;
       state.metadataSearchResults.value = response;
     } catch (error: any) {
       toast.error('Searching metadata', error);

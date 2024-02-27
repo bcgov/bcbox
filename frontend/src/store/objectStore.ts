@@ -194,6 +194,10 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
+  function setObjects(objects: Array<COMSObject>) {
+    state.objects.value = objects;
+  }
+
   function setSelectedObjects(selected: Array<COMSObject>) {
     state.selectedObjects.value = selected;
   }
@@ -275,6 +279,7 @@ export const useObjectStore = defineStore('object', () => {
     findObjectById,
     headObject,
     removeSelectedObject,
+    setObjects,
     setSelectedObjects,
     syncObject,
     togglePublic,

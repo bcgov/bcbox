@@ -3,27 +3,23 @@ import { storeToRefs } from 'pinia';
 import { onMounted, ref, watch } from 'vue';
 
 import GridRow from '@/components/form/GridRow.vue';
-import { useBucketStore, useMetadataStore, useObjectStore, useUserStore } from '@/store';
+import { useBucketStore, useObjectStore, useUserStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
-import type { Bucket, COMSObject, Metadata } from '@/types';
+import type { Bucket, COMSObject } from '@/types';
 
 // Props
 type Props = {
   objectId: string;
-  versionId?: string;
   fullView: boolean;
 };
 
-const props = withDefaults(defineProps<Props>(), {
-  versionId: undefined
-});
+const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const bucketStore = useBucketStore();
-const metadataStore = useMetadataStore();
 const objectStore = useObjectStore();
 const userStore = useUserStore();
 const { getUserSearch } = storeToRefs(userStore);
@@ -32,17 +28,17 @@ const { getUserSearch } = storeToRefs(userStore);
 const bucket: Ref<Bucket | undefined> = ref(undefined);
 const createdBy: Ref<string | undefined> = ref(undefined);
 const object: Ref<COMSObject | undefined> = ref(undefined);
-const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
 const updatedBy: Ref<string | undefined> = ref(undefined);
 
 // Actions
 async function load() {
   object.value = objectStore.findObjectById(props.objectId);
-  await bucketStore.fetchBuckets({ bucketId: object.value?.bucketId });
-  bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
 
   if (props.fullView) {
-    objectMetadata.value = metadataStore.findMetadataByObjectId(object.value?.id as string);
+    // to get bucket name
+    await bucketStore.fetchBuckets({ bucketId: object.value?.bucketId });
+    bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
+
     await userStore.fetchUsers({ userId: [object.value?.createdBy, object.value?.updatedBy] });
     createdBy.value = getUserSearch.value.find((x) => x.userId === object.value?.createdBy)?.fullName;
     updatedBy.value = getUserSearch.value.find((x) => x.userId === object.value?.updatedBy)?.fullName;

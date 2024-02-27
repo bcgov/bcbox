@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onBeforeMount, onErrorCaptured, onMounted, ref } from 'vue';
+import { onBeforeMount, onErrorCaptured, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { ObjectList } from '@/components/object';
 import { useToast } from '@/lib/primevue';
-import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
+import { useAuthStore, useBucketStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { Bucket, BucketPermission } from '@/types';
+import type { Bucket } from '@/types';
 
 // Props
 type Props = {
@@ -22,17 +22,11 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const bucketStore = useBucketStore();
-const permissionStore = usePermissionStore();
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const ready: Ref<boolean> = ref(false);
 const bucket: Ref<Bucket | undefined> = ref(undefined);
-
-// Actions
-async function getBucketName() {
-  bucket.value = props.bucketId ? await bucketStore.findBucketById(props.bucketId) : undefined;
-}
 
 onErrorCaptured((e: Error) => {
   const toast = useToast();
@@ -42,16 +36,18 @@ onErrorCaptured((e: Error) => {
 onBeforeMount(async () => {
   const router = useRouter();
 
-  const permResponse = await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
-  if (!permResponse?.some((x: BucketPermission) => x.bucketId === props.bucketId)) {
-    router.replace({ name: RouteNames.FORBIDDEN });
-  } else {
+  // fetch buckets (which is already scoped by cur user's permissions) and populates bucket and permissions in store
+  const bucketResponse = await bucketStore.fetchBuckets({
+    bucketId: props.bucketId,
+    userId: getUserId.value,
+    objectPerms: true
+  });
+  if (bucketResponse?.length) {
+    bucket.value = bucketResponse[0];
     ready.value = true;
+  } else {
+    router.replace({ name: RouteNames.FORBIDDEN });
   }
-});
-
-onMounted(() => {
-  getBucketName();
 });
 </script>
 
