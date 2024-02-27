@@ -108,7 +108,7 @@ const loadLazyData = (event?: any) => {
         deleteMarker: false,
         latest: true,
         page: lazyParams.value?.page ? ++lazyParams.value.page : 1,
-        name: lazyParams.value?.filters?.name.value,
+        name: lazyParams.value?.filters?.name.value ? lazyParams.value?.filters?.name.value : undefined,
         limit: lazyParams.value.rows,
         sort: lazyParams.value.sortField,
         order: lazyParams.value.sortOrder === 1 ? 'asc' : 'desc',
@@ -170,6 +170,7 @@ const selectedFilters = (payload: any) => {
       return r;
     }, {});
   lazyParams.value.filters = filters;
+  loadLazyData();
 };
 </script>
 
@@ -187,8 +188,8 @@ const selectedFilters = (payload: any) => {
       data-key="id"
       class="p-datatable-sm"
       responsive-layout="scroll"
-      :rows="10"
-      :rows-per-page-options="[10, 20, 50]"
+      :rows="3"
+      :rows-per-page-options="[3, 20, 50]"
       sort-field="updatedAt"
       :sort-order="-1"
       :global-filter-fields="['name']"
@@ -212,6 +213,7 @@ const selectedFilters = (payload: any) => {
               v-model="filters.name.value"
               class="searchInput"
               placeholder="Search File Names"
+              @keyup.enter="loadLazyData"
             />
             <Button
               v-show="filters.name.value !== undefined"
