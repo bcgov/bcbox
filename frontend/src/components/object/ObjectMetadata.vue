@@ -10,22 +10,16 @@ import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { ObjectMetadataTagFormType } from '@/components/object/ObjectMetadataTagForm.vue';
-import type { Metadata } from '@/types';
 
 // Props
 type Props = {
   editable?: boolean;
   objectId: string;
-  versionId?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  editable: true,
-  versionId: undefined
+  editable: true
 });
-
-// Emits
-const emit = defineEmits(['on-file-uploaded']);
 
 // Store
 const metadataStore = useMetadataStore();
@@ -38,9 +32,7 @@ const { getMetadataByObjectId } = storeToRefs(metadataStore);
 
 // State
 const obj = computed(() => objectStore.getObject(props.objectId));
-const objectMetadata: Ref<Metadata | undefined> = computed(() =>
-  props.versionId ? getMetadataByVersionId.value(props.versionId) : getMetadataByObjectId.value(props.objectId)
-);
+const versionId = defineModel<string>('versionId');
 const editing: Ref<boolean> = ref(false);
 const formData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
@@ -61,15 +53,15 @@ const confirmUpdate = (values: ObjectMetadataTagFormType) => {
 
 const showModal = () => {
   formData.value.filename = obj.value?.name ?? '';
-  formData.value.metadata = objectMetadata.value?.metadata;
+  formData.value.metadata = (
+    versionId.value ? getMetadataByVersionId.value(versionId.value) : getMetadataByObjectId.value(props.objectId)
+  )?.metadata;
 
   editing.value = true;
 };
 
 const submitModal = async (values: ObjectMetadataTagFormType) => {
-  await metadataStore.replaceMetadata(props.objectId, values.metadata ?? [], props.versionId);
-  emit('on-file-uploaded');
-
+  await metadataStore.replaceMetadata(props.objectId, values.metadata ?? [], versionId.value);
   closeModal();
 };
 
@@ -84,7 +76,7 @@ const closeModal = () => {
       <h2>Metadata</h2>
     </div>
     <GridRow
-      v-for="meta in objectMetadata?.metadata"
+      v-for="meta in (versionId ? getMetadataByVersionId(versionId) : getMetadataByObjectId(props.objectId))?.metadata"
       :key="meta.key + meta.value"
       :label="meta.key"
       :value="meta.value"
@@ -107,14 +99,12 @@ const closeModal = () => {
     </Button>
   </div>
 
-  <!-- eslint-disable vue/no-v-model-argument -->
   <Dialog
     v-model:visible="editing"
     :draggable="false"
     :modal="true"
     class="bcbox-info-dialog"
   >
-    <!-- eslint-enable vue/no-v-model-argument -->
     <template #header>
       <font-awesome-icon
         icon="fa-solid fa-pen-to-square"

@@ -1,3 +1,4 @@
 export type GetVersionMetadataOptions = {
-  versionId: string;
+  objectId?: string;
+  versionId?: string | string[];
 };

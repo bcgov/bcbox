@@ -4,7 +4,6 @@ import { computed, ref } from 'vue';
 import { useToast } from '@/lib/primevue';
 import { objectService, versionService } from '@/services';
 import { useAppStore } from '@/store';
-import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type {
@@ -58,15 +57,15 @@ export const useVersionStore = defineStore('version', () => {
     try {
       appStore.beginIndeterminateLoading();
 
-      const response = (await versionService.getMetadata(null, params)).data;
-
-      // Remove old values matching search parameters
-      const matches = (x: Metadata) => !params.versionId || params.versionId === x.versionId;
-
-      const [, difference] = partition(state.metadata.value, matches);
-
-      // Merge and assign
-      state.metadata.value = difference.concat(response);
+      if (params.objectId) {
+        state.metadata.value = [];
+        const versions = getters.getVersionsByObjectId.value(params.objectId);
+        state.metadata.value = (
+          await versionService.getMetadata(null, { versionId: versions.map(({ id }) => id) })
+        ).data;
+      } else {
+        state.metadata.value = (await versionService.getMetadata(null, params)).data;
+      }
     } catch (error: any) {
       toast.error('Fetching metadata', error);
     } finally {
@@ -77,17 +76,12 @@ export const useVersionStore = defineStore('version', () => {
   async function fetchTagging(params: GetVersionTaggingOptions) {
     try {
       appStore.beginIndeterminateLoading();
-
-      const response = (await versionService.getObjectTagging(params)).data;
-
-      // Remove old values matching search parameters
-      const matches = (x: Tagging) => !params.versionId || params.versionId === x.versionId;
-
-      const [, difference] = partition(state.tagging.value, matches);
-
-      // Merge and assign
-      state.tagging.value = difference.concat(response);
-      // NOTE: seems to be adding duplicates
+      if (params.objectId) {
+        const versions = getters.getVersionsByObjectId.value(params.objectId);
+        state.tagging.value = (await versionService.getObjectTagging({ versionId: versions.map(({ id }) => id) })).data;
+      } else {
+        state.tagging.value = (await versionService.getObjectTagging(params)).data;
+      }
     } catch (error: any) {
       toast.error('Fetching tags', error);
     } finally {
@@ -98,16 +92,7 @@ export const useVersionStore = defineStore('version', () => {
   async function fetchVersions(params: GetVersionOptions) {
     try {
       appStore.beginIndeterminateLoading();
-
-      const response = (await objectService.listObjectVersion(params.objectId)).data;
-
-      // Remove old values matching search parameters
-      const matches = (x: Version) => !params.objectId || x.objectId === params.objectId;
-
-      const [, difference] = partition(state.versions.value, matches);
-
-      // Merge and assign
-      state.versions.value = difference.concat(response);
+      state.versions.value = (await objectService.listObjectVersion(params.objectId)).data;
     } catch (error: any) {
       toast.error('Fetching versions', error);
     } finally {
