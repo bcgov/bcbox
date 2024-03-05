@@ -14,6 +14,7 @@ import {
   ObjectUploadBasic,
   ObjectVersion
 } from '@/components/object';
+import { InviteButton } from '@/components/common';
 import { ShareObjectButton } from '@/components/object/share';
 import { Button, Dialog, Divider } from '@/lib/primevue';
 import {
@@ -120,7 +121,11 @@ onMounted(async () => {
         </div>
 
         <div class="action-buttons">
-          <ShareObjectButton :id="object.id" />
+          <InviteButton
+            :id="props.objectId"
+            :label-text="'Invite File'"
+          />
+          <ShareObjectButton :id="props.objectId" />
           <DownloadObjectButton
             v-if="
               object.public || permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.READ, bucketId)
