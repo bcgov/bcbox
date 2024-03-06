@@ -4,7 +4,7 @@ import { computed, ref, onMounted } from 'vue';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ShareLinkContent from '@/components/object/share/ShareLinkContent.vue';
-import { Button, Dialog, TabView, TabPanel, RadioButton } from '@/lib/primevue';
+import { Button, Dialog, TabView, TabPanel, RadioButton, InputText, useToast } from '@/lib/primevue';
 import { useConfigStore, useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
@@ -12,33 +12,29 @@ import type { COMSObject } from '@/types';
 
 // Props
 type Props = {
-  id: string;
+  bucketId?: string;
+  objectId?: string;
   labelText: string;
 };
+export type inviteFormData = {
+  email: string;
+  bucketId?: string;
+  expiresAt: number;
+  objectId?: string;
+};
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = withDefaults(defineProps<Props>(), {
+  bucketId: '',
+  objectId: '',
+  labelText: ''
+});
 
 // Store
 const objectStore = useObjectStore();
-const { getConfig } = storeToRefs(useConfigStore());
+const toast = useToast();
 
 // State
 const obj: Ref<COMSObject | undefined> = ref(undefined);
-
-const timeFrames: Ref<
-  {
-    name: string;
-    key: string;
-  }[]
-> = ref([
-  { name: 'No Limit', key: '0' },
-  { name: '1 Day', key: '1' },
-  { name: '3 Day', key: '3' },
-  { name: '7 Day', key: '7' }
-]);
-
-// Dialog
-const displayInviteDialog = ref(false);
 
 // Share link
 const bcBoxLink = computed(() => {
@@ -48,9 +44,50 @@ const comsUrl = computed(() => {
   return `${getConfig.value.coms?.apiPath}/object/${props.id}`;
 });
 
-onMounted(() => {
-  obj.value = objectStore.findObjectById(props.id);
-});
+// Value is set in hours, so 3 days (3x24) = 72hours
+const timeFrames: Ref<
+  {
+    name: string;
+    key: string;
+  }[]
+> = ref([
+  { name: '1 Hour', value: 1 },
+  { name: '8 Hour', value: 8 },
+  { name: '1 Day', value: 24 },
+  { name: '1 Week', value: 168 }
+]);
+
+const formData: Ref<inviteFormData> = ref({});
+
+// Dialog
+const displayInviteDialog = ref(false);
+
+//Action
+const sendInvite = () => {
+  console.log('test');
+  console.log(formData);
+  console.log(formData.value.expiresAt);
+  // console.log(obj.value.bucketId);
+  // console.log(obj.value.bucketId);
+  if (props.objectId) {
+    formData.value.bucketId = props.bucketId;
+  } else if (props.bucketId) {
+    formData.value.objectId = props.objectId;
+  } else {
+    toast.error('', 'Provide either BucketId or ObjectId');
+  }
+
+  let expiresAt;
+  if (formData.value.expiresAt) {
+    expiresAt = Math.floor(
+      new Date(new Date().setDate(new Date().getDate() + formData.value.expiresAt)).getTime() / 1000
+    );
+    // Just for reference
+    console.log(new Date(expiresAt * 1000));
+  }
+  toast.success('', 'Not Provide either BucketId or ObjectId');
+  comsUrl = 'https://bcbox-dev-domain/invite/token';
+};
 </script>
 
 <template>
@@ -76,24 +113,53 @@ onMounted(() => {
     <ul class="mb-4">
       <li>To share you must first add email and send an invite to the user.</li>
     </ul>
+    <h3 class="mt-1 mb-2">File Access</h3>
+    <p>Make file available for</p>
     <div class="flex flex-wrap gap-3">
       <div
         v-for="t in timeFrames"
-        :key="t.key"
+        :key="t.value.toString()"
         class="flex align-items-center"
       >
         <RadioButton
-          :input-id="t.key"
-          name="dynamic"
-          :value="t.name"
+          v-model="formData.expiresAt"
+          :input-id="t.value.toString()"
+          :name="t.name"
+          :value="t.value"
         />
         <label
-          :for="t.key"
+          :for="t.value"
           class="ml-2"
         >
           {{ t.name }}
         </label>
       </div>
+    </div>
+    <h3 class="mt-1 mb-2">Email</h3>
+    <label
+      class="mb-4"
+      for="inviteEmail"
+    >
+      Invite People
+    </label>
+    <div class="p-inputgroup mb-4">
+      <InputText
+        v-model="formData.email"
+        name="inviteEmail"
+        placeholder="Enter email"
+        required
+        type="email"
+      />
+      <Button
+        class="p-button p-button-primary"
+        @click="sendInvite"
+      >
+        <font-awesome-icon
+          icon="fa fa-envelope"
+          class="mr-2"
+        />
+        Invite
+      </Button>
     </div>
     <TabView>
       <TabPanel

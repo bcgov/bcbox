@@ -122,7 +122,7 @@ onMounted(async () => {
 
         <div class="action-buttons">
           <InviteButton
-            :id="props.objectId"
+            :object-id="props.objectId"
             :label-text="'Invite File'"
           />
           <ShareObjectButton :id="props.objectId" />
