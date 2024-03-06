@@ -35,6 +35,7 @@ export const RouteNames = Object.freeze({
   DEVELOPER: 'developer',
   FORBIDDEN: 'forbidden',
   HOME: 'home',
+  INVITE: 'invite',
   LIST_BUCKETS: 'listBuckets',
   LIST_OBJECTS: 'listObjects',
   LOGIN: 'login',
