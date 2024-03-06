@@ -17,9 +17,9 @@ type Props = {
   labelText: string;
 };
 export type inviteFormData = {
-  email: string;
+  email?: string;
   bucketId?: string;
-  expiresAt: number;
+  expiresAt?: number;
   objectId?: string;
 };
 
@@ -30,25 +30,20 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 // Store
-const objectStore = useObjectStore();
+const { getConfig } = storeToRefs(useConfigStore());
 const toast = useToast();
 
 // State
 const obj: Ref<COMSObject | undefined> = ref(undefined);
 
 // Share link
-const bcBoxLink = computed(() => {
-  return `${window.location.origin}/detail/objects?objectId=${props.id}`;
-});
-const comsUrl = computed(() => {
-  return `${getConfig.value.coms?.apiPath}/object/${props.id}`;
-});
+const inviteLink: Ref<string> = ref('');
 
 // Value is set in hours, so 3 days (3x24) = 72hours
 const timeFrames: Ref<
   {
     name: string;
-    key: string;
+    value: number;
   }[]
 > = ref([
   { name: '1 Hour', value: 1 },
@@ -86,13 +81,13 @@ const sendInvite = () => {
     console.log(new Date(expiresAt * 1000));
   }
   toast.success('', 'Not Provide either BucketId or ObjectId');
-  comsUrl = 'https://bcbox-dev-domain/invite/token';
+  inviteLink.value = 'https://bcbox-dev-domain/invite/token';
 };
 </script>
 
 <template>
   <Dialog
-    v-model:visible="displayInviteDialog"
+    :visible="displayInviteDialog"
     header="Share"
     :modal="true"
     :style="{ minWidth: '700px' }"
@@ -128,7 +123,7 @@ const sendInvite = () => {
           :value="t.value"
         />
         <label
-          :for="t.value"
+          :for="t.value.toString()"
           class="ml-2"
         >
           {{ t.name }}
@@ -162,28 +157,14 @@ const sendInvite = () => {
       </Button>
     </div>
     <TabView>
-      <TabPanel
-        v-if="obj?.public"
-        header="Direct public file link"
-      >
+      <TabPanel header="Invite file link">
         <ShareLinkContent
-          :share-link="comsUrl"
-          label="Direct Link"
-        />
-      </TabPanel>
-      <!-- Disable for public until unauthed File Details page works -->
-      <TabPanel
-        header="BCBox share link"
-        :disabled="obj?.public"
-      >
-        <ShareLinkContent
-          :share-link="bcBoxLink"
-          label="Share Link"
+          :share-link="inviteLink"
+          label="Invite Link"
         />
       </TabPanel>
     </TabView>
   </Dialog>
-
   <Button
     v-tooltip.bottom="props.labelText"
     class="p-button-lg p-button-text primary"
