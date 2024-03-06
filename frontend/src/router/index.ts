@@ -63,6 +63,13 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
+    path: '/invite/:token',
+    name: RouteNames.INVITE,
+    component: () => import('@/views/invite/InviteView.vue'),
+    meta: { requiresAuth: true, breadcrumb: 'Invite', title: 'Invite' },
+    props: createProps
+  },
+  {
     path: '/oidc',
     component: () => import('@/views/GenericView.vue'),
     children: [
