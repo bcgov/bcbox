@@ -102,5 +102,22 @@ export default {
    */
   objectGetPermissions(objectId: string, params?: ObjectGetPermissionsOptions) {
     return comsAxios().get(`${PATH}/${OBJECT}/${objectId}`, { params: params });
+  },
+
+  /**
+   * @function createInvite
+   * Post an Invite
+   * @param {string} bucketId
+   * @param {string} email to be used for access
+   * @param {string} expiration timestamp for token
+   * @returns {string} objectId
+   */
+  async createInvite(bucketId?: string, email?: string, expiresAt?: string, objectId?: string) {
+    return comsAxios().post(`${PATH}/invite`, {
+      bucketId: bucketId,
+      email: email,
+      expiresAt: expiresAt,
+      objectId: objectId
+    });
   }
 };

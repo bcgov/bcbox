@@ -4,7 +4,7 @@ import { ref, watch } from 'vue';
 
 import { BucketChildConfig, BucketPermission, BucketTableBucketName } from '@/components/bucket';
 import { Spinner } from '@/components/layout';
-import { SyncButton } from '@/components/common';
+import { SyncButton, InviteButton } from '@/components/common';
 import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { DELIMITER, Permissions } from '@/utils/constants';
@@ -288,10 +288,11 @@ watch(getBuckets, () => {
       header="Actions"
       header-class="text-right"
       body-class="action-buttons"
-      style="width: 280px"
+      style="width: 300px"
     >
       <template #body="{ node }">
         <span v-if="!node.data.dummy">
+          <InviteButton :bucket-id="node.data.bucketId" />
           <BucketChildConfig
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
             :parent-bucket="node.data"

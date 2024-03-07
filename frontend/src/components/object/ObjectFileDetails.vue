@@ -121,11 +121,7 @@ onMounted(async () => {
         </div>
 
         <div class="action-buttons">
-          <InviteButton
-            :object-id="props.objectId"
-            :label-text="'Invite File'"
-          />
-          <ShareObjectButton :id="props.objectId" />
+          <InviteButton :object-id="props.objectId" />
           <DownloadObjectButton
             v-if="
               object.public || permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.READ, bucketId)
