@@ -292,7 +292,10 @@ watch(getBuckets, () => {
     >
       <template #body="{ node }">
         <span v-if="!node.data.dummy">
-          <InviteButton :bucket-id="node.data.bucketId" />
+          <InviteButton
+            :bucket-id="node.data.bucketId"
+            label-text="Bucket"
+          />
           <BucketChildConfig
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
             :parent-bucket="node.data"

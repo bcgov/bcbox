@@ -5,11 +5,11 @@ import { computed, ref, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ShareLinkContent from '@/components/object/share/ShareLinkContent.vue';
 import { Button, Dialog, TabView, TabPanel, RadioButton, InputText, useToast, InputSwitch } from '@/lib/primevue';
-import { useConfigStore, useObjectStore } from '@/store';
+import { useConfigStore, useObjectStore, useBucketStore } from '@/store';
 import { permissionService } from '@/services';
 
 import type { Ref } from 'vue';
-import type { COMSObject } from '@/types';
+import type { COMSObject, Bucket } from '@/types';
 
 // Props
 type Props = {
@@ -34,11 +34,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const objectStore = useObjectStore();
+const bucketStore = useBucketStore();
 const { getConfig } = storeToRefs(useConfigStore());
 const toast = useToast();
 
 // State
 const obj: Ref<COMSObject | undefined> = ref(undefined);
+const bucket: Ref<Bucket | undefined> = ref(undefined);
 const isRestricted: Ref<boolean> = ref(props.restricted);
 const showInviteLink: Ref<boolean> = ref(false);
 
@@ -52,13 +54,12 @@ const timeFrames: Ref<
     value: number;
   }[]
 > = ref([
-  { name: '1 Hour', value: 1 },
-  { name: '8 Hour', value: 8 },
-  { name: '1 Day', value: 24 },
-  { name: '1 Week', value: 168 }
+  { name: '1 Hour', value: 3600 },
+  { name: '8 Hour', value: 28800 },
+  { name: '1 Day (Default)', value: 86400 },
+  { name: '1 Week', value: 691199 }
 ]);
-
-const formData: Ref<inviteFormData> = ref({});
+const formData: Ref<inviteFormData> = ref({ expiresAt: 86400 });
 
 // Dialog
 const displayInviteDialog = ref(false);
@@ -77,11 +78,7 @@ async function sendInvite() {
   try {
     let expiresAt;
     if (formData.value.expiresAt) {
-      expiresAt = Math.floor(
-        new Date(new Date().setDate(new Date().getDate() + formData.value.expiresAt)).getTime() / 1000
-      );
-      // Just for reference
-      console.log(new Date(expiresAt * 1000));
+      expiresAt = Math.floor(Date.now() / 1000) + formData.value.expiresAt;
     }
     const permissionToken = await permissionService.createInvite(
       props.bucketId,
@@ -89,16 +86,19 @@ async function sendInvite() {
       expiresAt,
       props.objectId
     );
-    inviteLink.value = `${getConfig.value.coms?.apiPath}/permission/invite/${permissionToken.data}`;
-    console.log(permissionToken);
-    toast.success('', 'Not Provide either BucketId or ObjectId');
+    inviteLink.value = `${window.location.origin}/invite/${permissionToken.data}`;
+    toast.success('', 'Invite link is created.');
     showInviteLink.value = true;
   } catch (error: any) {
     toast.error('', 'Error getting token');
   }
 }
 onMounted(() => {
-  obj.value = objectStore.findObjectById(props.objectId);
+  if (props.objectId) {
+    obj.value = objectStore.findObjectById(props.objectId);
+  } else if (props.bucketId) {
+    bucket.value = bucketStore.findBucketById(props.bucketId);
+  }
 });
 </script>
 
@@ -119,12 +119,12 @@ onMounted(() => {
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
-      {{ obj?.name }}
+      {{ obj?.name || bucket?.bucketName }}
     </h3>
 
     <ul class="mb-4">
-      <li>Invite someone using an invite link</li>
       <li>If a user already has permissions, you can link them with a share link</li>
+      <li>Invite someone using an invite link</li>
       <li>To share publicly or with a direct link, you must set the file to public - this only works for objects</li>
     </ul>
     <TabView>
@@ -148,8 +148,8 @@ onMounted(() => {
         />
       </TabPanel>
       <TabPanel header="Invite link">
-        <h3 class="mt-1 mb-2">File Access</h3>
-        <p>Make available for:</p>
+        <h3 class="mt-1 mb-2">{{ props.labelText }} Invite</h3>
+        <p>Make invite available for:</p>
         <div class="flex flex-wrap gap-3">
           <div
             v-for="t in timeFrames"
@@ -171,19 +171,22 @@ onMounted(() => {
           </div>
         </div>
         <p class="mt-4 mb-2">Restrict to user's email</p>
-        <InputSwitch
-          class="mt-5"
-          v-model="isRestricted"
-        />
-        <InputText
-          v-show="isRestricted"
-          v-model="formData.email"
-          class="ml-7 mb-4"
-          name="inviteEmail"
-          placeholder="Enter email"
-          required
-          type="email"
-        />
+        <div class="p-inputgroup mb-4">
+          <InputSwitch
+            v-model="isRestricted"
+            class="mt-1"
+          />
+          <!-- Add email validation -->
+          <InputText
+            v-show="isRestricted"
+            v-model="formData.email"
+            name="inviteEmail"
+            placeholder="Enter email"
+            required
+            type="email"
+            class="ml-5 mr-8"
+          />
+        </div>
         <div class="p-inputgroup mb-4">
           <Button
             class="p-button p-button-primary"
@@ -206,9 +209,9 @@ onMounted(() => {
     </TabView>
   </Dialog>
   <Button
-    v-tooltip.bottom="props.labelText"
+    v-tooltip.bottom="`${props.labelText} Share`"
     class="p-button-lg p-button-text primary"
-    aria-label="props.labelText"
+    aria-label="`${props.labelText} Share`"
     @click="displayInviteDialog = true"
   >
     <font-awesome-icon icon="fa-solid fa-share-alt" />

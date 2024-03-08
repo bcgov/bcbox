@@ -112,12 +112,12 @@ export default {
    * @param {string} expiration timestamp for token
    * @returns {string} objectId
    */
-  async createInvite(bucketId?: string, email?: string, expiresAt?: string, objectId?: string) {
+  async createInvite(bucketId?: string, email?: string, expiresAt?: number, objectId?: string) {
     return comsAxios().post(`${PATH}/invite`, {
-      bucketId: bucketId,
-      email: email,
-      expiresAt: expiresAt,
-      objectId: objectId
+      bucketId: bucketId || undefined,
+      email: email || undefined,
+      expiresAt: expiresAt || undefined,
+      objectId: objectId || undefined
     });
   }
 };
