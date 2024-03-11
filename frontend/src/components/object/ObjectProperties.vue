@@ -80,5 +80,10 @@ onMounted(() => {
       label="Updated date"
       :value="formatDateLong(object?.updatedAt as string)"
     />
+    <GridRow
+      v-if="fullView"
+      label="Last sync date"
+      :value="formatDateLong(object?.lastSyncedDate as string)"
+    />
   </div>
 </template>
