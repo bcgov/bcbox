@@ -38,7 +38,7 @@ const { getVersionsByObjectId } = storeToRefs(versionStore);
 
 // State
 const versionId = defineModel<string>('versionId');
-const versions: Ref<Array<Version>> = computed((): any => getVersionsByObjectId.value(props.objectId));
+const versions: Ref<Array<Version>> = computed(() => getVersionsByObjectId.value(props.objectId));
 const tableData: Ref<Array<VersionDataSource>> = computed(() => {
   return versions.value.map((v: Version, index, arr) => ({
     ...v,
@@ -58,8 +58,8 @@ const onVersionClick = (e: any) => {
   versionId.value = e.data.id;
 };
 
-watch(props, async () => {
-  await userStore.fetchUsers({ userId: versions.value.map((x: Version) => x.createdBy) });
+watch(props, () => {
+  userStore.fetchUsers({ userId: versions.value.map((x: Version) => x.createdBy) });
 });
 </script>
 

@@ -36,7 +36,7 @@ export const useUserStore = defineStore('user', () => {
       () => (userId: string | undefined) => state.userSearch.value.find((x: User) => userId === x.userId)
     ),
     // returns an array of Users corresponding to provided user IDs
-    getUsers: computed(() => (userIds: Array<string> | undefined) => {
+    getUsers: computed(() => (userIds?: Array<string>) => {
       if (userIds && userIds.length) {
         return state.userSearch.value.filter((x: User) => {
           return userIds.includes(x.userId);

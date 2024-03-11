@@ -78,14 +78,13 @@ async function onVersionsChanged() {
 
 onMounted(async () => {
   const head = await objectStore.headObject(props.objectId);
-  const isPublic = head?.status === 204;
 
   await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
   await objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true });
   object.value = getObject.value(props.objectId);
   const bucketId = object.value?.bucketId;
   if (
-    !isPublic &&
+    head?.status !== 204 &&
     (!object.value ||
       !permissionStore.isObjectActionAllowed(object.value.id, getUserId.value, Permissions.READ, object.value.bucketId))
   ) {
