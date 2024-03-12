@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { RequirePublicOrAuth } from '@/components/guards';
 import { ObjectFileDetails } from '@/components/object';
@@ -19,22 +20,19 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const versionStore = useVersionStore();
+const { getLatestVersionIdByObjectId } = storeToRefs(versionStore);
 
 // State
-const version: Ref<string | undefined> = ref(props.versionId);
+const versionId: Ref<string | undefined> = ref(props.versionId);
 
-// Actions
 onBeforeMount(async () => {
-  // Get the latest version if not defined
-  if (!version.value) {
+  // Always load version data
+  if (props.objectId) {
     await versionStore.fetchVersions({ objectId: props.objectId });
-    version.value = versionStore.findLatestVersionIdByObjectId(props.objectId);
-  }
-});
 
-watch([props], () => {
-  if (props.versionId) {
-    version.value = props.versionId;
+    if (!versionId.value) {
+      versionId.value = getLatestVersionIdByObjectId.value(props.objectId);
+    }
   }
 });
 </script>
@@ -42,18 +40,12 @@ watch([props], () => {
 <template>
   <RequirePublicOrAuth :object-id="props.objectId">
     <ObjectFileDetails
-      v-if="props.objectId"
+      v-if="props.objectId && versionId"
       :object-id="props.objectId"
-      :version-id="version"
+      :version-id="versionId"
     />
     <div v-else>
-      <h3>No object or version provided</h3>
+      <h3 class="font-bold">No object or version provided</h3>
     </div>
   </RequirePublicOrAuth>
 </template>
-
-<style lang="scss" scoped>
-h3 {
-  font-weight: bold;
-}
-</style>

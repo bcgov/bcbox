@@ -82,7 +82,7 @@ describe('Metadata Store', () => {
     it('returns matching metadata', async () => {
       metadataStore.metadata = [meta];
 
-      const result = metadataStore.findMetadataByObjectId('000');
+      const result = metadataStore.getMetadataByObjectId('000');
 
       expect(result).toStrictEqual(meta);
     });
@@ -90,7 +90,7 @@ describe('Metadata Store', () => {
     it('returns undefined when no match found', async () => {
       metadataStore.metadata = [meta];
 
-      const result = metadataStore.findMetadataByObjectId('111');
+      const result = metadataStore.getMetadataByObjectId('111');
 
       expect(result).toStrictEqual(undefined);
     });

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { COMSObjectPermission } from '@/types';
+import type { COMSObjectPermission, User } from '@/types';
 
 // Props
 type Props = {
@@ -20,12 +20,12 @@ const permissionStore = usePermissionStore();
 const userStore = useUserStore();
 
 const { getObjectPermissions } = storeToRefs(permissionStore);
+const { getUsers } = storeToRefs(userStore);
 
 // State
 const managedBy: Ref<string | undefined> = ref();
 
-// Actions
-async function load() {
+onMounted(async () => {
   await permissionStore.fetchObjectPermissions({ objectId: props.objectId });
 
   const uniqueIds = [
@@ -38,19 +38,11 @@ async function load() {
 
   if (uniqueIds.length) {
     await userStore.fetchUsers({ userId: uniqueIds });
-    managedBy.value = userStore
-      .findUsersById(uniqueIds)
-      .map((x) => x.fullName)
+    managedBy.value = getUsers
+      .value(uniqueIds)
+      .map((x: User) => x.fullName)
       .join(', ');
   }
-}
-
-onMounted(() => {
-  load();
-});
-
-watch(props, () => {
-  load();
 });
 </script>
 

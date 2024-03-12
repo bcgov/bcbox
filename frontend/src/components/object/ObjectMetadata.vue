@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 import GridRow from '@/components/form/GridRow.vue';
 import { ObjectMetadataTagForm } from '@/components/object';
@@ -10,22 +10,16 @@ import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { ObjectMetadataTagFormType } from '@/components/object/ObjectMetadataTagForm.vue';
-import type { Metadata } from '@/types';
 
 // Props
 type Props = {
   editable?: boolean;
   objectId: string;
-  versionId?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  editable: true,
-  versionId: undefined
+  editable: true
 });
-
-// Emits
-const emit = defineEmits(['on-file-uploaded']);
 
 // Store
 const metadataStore = useMetadataStore();
@@ -33,18 +27,16 @@ const versionStore = useVersionStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const { getUserId } = storeToRefs(useAuthStore());
-const { getMetadata: tsGetMetadata } = storeToRefs(metadataStore);
-const { getMetadata: vsGetMetadata } = storeToRefs(versionStore);
+const { getMetadataByVersionId } = storeToRefs(versionStore);
+const { getMetadataByObjectId } = storeToRefs(metadataStore);
 
 // State
+const obj = computed(() => objectStore.getObject(props.objectId));
+const versionId = defineModel<string>('versionId');
 const editing: Ref<boolean> = ref(false);
 const formData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
 });
-const objectMetadata: Ref<Metadata | undefined> = ref(undefined);
-
-// Object
-const obj = objectStore.findObjectById(props.objectId);
 
 // Actions
 const confirm = useConfirm();
@@ -60,38 +52,22 @@ const confirmUpdate = (values: ObjectMetadataTagFormType) => {
 };
 
 const showModal = () => {
-  formData.value.filename = obj?.name ?? '';
-  formData.value.metadata = objectMetadata.value?.metadata;
+  formData.value.filename = obj.value?.name ?? '';
+  formData.value.metadata = (
+    versionId.value ? getMetadataByVersionId.value(versionId.value) : getMetadataByObjectId.value(props.objectId)
+  )?.metadata;
 
   editing.value = true;
 };
 
 const submitModal = async (values: ObjectMetadataTagFormType) => {
-  await metadataStore.replaceMetadata(props.objectId, values.metadata ?? [], props.versionId);
-  emit('on-file-uploaded');
-
+  await metadataStore.replaceMetadata(props.objectId, values.metadata ?? [], versionId.value);
   closeModal();
 };
 
 const closeModal = () => {
   editing.value = false;
 };
-
-async function load() {
-  if (props.versionId) {
-    objectMetadata.value = versionStore.findMetadataByVersionId(props.versionId);
-  } else {
-    objectMetadata.value = metadataStore.findMetadataByObjectId(props.objectId);
-  }
-}
-
-onMounted(() => {
-  load();
-});
-
-watch([props, tsGetMetadata, vsGetMetadata], () => {
-  load();
-});
 </script>
 
 <template>
@@ -100,7 +76,7 @@ watch([props, tsGetMetadata, vsGetMetadata], () => {
       <h2>Metadata</h2>
     </div>
     <GridRow
-      v-for="meta in objectMetadata?.metadata"
+      v-for="meta in (versionId ? getMetadataByVersionId(versionId) : getMetadataByObjectId(props.objectId))?.metadata"
       :key="meta.key + meta.value"
       :label="meta.key"
       :value="meta.value"
@@ -123,14 +99,12 @@ watch([props, tsGetMetadata, vsGetMetadata], () => {
     </Button>
   </div>
 
-  <!-- eslint-disable vue/no-v-model-argument -->
   <Dialog
     v-model:visible="editing"
     :draggable="false"
     :modal="true"
     class="bcbox-info-dialog"
   >
-    <!-- eslint-enable vue/no-v-model-argument -->
     <template #header>
       <font-awesome-icon
         icon="fa-solid fa-pen-to-square"

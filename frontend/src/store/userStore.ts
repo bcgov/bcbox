@@ -31,7 +31,20 @@ export const useUserStore = defineStore('user', () => {
   // Getters
   const getters = {
     getIdps: computed(() => state.idps.value),
-    getUserSearch: computed(() => state.userSearch.value)
+    // returns a single User for provided user ID
+    getUser: computed(
+      () => (userId: string | undefined) => state.userSearch.value.find((x: User) => userId === x.userId)
+    ),
+    // returns an array of Users corresponding to provided user IDs
+    getUsers: computed(() => (userIds?: Array<string>) => {
+      if (userIds && userIds.length) {
+        return state.userSearch.value.filter((x: User) => {
+          return userIds.includes(x.userId);
+        });
+      } else {
+        return state.userSearch.value;
+      }
+    })
   };
 
   // Actions
@@ -66,10 +79,6 @@ export const useUserStore = defineStore('user', () => {
     state.userSearch.value = [];
   }
 
-  function findUsersById(userId: Array<string>) {
-    return state.userSearch.value.filter((x: User) => userId.includes(x.userId));
-  }
-
   return {
     // State
     ...state,
@@ -79,8 +88,7 @@ export const useUserStore = defineStore('user', () => {
 
     // Actions
     clearSearch,
-    fetchUsers,
-    findUsersById
+    fetchUsers
   };
 });
 

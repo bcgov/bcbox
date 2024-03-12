@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted } from 'vue';
 
 import GridRow from '@/components/form/GridRow.vue';
 import { useBucketStore, useObjectStore, useUserStore } from '@/store';
@@ -15,42 +15,24 @@ type Props = {
   objectId: string;
   fullView: boolean;
 };
-
 const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const bucketStore = useBucketStore();
 const objectStore = useObjectStore();
 const userStore = useUserStore();
-const { getUserSearch } = storeToRefs(userStore);
 
-// State
-const bucket: Ref<Bucket | undefined> = ref(undefined);
-const createdBy: Ref<string | undefined> = ref(undefined);
-const object: Ref<COMSObject | undefined> = ref(undefined);
-const updatedBy: Ref<string | undefined> = ref(undefined);
+const { getBucket } = storeToRefs(bucketStore);
+const { getObject } = storeToRefs(objectStore);
+const { getUser } = storeToRefs(userStore);
 
-// Actions
-async function load() {
-  object.value = objectStore.findObjectById(props.objectId);
-
-  if (props.fullView) {
-    // to get bucket name
-    await bucketStore.fetchBuckets({ bucketId: object.value?.bucketId });
-    bucket.value = bucketStore.findBucketById(object.value?.bucketId as string);
-
-    await userStore.fetchUsers({ userId: [object.value?.createdBy, object.value?.updatedBy] });
-    createdBy.value = getUserSearch.value.find((x) => x.userId === object.value?.createdBy)?.fullName;
-    updatedBy.value = getUserSearch.value.find((x) => x.userId === object.value?.updatedBy)?.fullName;
-  }
-}
+const object: Ref<COMSObject> = computed((): any => getObject.value(props.objectId));
+const bucket: Ref<Bucket | undefined> = computed(() => getBucket.value(object.value?.bucketId as string));
+const createdBy: Ref<string | undefined> = computed(() => getUser.value(object.value.createdBy)?.fullName);
+const updatedBy: Ref<string | undefined> = computed(() => getUser.value(object.value?.updatedBy)?.fullName);
 
 onMounted(() => {
-  load();
-});
-
-watch(props, () => {
-  load();
+  userStore.fetchUsers({ userId: [object.value?.createdBy, object.value?.updatedBy] });
 });
 </script>
 

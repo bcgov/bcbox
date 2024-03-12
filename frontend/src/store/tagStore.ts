@@ -27,6 +27,9 @@ export const useTagStore = defineStore('tag', () => {
   // Getters
   const getters = {
     getTagging: computed(() => state.tagging.value),
+    getTaggingByObjectId: computed(
+      () => (objectId: string) => state.tagging.value.find((x: Tagging) => x.objectId === objectId)
+    ),
     getTagSearchResults: computed(() => state.tagSearchResults.value)
   };
 
@@ -67,8 +70,6 @@ export const useTagStore = defineStore('tag', () => {
     }
   }
 
-  const findTaggingByObjectId = (objectId: string) => state.tagging.value.find((x: Tagging) => x.objectId === objectId);
-
   async function replaceTagging(objectId: string, tagging: Array<Tag>, versionId?: string) {
     try {
       appStore.beginIndeterminateLoading();
@@ -103,7 +104,6 @@ export const useTagStore = defineStore('tag', () => {
     // Actions
     deleteTagging,
     fetchTagging,
-    findTaggingByObjectId,
     replaceTagging,
     searchTagging
   };

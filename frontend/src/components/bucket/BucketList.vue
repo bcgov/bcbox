@@ -23,7 +23,7 @@ const bucketToUpdate: Ref<Bucket | undefined> = ref(undefined);
 
 // Actions
 const showSidebarInfo = async (bucketId: string) => {
-  sidebarInfo.value = bucketStore.findBucketById(bucketId);
+  sidebarInfo.value = bucketStore.getBucket(bucketId);
 };
 
 const closeSidebarInfo = () => {

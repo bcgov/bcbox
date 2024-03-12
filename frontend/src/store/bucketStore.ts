@@ -27,6 +27,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
   // Getters
   const getters = {
+    getBucket: computed(() => (id: string) => state.buckets.value.find((bucket) => bucket.bucketId === id)),
     getBuckets: computed(() => state.buckets.value)
   };
 
@@ -99,10 +100,6 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  function findBucketById(bucketId: string) {
-    return state.buckets.value.find((x) => x.bucketId === bucketId);
-  }
-
   async function updateBucket(bucketId: string, bucket: Bucket) {
     try {
       appStore.beginIndeterminateLoading();
@@ -138,7 +135,6 @@ export const useBucketStore = defineStore('bucket', () => {
     createBucketChild,
     deleteBucket,
     fetchBuckets,
-    findBucketById,
     syncBucket,
     updateBucket
   };

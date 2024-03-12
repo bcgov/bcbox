@@ -228,11 +228,11 @@ describe('Object Store', () => {
     });
   });
 
-  describe('findObjectById', () => {
+  describe('getObject', () => {
     it('returns a matching bucket', () => {
       objectStore.objects = [obj];
 
-      const result = objectStore.findObjectById('000');
+      const result = objectStore.getObject('000');
 
       expect(result).toStrictEqual(obj);
     });
@@ -240,7 +240,7 @@ describe('Object Store', () => {
     it('returns undefined when no matching bucket is found', () => {
       objectStore.objects = [obj];
 
-      const result = objectStore.findObjectById('foo');
+      const result = objectStore.getObject('foo');
 
       expect(result).toStrictEqual(undefined);
     });

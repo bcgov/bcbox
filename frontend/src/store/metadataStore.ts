@@ -27,6 +27,9 @@ export const useMetadataStore = defineStore('metadata', () => {
   // Getters
   const getters = {
     getMetadata: computed(() => state.metadata.value),
+    getMetadataByObjectId: computed(
+      () => (objectId: string) => state.metadata.value.find((x: Metadata) => x.objectId === objectId)
+    ),
     getMetadataSearchResults: computed(() => state.metadataSearchResults.value)
   };
 
@@ -54,12 +57,8 @@ export const useMetadataStore = defineStore('metadata', () => {
     }
   }
 
-  function findMetadataByObjectId(objectId: string) {
-    return state.metadata.value.find((x: Metadata) => x.objectId === objectId);
-  }
-
   function findValue(objectId: string, key: string) {
-    return findMetadataByObjectId(objectId)?.metadata.find((x) => x.key === key)?.value;
+    return getters.getMetadataByObjectId.value(objectId)?.metadata.find((x) => x.key === key)?.value;
   }
 
   async function replaceMetadata(
@@ -106,7 +105,6 @@ export const useMetadataStore = defineStore('metadata', () => {
 
     // Actions
     fetchMetadata,
-    findMetadataByObjectId,
     findValue,
     searchMetadata,
     replaceMetadata

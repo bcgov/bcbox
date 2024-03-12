@@ -49,7 +49,7 @@ async function load() {
   if (uniqueIds.length) {
     await userStore.fetchUsers({ userId: uniqueIds });
     managedBy.value = userStore
-      .findUsersById(uniqueIds)
+      .getUsers(uniqueIds)
       .map((x) => x.fullName)
       .join(', ');
   }

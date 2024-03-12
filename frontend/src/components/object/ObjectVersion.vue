@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { watch, computed } from 'vue';
 
 import { DeleteObjectButton, DownloadObjectButton } from '@/components/object';
 import { Button, Column, DataTable } from '@/lib/primevue';
 import { useAppStore, useAuthStore, usePermissionStore, useUserStore, useVersionStore } from '@/store';
-import { Permissions, RouteNames } from '@/utils/constants';
+import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
-import type { User, Version } from '@/types';
+import type { Version } from '@/types';
 
 type VersionDataSource = {
   createdByName?: string;
@@ -21,72 +20,46 @@ type VersionDataSource = {
 type Props = {
   bucketId: string;
   objectId: string;
-  versionId: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {});
+
+// Emits
+const emit = defineEmits(['on-deleted-success']);
 
 // Store
 const permissionStore = usePermissionStore();
 const userStore = useUserStore();
 const versionStore = useVersionStore();
+// getters
 const { getUserId } = storeToRefs(useAuthStore());
-const { getUserSearch } = storeToRefs(userStore);
-const { getVersions } = storeToRefs(versionStore);
+const { getUser } = storeToRefs(userStore);
+const { getVersionsByObjectId } = storeToRefs(versionStore);
 
 // State
-const tableData: Ref<Array<VersionDataSource>> = ref([]);
-
-// Actions
-const router = useRouter();
-
-// Highlight row for currently selected version
-const rowClass = (data: any) => [{ 'selected-row': data.id === props.versionId }];
-
-async function onDeletedSuccess(versionId: string) {
-  await versionStore.fetchVersions({ objectId: props.objectId });
-
-  // Navigate to new latest version if deleting active version
-  if (props.versionId === versionId) {
-    router.push({
-      name: RouteNames.DETAIL_OBJECTS,
-      query: {
-        objectId: props.objectId,
-        versionId: versionStore.findLatestVersionIdByObjectId(props.objectId)
-      }
-    });
-  }
-}
-
-const rowClick = function (e: any) {
-  router.push({
-    name: RouteNames.DETAIL_OBJECTS,
-    query: { objectId: e.data.objectId, versionId: e.data.id }
-  });
-};
-
-async function load() {
-  await versionStore.fetchVersions({ objectId: props.objectId });
-  const versions = versionStore.findVersionsByObjectId(props.objectId);
-  await userStore.fetchUsers({ userId: versions.map((x: Version) => x.createdBy) });
-}
-
-onMounted(() => {
-  load();
-});
-
-watch(props, () => {
-  load();
-});
-
-watch(getVersions, async () => {
-  const versions = versionStore.findVersionsByObjectId(props.objectId);
-  await userStore.fetchUsers({ userId: versions.map((x: Version) => x.createdBy) });
-  tableData.value = versions.map((v: Version, index, arr) => ({
+const versionId = defineModel<string>('versionId');
+const versions: Ref<Array<Version>> = computed(() => getVersionsByObjectId.value(props.objectId));
+const tableData: Ref<Array<VersionDataSource>> = computed(() => {
+  return versions.value.map((v: Version, index, arr) => ({
     ...v,
-    createdByName: getUserSearch.value.find((u: User) => u.userId === v.createdBy)?.fullName,
+    createdByName: getUser.value(v.createdBy)?.fullName,
     versionNumber: arr.length - index
   }));
+});
+
+// Highlight row for currently selected version
+const rowClass = (data: any) => [{ 'selected-row': data.id === versionId.value }];
+
+async function onDeletedSuccess() {
+  emit('on-deleted-success');
+}
+
+const onVersionClick = (e: any) => {
+  versionId.value = e.data.id;
+};
+
+watch(props, () => {
+  userStore.fetchUsers({ userId: versions.value.map((x: Version) => x.createdBy) });
 });
 </script>
 
@@ -107,7 +80,7 @@ watch(getVersions, async () => {
         paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
         current-page-report-template="{first}-{last} of {totalRecords}"
         :rows-per-page-options="[5, 10, 20]"
-        @row-click="rowClick($event)"
+        @row-click="onVersionClick"
       >
         <template #empty>
           <div
@@ -154,10 +127,6 @@ watch(getVersions, async () => {
           header-class="header-right"
           body-class="action-buttons"
         >
-          <!--           header-class="header-right flex justify-content-end"
-          body-class="content-right action-buttons justify-content-end"
-          header-style="width: 8em"
--->
           <template #body="{ data }">
             <DownloadObjectButton
               v-if="
@@ -173,26 +142,12 @@ watch(getVersions, async () => {
               :ids="[props.objectId]"
               :version-id="data.id"
             />
-            <router-link
-              v-if="
-                data.public ||
-                permissionStore.isObjectActionAllowed(
-                  props.objectId,
-                  getUserId,
-                  Permissions.READ,
-                  props.bucketId as string
-                )
-              "
-              :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objectId: props.objectId, versionId: data.id } }"
-              class="action-link"
+            <Button
+              v-tooltip.bottom="'Version details'"
+              class="p-button-lg p-button-rounded p-button-text"
             >
-              <Button
-                v-tooltip.bottom="'Version details'"
-                class="p-button-lg p-button-rounded p-button-text"
-              >
-                <font-awesome-icon icon="fa-solid fa-circle-info" />
-              </Button>
-            </router-link>
+              <font-awesome-icon icon="fa-solid fa-circle-info" />
+            </Button>
             <DeleteObjectButton
               v-if="
                 permissionStore.isObjectActionAllowed(

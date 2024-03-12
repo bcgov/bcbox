@@ -28,7 +28,7 @@ const closeObjectInfo = async () => {
   emit('close-object-info');
 };
 
-const obj = objectStore.findObjectById(props.objectId);
+const obj = objectStore.getObject(props.objectId);
 
 watch(
   props,

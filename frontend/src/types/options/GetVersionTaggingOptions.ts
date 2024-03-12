@@ -1,3 +1,4 @@
 export type GetVersionTaggingOptions = {
-  versionId: string;
+  objectId?: string;
+  versionId?: string | string[];
 };
