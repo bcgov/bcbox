@@ -21,7 +21,7 @@ export default defineConfig({
       }
     }
   },
-  plugins: [vue(), vueJsx()],
+  plugins: [vue({ script: { defineModel: true } }), vueJsx()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
