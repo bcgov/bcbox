@@ -47,18 +47,12 @@ const showInviteLink: Ref<boolean> = ref(false);
 // Share link
 const inviteLink: Ref<string> = ref('');
 
-// Value is set in hours, so 3 days (3x24) = 72hours
-const timeFrames: Ref<
-  {
-    name: string;
-    value: number;
-  }[]
-> = ref([
-  { name: '1 Hour', value: 3600 },
-  { name: '8 Hour', value: 28800 },
-  { name: '1 Day (Default)', value: 86400 },
-  { name: '1 Week', value: 691199 }
-]);
+const timeFrames: Record<string, number> = {
+  '1 Hour': 3600,
+  '8 Hour': 28800,
+  '1 Day (Default)': 86400,
+  '1 Week': 604800
+};
 const formData: Ref<inviteFormData> = ref({ expiresAt: 86400 });
 
 // Dialog
@@ -152,21 +146,21 @@ onMounted(() => {
         <p>Make invite available for:</p>
         <div class="flex flex-wrap gap-3">
           <div
-            v-for="t in timeFrames"
-            :key="t.value.toString()"
+            v-for="(value, name) in timeFrames"
+            :key="value"
             class="flex align-items-center"
           >
             <RadioButton
               v-model="formData.expiresAt"
-              :input-id="t.value.toString()"
-              :name="t.name"
-              :value="t.value"
+              :input-id="value"
+              :name="name"
+              :value="value"
             />
             <label
-              :for="t.value.toString()"
+              :for="value"
               class="ml-2"
             >
-              {{ t.name }}
+              {{ name }}
             </label>
           </div>
         </div>

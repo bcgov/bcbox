@@ -11,7 +11,6 @@ import {
   ObjectPublicToggle
 } from '@/components/object';
 import { SyncButton, InviteButton } from '@/components/common';
-import { ShareObjectButton } from '@/components/object/share';
 import { Button, Column, DataTable, Dialog, InputText, useToast } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';

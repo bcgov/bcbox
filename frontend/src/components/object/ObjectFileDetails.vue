@@ -15,7 +15,6 @@ import {
   ObjectVersion
 } from '@/components/object';
 import { InviteButton } from '@/components/common';
-import { ShareObjectButton } from '@/components/object/share';
 import { Button, Dialog, Divider } from '@/lib/primevue';
 import {
   useAuthStore,
