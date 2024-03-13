@@ -152,12 +152,12 @@ onMounted(() => {
           >
             <RadioButton
               v-model="formData.expiresAt"
-              :input-id="value"
+              :input-id="value.toString()"
               :name="name"
               :value="value"
             />
             <label
-              :for="value"
+              :for="value.toString()"
               class="ml-2"
             >
               {{ name }}
