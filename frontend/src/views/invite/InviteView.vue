@@ -11,14 +11,6 @@ import { RouteNames } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 
-// Types
-interface ErrorType {
-  [key: string]: {
-    title: string;
-    detail: string;
-  };
-}
-
 // Props
 type Props = {
   token: string;
@@ -35,35 +27,39 @@ const { getConfig } = storeToRefs(useConfigStore());
 
 // State
 const invalidInvite: Ref<boolean> = ref(false);
-const title: Ref<string> = ref('Invalid Invite');
-const detail: Ref<string> = ref('Please check your link again');
+const title: Ref<string> = ref('');
+const detail: Ref<string> = ref('');
 
 // Actions
 const toast = useToast();
 
-const errorMessage: ErrorType = {
-  401: {
-    title: 'Unauthorized',
-    detail: 'Invalid authorization credentials'
-  },
-  403: {
-    // wrong email
-    title: 'Forbidden',
-    detail: 'The person who sent you the link may have restricted it to another email address'
-  },
-  404: {
-    // invitation not found/expired
-    title: 'Not found',
-    detail: 'Invitation not found or has expired'
-  },
-  409: {
-    // bucket/object not found
-    // TODO: display specifically object or bucket
-    title: 'Not found',
-    detail: 'Invalid object or bucket'
+const setErrorMessage = (errorCode: number): void => {
+  switch (errorCode) {
+    case 401:
+      title.value = 'Unauthorized';
+      detail.value = 'Invalid authorization credentials';
+      break;
+    case 403:
+      title.value = 'Forbidden';
+      detail.value = 'The person who sent you the link may have restricted it to another email address';
+      break;
+    case 404:
+      title.value = 'Not found';
+      detail.value = 'Invitation not found or has expired';
+      break;
+    case 409:
+      title.value = 'Not found';
+      detail.value = 'Invalid object or bucket';
+      break;
+    case 410:
+      title.value = 'Gone';
+      detail.value = 'Invitation has expired';
+      break;
+    default:
+      title.value = 'Invalid Invite';
+      detail.value = 'This invite link is not valid or has expired';
   }
 };
-
 onMounted(() => {
   inviteService
     .getInvite(props.token)
@@ -86,12 +82,10 @@ onMounted(() => {
     })
     .catch((error: any) => {
       const errData = error?.response?.data;
-      if (errData) {
+      if (errData.status) {
         toast.error(errData.status, errData.detail);
-        title.value = errorMessage[errData.status]['title'];
-        detail.value = errorMessage[errData.status]['detail'];
+        setErrorMessage(errData.status);
       }
-
       invalidInvite.value = true;
     });
 });
@@ -99,14 +93,13 @@ onMounted(() => {
 
 <template>
   <div>
-    <Message
-      v-if="getConfig?.notificationBanner"
-      severity="warn"
-    >
-      {{ getConfig?.notificationBanner }}
-    </Message>
-
     <div v-if="invalidInvite">
+      <Message
+        v-if="getConfig?.notificationBanner"
+        severity="warn"
+      >
+        {{ getConfig?.notificationBanner }}
+      </Message>
       <h1>{{ title }}</h1>
       <div>{{ detail }}</div>
       <div class="text-center">

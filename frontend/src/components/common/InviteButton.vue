@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ShareLinkContent from '@/components/object/share/ShareLinkContent.vue';
 import { Button, Dialog, TabView, TabPanel, RadioButton, InputText, useToast, InputSwitch } from '@/lib/primevue';
 import { useConfigStore, useObjectStore, useBucketStore } from '@/store';
-import { permissionService } from '@/services';
+import { inviteService } from '@/services';
 
 import type { Ref } from 'vue';
 import type { COMSObject, Bucket } from '@/types';
@@ -74,7 +74,7 @@ async function sendInvite() {
     if (formData.value.expiresAt) {
       expiresAt = Math.floor(Date.now() / 1000) + formData.value.expiresAt;
     }
-    const permissionToken = await permissionService.createInvite(
+    const permissionToken = await inviteService.createInvite(
       props.bucketId,
       formData.value.email,
       expiresAt,
@@ -89,9 +89,9 @@ async function sendInvite() {
 }
 onMounted(() => {
   if (props.objectId) {
-    obj.value = objectStore.findObjectById(props.objectId);
+    obj.value = objectStore.getObject(props.objectId);
   } else if (props.bucketId) {
-    bucket.value = bucketStore.findBucketById(props.bucketId);
+    bucket.value = bucketStore.getBucket(props.bucketId);
   }
 });
 </script>

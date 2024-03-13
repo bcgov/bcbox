@@ -26,6 +26,12 @@ const mockToast = vi.fn();
 const useToastSpy = vi.spyOn(primevue, 'useToast');
 const useInviteService = vi.spyOn(inviteService, 'getInvite');
 
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    replace: vi.fn()
+  })
+}));
+
 const emptyTestPinia = () => {
   return createTestingPinia({
     initialState: {
@@ -99,8 +105,16 @@ const notFoundBucketOrObjectError: errorResponse = {
   }
 };
 
-const mockRouter = {
-  replace: vi.fn()
+const invitationGoneError: errorResponse = {
+  response: {
+    data: {
+      type: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/410',
+      title: 'Gone',
+      status: 410,
+      detail: 'string',
+      instance: 'string'
+    }
+  }
 };
 
 beforeEach(() => {
@@ -171,30 +185,24 @@ describe('InviteView.vue', async () => {
     expect(wrapper.find('h1').text()).toBe(notFoundBucketOrObjectError.response.data.title);
   });
 
-  it('redirects on valid response', async () => {
+  it('renders not found invitation error', async () => {
+    useInviteService.mockImplementation(() => Promise.reject(invitationGoneError));
+
+    const wrapper = shallowMount(InviteView, inviteViewWrapperSettings());
+
+    await flushPromises();
+    expect(wrapper.find('h1').text()).toBe(invitationGoneError.response.data.title);
+  });
+
+  it('does not trigger errors on valid response', async () => {
     useInviteService.mockImplementation(
-      () => new Promise((resolve) => resolve({ type: BUCKET_ID, resource: 'placeholderUUID' }))
+      () => new Promise((resolve) => resolve({ data: { type: BUCKET_ID, resource: 'placeholderUUID' } }))
     );
 
-    const wrapper = shallowMount(InviteView, {
-      props: {
-        token: 'placeholder'
-      },
-      global: {
-        plugins: [emptyTestPinia(), PrimeVue, ToastService],
-        stubs: {
-          RouterLink: RouterLinkStub,
-          'font-awesome-icon': true
-        },
-        mocks: {
-          $router: mockRouter
-        }
-      }
-    });
+    const wrapper = shallowMount(InviteView, inviteViewWrapperSettings());
     expect(wrapper.find('h1').text()).toBe('Processing...');
 
     await flushPromises();
-
-    expect(wrapper).toBeTruthy();
+    expect(wrapper.find('h1').text()).toBe('Processing...');
   });
 });

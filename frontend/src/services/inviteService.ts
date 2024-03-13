@@ -1,24 +1,30 @@
 import { comsAxios } from './interceptors';
 
-import type { InviteCreateOptions } from '@/types';
-
 const PATH = 'permission/invite';
 
 export default {
   /**
-   * @function getInvite
-   * Use an invite token
-   * @returns {Promise} An axios response
+   * @function createInvite
+   * Post an Invite, exclusive or on bucketId and objectId
+   * @param {string} bucketId
+   * @param {string} objectId
+   * @param {string} email to be used for access
+   * @param {string} expiration timestamp for token
+   * @returns {string} uuid token of the invite
    */
-  createInvite(params: InviteCreateOptions): Promise<string> {
-    return comsAxios().get(`${PATH}`, {
-      params: params
+  createInvite(bucketId?: string, email?: string, expiresAt?: number, objectId?: string) {
+    return comsAxios().post(`${PATH}`, {
+      bucketId: bucketId || undefined,
+      email: email || undefined,
+      expiresAt: expiresAt || undefined,
+      objectId: objectId || undefined
     });
   },
 
   /**
    * @function getInvite
    * Use an invite token
+   * @param {string} token uuid
    * @returns {Promise} An axios response
    */
   getInvite(token: string): Promise<any> {
