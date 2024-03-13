@@ -4,6 +4,7 @@ import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Button, Dialog, useToast } from '@/lib/primevue';
 import { useObjectStore, useBucketStore } from '@/store';
+import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
 
@@ -22,6 +23,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 // State
 const name: Ref<String> = ref('');
+const lastSyncedDate: Ref<String> = ref('');
+const lastSyncRequestedDate: Ref<String> = ref('');
 
 // Store
 const objectStore = useObjectStore();
@@ -47,9 +50,13 @@ const onSubmit = () => {
 const onClick = () => {
   displaySyncDialog.value = true;
   if (props.bucketId) {
-    name.value = bucketStore.getBucket(props.bucketId)?.bucketName ?? '';
+    const bucket = bucketStore.getBucket(props.bucketId);
+    name.value = bucket?.bucketName ?? '';
+    lastSyncRequestedDate.value = formatDateLong(bucket?.lastSyncRequestedDate as string);
   } else if (props.objectId) {
-    name.value = objectStore.getObject(props.objectId)?.name ?? '';
+    const object = objectStore.getObject(props.objectId);
+    name.value = object?.name ?? '';
+    lastSyncedDate.value = formatDateLong(object?.lastSyncedDate as string);
   }
 };
 </script>
@@ -84,6 +91,15 @@ const onClick = () => {
     <h3 class="bcbox-info-dialog-subhead">
       {{ name }}
     </h3>
+
+    <span class="mr-2">Last sync date:</span>
+    <span v-if="lastSyncRequestedDate">
+      {{ lastSyncRequestedDate }}
+    </span>
+    <span v-else-if="lastSyncedDate">
+      {{ lastSyncedDate }}
+    </span>
+    <span v-else>(none)</span>
 
     <ul class="mb-4 ml-1.5">
       <li v-if="props.bucketId">This will schedule a synchronization of the bucket's contents</li>

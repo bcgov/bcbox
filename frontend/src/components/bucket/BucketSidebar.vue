@@ -5,6 +5,7 @@ import { onBeforeMount, ref, watch } from 'vue';
 import { Button } from '@/lib/primevue';
 import { usePermissionStore, useUserStore } from '@/store';
 import { Permissions } from '@/utils/constants';
+import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketPermission } from '@/types';
@@ -91,6 +92,21 @@ watch(props, () => {
         <div class="col-fixed">Bucket ID:</div>
         <div class="col">
           {{ props.sidebarInfo?.bucketId }}
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-fixed">Last sync date:</div>
+        <div
+          v-if="props.sidebarInfo.lastSyncRequestedDate"
+          class="col"
+        >
+          {{ formatDateLong(props.sidebarInfo?.lastSyncRequestedDate as string) }}
+        </div>
+        <div
+          v-else
+          class="col"
+        >
+          (none)
         </div>
       </div>
     </div>
