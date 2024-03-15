@@ -5,8 +5,8 @@ import { computed, ref, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ShareLinkContent from '@/components/object/share/ShareLinkContent.vue';
 import { Button, Dialog, TabView, TabPanel, RadioButton, InputText, useToast, InputSwitch } from '@/lib/primevue';
-import { useConfigStore, useObjectStore, useBucketStore } from '@/store';
 import { inviteService } from '@/services';
+import { useConfigStore, useObjectStore, useBucketStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { COMSObject, Bucket } from '@/types';
@@ -18,7 +18,7 @@ type Props = {
   labelText: string;
   restricted?: boolean;
 };
-export type inviteFormData = {
+export type InviteFormData = {
   email?: string;
   bucketId?: string;
   expiresAt?: number;
@@ -53,7 +53,7 @@ const timeFrames: Record<string, number> = {
   '1 Day (Default)': 86400,
   '1 Week': 604800
 };
-const formData: Ref<inviteFormData> = ref({ expiresAt: 86400 });
+const formData: Ref<InviteFormData> = ref({ expiresAt: 86400 });
 
 // Dialog
 const displayInviteDialog = ref(false);
@@ -87,6 +87,7 @@ async function sendInvite() {
     toast.error('', 'Error getting token');
   }
 }
+
 onMounted(() => {
   if (props.objectId) {
     obj.value = objectStore.getObject(props.objectId);
