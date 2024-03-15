@@ -10,8 +10,7 @@ import {
   ObjectPermission,
   ObjectPublicToggle
 } from '@/components/object';
-import { SyncButton } from '@/components/common';
-import { ShareObjectButton } from '@/components/object/share';
+import { SyncButton, InviteButton } from '@/components/common';
 import { Button, Column, DataTable, Dialog, InputText, useToast } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
@@ -316,7 +315,10 @@ const selectedFilters = (payload: any) => {
         body-class="action-buttons"
       >
         <template #body="{ data }">
-          <ShareObjectButton :id="data.id" />
+          <InviteButton
+            :object-id="data.id"
+            label-text="Object"
+          />
           <DownloadObjectButton
             v-if="
               data.public ||

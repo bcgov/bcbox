@@ -4,6 +4,7 @@ export type { BucketTreeNode, BucketTreeNodeData } from './BucketTreeNode';
 export type { COMSObject } from './COMSObject';
 export type { COMSObjectPermission } from './COMSObjectPermission';
 export type { IdentityProvider } from './IdentityProvider';
+export type { InviteCreateOptions } from './InviteCreateOptions';
 export type { Metadata } from './Metadata';
 export type { MetadataPair } from './MetadataPair';
 export type { Permission } from './Permission';
