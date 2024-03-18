@@ -16,6 +16,7 @@
     "prebuild": "npm run lint",
     "prelint": "npm run typecheck",
     "pretest": "npm run lint",
+    "posttest": "node ./lcov-fix.mjs",
     "purge": "rimraf node_modules",
     "rebuild": "npm run clean && npm run build",
     "reinstall": "npm run purge && npm install",
