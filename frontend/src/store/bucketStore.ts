@@ -82,7 +82,9 @@ export const useBucketStore = defineStore('bucket', () => {
         ];
 
         let response = Array<Bucket>();
-        response = (await bucketService.searchBuckets({ bucketId: uniqueIds })).data;
+        if (uniqueIds.length) {
+          response = (await bucketService.searchBuckets({ bucketId: uniqueIds })).data;
+        }
 
         // Remove old values matching search parameters
         const matches = (x: Bucket) => !params?.bucketId || x.bucketId === params.bucketId;
