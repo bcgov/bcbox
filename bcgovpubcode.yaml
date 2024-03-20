@@ -32,7 +32,7 @@ product_information:
 product_technology_information:
   backend_frameworks:
     - name: Express
-      version: 4.18.2
+      version: 4.18.3
   backend_languages_version:
     - name: JavaScript
       version: ecmaVersion 11 / es2020
@@ -41,16 +41,16 @@ product_technology_information:
     - Helm
   frontend_frameworks:
     - name: Vue
-      version: 3.2.47
+      version: 3.4.21
     - name: Other
-      version: Pinia 2.0.32
+      version: Pinia 2.1.7
     - name: Other
-      version: Primevue (3.23.0)
+      version: Primevue (3.44.0)
     - name: Other
-      version: oidc-client-ts (2.2.1)
+      version: oidc-client-ts (3.0.1)
   frontend_languages:
     - name: TypeScript
-      version: 4.8.4
+      version: 5.4.2
     - name: JavaScript
       version: ecmaVersion 11 / es2020
   hosting_platforms:
