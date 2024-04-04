@@ -119,7 +119,10 @@ onMounted(() => {
 
     <ul class="mb-4">
       <li>If a user already has permissions, you can link them with a share link</li>
-      <li>Invite someone using an invite link</li>
+      <li>
+        Invite someone using an invite link - the links are single-use; you must generate a new link for each user you
+        intend to send this to
+      </li>
       <li>To share publicly or with a direct link, you must set the file to public - this only works for objects</li>
     </ul>
     <TabView>
