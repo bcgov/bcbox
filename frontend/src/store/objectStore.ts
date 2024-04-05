@@ -51,17 +51,28 @@ export const useObjectStore = defineStore('object', () => {
     },
     axiosOptions?: AxiosRequestConfig
   ) {
-    appStore.beginIndeterminateLoading();
+    try{
+      appStore.beginIndeterminateLoading();
 
-    // Ensure x-amz-meta- prefix exists
-    if (headers.metadata) {
-      for (const meta of headers.metadata) {
-        if (!meta.key.startsWith('x-amz-meta-')) {
-          meta.key = `x-amz-meta-${meta.key}`;
+      // Ensure x-amz-meta- prefix exists
+      if (headers.metadata) {
+        for (const meta of headers.metadata) {
+          if (!meta.key.startsWith('x-amz-meta-')) {
+            meta.key = `x-amz-meta-${meta.key}`;
+          }
         }
       }
+
+      await objectService.createObject(object, headers, params, axiosOptions);
+    } catch(error: any) {
+      if (error.response?.status === 409){
+        throw new Error(error.response.data.detail);
+      } else {
+        throw new Error('Network error');
+      }
+    } finally {
+      appStore.endIndeterminateLoading();
     }
-    await objectService.createObject(object, headers, params, axiosOptions);
   }
 
   async function deleteObject(objectId: string, versionId?: string) {

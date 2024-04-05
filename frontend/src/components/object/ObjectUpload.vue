@@ -63,16 +63,10 @@ const onUpload = async (event: any) => {
           );
           successfulFiles.value.push(file);
         } catch (error: any) {
-          // show toasts
-          if (error?.response?.status === 409) {
-            toast.error(`Failed to upload file ${file.name}`, 'File already exists');
-          } else {
-            toast.error(`Failed to upload file ${file.name}`, error);
-          }
+          toast.error(`Failed to upload file ${file.name}`, error, {life: 0});
           failedFiles.value.push(file);
         } finally {
           appStore.endUploading();
-          appStore.endIndeterminateLoading();
         }
       })
     );
