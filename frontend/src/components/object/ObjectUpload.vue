@@ -63,10 +63,16 @@ const onUpload = async (event: any) => {
           );
           successfulFiles.value.push(file);
         } catch (error: any) {
-          toast.error(`Failed to upload file ${file.name}`, error);
+          // show toasts
+          if (error?.response?.status === 409) {
+            toast.error(`Failed to upload file ${file.name}`, 'File already exists');
+          } else {
+            toast.error(`Failed to upload file ${file.name}`, error);
+          }
           failedFiles.value.push(file);
         } finally {
           appStore.endUploading();
+          appStore.endIndeterminateLoading();
         }
       })
     );
@@ -156,18 +162,8 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
         />
         <p class="mt-4 mb-0">Drag and drop files here to select for upload. Then click "Start upload".</p>
       </div>
-      <ObjectUploadFile
-        :files="successfulFiles"
-        :badge-props="{ value: 'Complete', severity: 'success' }"
-        :remove-callback="onRemoveUploadedFile"
-      />
-      <ObjectUploadFile
-        :files="failedFiles"
-        :badge-props="{ value: 'Failed', severity: 'danger' }"
-        :remove-callback="onRemoveFailedFile"
-      />
     </template>
-    <template #content="{ files, uploadedFiles, removeFileCallback, removeUploadedFileCallback }">
+    <template #content="{ files, removeFileCallback }">
       <ObjectUploadFile
         :editable="true"
         :files="files || pendingFiles"
@@ -177,14 +173,14 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
         @submit-object-metadatatag-config="submitObjectMetaTagConfig"
       />
       <ObjectUploadFile
-        :files="uploadedFiles || successfulFiles"
+        :files="successfulFiles"
         :badge-props="{ value: 'Complete', severity: 'success' }"
-        :remove-callback="removeUploadedFileCallback"
+        :remove-callback="onRemoveUploadedFile"
       />
       <ObjectUploadFile
         :files="failedFiles"
         :badge-props="{ value: 'Failed', severity: 'danger' }"
-        :remove-callback="removeUploadedFileCallback"
+        :remove-callback="onRemoveFailedFile"
       />
     </template>
   </FileUpload>

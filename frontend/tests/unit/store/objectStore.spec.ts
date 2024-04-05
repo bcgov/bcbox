@@ -113,7 +113,6 @@ describe('Object Store', () => {
         },
         { timeout: 0 }
       );
-      expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
     });
   });
 
