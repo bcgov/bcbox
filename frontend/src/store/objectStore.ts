@@ -51,7 +51,7 @@ export const useObjectStore = defineStore('object', () => {
     },
     axiosOptions?: AxiosRequestConfig
   ) {
-    try {
+    try{
       appStore.beginIndeterminateLoading();
 
       // Ensure x-amz-meta- prefix exists
@@ -64,11 +64,11 @@ export const useObjectStore = defineStore('object', () => {
       }
 
       await objectService.createObject(object, headers, params, axiosOptions);
-    } catch (error: any) {
-      if (error?.response?.status === 409) {
-        toast.error('Creating object', 'File already exists');
+    } catch(error: any) {
+      if (error.response?.status === 409){
+        throw new Error(error.response.data.detail);
       } else {
-        toast.error('Creating object', error);
+        throw new Error('Network error');
       }
     } finally {
       appStore.endIndeterminateLoading();

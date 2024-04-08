@@ -63,7 +63,7 @@ const onUpload = async (event: any) => {
           );
           successfulFiles.value.push(file);
         } catch (error: any) {
-          toast.error(`Failed to upload file ${file.name}`, error);
+          toast.error(`Failed to upload file ${file.name}`, error, {life: 0});
           failedFiles.value.push(file);
         } finally {
           appStore.endUploading();
@@ -156,18 +156,8 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
         />
         <p class="mt-4 mb-0">Drag and drop files here to select for upload. Then click "Start upload".</p>
       </div>
-      <ObjectUploadFile
-        :files="successfulFiles"
-        :badge-props="{ value: 'Complete', severity: 'success' }"
-        :remove-callback="onRemoveUploadedFile"
-      />
-      <ObjectUploadFile
-        :files="failedFiles"
-        :badge-props="{ value: 'Failed', severity: 'danger' }"
-        :remove-callback="onRemoveFailedFile"
-      />
     </template>
-    <template #content="{ files, uploadedFiles, removeFileCallback, removeUploadedFileCallback }">
+    <template #content="{ files, removeFileCallback }">
       <ObjectUploadFile
         :editable="true"
         :files="files || pendingFiles"
@@ -177,14 +167,14 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
         @submit-object-metadatatag-config="submitObjectMetaTagConfig"
       />
       <ObjectUploadFile
-        :files="uploadedFiles || successfulFiles"
+        :files="successfulFiles"
         :badge-props="{ value: 'Complete', severity: 'success' }"
-        :remove-callback="removeUploadedFileCallback"
+        :remove-callback="onRemoveUploadedFile"
       />
       <ObjectUploadFile
         :files="failedFiles"
         :badge-props="{ value: 'Failed', severity: 'danger' }"
-        :remove-callback="removeUploadedFileCallback"
+        :remove-callback="onRemoveFailedFile"
       />
     </template>
   </FileUpload>
