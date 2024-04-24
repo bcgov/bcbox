@@ -301,7 +301,7 @@ watch(getBuckets, () => {
             :parent-bucket="node.data"
           />
           <Button
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.UPDATE)"
+            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
             v-tooltip.bottom="'Configure bucket'"
             class="p-button-lg p-button-text"
             aria-label="Configure bucket"

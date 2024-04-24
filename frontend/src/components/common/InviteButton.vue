@@ -5,8 +5,9 @@ import { computed, ref, onMounted } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ShareLinkContent from '@/components/object/share/ShareLinkContent.vue';
 import { Button, Dialog, TabView, TabPanel, RadioButton, InputText, useToast, InputSwitch } from '@/lib/primevue';
+import { Permissions } from '@/utils/constants';
 import { inviteService } from '@/services';
-import { useConfigStore, useObjectStore, useBucketStore } from '@/store';
+import { useAuthStore, useConfigStore, useObjectStore, usePermissionStore, useBucketStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { COMSObject, Bucket } from '@/types';
@@ -36,6 +37,9 @@ const props = withDefaults(defineProps<Props>(), {
 const objectStore = useObjectStore();
 const bucketStore = useBucketStore();
 const { getConfig } = storeToRefs(useConfigStore());
+const { getUserId } = storeToRefs(useAuthStore());
+const permissionStore = usePermissionStore();
+
 const toast = useToast();
 
 // State
@@ -43,6 +47,11 @@ const obj: Ref<COMSObject | undefined> = ref(undefined);
 const bucket: Ref<Bucket | undefined> = ref(undefined);
 const isRestricted: Ref<boolean> = ref(props.restricted);
 const showInviteLink: Ref<boolean> = ref(false);
+const hasManagePermission: Ref<boolean> =  computed(() => {
+  return (props.objectId) ?
+    permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE) :
+    permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
+});
 
 // Share link
 const inviteLink: Ref<string> = ref('');
@@ -145,7 +154,10 @@ onMounted(() => {
           label="Share Link"
         />
       </TabPanel>
-      <TabPanel header="Invite link">
+      <TabPanel
+        header="Invite link"
+        :disabled="!hasManagePermission"
+      >
         <h3 class="mt-1 mb-2">{{ props.labelText }} Invite</h3>
         <p>Make invite available for:</p>
         <div class="flex flex-wrap gap-3">
