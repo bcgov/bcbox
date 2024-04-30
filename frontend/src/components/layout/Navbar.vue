@@ -81,10 +81,6 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
           padding: 0.4rem 0.8rem 0.6rem 0.8rem;
           text-decoration: none;
 
-          &:focus {
-            outline: none;
-            outline-offset: 0;
-          }
           &:hover {
             text-decoration: underline;
           }

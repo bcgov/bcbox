@@ -233,7 +233,6 @@ watch(getBuckets, () => {
     :loading="getIsLoading"
     :value="treeData"
     :expanded-keys="expandedKeys"
-    data-key="bucketId"
     class="p-treetable-sm"
     responsive-layout="scroll"
     :paginator="true"
