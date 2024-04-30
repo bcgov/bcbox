@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RouteNames } from '@/utils/constants';
 import { LoginButton } from '@/components/layout';
 </script>
 
@@ -7,17 +8,15 @@ import { LoginButton } from '@/components/layout';
     <nav id="header-branding">
       <div class="flex flex-row flex-wrap align-items-center py-3 lg:px-7">
         <div class="flex flex-none">
-          <a
-            href="https://www2.gov.bc.ca"
-            class="pl-1"
-          >
+          <router-link :to="{ name: RouteNames.HOME }">
             <img
               src="@/assets/images/bc_logo.svg"
               width="181"
               height="44"
               alt="B.C. Government Logo"
+              class="pl-1"
             />
-          </a>
+          </router-link>
         </div>
         <div class="flex flex-grow-1 ml-2">
           <h2 class="m-0">BCBox</h2>

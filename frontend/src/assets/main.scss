@@ -78,6 +78,14 @@ a:visited {
     color: $bcbox-link-text-hover;
   }
 }
+a:focus-visible {
+  outline: 0 none;
+  box-shadow: 0 0 0 0.2rem #a6d5fa;
+  border-radius: inherit;
+}
+a button:focus-visible {
+  box-shadow: none;
+}
 
 .wrap-block {
   display: inline-block;
@@ -122,6 +130,7 @@ a:visited {
 .gov-footer {
   background-color: #003366 !important;
   border-top: 2px solid #fcba19;
+  padding-bottom: 3px;
   a {
     display: inline-block;
     padding: 0.5rem 1rem;
@@ -130,9 +139,6 @@ a:visited {
     text-decoration: none;
     &:hover {
       text-decoration: underline;
-    }
-    &:focus {
-      outline: none;
     }
     &:visited {
       color: #ffffff;
@@ -219,9 +225,6 @@ a:visited {
       &.p-highlight,
       &.selected-row {
         background: $bcbox-highlight-background !important;
-      }
-      &:focus {
-        outline: none !important;
       }
     }
   }

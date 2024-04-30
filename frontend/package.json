@@ -39,7 +39,7 @@
     "pinia-plugin-persistedstate": "^3.2.1",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
-    "primevue": "~3.44.0",
+    "primevue": "^3.52.0",
     "qrcode.vue": "^3.4.1",
     "vee-validate": "^4.12.6",
     "vue": "^3.4.21",
