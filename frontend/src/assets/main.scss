@@ -184,10 +184,9 @@ a button:focus-visible {
 }
 
 /* checkboxes, radios, input switches */
-.p-checkbox-checked .p-checkbox-box,
-.p-checkbox-box.p-highlight,
-.p-radiobutton-checked .p-radiobutton-box,
-.p-inputswitch-checked .p-inputswitch-slider:not(.p-disabled) {
+.p-highlight .p-checkbox-box:not(.p-disabled),
+.p-highlight .p-radiobutton-box:not(.p-disabled),
+.p-highlight .p-inputswitch-slider:not(.p-disabled) {
   background-color: $bcbox-primary;
   border-color: $bcbox-primary;
   &:hover {
