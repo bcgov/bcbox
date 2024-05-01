@@ -50,7 +50,7 @@ const routes: Array<RouteRecordRaw> = [
         path: 'buckets',
         name: RouteNames.LIST_BUCKETS,
         component: () => import('@/views/list/ListBucketsView.vue'),
-        meta: { requiresAuth: true, breadcrumb: 'Buckets', title: 'My Buckets' },
+        meta: { requiresAuth: true, breadcrumb: 'Buckets', title: 'My files' },
         props: createProps
       },
       {

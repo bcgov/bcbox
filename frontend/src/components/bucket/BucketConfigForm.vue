@@ -50,7 +50,7 @@ const initialValues: BucketForm = {
 const schema = object({
   accessKeyId: string().max(255).required().label('Access Key ID'),
   bucket: string().max(255).required().label('Bucket'),
-  bucketName: string().max(255).required().label('Bucket name'),
+  bucketName: string().max(255).required().label('Folder name'),
   endpoint: string().max(255).required().label('Endpoint'),
   key: string()
     .matches(/^[^\\]+$/, 'Sub-path must not contain backslashes')
@@ -96,13 +96,14 @@ const onSubmit = async (values: any) => {
 
     emit('submit-bucket-config');
 
-    toast.success('Configuring bucket', 'Bucket configuration successful');
+    toast.success('Configuring storage location source', 'Configuration successful');
 
     if ((bucketChanges.accessKeyId || bucketChanges.secretAccessKey) && hasChildren) {
-      toast.info('Buckets under this bucket', 'Remember to update their credentials where applicable', { life: 10000 });
+      toast.info('Child storage locations exist',
+        'Remember to update their credentials where applicable', { life: 10000 });
     }
   } catch (error: any) {
-    toast.error('Configuring bucket', error);
+    toast.error('Configuring storage location source', error);
   }
 };
 
@@ -120,9 +121,10 @@ const onCancel = () => {
     >
       <TextInput
         name="bucketName"
-        label="Bucket name *"
+        label="Folder name *"
         placeholder="My Documents"
-        help-text="Your custom display name for the bucket - any name as you would like to see it listed in BCBox."
+        help-text="Your custom display name for the storage location,
+          shown in BCBox as a folder. Any name as you would like to see it listed in BCBox."
         autofocus
       />
       <TextInput
@@ -151,12 +153,12 @@ const onCancel = () => {
       />
       <TextInput
         name="key"
-        label="Bucket sub-path"
+        label="Sub-path"
         placeholder="/"
-        help-text="Optionally sets the bucket to mount at a specific subdirectory.
+        help-text="Optionally sets the bucket storage location source to mount at a specific subdirectory / subfolder.
           The directory will be created if it does not already exist.
           This will default to the root '/' if not provided.
-          This value cannot be changed after the bucket is configured."
+          This value cannot be changed after the storage location source is configured."
         :disabled="!!props.bucket"
       />
       <Button

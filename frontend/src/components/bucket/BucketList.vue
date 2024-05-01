@@ -55,17 +55,17 @@ onMounted(async () => {
 
   <div class="flex flex-wrap">
     <div class="flex-grow-1">
-      <h1 class="">Select a bucket</h1>
-      <h4 class="mb-4">Buckets are containers for storing objects.</h4>
+      <h1 class="">My files</h1>
+      <h4 class="mb-4">Select a folder to view the files inside it.</h4>
     </div>
 
     <div class="flex-none align-items-right">
       <Button
         v-if="usePermissionStore().isUserElevatedRights()"
-        label="Connect bucket to BCBox"
+        label="Add a new storage location source"
         class="p-button-outlined my-4"
         data-test="connect-bucket"
-        aria-label="Configure bucket"
+        aria-label="Add a new storage location source"
         icon="pi pi-plus"
         @click="showBucketConfig()"
         @keyup.enter="showBucketConfig()"
@@ -99,7 +99,8 @@ onMounted(async () => {
           >
             NRIDS Optimization
           </a>
-          (Natural Resource ministries) or your ministry's service desk if you need help with buckets.
+          (Natural Resource ministries) or your ministry's service desk if you
+          need help with &quot;bucket&quot; storage location sources.
         </Message>
 
         <Message severity="warn">

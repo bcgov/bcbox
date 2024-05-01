@@ -69,7 +69,7 @@ watch(props, () => {
   <div class="side-panel pl-4">
     <div class="flex panel-header align-items-start">
       <font-awesome-icon icon="fa-solid fa-circle-info" />
-      <h1 class="mt-0 ml-3 flex-grow-1">Bucket details</h1>
+      <h1 class="mt-0 ml-3 flex-grow-1">Folder details</h1>
       <Button
         class="p-button-text pt-0"
         @click="closeSidebarInfo"
@@ -83,13 +83,13 @@ watch(props, () => {
         <h2>Properties</h2>
       </div>
       <div class="grid overflow-hidden">
-        <div class="col-fixed">Bucket Name:</div>
+        <div class="col-fixed">Folder name:</div>
         <div class="col wrap-block">
           {{ props.sidebarInfo?.bucketName }}
         </div>
       </div>
       <div class="grid">
-        <div class="col-fixed">Bucket ID:</div>
+        <div class="col-fixed">Source storage location ID:</div>
         <div class="col">
           {{ props.sidebarInfo?.bucketId }}
         </div>

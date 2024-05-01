@@ -37,17 +37,17 @@ const { getConfig } = storeToRefs(useConfigStore());
         users can upload and share files.
         <br />
         <br />
-        You will need access to a bucket – a file storage container – before you can use BCBox. If you are new to
-        buckets and don't know a bucket manager, contact
+        BCBox displays files in folders, which are visualizations of &quot;bucket&quot; storage
+        location sources required to use BCBox. If you are new to this and don't know a bucket manager, contact
         <a href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701">NRIDS Optimization</a>
-        (NRM only) or your ministry's service desk to get credentials for a bucket. Then come back, log in, and add it
-        in BCBox.
+        (NRM only) or your ministry's service desk to get credentials for a &quot;bucket&quot; storage location source.
+        Then come back, log in, and add it in BCBox to have it show up as a folder.
       </p>
 
       <div class="flex flex-column justify-content-center align-items-center mb-4">
         <router-link :to="{ name: RouteNames.LIST_BUCKETS }">
           <Button>
-            {{ getIsAuthenticated ? 'Go to My Buckets' : 'Log in to get started' }}
+            {{ getIsAuthenticated ? 'Go to my files' : 'Log in to get started' }}
           </Button>
         </router-link>
 
@@ -105,7 +105,7 @@ const { getConfig } = storeToRefs(useConfigStore());
       </div>
 
       <div class="flex flex-column justify-content-center align-items-center">
-        <h3 class="mb-4">Versioning, metadata, tagging, syncing with existing buckets and more</h3>
+        <h3 class="mb-4">Versioning, metadata, tagging, syncing and more</h3>
 
         <p class="text-xl">
           Contact
@@ -115,12 +115,12 @@ const { getConfig } = storeToRefs(useConfigStore());
           >
             NRIDS Optimization
           </a>
-          or your ministry's service desk. You will need a bucket to get started.
+          or your ministry's service desk to get &quot;bucket&quot; storage location source credentials and get started.
         </p>
 
         <router-link :to="{ name: RouteNames.LIST_BUCKETS }">
           <Button>
-            {{ getIsAuthenticated ? 'Go to My Buckets' : 'Log in to get started' }}
+            {{ getIsAuthenticated ? 'Go to my files' : 'Log in to get started' }}
           </Button>
         </router-link>
 
@@ -161,7 +161,8 @@ const { getConfig } = storeToRefs(useConfigStore());
               indicating your BCeID-related intentions
             </li>
             <li>
-              All other inquiries around getting or using buckets should be directed to
+              All other inquiries around getting or using &quot;bucket&quot;
+              storage location sources should be directed to
               <a
                 href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701"
                 target="_blank"
@@ -171,8 +172,8 @@ const { getConfig } = storeToRefs(useConfigStore());
               (Natural Resource ministries) or your ministry's service desk
             </li>
             <li>
-              Storage and custodianship of metadata and tags (not the objects themselves in your bucket) is maintained
-              by Natural Resource Information & Digital Services
+              Storage and custodianship of just the metadata and tags, not the objects themselves,
+              is maintained by Natural Resource Information &amp; Digital Services
             </li>
             <li>
               You will refer to and adhere to

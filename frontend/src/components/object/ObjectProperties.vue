@@ -49,14 +49,9 @@ onMounted(() => {
     />
     <GridRow
       v-if="fullView"
-      label="Bucket"
+      label="Folder"
       :value="bucket?.bucketName"
       :link="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: bucket?.bucketId } }"
-    />
-    <GridRow
-      v-if="fullView"
-      label="Bucket ID"
-      :value="object?.bucketId"
     />
     <GridRow
       label="Object ID"
