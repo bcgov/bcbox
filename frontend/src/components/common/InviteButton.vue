@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ShareLinkContent from '@/components/object/share/ShareLinkContent.vue';
@@ -63,6 +63,7 @@ const hasManagePermission: Ref<boolean> = computed(() => {
     ? permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE, obj.value?.bucketId)
     : permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
 });
+const resource = props.objectId ? 'object' : 'bucket';
 
 // Share link
 const inviteLink: Ref<string> = ref('');
@@ -92,7 +93,7 @@ const displayInviteDialog = ref(false);
 
 // Permissions selection
 const selectedOptions = computed(() => {
-  return props.labelText === 'Bucket' ? bucketPermCodes : objectPermCodes;
+  return resource === 'bucket' ? bucketPermCodes : objectPermCodes;
 });
 // Share link
 const bcBoxLink = computed(() => {
@@ -107,6 +108,12 @@ const isOptionUnselectable = (optionName: string) => {
   // Make default permission disabled
   return optionName === 'Read';
 };
+
+watch(isRestricted, () => {
+  if (formData.value.email) {
+    formData.value.email = '';
+  }
+});
 
 //Action
 async function sendInvite() {
