@@ -11,13 +11,15 @@ export default {
    * @param {string} email to be used for access
    * @param {string} expiration timestamp for token
    * @returns {string} uuid token of the invite
+   * @returns {array} permCodes token of the invite
    */
-  createInvite(bucketId?: string, email?: string, expiresAt?: number, objectId?: string) {
+  createInvite(bucketId?: string, email?: string, expiresAt?: number, objectId?: string, permCodes?: Array<string>) {
     return comsAxios().post(`${PATH}`, {
       bucketId: bucketId || undefined,
       email: email || undefined,
       expiresAt: expiresAt || undefined,
-      objectId: objectId || undefined
+      objectId: objectId || undefined,
+      permCodes: permCodes || undefined
     });
   },
 

@@ -1,10 +1,20 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ShareLinkContent from '@/components/object/share/ShareLinkContent.vue';
-import { Button, Dialog, TabView, TabPanel, RadioButton, InputText, useToast, InputSwitch } from '@/lib/primevue';
+import {
+  Button,
+  Dialog,
+  TabView,
+  TabPanel,
+  RadioButton,
+  Checkbox,
+  InputText,
+  useToast,
+  InputSwitch
+} from '@/lib/primevue';
 import { Permissions } from '@/utils/constants';
 import { inviteService } from '@/services';
 import { useAuthStore, useConfigStore, useObjectStore, usePermissionStore, useBucketStore } from '@/store';
@@ -24,6 +34,7 @@ export type InviteFormData = {
   bucketId?: string;
   expiresAt?: number;
   objectId?: string;
+  permCodes?: Array<string>;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -47,11 +58,12 @@ const obj: Ref<COMSObject | undefined> = ref(undefined);
 const bucket: Ref<Bucket | undefined> = ref(undefined);
 const isRestricted: Ref<boolean> = ref(props.restricted);
 const showInviteLink: Ref<boolean> = ref(false);
-const hasManagePermission: Ref<boolean> =  computed(() => {
-  return (props.objectId) ?
-    permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE, obj.value?.bucketId) :
-    permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
+const hasManagePermission: Ref<boolean> = computed(() => {
+  return props.objectId
+    ? permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE, obj.value?.bucketId)
+    : permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
 });
+const resource = props.objectId ? 'object' : 'bucket';
 
 // Share link
 const inviteLink: Ref<string> = ref('');
@@ -62,11 +74,27 @@ const timeFrames: Record<string, number> = {
   '1 Day (Default)': 86400,
   '1 Week': 604800
 };
-const formData: Ref<InviteFormData> = ref({ expiresAt: 86400 });
+
+const bucketPermCodes: Record<string, string> = {
+  READ: 'Read',
+  CREATE: 'Upload',
+  UPDATE: 'Update'
+};
+
+const objectPermCodes: Record<string, string> = {
+  READ: 'Read',
+  UPDATE: 'Update'
+};
+
+const formData: Ref<InviteFormData> = ref({ expiresAt: 86400, permCodes: ['READ'] });
 
 // Dialog
 const displayInviteDialog = ref(false);
 
+// Permissions selection
+const selectedOptions = computed(() => {
+  return resource === 'bucket' ? bucketPermCodes : objectPermCodes;
+});
 // Share link
 const bcBoxLink = computed(() => {
   const path = props.objectId ? `detail/objects?objectId=${props.objectId}` : `list/objects?bucketId=${props.bucketId}`;
@@ -74,6 +102,17 @@ const bcBoxLink = computed(() => {
 });
 const comsUrl = computed(() => {
   return `${getConfig.value.coms?.apiPath}/object/${props.objectId}`;
+});
+
+const isOptionUnselectable = (optionName: string) => {
+  // Make default permission disabled
+  return optionName === 'Read';
+};
+
+watch(isRestricted, () => {
+  if (formData.value.email) {
+    formData.value.email = '';
+  }
 });
 
 //Action
@@ -87,7 +126,8 @@ async function sendInvite() {
       props.bucketId,
       formData.value.email,
       expiresAt,
-      props.objectId
+      props.objectId,
+      formData.value.permCodes
     );
     inviteLink.value = `${window.location.origin}/invite/${permissionToken.data}`;
     toast.success('', 'Invite link is created.');
@@ -159,7 +199,7 @@ onMounted(() => {
         :disabled="!hasManagePermission"
       >
         <h3 class="mt-1 mb-2">{{ props.labelText }} Invite</h3>
-        <p>Make invite available for:</p>
+        <p>Make invite available for</p>
         <div class="flex flex-wrap gap-3">
           <div
             v-for="(value, name) in timeFrames"
@@ -171,6 +211,28 @@ onMounted(() => {
               :input-id="value.toString()"
               :name="name"
               :value="value"
+            />
+            <label
+              :for="value.toString()"
+              class="ml-2"
+            >
+              {{ name }}
+            </label>
+          </div>
+        </div>
+        <p class="mt-4 mb-2">Access options</p>
+        <div class="flex flex-wrap gap-3">
+          <div
+            v-for="(name, value) in selectedOptions"
+            :key="value"
+            class="flex align-items-center"
+          >
+            <Checkbox
+              v-model="formData.permCodes"
+              :input-id="value.toString()"
+              :name="name"
+              :value="value"
+              :disabled="isOptionUnselectable(name)"
             />
             <label
               :for="value.toString()"
