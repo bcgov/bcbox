@@ -49,7 +49,7 @@ const isRestricted: Ref<boolean> = ref(props.restricted);
 const showInviteLink: Ref<boolean> = ref(false);
 const hasManagePermission: Ref<boolean> =  computed(() => {
   return (props.objectId) ?
-    permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE) :
+    permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE, obj.value?.bucketId) :
     permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
 });
 
