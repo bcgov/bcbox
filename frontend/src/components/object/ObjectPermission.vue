@@ -125,7 +125,7 @@ onBeforeMount(() => {
             v-model="data.read"
             input-id="read"
             :binary="true"
-            @input="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.READ)"
+            @update:model-value="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.READ)"
           />
         </template>
       </Column>
@@ -139,7 +139,7 @@ onBeforeMount(() => {
             v-model="data.update"
             input-id="update"
             :binary="true"
-            @input="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.UPDATE)"
+            @update:model-value="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.UPDATE)"
           />
         </template>
       </Column>
@@ -153,7 +153,7 @@ onBeforeMount(() => {
             v-model="data.delete"
             input-id="delete"
             :binary="true"
-            @input="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.DELETE)"
+            @update:model-value="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.DELETE)"
           />
         </template>
       </Column>
@@ -167,7 +167,7 @@ onBeforeMount(() => {
             v-model="data.manage"
             input-id="manage"
             :binary="true"
-            @input="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.MANAGE)"
+            @update:model-value="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.MANAGE)"
           />
         </template>
       </Column>
