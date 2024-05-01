@@ -206,18 +206,17 @@ const selectedFilters = (payload: any) => {
             @selected-filters="selectedFilters"
           />
 
-          <span class="p-input-icon-left ml-4">
-            <i class="pi pi-search" />
+          <InputGroup class="ml-4">
             <InputText
               v-model="filters.name.value"
-              class="searchInput"
+              class="pr-6"
               placeholder="Search File Names"
               @keyup.enter="loadLazyData"
             />
             <Button
-              v-show="filters.name.value !== undefined"
+              v-show="filters.name.value"
               v-tooltip.bottom="'Clear'"
-              class="ml-2 p-input-icon-clear-right"
+              class="overlap"
               icon="pi pi-times"
               outlined
               aria-label="Clear"
@@ -227,8 +226,7 @@ const selectedFilters = (payload: any) => {
                 }
               "
             />
-          </span>
-
+          </InputGroup>
           <Button
             v-tooltip.bottom="'Search'"
             class="ml-2"
@@ -391,7 +389,10 @@ const selectedFilters = (payload: any) => {
   </div>
 </template>
 <style lang="scss" scoped>
-:deep(.searchInput.p-inputtext) {
-  padding-right: 2.5rem;
+.overlap {
+  position: absolute;
+  right: 3.4rem;
+  width: 2.5rem;
+  height: 2.4rem;
 }
 </style>
