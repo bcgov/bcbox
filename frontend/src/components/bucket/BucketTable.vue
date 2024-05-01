@@ -256,7 +256,7 @@ watch(getBuckets, () => {
     </template>
     <Column
       field="bucketName"
-      header="Bucket Name"
+      header="Bucket Name 1"
       header-style="padding-left: 50px"
       body-class="truncate"
       expander
@@ -305,6 +305,7 @@ watch(getBuckets, () => {
             class="p-button-lg p-button-text"
             aria-label="Configure bucket"
             @click="showBucketConfig(node.data)"
+            @keyup.enter="showBucketConfig(node.data)"
           >
             <font-awesome-icon icon="fas fa-cog" />
           </Button>
@@ -314,6 +315,7 @@ watch(getBuckets, () => {
             class="p-button-lg p-button-text"
             aria-label="Bucket permissions"
             @click="showPermissions(node.data.bucketId, node.data.bucketName)"
+            @keyup.enter="showPermissions(node.data.bucketId, node.data.bucketName)"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
@@ -327,6 +329,7 @@ watch(getBuckets, () => {
             class="p-button-lg p-button-rounded p-button-text"
             aria-label="Bucket details"
             @click="showSidebarInfo(node.data.bucketId)"
+            @keyup.enter="showSidebarInfo(node.data.bucketId)"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
@@ -336,6 +339,7 @@ watch(getBuckets, () => {
             class="p-button-lg p-button-text p-button-danger"
             aria-label="Delete bucket"
             @click="confirmDeleteBucket(node.data.bucketId)"
+            @keyup.enter="confirmDeleteBucket(node.data.bucketId)"
           >
             <font-awesome-icon icon="fa-solid fa-trash" />
           </Button>
