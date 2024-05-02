@@ -283,7 +283,7 @@ onMounted(() => {
   <Button
     v-tooltip.bottom="`${props.labelText} Share`"
     class="p-button-lg p-button-text primary"
-    aria-label="`${props.labelText} Share`"
+    :aria-label="`${props.labelText} Share`"
     @click="displayInviteDialog = true"
   >
     <font-awesome-icon icon="fa-solid fa-share-alt" />
