@@ -256,7 +256,7 @@ watch(getBuckets, () => {
     </template>
     <Column
       field="bucketName"
-      header="Bucket Name 1"
+      header="Bucket Name"
       header-style="padding-left: 50px"
       body-class="truncate"
       expander
