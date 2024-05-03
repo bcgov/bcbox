@@ -285,6 +285,7 @@ onMounted(() => {
     class="p-button-lg p-button-text primary"
     :aria-label="`${props.labelText} Share`"
     @click="displayInviteDialog = true"
+    @keyup.enter="displayInviteDialog = true"
   >
     <font-awesome-icon icon="fa-solid fa-share-alt" />
   </Button>

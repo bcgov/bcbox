@@ -68,6 +68,7 @@ onMounted(async () => {
         aria-label="Configure bucket"
         icon="pi pi-plus"
         @click="showBucketConfig()"
+        @keyup.enter="showBucketConfig()"
       />
 
       <!-- Bucket config dialog -->

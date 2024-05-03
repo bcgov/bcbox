@@ -116,6 +116,7 @@ const onClick = () => {
       label="Submit sync request"
       type="submit"
       @click="onSubmit"
+      @keyup.enter="onSubmit"
     />
     <Button
       class="no-indent p-button-outlined mt-2"
@@ -129,6 +130,7 @@ const onClick = () => {
     class="p-button-lg p-button-text"
     :aria-label="labelText"
     @click="onClick"
+    @keyup.enter="onClick"
   >
     <font-awesome-icon icon="fa-solid fa-sync" />
   </Button>

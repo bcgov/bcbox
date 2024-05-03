@@ -65,6 +65,7 @@ const onCancel = () => {
     class="p-button-lg p-button-text"
     aria-label="Add folder to a bucket"
     @click="showDialog(true)"
+    @keyup.enter="showDialog(true)"
   >
     <font-awesome-icon icon="fa-solid fa-folder-plus" />
   </Button>
