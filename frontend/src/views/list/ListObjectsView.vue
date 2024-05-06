@@ -30,7 +30,7 @@ const bucket: Ref<Bucket | undefined> = ref(undefined);
 
 onErrorCaptured((e: Error) => {
   const toast = useToast();
-  toast.error('Loading bucket', e.message);
+  toast.error('Loading folder', e.message);
 });
 
 onBeforeMount(async () => {

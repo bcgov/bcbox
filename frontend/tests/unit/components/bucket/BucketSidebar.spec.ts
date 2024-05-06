@@ -106,8 +106,8 @@ describe('BucketSidebar.vue', async () => {
     wrapper.findAll('div').forEach((ele) => {
       textArray.push(ele.text());
     });
-    expect(textArray).toContain(`Bucket ID:${testSidebarInfo.bucketId}`);
-    expect(textArray).toContain(`Bucket Name:${testSidebarInfo.bucketName}`);
+    expect(textArray).toContain(`Source storage location ID:${testSidebarInfo.bucketId}`);
+    expect(textArray).toContain(`Folder name:${testSidebarInfo.bucketName}`);
   });
 
   it('emits close modal', async () => {

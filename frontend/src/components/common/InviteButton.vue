@@ -172,7 +172,10 @@ onMounted(() => {
         Invite someone using an invite link - the links are single-use; you must generate a new link for each user you
         intend to send this to
       </li>
-      <li>To share publicly or with a direct link, you must set the file to public - this only works for objects</li>
+      <li>
+        To share publicly or with a direct link,
+        you must set the file to public - this only works for individual files
+      </li>
     </ul>
     <TabView>
       <TabPanel
@@ -198,7 +201,7 @@ onMounted(() => {
         header="Invite link"
         :disabled="!hasManagePermission"
       >
-        <h3 class="mt-1 mb-2">{{ props.labelText }} Invite</h3>
+        <h3 class="mt-1 mb-2">{{ (props.labelText) }} Invite</h3>
         <p>Make invite available for</p>
         <div class="flex flex-wrap gap-3">
           <div
@@ -281,9 +284,9 @@ onMounted(() => {
     </TabView>
   </Dialog>
   <Button
-    v-tooltip.bottom="`${props.labelText} Share`"
+    v-tooltip.bottom="`Share ${props.labelText.toLocaleLowerCase()}`"
     class="p-button-lg p-button-text primary"
-    :aria-label="`${props.labelText} Share`"
+    :aria-label="`Share ${props.labelText.toLocaleLowerCase()}`"
     @click="displayInviteDialog = true"
     @keyup.enter="displayInviteDialog = true"
   >

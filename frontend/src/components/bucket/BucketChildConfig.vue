@@ -48,7 +48,7 @@ const onSubmit = async (values: any) => {
     // refresh stores
     await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
     showDialog(false);
-    toast.success('Adding Folder to a bucket', 'Folder configuration successful');
+    toast.success('Adding subfolder', 'Folder configuration successful');
   } catch (error: any) {
     validationMessages.value = [];
     validationMessages.value.push(error.response.data.detail);
@@ -61,9 +61,9 @@ const onCancel = () => {
 
 <template>
   <Button
-    v-tooltip.bottom="'Add folder to a bucket'"
+    v-tooltip.bottom="'Add subfolder'"
     class="p-button-lg p-button-text"
-    aria-label="Add folder to a bucket"
+    aria-label="Add subfolder"
     @click="showDialog(true)"
     @keyup.enter="showDialog(true)"
   >
@@ -82,12 +82,12 @@ const onCancel = () => {
         icon="fas fa-cog"
         fixed-width
       />
-      <span class="p-dialog-title">Add folder to bucket</span>
+      <span class="p-dialog-title">Add subfolder</span>
     </template>
 
     <h3 class="bcbox-info-dialog-subhead mb-0">{{ props.parentBucket.bucketName }}</h3>
     <ul class="mt-0 pl-3">
-      <li>Sets a folder to appear within a bucket</li>
+      <li>Sets a subfolder to appear within a folder</li>
     </ul>
     <Form
       :validation-schema="schema"
@@ -112,7 +112,7 @@ const onCancel = () => {
         name="bucketName"
         label="Folder display name *"
         placeholder="My Documents"
-        help-text="Your custom display name for the bucket - any name as you would like to see it listed in BCBox."
+        help-text="Your custom display name for the subfolder - any name as you would like to see it listed in BCBox."
         autofocus
       />
       <Button

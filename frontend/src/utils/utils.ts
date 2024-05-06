@@ -122,10 +122,13 @@ export function setDispositionHeader(filename: string) {
  * @function getBucketPath
  * Returns a full canonical path to a Bucket
  * @param {Bucket} bucket COMS bucket
- * @returns {string} full canonical path to bucket
+ * @param {boolean} justPath whether to return just the path (eg without scheme and domain)
+ * @returns {string} full canonical url or path to bucket
  */
-export function getBucketPath(bucket: Bucket): string {
-  return `${bucket.endpoint}/${bucket.bucket}/${bucket.key}`;
+export function getBucketPath(bucket: Bucket, justPath = false): string {
+  return justPath ?
+    `${bucket.bucket}/${bucket.key}` :
+    `${bucket.endpoint}/${bucket.bucket}/${bucket.key}`;
 }
 
 /**

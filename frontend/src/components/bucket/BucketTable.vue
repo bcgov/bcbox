@@ -52,10 +52,10 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
 const confirmDeleteBucket = (bucketId: string) => {
   confirm.require({
     message:
-      'Are you sure you want to delete this bucket in BCBox? \
+      'Are you sure you want to delete this folder in BCBox? \
       This will drop all related objects and permissions from BCBox, \
-      but the files will still remain in the actual bucket.',
-    header: 'Delete bucket',
+      but the files will still remain in the actual source storage location.',
+    header: 'Delete folder',
     acceptLabel: 'Confirm',
     rejectLabel: 'Cancel',
     accept: () => deleteBucket(bucketId)
@@ -248,7 +248,7 @@ watch(getBuckets, () => {
         v-if="!getIsLoading"
         class="flex justify-content-center"
       >
-        <h3>There are no buckets associated with your account.</h3>
+        <h3>There are no folders associated with your account.</h3>
       </div>
     </template>
     <template #loadingicon>
@@ -256,29 +256,13 @@ watch(getBuckets, () => {
     </template>
     <Column
       field="bucketName"
-      header="Bucket Name"
+      header="Folder Name"
       header-style="padding-left: 50px"
       body-class="truncate"
       expander
     >
       <template #body="{ node }">
         <span class="row-head mr-2">
-          <font-awesome-icon
-            v-if="!node.data.dummy"
-            icon="fa-solid fa-box-open"
-          />
-          <font-awesome-icon
-            v-else
-            icon="fa-solid fa-folder"
-          />
-        </span>
-        <span
-          v-if="node.data.bucketName.length > 150"
-          v-tooltip.bottom="{ value: node.data.bucketName }"
-        >
-          <BucketTableBucketName :node="node" />
-        </span>
-        <span v-else>
           <BucketTableBucketName :node="node" />
         </span>
       </template>
@@ -293,7 +277,7 @@ watch(getBuckets, () => {
         <span v-if="!node.data.dummy">
           <InviteButton
             :bucket-id="node.data.bucketId"
-            label-text="Bucket"
+            label-text="Folder"
           />
           <BucketChildConfig
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
@@ -301,9 +285,9 @@ watch(getBuckets, () => {
           />
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
-            v-tooltip.bottom="'Configure bucket'"
+            v-tooltip.bottom="'Configure folder'"
             class="p-button-lg p-button-text"
-            aria-label="Configure bucket"
+            aria-label="Configure folder"
             @click="showBucketConfig(node.data)"
             @keyup.enter="showBucketConfig(node.data)"
           >
@@ -311,23 +295,23 @@ watch(getBuckets, () => {
           </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
-            v-tooltip.bottom="'Bucket permissions'"
+            v-tooltip.bottom="'Folder permissions'"
             class="p-button-lg p-button-text"
-            aria-label="Bucket permissions"
+            aria-label="Folder permissions"
             @click="showPermissions(node.data.bucketId, node.data.bucketName)"
             @keyup.enter="showPermissions(node.data.bucketId, node.data.bucketName)"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
           <SyncButton
-            label-text="Synchronize bucket"
+            label-text="Synchronize storage location"
             :bucket-id="node.data.bucketId"
           />
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
-            v-tooltip.bottom="'Bucket details'"
+            v-tooltip.bottom="'Folder details'"
             class="p-button-lg p-button-rounded p-button-text"
-            aria-label="Bucket details"
+            aria-label="Folder details"
             @click="showSidebarInfo(node.data.bucketId)"
             @keyup.enter="showSidebarInfo(node.data.bucketId)"
           >
@@ -335,9 +319,9 @@ watch(getBuckets, () => {
           </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.DELETE)"
-            v-tooltip.bottom="'Delete bucket'"
+            v-tooltip.bottom="'Delete folder'"
             class="p-button-lg p-button-text p-button-danger"
-            aria-label="Delete bucket"
+            aria-label="Delete folder"
             @click="confirmDeleteBucket(node.data.bucketId)"
             @keyup.enter="confirmDeleteBucket(node.data.bucketId)"
           >
@@ -361,7 +345,7 @@ watch(getBuckets, () => {
         icon="fas fa-users"
         fixed-width
       />
-      <span class="p-dialog-title">Bucket Permissions</span>
+      <span class="p-dialog-title">Folder permissions</span>
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">

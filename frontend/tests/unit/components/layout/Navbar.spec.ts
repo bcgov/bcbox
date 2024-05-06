@@ -55,7 +55,7 @@ describe('Navbar.vue', () => {
     const linkEle = wrapper.findAll('a');
     expect(linkEle).toHaveLength(3);
     expect(linkEle[0].text()).toBe('Home');
-    expect(linkEle[1].text()).toBe('My Buckets');
+    expect(linkEle[1].text()).toBe('My Files');
     expect(linkEle[2].text()).toBe('Help');
   });
 

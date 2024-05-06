@@ -78,7 +78,7 @@ const onClick = () => {
         v-if="props.bucketId"
         class="p-dialog-title"
       >
-        Synchronize Bucket
+        Synchronize storage location
       </span>
       <span
         v-else
@@ -102,8 +102,13 @@ const onClick = () => {
     <span v-else>(none)</span>
 
     <ul class="mb-4 ml-1.5">
-      <li v-if="props.bucketId">This will schedule a synchronization of the bucket's contents</li>
-      <li v-else>This will schedule a synchronization of the file</li>
+      <li v-if="props.bucketId">
+        This will schedule a synchronization of the folder's
+        contents with its source storage location (&quot;bucket&quot;)
+      </li>
+      <li v-else>
+        This will schedule a synchronization of the file
+      </li>
       <li>
         Use this if you are modifying it outside of BCBox, such as in another software application, and want to see
         those changes reflected in BCBox

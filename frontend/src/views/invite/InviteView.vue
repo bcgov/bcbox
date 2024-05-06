@@ -49,7 +49,7 @@ const setErrorMessage = (errorCode: number): void => {
       break;
     case 409:
       title.value = 'Not found';
-      detail.value = 'Invalid object or bucket';
+      detail.value = 'Invalid object or folder';
       break;
     case 410:
       title.value = 'Gone';
@@ -105,7 +105,7 @@ onMounted(() => {
       <div class="text-center">
         <router-link :to="{ name: RouteNames.LIST_BUCKETS }">
           <Button class="text-center mt-5">
-            {{ 'Go to My Buckets' }}
+            {{ 'Go to my files' }}
           </Button>
         </router-link>
       </div>

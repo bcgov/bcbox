@@ -23,9 +23,9 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
           >
             <router-link
               :to="{ name: RouteNames.LIST_BUCKETS }"
-              aria-label="My buckets"
+              aria-label="My files"
             >
-              My Buckets
+              My Files
             </router-link>
           </li>
           <li class="mr-2">

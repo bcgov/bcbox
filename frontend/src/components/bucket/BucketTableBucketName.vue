@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouteNames } from '@/utils/constants';
-import { getBucketPath, getLastSegment } from '@/utils/utils';
+import { getBucketPath } from '@/utils/utils';
 
 import type { BucketTreeNode } from '@/types';
 
@@ -13,37 +13,26 @@ const props = withDefaults(defineProps<Props>(), {});
 </script>
 
 <template>
-  <span v-if="props.node.data.dummy">
+  <span
+    v-if="props.node.data.dummy"
+    class="opacity-70"
+  >
+    <font-awesome-icon
+      icon="fa-solid fa-folder"
+      class="mr-2"
+    />
     {{ props.node.data.bucketName }}
-    <span
-      v-if="props.node.data.key === '/'"
-      class="pl-2 text-xs"
-    >
-      {{ props.node.data.bucketName }}
-    </span>
-    <span
-      v-else
-      class="pl-2 text-xs"
-    >
-      {{ '/' + props.node.data.bucketName }}
-    </span>
   </span>
-
-  <span v-else>
+  <span
+    v-else
+    v-tooltip.bottom="'path: /' + getBucketPath(node.data, true).replace('//', '')"
+  >
+    <font-awesome-icon
+      icon="fa-solid fa-folder"
+      class="mr-2"
+    />
     <router-link :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: props.node.data.bucketId } }">
       {{ props.node.data.bucketName }}
     </router-link>
-    <span
-      v-if="props.node.data.key === '/'"
-      class="pl-2 text-xs"
-    >
-      {{ getLastSegment(getBucketPath(props.node.data)) }}
-    </span>
-    <span
-      v-else
-      class="pl-2 text-xs"
-    >
-      {{ '/' + getLastSegment(getBucketPath(props.node.data)) }}
-    </span>
   </span>
 </template>
