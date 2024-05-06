@@ -85,11 +85,6 @@ export const usePermissionStore = defineStore('permission', () => {
     try {
       appStore.beginIndeterminateLoading();
       await permissionService.objectAddPermissions(objectId, [{ userId, permCode }]);
-
-      const forceToggleReadOn: Array<string> = [Permissions.UPDATE, Permissions.DELETE, Permissions.MANAGE];
-      if (forceToggleReadOn.some((x: string) => x === permCode)) {
-        await permissionService.objectAddPermissions(objectId, [{ userId, permCode: Permissions.READ }]);
-      }
     } catch (error: any) {
       toast.error('Adding object permission', error);
     } finally {
@@ -114,7 +109,7 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  async function deleteBucketPermission(bucketId: string, userId: string, permCode: string): Promise<void>{
+  async function deleteBucketPermission(bucketId: string, userId: string, permCode: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
       await permissionService.bucketDeletePermission(bucketId, { userId, permCode });
@@ -130,11 +125,6 @@ export const usePermissionStore = defineStore('permission', () => {
     try {
       appStore.beginIndeterminateLoading();
       await permissionService.objectDeletePermission(objectId, { userId, permCode });
-
-      if (permCode === Permissions.READ) {
-        const forceToggleOnRead: Array<string> = [Permissions.UPDATE, Permissions.DELETE, Permissions.MANAGE];
-        await permissionService.objectDeletePermission(objectId, { userId, permCode: forceToggleOnRead });
-      }
     } catch (error: any) {
       toast.error('Deleting object permission', error);
     } finally {
