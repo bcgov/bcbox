@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 
 import { RequirePublicOrAuth } from '@/components/guards';
 import { ObjectFileDetails } from '@/components/object';
+import { Spinner } from '@/components/layout';
 import { useVersionStore } from '@/store';
 
 import type { Ref } from 'vue';
@@ -23,6 +24,7 @@ const versionStore = useVersionStore();
 const { getLatestVersionIdByObjectId } = storeToRefs(versionStore);
 
 // State
+const loading: Ref<boolean> = ref(true);
 const versionId: Ref<string | undefined> = ref(props.versionId);
 
 onBeforeMount(async () => {
@@ -33,19 +35,25 @@ onBeforeMount(async () => {
     if (!versionId.value) {
       versionId.value = getLatestVersionIdByObjectId.value(props.objectId);
     }
+    loading.value = false;
   }
 });
 </script>
 
 <template>
   <RequirePublicOrAuth :object-id="props.objectId">
-    <ObjectFileDetails
-      v-if="props.objectId && versionId"
-      :object-id="props.objectId"
-      :version-id="versionId"
-    />
+    <div v-if="!loading">
+      <ObjectFileDetails
+        v-if="props.objectId && versionId"
+        :object-id="props.objectId"
+        :version-id="versionId"
+      />
+      <div v-else>
+        <h3 class="font-bold">No object or version provided</h3>
+      </div>
+    </div>
     <div v-else>
-      <h3 class="font-bold">No object or version provided</h3>
+      <Spinner />
     </div>
   </RequirePublicOrAuth>
 </template>

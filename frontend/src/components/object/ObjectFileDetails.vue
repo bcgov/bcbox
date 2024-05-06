@@ -82,7 +82,7 @@ onMounted(async () => {
   await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
   await objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true });
   object.value = getObject.value(props.objectId);
-  const bucketId = object.value?.bucketId;
+  bucketId.value = object.value ? object.value.bucketId : '';
   if (
     head?.status !== 204 &&
     (!object.value ||
@@ -92,7 +92,7 @@ onMounted(async () => {
   }
   // fetch data for child components
   await Promise.all([
-    bucketStore.fetchBuckets({ bucketId: bucketId }),
+    bucketStore.fetchBuckets({ bucketId: bucketId.value }),
     versionStore.fetchVersions({ objectId: props.objectId }),
     metadataStore.fetchMetadata({ objectId: props.objectId }),
     tagStore.fetchTagging({ objectId: props.objectId }),
@@ -122,7 +122,7 @@ onMounted(async () => {
         <div class="action-buttons">
           <InviteButton
             :object-id="props.objectId"
-            label-text="Object"
+            label-text="File"
           />
           <DownloadObjectButton
             v-if="
@@ -134,9 +134,9 @@ onMounted(async () => {
           />
           <Button
             v-if="permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.MANAGE, bucketId)"
-            v-tooltip.bottom="'Object permissions'"
+            v-tooltip.bottom="'File permissions'"
             class="p-button-lg p-button-text"
-            aria-label="Object permissions"
+            aria-label="File permissions"
             @click="permissionsVisible = true"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
@@ -202,7 +202,7 @@ onMounted(async () => {
         icon="fas fa-users"
         fixed-width
       />
-      <span class="p-dialog-title">Object Permissions</span>
+      <span class="p-dialog-title">File Permissions</span>
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">

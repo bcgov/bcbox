@@ -59,7 +59,7 @@ onBeforeMount(async () => {
       class="mb-3 flex overflow-hidden"
     >
       <font-awesome-icon
-        icon="fa-solid fa-box-open"
+        icon="fa-solid fa-folder"
         class="mr-2 mt-2"
       />
       <span class="wrap-block w-11">{{ bucket.bucketName }}</span>

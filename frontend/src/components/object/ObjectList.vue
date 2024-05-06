@@ -77,10 +77,10 @@ const onDeletedSuccess = () => {
     <div>
       <Button
         v-if="permissionStore.isBucketActionAllowed(props.bucketId as string, getUserId, Permissions.CREATE)"
-        v-tooltip.bottom="'Upload object'"
+        v-tooltip.bottom="'Upload file'"
         class="mr-2"
         :disabled="displayUpload"
-        aria-label="Show object"
+        aria-label="Upload file"
         @click="showUpload"
       >
         <font-awesome-icon
