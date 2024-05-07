@@ -67,21 +67,21 @@ const download = () => {
 
   <Button
     v-if="props.mode === ButtonMode.ICON"
-    v-tooltip.bottom="'Download object'"
+    v-tooltip.bottom="'Download file'"
     class="p-button-lg p-button-text"
     :disabled="props.disabled"
-    aria-label="Download object"
+    aria-label="Download file"
     @click="download()"
   >
     <font-awesome-icon icon="fa-solid fa-download" />
   </Button>
   <Button
     v-else
-    v-tooltip.bottom="'Download object'"
+    v-tooltip.bottom="'Download file'"
     class="mr-2"
     outlined
     :disabled="props.disabled"
-    aria-label="Download object"
+    aria-label="Download file"
     @click="download()"
   >
     <font-awesome-icon

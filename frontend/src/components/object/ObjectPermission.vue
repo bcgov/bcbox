@@ -104,7 +104,12 @@ onBeforeMount(() => {
     >
       <template #empty>
         <div class="flex justify-content-center">
-          <h3>There are no users associated with this object.</h3>
+          <div>
+            <h3>There are no users associated specifically with this file.</h3>
+            <span>
+              Permissions at the folder level still apply but aren't shown here.
+            </span>
+          </div>
         </div>
       </template>
       <Column

@@ -13,7 +13,7 @@ import {
 import { SyncButton, InviteButton } from '@/components/common';
 import { Button, Column, DataTable, Dialog, InputText, useToast } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
-import { Permissions } from '@/utils/constants';
+import { Permissions, RouteNames } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 import { formatDateLong } from '@/utils/formatters';
 import { objectService } from '@/services';
@@ -261,8 +261,14 @@ const selectedFilters = (payload: any) => {
         body-class="truncate"
       >
         <template #body="{ data }">
-          <div v-tooltip.bottom="{ value: data.name }">
-            {{ data.name }}
+          <div>
+            <router-link
+              :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objectId: data.id } }"
+            >
+              <span v-tooltip.bottom="'View file details'">
+                {{ data.name }}
+              </span>
+            </router-link>
           </div>
         </template>
       </Column>
@@ -315,7 +321,7 @@ const selectedFilters = (payload: any) => {
         <template #body="{ data }">
           <InviteButton
             :object-id="data.id"
-            label-text="Object"
+            label-text="File"
           />
           <DownloadObjectButton
             v-if="
@@ -329,9 +335,9 @@ const selectedFilters = (payload: any) => {
             v-if="
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.MANAGE, props.bucketId as string)
             "
-            v-tooltip.bottom="'Object permissions'"
+            v-tooltip.bottom="'File permissions'"
             class="p-button-lg p-button-text"
-            aria-label="Object permissions"
+            aria-label="File permissions"
             @click="showPermissions(data.id)"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
@@ -345,9 +351,9 @@ const selectedFilters = (payload: any) => {
               data.public ||
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, props.bucketId as string)
             "
-            v-tooltip.bottom="'Object details'"
+            v-tooltip.bottom="'File details'"
             class="p-button-lg p-button-rounded p-button-text"
-            aria-label="Object details"
+            aria-label="File details"
             @click="showInfo(data.id)"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
@@ -377,7 +383,7 @@ const selectedFilters = (payload: any) => {
           icon="fas fa-users"
           fixed-width
         />
-        <span class="p-dialog-title">Object Permissions</span>
+        <span class="p-dialog-title">File Permissions</span>
       </template>
 
       <h3 class="bcbox-info-dialog-subhead">

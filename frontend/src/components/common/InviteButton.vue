@@ -63,7 +63,7 @@ const hasManagePermission: Ref<boolean> = computed(() => {
     ? permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE, obj.value?.bucketId)
     : permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
 });
-const resource = props.objectId ? 'object' : 'bucket';
+const resource = props.objectId ? 'file' : 'bucket';
 
 // Share link
 const inviteLink: Ref<string> = ref('');

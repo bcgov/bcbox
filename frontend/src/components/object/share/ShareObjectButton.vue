@@ -61,7 +61,7 @@ onMounted(() => {
     </h3>
 
     <ul class="mb-4">
-      <li>To share publicly or with a direct file link, you must set the file to public in the object list</li>
+      <li>To share publicly or with a direct file link, you must set the file to public in the file list</li>
       <li>To share to a BCBox user, you must first apply permissions to them</li>
     </ul>
 
@@ -89,9 +89,9 @@ onMounted(() => {
   </Dialog>
 
   <Button
-    v-tooltip.bottom="'Share object'"
+    v-tooltip.bottom="'Share file'"
     class="p-button-lg p-button-text primary"
-    aria-label="Share object"
+    aria-label="Share file"
     @click="displayShareDialog = true"
   >
     <font-awesome-icon icon="fa-solid fa-share-alt" />

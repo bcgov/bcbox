@@ -72,20 +72,20 @@ const confirmDelete = () => {
 
   <Button
     v-if="props.mode === ButtonMode.ICON"
-    v-tooltip.bottom="'Delete object'"
+    v-tooltip.bottom="props.versionId ? 'Delete version' : 'Delete file'"
     class="p-button-lg p-button-text p-button-danger"
     :disabled="props.disabled"
-    aria-label="Delete object"
+    :aria-label="props.versionId ? 'Delete version' : 'Delete file'"
     @click="confirmDelete()"
   >
     <font-awesome-icon icon="fa-solid fa-trash" />
   </Button>
   <Button
     v-else
-    v-tooltip.bottom="'Delete object'"
+    v-tooltip.bottom="props.versionId ? 'Delete version' : 'Delete file'"
     class="p-button-outlined p-button-danger"
     :disabled="props.disabled"
-    aria-label="Delete object"
+    :aria-label="props.versionId ? 'Delete version' : 'Delete file'"
     @click="confirmDelete()"
   >
     <font-awesome-icon
