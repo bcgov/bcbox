@@ -86,7 +86,11 @@ a:focus-visible {
 a button:focus-visible {
   box-shadow: none;
 }
-
+table tbody,
+table tbody tr td:focus-visible{
+  outline: 0 none;
+  box-shadow: inset 0px 0px 0 0.1rem #a6d5fa;
+}
 .wrap-block {
   display: inline-block;
   overflow-wrap: break-word;
