@@ -86,7 +86,10 @@ onBeforeMount(() => {
       </Button>
     </div>
     <div v-else>
-      <ObjectPermissionAddUser @cancel-search-users="cancelSearchUsers" />
+      <ObjectPermissionAddUser
+        :object-id="object?.id!"
+        @cancel-search-users="cancelSearchUsers"
+      />
     </div>
 
     <DataTable
@@ -106,9 +109,7 @@ onBeforeMount(() => {
         <div class="flex justify-content-center">
           <div>
             <h3>There are no users associated specifically with this file.</h3>
-            <span>
-              Permissions at the folder level still apply but aren't shown here.
-            </span>
+            <span>Permissions at the folder level still apply but aren't shown here.</span>
           </div>
         </div>
       </template>
@@ -130,7 +131,8 @@ onBeforeMount(() => {
             v-model="data.read"
             input-id="read"
             :binary="true"
-            @update:model-value="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.READ)"
+            :disabled="data.read"
+            @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.READ)"
           />
         </template>
       </Column>
@@ -144,7 +146,7 @@ onBeforeMount(() => {
             v-model="data.update"
             input-id="update"
             :binary="true"
-            @update:model-value="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.UPDATE)"
+            @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.UPDATE)"
           />
         </template>
       </Column>
@@ -158,7 +160,7 @@ onBeforeMount(() => {
             v-model="data.delete"
             input-id="delete"
             :binary="true"
-            @update:model-value="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.DELETE)"
+            @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.DELETE)"
           />
         </template>
       </Column>
@@ -172,7 +174,7 @@ onBeforeMount(() => {
             v-model="data.manage"
             input-id="manage"
             :binary="true"
-            @update:model-value="(value:boolean) => updateObjectPermission(value, data.userId, Permissions.MANAGE)"
+            @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.MANAGE)"
           />
         </template>
       </Column>
