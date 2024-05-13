@@ -80,7 +80,7 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Adding object permission', error);
     } finally {
-      await fetchObjectPermissions();
+      await fetchObjectPermissions({ objectId: objectId });
 
       const initialPerms = [...state.mappedObjectToUserPermissions.value];
       await mapObjectToUserPermissions(objectId);
@@ -278,7 +278,7 @@ export const usePermissionStore = defineStore('permission', () => {
   }
 
   async function removeBucketUserPermsHandler(bucketId: string, userId: string): Promise<void> {
-    await fetchBucketPermissions();
+    await fetchBucketPermissions({ bucketId: bucketId });
 
     const initialPerms = [...state.mappedBucketToUserPermissions.value.filter(({ userId: id }) => id !== userId)];
     await mapBucketToUserPermissions(bucketId);
@@ -308,7 +308,7 @@ export const usePermissionStore = defineStore('permission', () => {
   }
 
   async function removeObjectUserPermsHandler(objectId: string, userId: string): Promise<void> {
-    await fetchObjectPermissions();
+    await fetchObjectPermissions({ objectId: objectId });
 
     const initialPerms = [...state.mappedObjectToUserPermissions.value.filter(({ userId: id }) => id !== userId)];
     await mapObjectToUserPermissions(objectId);
