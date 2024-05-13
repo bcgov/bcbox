@@ -80,7 +80,9 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Adding object permission', error);
     } finally {
-      await fetchObjectPermissions({ objectId: objectId });
+      await fetchObjectPermissions();
+
+      const initialPerms = [...state.mappedObjectToUserPermissions.value];
       await mapObjectToUserPermissions(objectId);
       appStore.endIndeterminateLoading();
     }
@@ -275,10 +277,15 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  async function removeBucketUserMap(bucketId: string, userId: string): Promise<void> {
-    state.mappedBucketToUserPermissions.value = [
-      ...state.mappedBucketToUserPermissions.value.filter(({ userId: id }) => id !== userId)
-    ];
+  async function removeBucketUserPermsHandler(bucketId: string, userId: string): Promise<void> {
+    await fetchBucketPermissions();
+
+    const initialPerms = [...state.mappedBucketToUserPermissions.value.filter(({ userId: id }) => id !== userId)];
+    await mapBucketToUserPermissions(bucketId);
+    const afterPerms = [...state.mappedBucketToUserPermissions.value];
+
+    const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
+    state.mappedBucketToUserPermissions.value = state.mappedBucketToUserPermissions.value.concat(results);
   }
 
   async function removeObjectUser(objectId: string, userId: string): Promise<void> {
@@ -300,10 +307,15 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  async function removeObjectUserMap(objectId: string, userId: string): Promise<void> {
-    state.mappedObjectToUserPermissions.value = [
-      ...state.mappedObjectToUserPermissions.value.filter(({ userId: id }) => id !== userId)
-    ];
+  async function removeObjectUserPermsHandler(objectId: string, userId: string): Promise<void> {
+    await fetchObjectPermissions();
+
+    const initialPerms = [...state.mappedObjectToUserPermissions.value.filter(({ userId: id }) => id !== userId)];
+    await mapObjectToUserPermissions(objectId);
+    const afterPerms = [...state.mappedObjectToUserPermissions.value];
+
+    const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
+    state.mappedObjectToUserPermissions.value = state.mappedObjectToUserPermissions.value.concat(results);
   }
 
   return {
