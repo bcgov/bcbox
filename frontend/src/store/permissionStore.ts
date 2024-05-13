@@ -5,7 +5,6 @@ import { useToast } from '@/lib/primevue';
 import { permissionService, userService } from '@/services';
 import { useAppStore, useAuthStore, useConfigStore } from '@/store';
 import { Permissions } from '@/utils/constants';
-import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type {
@@ -60,15 +59,8 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Adding bucket permission', error);
     } finally {
-      await fetchBucketPermissions();
-
-      const initialPerms = [...state.mappedBucketToUserPermissions.value];
+      await fetchBucketPermissions({ bucketId: bucketId });
       await mapBucketToUserPermissions(bucketId);
-      const afterPerms = [...state.mappedBucketToUserPermissions.value];
-
-      const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
-      state.mappedBucketToUserPermissions.value = state.mappedBucketToUserPermissions.value.concat(results);
-
       appStore.endIndeterminateLoading();
     }
   }
@@ -88,15 +80,8 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Adding object permission', error);
     } finally {
-      await fetchObjectPermissions();
-
-      const initialPerms = [...state.mappedObjectToUserPermissions.value];
+      await fetchObjectPermissions({ objectId: objectId });
       await mapObjectToUserPermissions(objectId);
-      const afterPerms = [...state.mappedObjectToUserPermissions.value];
-
-      const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
-      state.mappedObjectToUserPermissions.value = state.mappedObjectToUserPermissions.value.concat(results);
-
       appStore.endIndeterminateLoading();
     }
   }
@@ -116,7 +101,8 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Deleting bucket permission', error);
     } finally {
-      await removeBucketUserPermsHandler(bucketId, userId);
+      await fetchBucketPermissions({ bucketId: bucketId });
+      await mapBucketToUserPermissions(bucketId);
       appStore.endIndeterminateLoading();
     }
   }
@@ -128,7 +114,8 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Deleting object permission', error);
     } finally {
-      await removeObjectUserPermsHandler(objectId, userId);
+      await fetchObjectPermissions({ objectId: objectId });
+      await mapObjectToUserPermissions(objectId);
       appStore.endIndeterminateLoading();
     }
   }
@@ -142,16 +129,8 @@ export const usePermissionStore = defineStore('permission', () => {
       const response = (await permissionService.bucketSearchPermissions(params)).data;
       const newPerms: Array<BucketPermission> = response.flatMap((x: any) => x.permissions);
 
-      // Remove old values matching search parameters
-      const matches = (x: BucketPermission) =>
-        (!params.bucketId || x.bucketId === params.bucketId) &&
-        (!params.userId || x.userId === params.userId) &&
-        (!params.permCode || x.permCode === params.permCode);
-
-      const [, difference] = partition(state.bucketPermissions.value, matches);
-
       // Merge and assign
-      state.bucketPermissions.value = difference.concat(newPerms);
+      state.bucketPermissions.value = newPerms;
 
       // Pass response back so bucketStore can handle bucketPerms=true correctly
       return response;
@@ -172,16 +151,7 @@ export const usePermissionStore = defineStore('permission', () => {
 
       const newPerms: Array<COMSObjectPermission> = response.flatMap((x: any) => x.permissions);
 
-      // Remove old values matching search parameters
-      const matches = (x: COMSObjectPermission) =>
-        (!params.objectId || x.id === params.objectId) &&
-        (!params.userId || x.userId === params.userId) &&
-        (!params.permCode || x.permCode === params.permCode);
-
-      const [, difference] = partition(state.objectPermissions.value, matches);
-
-      // Merge and assign
-      state.objectPermissions.value = difference.concat(newPerms);
+      state.objectPermissions.value = newPerms;
 
       // Pass response back so objectStore can handle bucketPerms=true correctly
       return response;
@@ -299,20 +269,16 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Removing bucket user', error);
     } finally {
-      await removeBucketUserPermsHandler(bucketId, userId);
+      await fetchBucketPermissions({ bucketId: bucketId });
+      await removeBucketUserMap(bucketId, userId);
       appStore.endIndeterminateLoading();
     }
   }
 
-  async function removeBucketUserPermsHandler(bucketId: string, userId: string): Promise<void> {
-    await fetchBucketPermissions();
-
-    const initialPerms = [...state.mappedBucketToUserPermissions.value.filter(({ userId: id }) => id !== userId)];
-    await mapBucketToUserPermissions(bucketId);
-    const afterPerms = [...state.mappedBucketToUserPermissions.value];
-
-    const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
-    state.mappedBucketToUserPermissions.value = state.mappedBucketToUserPermissions.value.concat(results);
+  async function removeBucketUserMap(bucketId: string, userId: string): Promise<void> {
+    state.mappedBucketToUserPermissions.value = [
+      ...state.mappedBucketToUserPermissions.value.filter(({ userId: id }) => id !== userId)
+    ];
   }
 
   async function removeObjectUser(objectId: string, userId: string): Promise<void> {
@@ -328,20 +294,16 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Removing object user', error);
     } finally {
-      await removeObjectUserPermsHandler(objectId, userId);
+      await fetchObjectPermissions({ objectId: objectId });
+      await removeObjectUserMap(objectId, userId);
       appStore.endIndeterminateLoading();
     }
   }
 
-  async function removeObjectUserPermsHandler(objectId: string, userId: string): Promise<void> {
-    await fetchObjectPermissions();
-
-    const initialPerms = [...state.mappedObjectToUserPermissions.value.filter(({ userId: id }) => id !== userId)];
-    await mapObjectToUserPermissions(objectId);
-    const afterPerms = [...state.mappedObjectToUserPermissions.value];
-
-    const results = initialPerms.filter(({ userId: id1 }) => !afterPerms.some(({ userId: id2 }) => id2 === id1));
-    state.mappedObjectToUserPermissions.value = state.mappedObjectToUserPermissions.value.concat(results);
+  async function removeObjectUserMap(objectId: string, userId: string): Promise<void> {
+    state.mappedObjectToUserPermissions.value = [
+      ...state.mappedObjectToUserPermissions.value.filter(({ userId: id }) => id !== userId)
+    ];
   }
 
   return {
