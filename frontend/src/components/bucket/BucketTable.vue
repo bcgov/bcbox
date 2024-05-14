@@ -27,6 +27,17 @@ const permissionsVisible: Ref<boolean> = ref(false);
 const permissionsBucketId: Ref<string> = ref('');
 const permissionBucketName: Ref<string> = ref('');
 const treeData: Ref<Array<BucketTreeNode>> = ref([]);
+const tableProps = {
+  role: 'treegrid',
+  'aria-describedby': 'tree_label',
+  'aria-readonly': true
+};
+const columnProps = {
+  bodyCell: () => ({
+    role: 'treeitem',
+    tabindex: 0
+  })
+};
 
 const emit = defineEmits(['show-bucket-config', 'show-sidebar-info']);
 
@@ -242,6 +253,12 @@ watch(getBuckets, () => {
     :rows-per-page-options="[10, 20, 50]"
     sort-field="bucketName"
     :sort-order="1"
+    :table-props="tableProps"
+    :pt="{
+      tbody: () => ({
+        tabindex: 0
+      })
+    }"
   >
     <template #empty>
       <div
@@ -260,6 +277,7 @@ watch(getBuckets, () => {
       header-style="padding-left: 50px"
       body-class="truncate"
       expander
+      :pt="columnProps"
     >
       <template #body="{ node }">
         <span class="row-head mr-2">
