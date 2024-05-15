@@ -228,6 +228,12 @@ a button:focus-visible {
     }
   }
 
+  table tbody,
+  table tbody tr td:focus-visible{
+    outline: 0 none;
+    box-shadow: inset 0px 0px 0 0.2rem #a6d5fa;
+  }
+
   .p-column-title {
     font-weight: bold;
   }
