@@ -262,9 +262,7 @@ const selectedFilters = (payload: any) => {
       >
         <template #body="{ data }">
           <div>
-            <router-link
-              :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objectId: data.id } }"
-            >
+            <router-link :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objectId: data.id } }">
               <span v-tooltip.bottom="'View file details'">
                 {{ data.name }}
               </span>
@@ -307,6 +305,7 @@ const selectedFilters = (payload: any) => {
             v-if="props.bucketId && getUserId"
             :bucket-id="props.bucketId"
             :object-id="data.id"
+            :object-name="data.name"
             :object-public="data.public"
             :user-id="getUserId"
           />
