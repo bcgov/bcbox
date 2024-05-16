@@ -66,6 +66,7 @@ onBeforeMount(() => {
         class="ml-4"
         :bucket-id="object.bucketId"
         :object-id="object.id"
+        :object-name="object.name"
         :object-public="object.public"
         :user-id="getUserId"
       />
