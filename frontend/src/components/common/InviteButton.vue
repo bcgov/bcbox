@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { computed, ref, onMounted, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ShareLinkContent from '@/components/object/share/ShareLinkContent.vue';
@@ -15,27 +15,30 @@ import {
   useToast,
   InputSwitch
 } from '@/lib/primevue';
+import { Spinner } from '@/components/layout';
+
 import { Permissions } from '@/utils/constants';
 import { inviteService } from '@/services';
 import { useAuthStore, useConfigStore, useObjectStore, usePermissionStore, useBucketStore } from '@/store';
 
 import type { Ref } from 'vue';
-import type { COMSObject, Bucket } from '@/types';
 
 // Props
 type Props = {
   bucketId?: string;
   objectId?: string;
   labelText: string;
-  restricted?: boolean;
 };
-export type InviteFormData = {
+type InviteFormData = {
   email?: string;
   bucketId?: string;
   expiresAt?: number;
   objectId?: string;
   permCodes?: Array<string>;
 };
+
+// TODO: define a stricter type using a union of COMSObject | Bucket
+type Resource  =  any;
 
 const props = withDefaults(defineProps<Props>(), {
   bucketId: '',
@@ -48,22 +51,26 @@ const props = withDefaults(defineProps<Props>(), {
 const objectStore = useObjectStore();
 const bucketStore = useBucketStore();
 const { getConfig } = storeToRefs(useConfigStore());
-const { getUserId } = storeToRefs(useAuthStore());
+const { getUserId, getUser } = storeToRefs(useAuthStore());
 const permissionStore = usePermissionStore();
 
 const toast = useToast();
 
 // State
-const obj: Ref<COMSObject | undefined> = ref(undefined);
-const bucket: Ref<Bucket | undefined> = ref(undefined);
-const isRestricted: Ref<boolean> = ref(props.restricted);
+const resourceType = props.objectId ? ref('object') : ref('bucket');
+const resource: Ref<Resource | undefined> = computed(() => {
+  return props.objectId
+    ? objectStore.getObject(props.objectId)
+    : bucketStore.getBucket(props.bucketId);
+});
+const isRestricted: Ref<boolean> = ref(false);
+const inviteLoading: Ref<boolean> = ref(false);
 const showInviteLink: Ref<boolean> = ref(false);
 const hasManagePermission: Ref<boolean> = computed(() => {
-  return props.objectId
-    ? permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE, obj.value?.bucketId)
+  return resourceType.value === 'object'
+    ? permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE, resource.value?.bucketId)
     : permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
 });
-const resource = props.objectId ? 'file' : 'bucket';
 
 // Share link
 const inviteLink: Ref<string> = ref('');
@@ -93,7 +100,7 @@ const displayInviteDialog = ref(false);
 
 // Permissions selection
 const selectedOptions = computed(() => {
-  return resource === 'bucket' ? bucketPermCodes : objectPermCodes;
+  return resourceType.value === 'bucket' ? bucketPermCodes : objectPermCodes;
 });
 // Share link
 const bcBoxLink = computed(() => {
@@ -116,34 +123,46 @@ watch(isRestricted, () => {
 });
 
 //Action
-async function sendInvite() {
+async function invite() {
+  inviteLoading.value = true;
   try {
+    // set expiry date
     let expiresAt;
     if (formData.value.expiresAt) {
       expiresAt = Math.floor(Date.now() / 1000) + formData.value.expiresAt;
     }
-    const permissionToken = await inviteService.createInvite(
-      props.bucketId,
-      formData.value.email,
-      expiresAt,
-      props.objectId,
-      formData.value.permCodes
-    );
-    inviteLink.value = `${window.location.origin}/invite/${permissionToken.data}`;
-    toast.success('', 'Invite link is created.');
-    showInviteLink.value = true;
-  } catch (error: any) {
-    toast.error('', 'Error getting token');
-  }
-}
+    // put input email addresses into an array
+    const emails = isRestricted.value && formData.value.email ? [formData.value.email] : [];
+    // TODO: add perms to users already in the system
 
-onMounted(() => {
-  if (props.objectId) {
-    obj.value = objectStore.getObject(props.objectId);
-  } else if (props.bucketId) {
-    bucket.value = bucketStore.getBucket(props.bucketId);
+    // generate invites (for emails not already in the system)
+    const invites = await inviteService.createInvites(
+      resourceType.value,
+      resource.value,
+      getUser.value?.profile,
+      emails,
+      expiresAt,
+      formData.value.permCodes,
+    );
+
+    // if not restricting to an email, show link
+    if(emails.length == 0) {
+      inviteLink.value = `${window.location.origin}/invite/${invites[0].token}`;
+      toast.success('', 'Invite link created.');
+      showInviteLink.value = true;
+    }
+    // else show email confirmation
+    else {
+      // TODO: output report (list of invites sent, CHES trx ID (?))
+      toast.success('', 'Invite notifications sent.', {life: 5000});
+      showInviteLink.value = false;
+    }
+  } catch (error: any) {
+    console.log('d', error.response);
+    toast.error('Creating Invite', error.response.data.detail, {life: 0});
   }
-});
+  inviteLoading.value = false;
+}
 </script>
 
 <template>
@@ -163,7 +182,7 @@ onMounted(() => {
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
-      {{ obj?.name || bucket?.bucketName }}
+        {{ resourceType === 'object' ? resource?.name : resource?.bucketName }}
     </h3>
 
     <ul class="mb-4">
@@ -179,7 +198,7 @@ onMounted(() => {
     </ul>
     <TabView>
       <TabPanel
-        v-if="obj?.public"
+        v-if="resource?.public"
         header="Direct public file link"
       >
         <ShareLinkContent
@@ -190,7 +209,7 @@ onMounted(() => {
       <!-- Disable for public until unauthed File Details page works -->
       <TabPanel
         header="Share link"
-        :disabled="obj?.public"
+        :disabled="resource?.public"
       >
         <ShareLinkContent
           :share-link="bcBoxLink"
@@ -200,6 +219,7 @@ onMounted(() => {
       <TabPanel
         header="Invite link"
         :disabled="!hasManagePermission"
+
       >
         <h3 class="mt-1 mb-2">{{ (props.labelText) }} Invite</h3>
         <p>Make invite available for</p>
@@ -246,12 +266,11 @@ onMounted(() => {
           </div>
         </div>
         <p class="mt-4 mb-2">Restrict to user's email</p>
-        <div class="p-inputgroup mb-4">
+        <!-- <p class="mt-4 mb-2">Restrict invite to a user signing in to BCBox with the following email address</p> -->
+        <div class="flex flex-column gap-2">
           <InputSwitch
             v-model="isRestricted"
-            class="mt-1"
           />
-          <!-- Add email validation -->
           <InputText
             v-show="isRestricted"
             v-model="formData.email"
@@ -259,13 +278,15 @@ onMounted(() => {
             placeholder="Enter email"
             required
             type="email"
-            class="ml-5 mr-8"
+            class="mt-2 max-w-30rem"
           />
-        </div>
-        <div class="p-inputgroup mb-4">
+          <small v-show="isRestricted" id="inviteEmail-help">The Invite will be emailed to this person</small>
+          </div>
+        <div class="my-4 inline-flex p-0">
           <Button
-            class="p-button p-button-primary"
-            @click="sendInvite"
+            class="p-button p-button-primary mr-3"
+            @click="invite"
+            :disabled="inviteLoading"
           >
             <font-awesome-icon
               icon="fa fa-envelope"
@@ -273,7 +294,10 @@ onMounted(() => {
             />
             Generate invite link
           </Button>
-        </div>
+          <Spinner
+            v-if="inviteLoading"
+          />
+        </div><br />
 
         <ShareLinkContent
           v-if="showInviteLink"
