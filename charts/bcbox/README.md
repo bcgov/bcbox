@@ -1,6 +1,6 @@
 # bcbox
 
-![Version: 0.0.14](https://img.shields.io/badge/Version-0.0.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.7.0](https://img.shields.io/badge/AppVersion-0.7.0-informational?style=flat-square)
+![Version: 0.0.15](https://img.shields.io/badge/Version-0.0.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.7.0](https://img.shields.io/badge/AppVersion-0.7.0-informational?style=flat-square)
 
 A frontend UI for managing access control to S3 Objects
 
@@ -29,7 +29,7 @@ Kubernetes: `>= 1.13.0`
 | autoscaling.maxReplicas | int | `16` |  |
 | autoscaling.minReplicas | int | `2` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| config.configMap | object | `{"FRONTEND_APIPATH":"api/v1","FRONTEND_COMS_APIPATH":null,"FRONTEND_OIDC_AUTHORITY":null,"FRONTEND_OIDC_CLIENTID":null,"SERVER_APIPATH":"/api/v1","SERVER_BODYLIMIT":"30mb","SERVER_LOGLEVEL":"http","SERVER_PORT":"8080"}` | These values will be wholesale added to the configmap as is; refer to the bcbox documentation for what each of these values mean and whether you need them defined. Ensure that all values are represented explicitly as strings, as non-string values will not translate over as expected into container environment variables. For configuration keys named `*_ENABLED`, either leave them commented/undefined, or set them to string value "true". |
+| config.configMap | object | `{"FRONTEND_APIPATH":"api/v1","FRONTEND_COMS_APIPATH":null,"FRONTEND_OIDC_AUTHORITY":null,"FRONTEND_OIDC_CLIENTID":null,"SERVER_APIPATH":"/api/v1","SERVER_BODYLIMIT":"30mb","SERVER_CHES_APIPATH":null,"SERVER_CHES_FROM":null,"SERVER_CHES_TOKENURL":null,"SERVER_LOGLEVEL":"http","SERVER_OIDC_AUTHORITY":null,"SERVER_OIDC_IDENTITYKEY":null,"SERVER_OIDC_PUBLICKEY":null,"SERVER_PORT":"8080"}` | These values will be wholesale added to the configmap as is; refer to the bcbox documentation for what each of these values mean and whether you need them defined. Ensure that all values are represented explicitly as strings, as non-string values will not translate over as expected into container environment variables. For configuration keys named `*_ENABLED`, either leave them commented/undefined, or set them to string value "true". |
 | config.enabled | bool | `false` | Set to true if you want to let Helm manage and overwrite your configmaps. |
 | config.releaseScoped | bool | `false` | This should be set to true if and only if you require configmaps and secrets to be release scoped. In the event you want all instances in the same namespace to share a similar configuration, this should be set to false |
 | failurePolicy | string | `"Retry"` | DeploymentConfig pre-hook failure behavior |

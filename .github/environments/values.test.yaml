@@ -10,6 +10,12 @@ config:
     FRONTEND_OIDC_CLIENTID: bc-box-4555
     SERVER_APIPATH: /api/v1
     SERVER_BODYLIMIT: 30mb
+    SERVER_CHES_APIPATH: https://ches-test.api.gov.bc.ca/api/v1
+    SERVER_CHES_TOKENURL: https://test.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token
+    SERVER_CHES_FROM: DoNotReply.BCBox@gov.bc.ca
     # SERVER_LOGFILE: ~
     SERVER_LOGLEVEL: http
+    SERVER_OIDC_AUTHORITY: https://test.loginproxy.gov.bc.ca/auth/realms/standard
+    SERVER_OIDC_IDENTITYKEY: idir_user_guid,bceid_user_guid
+    SERVER_OIDC_PUBLICKEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiFdv9GA83uHuy8Eu9yiZHGGF9j6J8t7FkbcpaN81GDjwbjsIJ0OJO9dKRAx6BAtTC4ubJTBJMPvQER5ikOhIeBi4o25fg61jpgsU6oRZHkCXc9gX6mrjMjbsPaf3/bjjYxP5jicBDJQeD1oRa24+tiGggoQ7k6gDEN+cRYqqNpzC/GQbkUPk8YsgroncEgu8ChMh/3ERsLV2zorchMANUq76max16mHrhtWIQxrb/STpSt4JuSlUzzBV/dcXjJe5gywZHe0jAutFhNqjHzHdgyaC4RAd3eYQo+Kl/JOgy2AZrnx+CiPmvOJKe9tAW4k4H087ng8aVE40v4HW/FEbnwIDAQAB
     SERVER_PORT: "8080"

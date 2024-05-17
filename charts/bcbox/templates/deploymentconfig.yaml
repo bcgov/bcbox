@@ -59,6 +59,26 @@ spec:
           env:
             - name: NODE_ENV
               value: production
+            - name: SERVER_CHES_CLIENTID
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: {{ include "bcbox.configname" . }}-ches-service-account
+            - name: SERVER_CHES_CLIENTSECRET
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: {{ include "bcbox.configname" . }}-ches-service-account
+            - name: SERVER_OIDC_CLIENTID
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: {{ include "bcbox.configname" . }}-keycloak
+            - name: SERVER_OIDC_CLIENTSECRET
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: {{ include "bcbox.configname" . }}-keycloak
           envFrom:
             - configMapRef:
                 name: {{ include "bcbox.configname" . }}-config

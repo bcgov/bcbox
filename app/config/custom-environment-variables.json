@@ -17,8 +17,22 @@
   "server": {
     "apiPath": "SERVER_APIPATH",
     "bodyLimit": "SERVER_BODYLIMIT",
+    "ches": {
+      "apiPath": "SERVER_CHES_APIPATH",
+      "clientId": "SERVER_CHES_CLIENTID",
+      "clientSecret": "SERVER_CHES_CLIENTSECRET",
+      "tokenUrl": "SERVER_CHES_TOKENURL",
+      "from": "SERVER_CHES_FROM"
+    },
     "logFile": "SERVER_LOGFILE",
     "logLevel": "SERVER_LOGLEVEL",
+    "oidc": {
+      "authority": "SERVER_OIDC_AUTHORITY",
+      "clientId": "SERVER_OIDC_CLIENTID",
+      "clientSecret": "SERVER_OIDC_CLIENTSECRET",
+      "identityKey": "SERVER_OIDC_IDENTITYKEY",
+      "publicKey": "SERVER_OIDC_PUBLICKEY"
+    },
     "port": "SERVER_PORT"
   }
 }
