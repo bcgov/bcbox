@@ -74,6 +74,7 @@ const service = {
       } else {
         return {
           data: 'Error sending email',
+          e,
           status: 500
         };
       }
