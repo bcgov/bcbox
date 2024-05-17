@@ -12,6 +12,7 @@ import { name as appName, version as appVersion } from './package.json';
 import { DEFAULTCORS } from './src/components/constants';
 import { getLogger, httpLogger } from './src/components/log';
 import { getGitRevision, readIdpList } from './src/components/utils';
+import v1Router from './src/routes/v1';
 
 import type { Request, Response } from 'express';
 
@@ -91,6 +92,9 @@ appRouter.get('/api', (_req: Request, res: Response): void => {
     });
   }
 });
+
+// v1 Router
+appRouter.use(config.get('server.apiPath'), v1Router);
 
 // Host the static frontend assets
 // This route assumes being executed from '/sbin'
