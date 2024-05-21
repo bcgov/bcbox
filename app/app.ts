@@ -7,11 +7,13 @@ import { join } from 'path';
 // @ts-expect-error 7016 api-problem lacks a defined interface; code still works fine
 import Problem from 'api-problem';
 import querystring from 'querystring';
+import { rateLimit } from 'express-rate-limit';
 
 import { name as appName, version as appVersion } from './package.json';
 import { DEFAULTCORS } from './src/components/constants';
 import { getLogger, httpLogger } from './src/components/log';
 import { getGitRevision, readIdpList } from './src/components/utils';
+import v1Router from './src/routes/v1';
 
 import type { Request, Response } from 'express';
 
@@ -43,6 +45,14 @@ app.use(
     }
   })
 );
+
+// rate limiting applied to all routes.
+// Current limit: 1000 requests/minute
+const limiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 1000,
+});
+app.use(limiter);
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
@@ -91,6 +101,9 @@ appRouter.get('/api', (_req: Request, res: Response): void => {
     });
   }
 });
+
+// v1 Router
+appRouter.use(config.get('server.apiPath'), v1Router);
 
 // Host the static frontend assets
 // This route assumes being executed from '/sbin'
