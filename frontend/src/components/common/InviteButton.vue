@@ -300,6 +300,7 @@ async function invite() {
           </Button>
           <Spinner
             v-if="inviteLoading"
+            class="h-2rem w-2rem"
           />
         </div><br />
 

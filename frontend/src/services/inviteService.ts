@@ -1,4 +1,5 @@
 import { appAxios, comsAxios } from './interceptors';
+import { invite as inviteEmailTemplate } from '@/utils/emailTemplates';
 
 const PATH = 'permission/invite';
 
@@ -73,35 +74,19 @@ export default {
    */
   emailInvites(resourceType: string, resource: any, currentUser: any, invites: any){
     try {
-      // build template
-      let resourceName, subject, body;
-      // eslint-disable-next-line max-len
-      const currentUserEmail = `<a href="mailto:${currentUser.email}" style="color: #1a5a96 !important">${currentUser.email}</a>`;
+      let resourceName, subject;
       // alternate templates depending if resource is a file or a folder
       if (resourceType === 'object') {
         resourceName = resource.name;
         subject = `You have been invited to access ${resourceName} on BCBox`;
-        body = `<html style="color: #495057"><br><br>
-          <h2>${currentUserEmail} invited you to access a file on BCBox</h2>
-          <p>Here's a link to access the file that ${currentUserEmail} shared with you:</p>`;
       }
       else if (resourceType === 'bucket') {
         resourceName = resource.bucketName;
         subject = `You have been invited to access ${resourceName} on BCBox`;
-        body = `<html style="color: #495057"><br><br>
-          <h2>${currentUserEmail} invited you to access a folder on BCBox</h2>\n
-          <p>Here's a link to access the folder that ${currentUserEmail} shared with you:</p>`;
       }
-      // eslint-disable-next-line max-len
-      body = body + `<strong><a style="text-align: center; font-size: large; color: #1a5a96" href="${window.location.origin}/invite/{{token}}">
-          ${resourceName }
-          </a>
-        </strong><br><br>
-        <small>
-          This invite will only work for you and people with existing access. If you do not recognize the sender, do not click on the link above. Only open links that you are expecting from a known sender.
-        </small><br><br>
-        <a style="color: #1a5a96" href="${window.location.origin}">Learn more about BCBox</a>
-      </html>`;
+
+      // build html template for email body
+      const body = inviteEmailTemplate(resourceType, resourceName, currentUser);
 
       // define email data matching the structure required by CHES api
       const emailData:any = {
