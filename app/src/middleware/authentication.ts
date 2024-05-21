@@ -38,7 +38,10 @@ export const currentUser = async (req: Request, res: Response, next: NextFunctio
       if (config.has('server.oidc.authority') && config.has('server.oidc.publicKey')) {
         const publicKey: string = config.get('server.oidc.publicKey');
         const pemKey = publicKey.startsWith('-----BEGIN') ? publicKey : _spkiWrapper(publicKey);
-        isValid = jwt.verify(bearerToken, pemKey, { issuer: config.get('server.oidc.authority') });
+        isValid = jwt.verify(bearerToken, pemKey, {
+          issuer: config.get('server.oidc.authority'),
+          audience: config.get('frontend.oidc.clientId')
+        });
       } else {
         throw new Error(
           'OIDC environment variables `SERVER_OIDC_AUTHORITY` and `SERVER_OIDC_PUBLICKEY` must be defined'

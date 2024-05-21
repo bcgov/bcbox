@@ -12,8 +12,6 @@ import type { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } fr
  */
 export function appAxios(options: AxiosRequestConfig = {}): AxiosInstance {
 
-  console.log(new ConfigService().getConfig().apiPath);
-
   const instance = axios.create({
     baseURL: '/' + new ConfigService().getConfig().apiPath,
     timeout: 10000,
