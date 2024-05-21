@@ -3,6 +3,36 @@ entries:
   bcbox:
   - apiVersion: v2
     appVersion: 0.7.0
+    created: "2024-05-21T19:16:36.087757389Z"
+    description: A frontend UI for managing access control to S3 Objects
+    digest: ba054b10e5c8dc4e5e54033c9becfedb03e6e7b76dad58192d070a3bf81b6d7e
+    home: https://bcgov.github.io/bcbox
+    keywords:
+    - nodejs
+    - javascript
+    - typescript
+    - docker
+    - microservice
+    - s3
+    - document-management
+    - access-control
+    - object-storage
+    - domo
+    - vue
+    kubeVersion: '>= 1.13.0'
+    maintainers:
+    - email: NR.CommonServiceShowcase@gov.bc.ca
+      name: NR Common Service Showcase Team
+      url: https://bcgov.github.io/common-service-showcase/team.html
+    name: bcbox
+    sources:
+    - https://github.com/bcgov/bcbox
+    type: application
+    urls:
+    - https://github.com/bcgov/bcbox/releases/download/bcbox-0.0.15/bcbox-0.0.15.tgz
+    version: 0.0.15
+  - apiVersion: v2
+    appVersion: 0.7.0
     created: "2024-03-20T23:01:28.039796076Z"
     description: A frontend UI for managing access control to S3 Objects
     digest: 9310f15cd0bb41b46c1778ffd1a74a4a9e4838f34d4fb3be33676210e26e3b31
@@ -421,4 +451,4 @@ entries:
     urls:
     - https://github.com/bcgov/bcbox/releases/download/bcbox-0.0.1/bcbox-0.0.1.tgz
     version: 0.0.1
-generated: "2024-03-20T23:01:28.040120748Z"
+generated: "2024-05-21T19:16:36.08788697Z"
