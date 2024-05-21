@@ -1,7 +1,5 @@
 import { appAxios, comsAxios } from './interceptors';
 
-import type { COMSObject, Bucket, User } from '@/types';
-
 const PATH = 'permission/invite';
 
 export default {
@@ -77,6 +75,7 @@ export default {
     try {
       // build template
       let resourceName, subject, body;
+      // eslint-disable-next-line max-len
       const currentUserEmail = `<a href="mailto:${currentUser.email}" style="color: #1a5a96 !important">${currentUser.email}</a>`;
       // alternate templates depending if resource is a file or a folder
       if (resourceType === 'object') {
@@ -93,8 +92,8 @@ export default {
           <h2>${currentUserEmail} invited you to access a folder on BCBox</h2>\n
           <p>Here's a link to access the folder that ${currentUserEmail} shared with you:</p>`;
       }
-      body = body + `<strong>
-          <a style="text-align: center; font-size: large; color: #1a5a96" href="${window.location.origin}/invite/{{token}}">
+      // eslint-disable-next-line max-len
+      body = body + `<strong><a style="text-align: center; font-size: large; color: #1a5a96" href="${window.location.origin}/invite/{{token}}">
           ${resourceName }
           </a>
         </strong><br><br>

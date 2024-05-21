@@ -68,6 +68,7 @@ const inviteLoading: Ref<boolean> = ref(false);
 const showInviteLink: Ref<boolean> = ref(false);
 const hasManagePermission: Ref<boolean> = computed(() => {
   return resourceType.value === 'object'
+    // eslint-disable-next-line max-len
     ? permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE, resource.value?.bucketId)
     : permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
 });
@@ -158,7 +159,6 @@ async function invite() {
       showInviteLink.value = false;
     }
   } catch (error: any) {
-    console.log('d', error.response);
     toast.error('Creating Invite', error.response.data.detail, {life: 0});
   }
   inviteLoading.value = false;
@@ -219,7 +219,6 @@ async function invite() {
       <TabPanel
         header="Invite link"
         :disabled="!hasManagePermission"
-
       >
         <h3 class="mt-1 mb-2">{{ (props.labelText) }} Invite</h3>
         <p>Make invite available for</p>
@@ -280,13 +279,18 @@ async function invite() {
             type="email"
             class="mt-2 max-w-30rem"
           />
-          <small v-show="isRestricted" id="inviteEmail-help">The Invite will be emailed to this person</small>
-          </div>
+          <small
+            v-show="isRestricted"
+            id="inviteEmail-help"
+          >
+            The Invite will be emailed to this person
+          </small>
+        </div>
         <div class="my-4 inline-flex p-0">
           <Button
             class="p-button p-button-primary mr-3"
-            @click="invite"
             :disabled="inviteLoading"
+            @click="invite"
           >
             <font-awesome-icon
               icon="fa fa-envelope"
