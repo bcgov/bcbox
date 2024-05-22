@@ -2,22 +2,15 @@
 import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
 
+import { Form } from 'vee-validate';
+import { object, string } from 'yup';
+import TextInput from '@/components/form/TextInput.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ShareLinkContent from '@/components/object/share/ShareLinkContent.vue';
-import {
-  Button,
-  Dialog,
-  TabView,
-  TabPanel,
-  RadioButton,
-  Checkbox,
-  InputText,
-  useToast,
-  InputSwitch
-} from '@/lib/primevue';
+import { Button, Dialog, TabView, TabPanel, RadioButton, Checkbox, useToast, InputSwitch } from '@/lib/primevue';
 import { Spinner } from '@/components/layout';
 
-import { Permissions } from '@/utils/constants';
+import { Permissions, Regex } from '@/utils/constants';
 import { inviteService } from '@/services';
 import { useAuthStore, useConfigStore, useObjectStore, usePermissionStore, useBucketStore } from '@/store';
 
@@ -38,7 +31,7 @@ type InviteFormData = {
 };
 
 // TODO: define a stricter type using a union of COMSObject | Bucket
-type Resource  =  any;
+type Resource = any;
 
 const props = withDefaults(defineProps<Props>(), {
   bucketId: '',
@@ -59,19 +52,24 @@ const toast = useToast();
 // State
 const resourceType = props.objectId ? ref('object') : ref('bucket');
 const resource: Ref<Resource | undefined> = computed(() => {
-  return props.objectId
-    ? objectStore.getObject(props.objectId)
-    : bucketStore.getBucket(props.bucketId);
+  return props.objectId ? objectStore.getObject(props.objectId) : bucketStore.getBucket(props.bucketId);
 });
 const isRestricted: Ref<boolean> = ref(false);
 const inviteLoading: Ref<boolean> = ref(false);
 const showInviteLink: Ref<boolean> = ref(false);
+
+/* eslint-disable */
 const hasManagePermission: Ref<boolean> = computed(() => {
   return resourceType.value === 'object'
-    // eslint-disable-next-line max-len
-    ? permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE, resource.value?.bucketId)
+    ? permissionStore.isObjectActionAllowed(
+        props.objectId,
+        getUserId.value,
+        Permissions.MANAGE,
+        resource.value?.bucketId
+      )
     : permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
 });
+/* eslint-disable */
 
 // Share link
 const inviteLink: Ref<string> = ref('');
@@ -123,6 +121,11 @@ watch(isRestricted, () => {
   }
 });
 
+//Validation
+const schema = object({
+  Email: string().matches(new RegExp(Regex.EMAIL), 'Provide a valid email address')
+});
+
 //Action
 async function invite() {
   inviteLoading.value = true;
@@ -143,11 +146,11 @@ async function invite() {
       getUser.value?.profile,
       emails,
       expiresAt,
-      formData.value.permCodes,
+      formData.value.permCodes
     );
 
     // if not restricting to an email, show link
-    if(emails.length == 0) {
+    if (emails.length == 0) {
       inviteLink.value = `${window.location.origin}/invite/${invites[0].token}`;
       toast.success('', 'Invite link created.');
       showInviteLink.value = true;
@@ -155,11 +158,11 @@ async function invite() {
     // else show email confirmation
     else {
       // TODO: output report (list of invites sent, CHES trx ID (?))
-      toast.success('', 'Invite notifications sent.', {life: 5000});
+      toast.success('', 'Invite notifications sent.', { life: 5000 });
       showInviteLink.value = false;
     }
   } catch (error: any) {
-    toast.error('Creating Invite', error.response.data.detail, {life: 0});
+    toast.error('Creating Invite', error.response.data.detail, { life: 0 });
   }
   inviteLoading.value = false;
 }
@@ -182,7 +185,7 @@ async function invite() {
     </template>
 
     <h3 class="bcbox-info-dialog-subhead">
-        {{ resourceType === 'object' ? resource?.name : resource?.bucketName }}
+      {{ resourceType === 'object' ? resource?.name : resource?.bucketName }}
     </h3>
 
     <ul class="mb-4">
@@ -192,8 +195,7 @@ async function invite() {
         intend to send this to
       </li>
       <li>
-        To share publicly or with a direct link,
-        you must set the file to public - this only works for individual files
+        To share publicly or with a direct link, you must set the file to public - this only works for individual files
       </li>
     </ul>
     <TabView>
@@ -220,95 +222,101 @@ async function invite() {
         header="Invite link"
         :disabled="!hasManagePermission"
       >
-        <h3 class="mt-1 mb-2">{{ (props.labelText) }} Invite</h3>
-        <p>Make invite available for</p>
-        <div class="flex flex-wrap gap-3">
-          <div
-            v-for="(value, name) in timeFrames"
-            :key="value"
-            class="flex align-items-center"
-          >
-            <RadioButton
-              v-model="formData.expiresAt"
-              :input-id="value.toString()"
-              :name="name"
-              :value="value"
-            />
-            <label
-              :for="value.toString()"
-              class="ml-2"
+        <Form
+          :validation-schema="schema"
+          @submit="invite"
+        >
+          <h3 class="mt-1 mb-2">{{ props.labelText }} Invite</h3>
+          <p>Make invite available for</p>
+          <div class="flex flex-wrap gap-3">
+            <div
+              v-for="(value, name) in timeFrames"
+              :key="value"
+              class="flex align-items-center"
             >
-              {{ name }}
-            </label>
+              <RadioButton
+                v-model="formData.expiresAt"
+                :input-id="value.toString()"
+                :name="name"
+                :value="value"
+              />
+              <label
+                :for="value.toString()"
+                class="ml-2"
+              >
+                {{ name }}
+              </label>
+            </div>
           </div>
-        </div>
-        <p class="mt-4 mb-2">Access options</p>
-        <div class="flex flex-wrap gap-3">
-          <div
-            v-for="(name, value) in selectedOptions"
-            :key="value"
-            class="flex align-items-center"
-          >
-            <Checkbox
-              v-model="formData.permCodes"
-              :input-id="value.toString()"
-              :name="name"
-              :value="value"
-              :disabled="isOptionUnselectable(name)"
-            />
-            <label
-              :for="value.toString()"
-              class="ml-2"
+          <p class="mt-4 mb-2">Access options</p>
+          <div class="flex flex-wrap gap-3">
+            <div
+              v-for="(name, value) in selectedOptions"
+              :key="value"
+              class="flex align-items-center"
             >
-              {{ name }}
-            </label>
+              <Checkbox
+                v-model="formData.permCodes"
+                :input-id="value.toString()"
+                :name="name"
+                :value="value"
+                :disabled="isOptionUnselectable(name)"
+              />
+              <label
+                :for="value.toString()"
+                class="ml-2"
+              >
+                {{ name }}
+              </label>
+            </div>
           </div>
-        </div>
-        <p class="mt-4 mb-2">Restrict to user's email</p>
-        <!-- <p class="mt-4 mb-2">Restrict invite to a user signing in to BCBox with the following email address</p> -->
-        <div class="flex flex-column gap-2">
-          <InputSwitch
-            v-model="isRestricted"
-          />
-          <InputText
-            v-show="isRestricted"
-            v-model="formData.email"
-            name="inviteEmail"
-            placeholder="Enter email"
-            required
-            type="email"
-            class="mt-2 max-w-30rem"
-          />
-          <small
-            v-show="isRestricted"
-            id="inviteEmail-help"
-          >
-            The Invite will be emailed to this person
-          </small>
-        </div>
-        <div class="my-4 inline-flex p-0">
-          <Button
-            class="p-button p-button-primary mr-3"
-            :disabled="inviteLoading"
-            @click="invite"
-          >
-            <font-awesome-icon
-              icon="fa fa-envelope"
-              class="mr-2"
+          <p class="mt-4 mb-2">Restrict to user's email</p>
+          <!-- <p class="mt-4 mb-2">Restrict invite to a user signing in to BCBox with the following email address</p> -->
+          <div class="flex flex-column gap-2 invite-email">
+            <InputSwitch
+              v-model="isRestricted"
+              name="isRestricted"
             />
-            Generate invite link
-          </Button>
-          <Spinner
-            v-if="inviteLoading"
-            class="h-2rem w-2rem"
-          />
-        </div><br />
+            <TextInput
+              v-if="isRestricted"
+              v-model="formData.email"
+              name="Email"
+              placeholder="Enter email"
+              type="email"
+              class="mt-2 max-w-30rem"
+            />
+            <small
+              v-show="isRestricted"
+              id="Email-help"
+            >
+              The Invite will be emailed to this person
+            </small>
+          </div>
+          <div class="my-4 inline-flex p-0">
+            <Button
+              class="p-button p-button-primary mr-3"
+              :disabled="inviteLoading"
+              type="submit"
+            >
+              <font-awesome-icon
+                icon="fa fa-envelope"
+                class="mr-2"
+              />
+              Generate invite link
+            </Button>
+            <Spinner
+              v-if="inviteLoading"
+              class="h-2rem w-2rem"
+            />
+          </div>
+          <br />
 
-        <ShareLinkContent
-          v-if="showInviteLink"
-          :share-link="inviteLink"
-          label="Invite Link"
-        />
+          <ShareLinkContent
+            v-if="showInviteLink"
+            :share-link="inviteLink"
+            label="Invite Link"
+          />
+        </Form>
       </TabPanel>
     </TabView>
   </Dialog>
@@ -329,5 +337,8 @@ h2 {
 }
 ul {
   padding-left: 22px;
+}
+.invite-email:deep(input) {
+  width: 90%;
 }
 </style>
