@@ -14,7 +14,7 @@ import {
   ObjectUploadBasic,
   ObjectVersion
 } from '@/components/object';
-import { InviteButton } from '@/components/common';
+import { ShareButton } from '@/components/common';
 import { Button, Dialog, Divider } from '@/lib/primevue';
 import {
   useAuthStore,
@@ -120,7 +120,7 @@ onMounted(async () => {
         </div>
 
         <div class="action-buttons">
-          <InviteButton
+          <ShareButton
             :object-id="props.objectId"
             label-text="File"
           />
