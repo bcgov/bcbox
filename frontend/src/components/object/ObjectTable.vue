@@ -125,7 +125,9 @@ const loadLazyData = (event?: any) => {
     })
     // add object permissions to store
     .then((objects: Array<COMSObjectDataSource>) => {
-      permissionStore.fetchObjectPermissions({ objectId: objects.map((o: COMSObject) => o.id) });
+      if(objects.length > 0) {
+        permissionStore.fetchObjectPermissions({ objectId: objects.map((o: COMSObject) => o.id) });
+      }
     });
 };
 
