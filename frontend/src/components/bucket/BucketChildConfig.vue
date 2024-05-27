@@ -26,7 +26,7 @@ const schema = object({
   bucketName: string().required().max(255).label('Folder display name'),
   subKey: string()
     .required()
-    .matches(/^[^/\\]+$/, 'Folder sub-path must not contain back or forward slashes')
+    .matches(/^[^\\]+$/, 'Folder sub-path must not contain back slashes')
     .label('Folder sub-path')
 });
 
