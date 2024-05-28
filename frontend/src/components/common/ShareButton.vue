@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { computed, ref} from 'vue';
+import { computed, ref } from 'vue';
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Invite, Share } from '@/components/common';
-import {
-  Button,
-  Dialog,
-  TabView,
-  TabPanel,
-} from '@/lib/primevue';
+import { Button, Dialog, TabView, TabPanel } from '@/lib/primevue';
 
 import { Permissions } from '@/utils/constants';
 import { useAuthStore, useObjectStore, usePermissionStore, useBucketStore } from '@/store';
@@ -24,12 +19,12 @@ type Props = {
 };
 
 // TODO: define a stricter type using a union of COMSObject | Bucket
-type Resource  =  any;
+type Resource = any;
 
 const props = withDefaults(defineProps<Props>(), {
   bucketId: '',
   objectId: '',
-  labelText: '',
+  labelText: ''
 });
 
 // Store
@@ -41,14 +36,17 @@ const permissionStore = usePermissionStore();
 // State
 const resourceType = props.objectId ? ref('object') : ref('bucket');
 const resource: Ref<Resource | undefined> = computed(() => {
-  return props.objectId
-    ? objectStore.getObject(props.objectId)
-    : bucketStore.getBucket(props.bucketId);
+  return props.objectId ? objectStore.getObject(props.objectId) : bucketStore.getBucket(props.bucketId);
 });
+/* eslint-disable */
 const hasManagePermission: Ref<boolean> = computed(() => {
   return resourceType.value === 'object'
-    // eslint-disable-next-line max-len
-    ? permissionStore.isObjectActionAllowed(props.objectId, getUserId.value, Permissions.MANAGE, resource.value?.bucketId)
+    ? permissionStore.isObjectActionAllowed(
+        props.objectId,
+        getUserId.value,
+        Permissions.MANAGE,
+        resource.value?.bucketId
+      )
     : permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
 });
 
@@ -58,34 +56,50 @@ const displayShareDialog = ref(false);
 
 <template>
   <Dialog
+    id="share_dialog"
     v-model:visible="displayShareDialog"
     header="Share"
     :modal="true"
     :style="{ minWidth: '700px' }"
     class="bcbox-info-dialog"
+    aria-labelledby="share_dialog_label"
+    aria-describedby="share_dialog_desc"
+    focus-trap
   >
     <template #header>
       <font-awesome-icon
         icon="fa-solid fa-share-alt"
         fixed-width
       />
-      <span class="p-dialog-title">Share</span>
+      <span
+        id="share_dialog_label"
+        class="p-dialog-title"
+      >
+        Share
+      </span>
     </template>
-
-    <h3 class="bcbox-info-dialog-subhead">
+    <div
+      tabindex="0"
+      role="document"
+    >
+      <h3 class="bcbox-info-dialog-subhead">
         {{ resourceType === 'object' ? resource?.name : resource?.bucketName }}
-    </h3>
-    <ul class="mb-4">
-      <li>If a user already has permissions, you can link them with a share link</li>
-      <li>
-        Invite someone using an invite link - the links are single-use; you must generate a new link for each user you
-        intend to send this to
-      </li>
-      <li>
-        To share publicly or with a direct link,
-        you must set the file to public - this only works for individual files
-      </li>
-    </ul>
+      </h3>
+      <ul
+        id="share_dialog_desc"
+        class="mb-4"
+      >
+        <li>If a user already has permissions, you can link them with a share link</li>
+        <li>
+          Invite someone using an invite link - the links are single-use; you must generate a new link for each user you
+          intend to send this to
+        </li>
+        <li>
+          To share publicly or with a direct link, you must set the file to public - this only works for individual
+          files
+        </li>
+      </ul>
+    </div>
     <TabView>
       <TabPanel
         v-if="resource?.public"
