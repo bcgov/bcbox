@@ -4,7 +4,7 @@ import { ref, watch } from 'vue';
 
 import { BucketChildConfig, BucketPermission, BucketTableBucketName } from '@/components/bucket';
 import { Spinner } from '@/components/layout';
-import { SyncButton, InviteButton } from '@/components/common';
+import { SyncButton, ShareButton } from '@/components/common';
 import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { DELIMITER, Permissions } from '@/utils/constants';
@@ -293,7 +293,7 @@ watch(getBuckets, () => {
     >
       <template #body="{ node }">
         <span v-if="!node.data.dummy">
-          <InviteButton
+          <ShareButton
             :bucket-id="node.data.bucketId"
             label-text="Folder"
           />

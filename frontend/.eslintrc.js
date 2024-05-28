@@ -5,8 +5,8 @@ module.exports = {
     es2020: true
   },
   extends: [
-    'prettier',
     'eslint:recommended',
+    'prettier',
     '@vue/eslint-config-typescript',
     'plugin:vue/vue3-recommended',
     'plugin:vitest-globals/recommended'
