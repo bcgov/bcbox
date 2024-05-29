@@ -53,9 +53,8 @@ const schema = object({
   bucketName: string().max(255).required().label('Folder name'),
   endpoint: string().max(255).required().label('Endpoint'),
   key: string()
-    .matches(/^[^\\]+$/, 'Sub-path must not contain backslashes')
-    .max(255)
-    .label('Key'),
+    .matches(/^[^\\]+$/, { excludeEmptyString: true, message: 'Path must not contain backslashes' })
+    .max(255),
   secretAccessKey: string().max(255).required().label('Secret Access Key')
 });
 
@@ -99,8 +98,9 @@ const onSubmit = async (values: any) => {
     toast.success('Configuring storage location source', 'Configuration successful');
 
     if ((bucketChanges.accessKeyId || bucketChanges.secretAccessKey) && hasChildren) {
-      toast.info('Child storage locations exist',
-        'Remember to update their credentials where applicable', { life: 10000 });
+      toast.info('Subfolders exist', 'Remember to update their credentials where applicable', {
+        life: 10000
+      });
     }
   } catch (error: any) {
     toast.error('Configuring storage location source', error);
@@ -122,7 +122,7 @@ const onCancel = () => {
       <TextInput
         name="bucketName"
         label="Folder name *"
-        placeholder="My Documents"
+        placeholder="For example: 'My Documents'"
         help-text="Your custom display name for the storage location,
           shown in BCBox as a folder. Any name as you would like to see it listed in BCBox."
         autofocus
@@ -130,13 +130,13 @@ const onCancel = () => {
       <TextInput
         name="bucket"
         label="Bucket *"
-        placeholder="bucket0123456789"
+        placeholder="For example: 'wildfire_bucket'"
         :help-text="'The name of the bucket given to you. For example: \'yxwgj\'.'"
       />
       <TextInput
         name="endpoint"
         label="Endpoint *"
-        placeholder="https://example.com/"
+        placeholder="For example: 'https://nrs.objectstore.gov.bc.ca'"
         help-text="The URL of your object storage namespace without the bucket identifier/name."
       />
       <Password
@@ -153,11 +153,11 @@ const onCancel = () => {
       />
       <TextInput
         name="key"
-        label="Sub-path"
-        placeholder="/"
-        help-text="Optionally sets the bucket storage location source to mount at a specific subdirectory / subfolder.
-          The directory will be created if it does not already exist.
-          This will default to the root '/' if not provided.
+        label="Path"
+        placeholder="For example: '/maps/bc'"
+        help-text="Optionally mount the storage location source to be mounted at a specific subfolder<br />
+          The folder will be created if it does not already exist.<br />
+          This will default to the root '/' if not provided.<br />
           This value cannot be changed after the storage location source is configured."
         :disabled="!!props.bucket"
       />

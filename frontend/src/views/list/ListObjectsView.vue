@@ -53,7 +53,6 @@ onBeforeMount(async () => {
 
 <template>
   <div v-if="ready">
-    <h1>Files</h1>
     <h2
       v-if="bucket"
       class="mb-3 flex overflow-hidden"
