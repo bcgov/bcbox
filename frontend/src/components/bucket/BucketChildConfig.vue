@@ -102,17 +102,16 @@ const onCancel = () => {
       <TextInput
         name="subKey"
         label="Path"
-        placeholder="For example: '2024/January/documents'"
-        :help-text="`The relative path of the subfolder.<br />
-          You can choose a path that exists in your object storage or create a new one.<br />
-          Folder levels are supported using '/' between levels.<br />
-          This value cannot be changed after it is set.`"
+        placeholder="my-documents"
+        :help-text="`The relative path of the subfolder. You can pick a new path or choose an existing object storage path,
+          but it can't be changed after it is set.<br />
+          Folder levels are supported using '/' between levels (for example: 2024/January/my-documents).`"
         class="child-input"
       />
       <TextInput
         name="bucketName"
         label="Folder display name *"
-        placeholder="For example: 'My Documents'"
+        placeholder="My Documents"
         help-text="Your custom display name for the subfolder - any name as you would like to see it listed in BCBox."
         class="child-input"
         autofocus

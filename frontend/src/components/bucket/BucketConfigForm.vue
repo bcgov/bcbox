@@ -122,7 +122,7 @@ const onCancel = () => {
       <TextInput
         name="bucketName"
         label="Folder name *"
-        placeholder="For example: 'My Documents'"
+        placeholder="My Documents"
         help-text="Your custom display name for the storage location,
           shown in BCBox as a folder. Any name as you would like to see it listed in BCBox."
         autofocus
@@ -130,13 +130,13 @@ const onCancel = () => {
       <TextInput
         name="bucket"
         label="Bucket *"
-        placeholder="For example: 'wildfire_bucket'"
+        placeholder="bucket0123456789"
         :help-text="'The name of the bucket given to you. For example: \'yxwgj\'.'"
       />
       <TextInput
         name="endpoint"
         label="Endpoint *"
-        placeholder="For example: 'https://nrs.objectstore.gov.bc.ca'"
+        placeholder="https://example.com"
         help-text="The URL of your object storage namespace without the bucket identifier/name."
       />
       <Password
@@ -154,11 +154,10 @@ const onCancel = () => {
       <TextInput
         name="key"
         label="Path"
-        placeholder="For example: '/maps/bc'"
-        help-text="Optionally mount the storage location source to be mounted at a specific subfolder<br />
-          The folder will be created if it does not already exist.<br />
-          This will default to the root '/' if not provided.<br />
-          This value cannot be changed after the storage location source is configured."
+        placeholder="/"
+        help-text="Optionally mounts the storage location at a specific path.
+          A folder will be created if it does not already exist.<br />
+          This will default to the root '/' if not provided."
         :disabled="!!props.bucket"
       />
       <Button
