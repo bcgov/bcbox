@@ -26,8 +26,7 @@ const schema = object({
   bucketName: string().required().max(255).label('Folder display name'),
   subKey: string()
     .required()
-    .matches(/^[^/\\]+$/, 'Folder sub-path must not contain back or forward slashes')
-    .label('Folder sub-path')
+    .matches(/^[^\\]+$/, { excludeEmptyString: true, message: 'Path must not contain backslashes' })
 });
 
 // Actions
@@ -102,17 +101,19 @@ const onCancel = () => {
       </Message>
       <TextInput
         name="subKey"
-        label="Folder sub-path"
+        label="Path"
         placeholder="my-documents"
-        help-text="The directory will be created if it does not already exist.
-          Sub-paths are supported using '/' between levels.
-          This value cannot be changed after it is set."
+        :help-text="`The relative path of the subfolder. You can pick a new path or choose an existing object storage path,
+          but it can't be changed after it is set.<br />
+          Folder levels are supported using '/' between levels (for example: 2024/January/my-documents).`"
+        class="child-input"
       />
       <TextInput
         name="bucketName"
         label="Folder display name *"
         placeholder="My Documents"
         help-text="Your custom display name for the subfolder - any name as you would like to see it listed in BCBox."
+        class="child-input"
         autofocus
       />
       <Button
@@ -128,3 +129,8 @@ const onCancel = () => {
     </Form>
   </Dialog>
 </template>
+<style scoped lang="scss">
+.child-input:deep(input) {
+  width: 70%;
+}
+</style>
