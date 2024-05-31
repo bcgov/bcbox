@@ -116,7 +116,10 @@ const loadLazyData = (event?: any) => {
       lazyParams.value?.filters?.meta.value //Header
     )
     .then((r: any) => {
-      tableData.value = r.data;
+      tableData.value = r.data.map((item: any) => ({
+        ...item,
+        updatedAt: item.updatedAt === null ? item.createdAt : item.updatedAt
+      }));
       totalRecords.value = +r?.headers['x-total-rows'];
       // add objects to store
       objectStore.setObjects(r.data);
@@ -125,7 +128,7 @@ const loadLazyData = (event?: any) => {
     })
     // add object permissions to store
     .then((objects: Array<COMSObjectDataSource>) => {
-      if(objects.length > 0) {
+      if (objects.length > 0) {
         permissionStore.fetchObjectPermissions({ objectId: objects.map((o: COMSObject) => o.id) });
       }
     });
@@ -294,7 +297,7 @@ const selectedFilters = (payload: any) => {
         sortable
       >
         <template #body="{ data }">
-          {{ formatDateLong(data.updatedAt ?? data.createdAt) }}
+          {{ formatDateLong(data.updatedAt) }}
         </template>
       </Column>
       <Column
