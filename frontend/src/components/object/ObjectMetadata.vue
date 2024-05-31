@@ -38,6 +38,9 @@ const formData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
 });
 
+// Emits
+const emit = defineEmits(['on-metadata-success']);
+
 // Actions
 const confirm = useConfirm();
 
@@ -62,6 +65,7 @@ const showModal = () => {
 
 const submitModal = async (values: ObjectMetadataTagFormType) => {
   await metadataStore.replaceMetadata(props.objectId, values.metadata ?? [], versionId.value);
+  emit('on-metadata-success');
   closeModal();
 };
 

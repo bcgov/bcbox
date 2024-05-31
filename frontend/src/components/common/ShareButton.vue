@@ -40,6 +40,7 @@ const resource: Ref<Resource | undefined> = computed(() => {
 });
 /* eslint-disable */
 const hasManagePermission: Ref<boolean> = computed(() => {
+  /* eslint-disable */
   return resourceType.value === 'object'
     ? permissionStore.isObjectActionAllowed(
         props.objectId,
@@ -48,6 +49,7 @@ const hasManagePermission: Ref<boolean> = computed(() => {
         resource.value?.bucketId
       )
     : permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
+  /* eslint-enable */
 });
 
 // Dialog

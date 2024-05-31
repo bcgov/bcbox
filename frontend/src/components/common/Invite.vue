@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, } from 'vue';
+import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { Form } from 'vee-validate';
-import {  object, string } from 'yup';
+import { useForm, ErrorMessage, Form } from 'vee-validate';
+import * as yup from 'yup';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import {
-  Button,
-  RadioButton,
-  Checkbox,
-  useToast,
-  InputSwitch
-} from '@/lib/primevue';
+import { Button, RadioButton, Checkbox, useToast, InputSwitch } from '@/lib/primevue';
 import TextInput from '@/components/form/TextInput.vue';
 import { Share } from '@/components/common';
 import { Spinner } from '@/components/layout';
@@ -60,46 +54,46 @@ const objectPermCodes: Record<string, string> = {
   UPDATE: 'Update'
 };
 
-const formData: Ref<any> = ref({
-  expiresAt: 86400,
-  isRestricted: false,
-  permCodes: ['READ'],
-});
-
 // Permissions selection
 const selectedOptions = computed(() => {
   return props.resourceType === 'bucket' ? bucketPermCodes : objectPermCodes;
 });
 
-const isOptionUnselectable = (optionName: string) => {
-  // Make default permission disabled
-  return optionName === 'Read';
-};
-
-// Form validation
-const schema = object({
-  // TODO: conditional validation
-  // isRestricted: boolean(),
-  // email: string()
-  //   .email()
-  //   .matches(new RegExp(Regex.EMAIL), 'Provide a valid email address')
-  //   .when('isRestricted', {
-  //     is: true,
-  //     then: (schema) => schema
-  //       .required('Email address is required')
-  //   })
-  email: string().matches(new RegExp(Regex.EMAIL), 'Provide a valid email address')
+// Form validation schema
+const schema = yup.object({
+  isRestricted: yup.boolean(),
+  email: yup
+    .string()
+    .matches(new RegExp(Regex.EMAIL), 'Provide a valid email address')
+    .when('isRestricted', {
+      is: true,
+      then: (schema) => schema.required('Email address is required')
+    })
 });
 
-//Action
-async function invite(data: any) {
+// create a vee-validate form context
+const { values, defineField, errors, handleSubmit } = useForm({
+  validationSchema: schema,
+  initialValues: {
+    expiresAt: 86400,
+    permCodes: ['READ'],
+    isRestricted: true,
+    email: ''
+  }
+});
+// maps the input models for vee-validate
+const [expiresAt] = defineField('expiresAt', {});
+const [permCodes] = defineField('permCodes', {});
+const [isRestricted] = defineField('isRestricted', {});
+const [email] = defineField('email', {});
+
+// Invite form is submitted
+const onSubmit = handleSubmit(async (values: any) => {
   inviteLoading.value = true;
   try {
     // set expiry date
-    const expiresAt = Math.floor(Date.now() / 1000) + formData.value.expiresAt;
-    // put input email addresses into an array
-    // NOTE: emails are coming from `data`
-    const emails = formData.value.isRestricted ? [data.email] : [];
+    const expiresAt = Math.floor(Date.now() / 1000) + values.expiresAt;
+    const emails = values.isRestricted ? [values.email] : [];
 
     // TODO: add perms to users already in the system
 
@@ -110,11 +104,11 @@ async function invite(data: any) {
       getUser.value?.profile,
       emails,
       expiresAt,
-      formData.value.permCodes, // use formData because it was bound during setup
+      values.permCodes
     );
 
     // if not restricting to an email, show link
-    if(emails.length == 0) {
+    if (emails.length == 0) {
       inviteLink.value = `${window.location.origin}/invite/${invites[0].token}`;
       toast.success('', 'Invite link created.');
       showInviteLink.value = true;
@@ -129,116 +123,108 @@ async function invite(data: any) {
     toast.error('Creating Invite', error.response?.data.detail, { life: 0 });
   }
   inviteLoading.value = false;
-}
+});
 </script>
 
 <template>
-  <h3 class="mt-1 mb-2">{{ (props.label) }}</h3>
-  <!-- :initial-values="formData" -->
-  <Form
-    :initial-values="formData"
-    :validation-schema="schema"
-    @submit="invite"
-  >
-  <p>Make invite available for</p>
-  <div class="flex flex-wrap gap-3">
-    <div
-      v-for="(value, name) in timeFrames"
-      :key="value"
-      class="flex align-items-center"
-    >
-      <RadioButton
-        v-model="formData.expiresAt"
-        :input-id="value.toString()"
-        :name="name"
-        :value="value"
-      />
-      <label
-        :for="value.toString()"
-        class="ml-2"
+  <h3 class="mt-1 mb-2">{{ props.label }}</h3>
+  <form @submit="onSubmit">
+    <p>Make invite available for</p>
+    <div class="flex flex-wrap gap-3">
+      <div
+        v-for="(value, name) in timeFrames"
+        :key="value"
+        class="flex align-items-center"
       >
-        {{ name }}
-      </label>
+        <RadioButton
+          v-model="expiresAt"
+          name="expiresAt"
+          :value="value"
+        />
+        <label
+          :for="value.toString()"
+          class="ml-2"
+        >
+          {{ name }}
+        </label>
+      </div>
     </div>
-  </div>
-  <p class="mt-4 mb-2">Access options</p>
-  <div class="flex flex-wrap gap-3">
-    <div
-      v-for="(name, value) in selectedOptions"
-      :key="value"
-      class="flex align-items-center"
-    >
-      <Checkbox
-        v-model="formData.permCodes"
-        :input-id="value.toString()"
-        :name="name"
-        :value="value"
-        :disabled="isOptionUnselectable(name)"
-      />
-      <label
-        :for="value.toString()"
-        class="ml-2"
+
+    <p class="mt-4 mb-2">Access options</p>
+    <div class="flex flex-wrap gap-3">
+      <div
+        v-for="(name, value) in selectedOptions"
+        :key="value"
+        class="flex align-items-center"
       >
-        {{ name }}
-      </label>
+        <Checkbox
+          v-model="permCodes"
+          name="permCodes"
+          :value="value"
+          :disabled="value === 'READ'"
+        />
+        <label
+          :for="value.toString()"
+          class="ml-2"
+        >
+          {{ name }}
+        </label>
+      </div>
     </div>
-  </div>
-  <p class="mt-4 mb-2">Restrict to user's email</p>
-  <!-- <p class="mt-4 mb-2">Restrict invite to a user signing in to BCBox with the following email address</p> -->
-  <div class="flex flex-column gap-2">
-    <InputSwitch
-      v-model="formData.isRestricted"
-      name="isRestricted"
-      class="mb-3"
-    />
-  </div>
-  <!-- if scoping invite to specific users -->
-  <div v-if="formData.isRestricted">
-    <!-- v-model="formData.email" -->
-    <TextInput
-      v-if="formData.isRestricted"
-      v-model="formData.email"
-      name="email"
-      type="email"
-      placeholder="Enter email"
-      help-text="The Invite will be emailed to this person"
-      class="invite-email"
-    />
-    <div class="my-4 inline-flex">
+
+    <p class="mt-4 mb-2">Restrict invite to a user signing in to BCBox with the following email address</p>
+    <div class="flex flex-column gap-2">
+      <InputSwitch
+        v-model="isRestricted"
+        name="isRestricted"
+        class="mb-3"
+      />
+    </div>
+    <!-- if scoping invite to specific users -->
+    <div v-if="values.isRestricted">
+      <TextInput
+        v-model="email"
+        name="email"
+        type="text"
+        placeholder="Enter email"
+        help-text="The Invite will be emailed to this person"
+        class="invite-email"
+      />
+      <div class="my-4 inline-flex">
+        <Button
+          class="p-button p-button-primary mr-3"
+          :disabled="inviteLoading"
+          type="submit"
+        >
+          <font-awesome-icon
+            icon="fa fa-envelope"
+            class="mr-2"
+          />
+          Send invite link
+        </Button>
+        <Spinner
+          v-if="inviteLoading"
+          class="h-2rem w-2rem"
+        />
+      </div>
+    </div>
+    <!-- else generating an open invite -->
+    <div v-else>
       <Button
-        class="p-button p-button-primary mr-3"
-        :disabled="inviteLoading"
+        class="p-button p-button-primary my-3 block"
         type="submit"
       >
-        <font-awesome-icon
-          icon="fa fa-envelope"
-          class="mr-2"
-        />
-        Send invite link
+        Generate invite link
       </Button>
-      <Spinner
-        v-if="inviteLoading"
-        class="h-2rem w-2rem"
+      <Share
+        v-if="showInviteLink"
+        label="Invite link"
+        :resource-type="resourceType"
+        :resource="resource"
+        :invite-link="inviteLink"
       />
     </div>
-  </div>
-  <!-- else generating an open invite -->
-  <div v-else>
-    <Button
-      class="p-button p-button-primary my-3 block"
-      type="submit"
-    >
-      Generate invite link
-    </Button>
-    <Share
-      v-if="showInviteLink"
-      label="Invite link"
-      :resource-type="resourceType"
-      :resource="resource"
-      :invite-link="inviteLink"
-    />
-  </div>
-  </Form>
+  </form>
 </template>
 
 <style scoped lang="scss">
