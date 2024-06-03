@@ -36,29 +36,21 @@ export default {
       permCodes: permCodes
     };
 
-    // if emails param exists
-    if (emails && emails.length > 0) {
-      // create COMS invites
-      const invites = await Promise.all(
-        emails.map(async (e) => {
-          const token = (
-            await comsAxios().post(`${PATH}`, {
-              ...inviteData,
-              email: e
-            })
-          ).data;
-          return { email: e, token: token };
-        })
-      );
-      // send invite email notifications
-      await this.emailInvites(resourceType, resource, currentUser, invites);
-      return invites;
-    }
-    // else no emails provided so make an 'open' invite
-    else {
-      const token = (await comsAxios().post(`${PATH}`, inviteData)).data;
-      return [{ token: token }];
-    }
+    // create COMS invites
+    const invites = await Promise.all(
+      emails.map(async (e) => {
+        const token = (
+          await comsAxios().post(`${PATH}`, {
+            ...inviteData,
+            email: e
+          })
+        ).data;
+        return { email: e, token: token };
+      })
+    );
+    // send invite email notifications
+    await this.emailInvites(resourceType, resource, currentUser, invites);
+    return invites;
   },
 
   /**

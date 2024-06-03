@@ -21,6 +21,7 @@ export { default as RadioButton } from 'primevue/radiobutton';
 export { default as TabView } from 'primevue/tabview';
 export { default as TabPanel } from 'primevue/tabpanel';
 export { default as Tag } from 'primevue/tag';
+export { default as TextArea } from 'primevue/textarea';
 export { default as Toast } from 'primevue/toast';
 export { default as Toolbar } from 'primevue/toolbar';
 export { default as TreeTable } from 'primevue/treetable';
