@@ -4,7 +4,6 @@ import { invite as inviteEmailTemplate } from '@/utils/emailTemplates';
 const PATH = 'permission/invite';
 
 export default {
-
   /**
    * @function createInvites
    * Create an invite url with the COMS api
@@ -30,35 +29,28 @@ export default {
     expiresAt?: number,
     permCodes?: Array<string>
   ) {
-
-    const inviteData  ={
+    const inviteData = {
       bucketId: resourceType === 'bucket' ? resource?.bucketId : undefined,
       objectId: resourceType === 'object' ? resource.id : undefined,
       expiresAt: expiresAt,
       permCodes: permCodes
     };
 
-    // if emails param exists
-    if(emails && emails.length > 0){
-      // create COMS invites
-      const invites = await Promise.all(
-        emails.map(async e => {
-          const token = (await comsAxios().post(`${PATH}`, {
+    // create COMS invites
+    const invites = await Promise.all(
+      emails.map(async (e) => {
+        const token = (
+          await comsAxios().post(`${PATH}`, {
             ...inviteData,
-            email: e,
-          })).data;
-          return { email: e, token: token};
-        })
-      );
-      // send invite email notifications
-      await this.emailInvites(resourceType, resource, currentUser, invites);
-      return invites;
-    }
-    // else no emails provided so make an 'open' invite
-    else {
-      const token = (await comsAxios().post(`${PATH}`, inviteData)).data;
-      return [{ token: token }];
-    }
+            email: e
+          })
+        ).data;
+        return { email: e, token: token };
+      })
+    );
+    // send invite email notifications
+    await this.emailInvites(resourceType, resource, currentUser, invites);
+    return invites;
   },
 
   /**
@@ -72,15 +64,14 @@ export default {
    * @param {Array<string>} invites array of email adddresses
    * @returns {Promise<string>} CHES TransactionId
    */
-  emailInvites(resourceType: string, resource: any, currentUser: any, invites: any){
+  emailInvites(resourceType: string, resource: any, currentUser: any, invites: any) {
     try {
       let resourceName, subject;
       // alternate templates depending if resource is a file or a folder
       if (resourceType === 'object') {
         resourceName = resource.name;
         subject = `You have been invited to access ${resourceName} on BCBox`;
-      }
-      else if (resourceType === 'bucket') {
+      } else if (resourceType === 'bucket') {
         resourceName = resource.bucketName;
         subject = `You have been invited to access ${resourceName} on BCBox`;
       }
@@ -89,10 +80,10 @@ export default {
       const body = inviteEmailTemplate(resourceType, resourceName, currentUser);
 
       // define email data matching the structure required by CHES api
-      const emailData:any = {
+      const emailData: any = {
         contexts: invites.map((invite: any) => {
           return {
-            to: [ invite.email ],
+            to: [invite.email],
             context: {
               token: invite.token
             }
@@ -102,9 +93,8 @@ export default {
         body: body
       };
       return appAxios().post('email', emailData);
-    } catch(err) {
-      console.error(`Failed to send Invite notification: ${err}`);
-
+    } catch (err) {
+      return 'Failed to send Invite notification';
     }
   },
 

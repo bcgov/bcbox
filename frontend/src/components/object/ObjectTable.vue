@@ -211,7 +211,7 @@ const selectedFilters = (payload: any) => {
             @selected-filters="selectedFilters"
           />
 
-          <InputGroup class="ml-4">
+          <span class="ml-4">
             <InputText
               v-model="filters.name.value"
               class="pr-6"
@@ -231,7 +231,7 @@ const selectedFilters = (payload: any) => {
                 }
               "
             />
-          </InputGroup>
+          </span>
           <Button
             v-tooltip.bottom="'Search'"
             class="ml-2"

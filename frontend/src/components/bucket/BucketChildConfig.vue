@@ -103,7 +103,8 @@ const onCancel = () => {
         name="subKey"
         label="Path"
         placeholder="my-documents"
-        :help-text="`The relative path of the subfolder. You can pick a new path or choose an existing object storage path,
+        :help-text="`The relative path of the subfolder.
+          You can pick a new path or choose an existing object storage path,
           but it can't be changed after it is set.<br />
           Folder levels are supported using '/' between levels (for example: 2024/January/my-documents).`"
         class="child-input"
