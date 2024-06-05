@@ -322,6 +322,7 @@ watch(getBuckets, () => {
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
           <SyncButton
+            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
             label-text="Synchronize storage location"
             :bucket-id="node.data.bucketId"
           />

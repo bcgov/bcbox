@@ -31,6 +31,11 @@ const toast = useToast();
 
 // State
 const inviteLoading: Ref<boolean> = ref(false);
+const permHelpLink: Ref<string> = computed(() => {
+  return props.resourceType === 'bucket'
+    ? 'https://github.com/bcgov/bcbox/wiki/My-Files#folder-permissions'
+    : 'https://github.com/bcgov/bcbox/wiki/Files#file-permissions';
+});
 
 const timeFrames: Record<string, number> = {
   '1 Hour': 3600,
@@ -58,6 +63,7 @@ const selectedOptions = computed(() => {
 
 // Form validation schema
 const schema = yup.object().shape({
+  permCodes: yup.array().min(1, 'Select one or more access options'),
   email: yup
     .string()
     .matches(new RegExp(Regex.EMAIL), 'Provide a valid email address')
@@ -87,7 +93,7 @@ const { values, defineField, handleSubmit } = useForm({
   validationSchema: schema,
   initialValues: {
     expiresAt: 86400,
-    permCodes: ['READ'],
+    permCodes: props.resourceType === 'object' ? ['READ'] : [],
     email: '',
     emailType: 'single',
     multiEmail: ''
@@ -100,6 +106,10 @@ const [emailType] = defineField('emailType', {});
 const [email] = defineField('email', {});
 const [multiEmail] = defineField('multiEmail', {});
 
+// require READ perm for file invites
+const isDisabled = (optionValue: string) => {
+  return props.resourceType === 'object' && optionValue === 'READ';
+};
 // Invite form is submitted
 const onSubmit = handleSubmit(async (values: any) => {
   inviteLoading.value = true;
@@ -135,7 +145,7 @@ const onSubmit = handleSubmit(async (values: any) => {
   <h3 class="mt-1 mb-2">{{ props.label }}</h3>
   <form @submit="onSubmit">
     <p class="mb-2">Make invite available for</p>
-    <div class="flex flex-wrap gap-3">
+    <div class="flex flex-wrap gap-3 field">
       <div
         v-for="(value, name) in timeFrames"
         :key="value"
@@ -155,26 +165,40 @@ const onSubmit = handleSubmit(async (values: any) => {
       </div>
     </div>
 
-    <p class="mt-4 mb-2">Access options</p>
-    <div class="flex flex-wrap gap-3 mb-4">
-      <div
-        v-for="(name, value) in selectedOptions"
-        :key="value"
-        class="flex align-items-center"
-      >
-        <Checkbox
-          v-model="permCodes"
-          name="permCodes"
-          :value="value"
-          :disabled="value === 'READ'"
-        />
-        <label
-          :for="value.toString()"
-          class="ml-2"
+    <p class="mb-2">Access options</p>
+    <div class="field">
+      <div class="flex flex-wrap gap-3">
+        <div
+          v-for="(name, value) in selectedOptions"
+          :key="value"
+          class="flex align-items-center"
         >
-          {{ name }}
-        </label>
+          <Checkbox
+            v-model="permCodes"
+            name="permCodes"
+            :value="value"
+            :disabled="isDisabled(value)"
+          />
+          <label
+            :for="value.toString()"
+            class="ml-2"
+          >
+            {{ name }}
+          </label>
+        </div>
+        <small class="help">
+          <a
+            :href="`${permHelpLink}`"
+            target="_blank"
+          >
+            Get help understanding permissions
+          </a>
+        </small>
       </div>
+      <ErrorMessage
+        name="permCodes"
+        class="block"
+      />
     </div>
 
     <p class="mb-2">Send to</p>
@@ -266,5 +290,8 @@ const onSubmit = handleSubmit(async (values: any) => {
 }
 .multi-email {
   width: 100%;
+}
+.help {
+  line-height: 1.6rem;
 }
 </style>
