@@ -5,6 +5,7 @@ import { useToast } from '@/lib/primevue';
 import { permissionService, userService } from '@/services';
 import { useAppStore, useAuthStore, useConfigStore } from '@/store';
 import { Permissions } from '@/utils/constants';
+import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type {
@@ -129,8 +130,13 @@ export const usePermissionStore = defineStore('permission', () => {
       const response = (await permissionService.bucketSearchPermissions(params)).data;
       const newPerms: Array<BucketPermission> = response.flatMap((x: any) => x.permissions);
 
-      // Merge and assign
-      state.bucketPermissions.value = newPerms;
+      // patch bucketPermissions state with latest perms from COMS
+      const matches = (x: BucketPermission) =>
+        (!params.bucketId || x.bucketId === params.bucketId) &&
+        (!params.userId || x.userId === params.userId) &&
+        (!params.permCode || x.permCode === params.permCode);
+      const [, difference] = partition(state.bucketPermissions.value, matches);
+      state.bucketPermissions.value = difference.concat(newPerms);
 
       // Pass response back so bucketStore can handle bucketPerms=true correctly
       return response;
@@ -151,7 +157,13 @@ export const usePermissionStore = defineStore('permission', () => {
 
       const newPerms: Array<COMSObjectPermission> = response.flatMap((x: any) => x.permissions);
 
-      state.objectPermissions.value = newPerms;
+      // patch objectPermissions state with latest perms from COMS
+      const matches = (x: COMSObjectPermission) =>
+        (!params.objectId || x.objectId === params.objectId) &&
+        (!params.userId || x.userId === params.userId) &&
+        (!params.permCode || x.permCode === params.permCode);
+      const [, difference] = partition(state.objectPermissions.value, matches);
+      state.objectPermissions.value = difference.concat(newPerms);
 
       // Pass response back so objectStore can handle bucketPerms=true correctly
       return response;
