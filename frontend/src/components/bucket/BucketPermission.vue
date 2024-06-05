@@ -123,7 +123,7 @@ onBeforeMount(async () => {
             v-model="data.create"
             input-id="create"
             :binary="true"
-            @update:model-value="(value:boolean) => updateBucketPermission(value, data.userId, Permissions.CREATE)"
+            @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.CREATE)"
           />
         </template>
       </Column>
@@ -137,7 +137,7 @@ onBeforeMount(async () => {
             v-model="data.read"
             input-id="read"
             :binary="true"
-            @update:model-value="(value:boolean) => updateBucketPermission(value, data.userId, Permissions.READ)"
+            @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.READ)"
           />
         </template>
       </Column>
@@ -151,7 +151,7 @@ onBeforeMount(async () => {
             v-model="data.update"
             input-id="update"
             :binary="true"
-            @update:model-value="(value:boolean) => updateBucketPermission(value, data.userId, Permissions.UPDATE)"
+            @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.UPDATE)"
           />
         </template>
       </Column>
@@ -165,7 +165,7 @@ onBeforeMount(async () => {
             v-model="data.delete"
             input-id="delete"
             :binary="true"
-            @update:model-value="(value:boolean) => updateBucketPermission(value, data.userId, Permissions.DELETE)"
+            @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.DELETE)"
           />
         </template>
       </Column>
@@ -180,7 +180,7 @@ onBeforeMount(async () => {
             input-id="manage"
             :binary="true"
             :disabled="!data.elevatedRights"
-            @update:model-value="(value:boolean) => updateBucketPermission(value, data.userId, Permissions.MANAGE)"
+            @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.MANAGE)"
           />
         </template>
       </Column>
