@@ -8,7 +8,7 @@ import { useAlert } from '@/composables/useAlert';
 import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
 import { usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
-
+import FocusTrap from 'primevue/focustrap';
 import type { Ref } from 'vue';
 import type { UserPermissions } from '@/types';
 
@@ -75,6 +75,7 @@ onBeforeMount(async () => {
       <Button
         class="mt-1 mb-4"
         @click="showSearchUsers = true"
+        @keyup.enter="showSearchUsers = true"
       >
         <font-awesome-icon
           icon="fa-solid fa-user-plus"
@@ -99,6 +100,7 @@ onBeforeMount(async () => {
       :rows-per-page-options="[10, 20, 50]"
       sort-field="fullName"
       :sort-order="1"
+      aria-label="Bucket Permissions"
     >
       <template #empty>
         <div class="flex justify-content-center">
@@ -108,6 +110,7 @@ onBeforeMount(async () => {
       <Column
         field="fullName"
         header="Name"
+        aria-labelledby="upload_checkbox"
       />
       <Column
         field="idpName"
@@ -122,6 +125,7 @@ onBeforeMount(async () => {
           <Checkbox
             v-model="data.create"
             input-id="create"
+            aria-label="upload"
             :binary="true"
             @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.CREATE)"
           />
@@ -136,6 +140,7 @@ onBeforeMount(async () => {
           <Checkbox
             v-model="data.read"
             input-id="read"
+            aria-label="Read"
             :binary="true"
             @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.READ)"
           />
@@ -150,6 +155,7 @@ onBeforeMount(async () => {
           <Checkbox
             v-model="data.update"
             input-id="update"
+            aria-label="Update"
             :binary="true"
             @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.UPDATE)"
           />
@@ -164,6 +170,7 @@ onBeforeMount(async () => {
           <Checkbox
             v-model="data.delete"
             input-id="delete"
+            aria-label="delete"
             :binary="true"
             @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.DELETE)"
           />

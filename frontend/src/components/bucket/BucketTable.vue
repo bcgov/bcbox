@@ -237,6 +237,12 @@ watch(getBuckets, () => {
   bucketTreeNodeMap.forEach((_v, k) => (expandedKeys.value[k] = true));
   treeData.value = tree;
 });
+const onDialogHide = () => {
+  console.log('jatinder');
+  debugger;
+  document.getElementById('folder_permissions').focus();
+  //debugger;
+};
 </script>
 
 <template>
@@ -313,6 +319,7 @@ watch(getBuckets, () => {
           </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
+            id="folder_permissions"
             v-tooltip.bottom="'Folder permissions'"
             class="p-button-lg p-button-text"
             aria-label="Folder permissions"
@@ -353,10 +360,15 @@ watch(getBuckets, () => {
 
   <!-- eslint-disable vue/no-v-model-argument -->
   <Dialog
+    id="permissions_dialog"
     v-model:visible="permissionsVisible"
     :draggable="false"
     :modal="true"
     class="bcbox-info-dialog"
+    aria-labelledby="permissions_label"
+    aria-describedby="permissions_desc"
+    @hide="onDialogHide"
+    focus-trap
   >
     <!-- eslint-enable vue/no-v-model-argument -->
     <template #header>
@@ -364,10 +376,18 @@ watch(getBuckets, () => {
         icon="fas fa-users"
         fixed-width
       />
-      <span class="p-dialog-title">Folder permissions</span>
+      <span
+        id="permissions_label"
+        class="p-dialog-title"
+      >
+        Folder permissions
+      </span>
     </template>
 
-    <h3 class="bcbox-info-dialog-subhead">
+    <h3
+      id="permissions_desc"
+      class="bcbox-info-dialog-subhead"
+    >
       {{ permissionBucketName }}
     </h3>
 
