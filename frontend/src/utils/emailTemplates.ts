@@ -5,7 +5,7 @@
  * @param {User | null} currentUser current user sending the invite
  * @returns {string} the template html
  */
-export function invite(resourceType: string, resourceName: string, currentUser: any): string{
+export function invite(resourceType: string, resourceName: string, currentUser: any): string {
   let html = '';
   // eslint-disable-next-line max-len
   const currentUserEmail = `<a href="mailto:${currentUser.email}" style="color: #1a5a96 !important">${currentUser.email}</a>`;
@@ -15,16 +15,15 @@ export function invite(resourceType: string, resourceName: string, currentUser: 
     html += `<h2 style="color: #495057 !important;">${currentUserEmail} invited you to access a file on BCBox</h2>`;
     html += '<p style="color: #495057 !important;">';
     html += `Here's a link to access the file that ${currentUserEmail} shared with you:</p>`;
-  }
-  else if (resourceType === 'bucket') {
+  } else if (resourceType === 'bucket') {
     html += '<html"><br>';
     html += `<h2 style="color: #495057 !important;">${currentUserEmail} invited you to access a folder on BCBox</h2>\n`;
     html += '<p style="color: #495057 !important;">';
     html += `Here's a link to access the folder that ${currentUserEmail} shared with you:</p>`;
   }
-  html += '<p style="max-width: 400px !important; text-align: center !important;">';
+  html += '<p>';
   html += `<strong><a style="font-size: large; color: #1a5a96" href="${window.location.origin}/invite/{{token}}">`;
-  html += `${resourceName }</a></strong></p><br>`;
+  html += `${resourceName}</a></strong></p><br>`;
   html += `<small style="color: #495057 !important;">
             This invite will only work for you and people with existing access.
             If you do not recognize the sender, do not click on the link above.<br>

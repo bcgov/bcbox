@@ -49,8 +49,7 @@ export default {
       })
     );
     // send invite email notifications
-    await this.emailInvites(resourceType, resource, currentUser, invites);
-    return invites;
+    return await this.emailInvites(resourceType, resource, currentUser, invites);
   },
 
   /**
@@ -94,7 +93,7 @@ export default {
       };
       return appAxios().post('email', emailData);
     } catch (err) {
-      return 'Failed to send Invite notification';
+      return Promise.reject(err);
     }
   },
 

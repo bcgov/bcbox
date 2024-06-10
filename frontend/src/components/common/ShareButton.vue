@@ -129,7 +129,6 @@ const displayShareDialog = ref(false);
         :disabled="!hasManagePermission"
       >
         <Invite
-          :label="`${resourceType === 'object' ? 'File' : 'Folder'} invite`"
           :resource-type="resourceType"
           :resource="resource"
         />

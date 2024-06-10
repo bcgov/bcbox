@@ -17,7 +17,6 @@ import type { Ref } from 'vue';
 
 // Types
 type Props = {
-  label: string;
   resourceType: string;
   resource: any;
 };
@@ -142,7 +141,7 @@ const onSubmit = handleSubmit(async (values: any) => {
 </script>
 
 <template>
-  <h3 class="mt-1 mb-2">{{ props.label }}</h3>
+  <h3 class="mt-1 mb-2">{{ props.resourceType === 'object' ? 'File invite' : 'Folder invite' }}</h3>
   <form @submit="onSubmit">
     <p class="mb-2">Make invite available for</p>
     <div class="flex flex-wrap gap-3 field">
@@ -167,7 +166,7 @@ const onSubmit = handleSubmit(async (values: any) => {
 
     <p class="mb-2">Access options</p>
     <div class="field">
-      <div class="flex flex-wrap gap-3">
+      <div class="flex flex-wrap gap-3 align-items-center">
         <div
           v-for="(name, value) in selectedOptions"
           :key="value"
@@ -237,7 +236,9 @@ const onSubmit = handleSubmit(async (values: any) => {
         name="email"
         type="text"
         placeholder="Enter email"
-        help-text="The Invite will be emailed to this person"
+        :help-text="`Enter an email address of person you are inviting to access this
+          ${props.resourceType === 'bucket' ? 'folder' : 'file'}. <br />
+          The email address must be associated with the account they use to sign in to BCBox.`"
         class="invite-email"
       />
     </div>
@@ -274,7 +275,8 @@ const onSubmit = handleSubmit(async (values: any) => {
           icon="fa fa-envelope"
           class="mr-2"
         />
-        Send invite link
+        <span v-if="values.emailType === 'single'">Send invite link</span>
+        <span v-else>Send invites</span>
       </Button>
       <Spinner
         v-if="inviteLoading"
@@ -285,13 +287,11 @@ const onSubmit = handleSubmit(async (values: any) => {
 </template>
 
 <style scoped lang="scss">
+div:has(.invite-email),
 .invite-email:deep(input) {
   width: 80%;
 }
 .multi-email {
   width: 100%;
-}
-.help {
-  line-height: 1.6rem;
 }
 </style>
