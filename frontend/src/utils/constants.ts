@@ -22,6 +22,14 @@ export const Permissions = Object.freeze({
   MANAGE: 'MANAGE'
 });
 
+export const Permissionlabels = Object.freeze({
+  CREATE: 'Upload',
+  READ: 'Read',
+  UPDATE: 'Update',
+  DELETE: 'Delete',
+  MANAGE: 'manage'
+});
+
 export const Regex = Object.freeze({
   // https://emailregex.com/
   // HTML5 - Modified to require domain of at least 2 characters

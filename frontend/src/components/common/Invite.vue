@@ -9,8 +9,9 @@ import TextInput from '@/components/form/TextInput.vue';
 import { Spinner } from '@/components/layout';
 
 import { Regex } from '@/utils/constants';
+import { toBulkResult } from '@/utils/formatters';
 
-import { inviteService } from '@/services';
+import { inviteService, permissionService, userService } from '@/services';
 import { useAuthStore } from '@/store';
 
 import type { Ref } from 'vue';
@@ -20,7 +21,6 @@ type Props = {
   resourceType: string;
   resource: any;
 };
-
 // Props
 const props = withDefaults(defineProps<Props>(), {});
 
@@ -29,12 +29,22 @@ const { getUser } = storeToRefs(useAuthStore());
 const toast = useToast();
 
 // State
-const inviteLoading: Ref<boolean> = ref(false);
+const loading: Ref<boolean> = ref(false);
 const permHelpLink: Ref<string> = computed(() => {
   return props.resourceType === 'bucket'
     ? 'https://github.com/bcgov/bcbox/wiki/My-Files#folder-permissions'
     : 'https://github.com/bcgov/bcbox/wiki/Files#file-permissions';
 });
+const resourceId: Ref<string> = computed(() =>
+  props.resourceType === 'object' ? props.resource.id : props.resource.bucketId
+);
+const results: Ref<Array<any>> = ref([
+  {
+    resourceType: props.resourceType,
+    resourceId: resourceId.value,
+    results: []
+  }
+]);
 
 const timeFrames: Record<string, number> = {
   '1 Hour': 3600,
@@ -111,32 +121,75 @@ const isDisabled = (optionValue: string) => {
 };
 // Invite form is submitted
 const onSubmit = handleSubmit(async (values: any) => {
-  inviteLoading.value = true;
+  loading.value = true;
   try {
-    // set expiry date
-    const expiresAt = Math.floor(Date.now() / 1000) + values.expiresAt;
-    // put email(s) into an array
+    // put email(s) into an array, delimit, de-dupe and remove empty
     let emailArray;
     if (values.emailType === 'single') emailArray = [values.email];
-    // for list of emails, delimit, de-dupe and remove empty
     else emailArray = [...new Set(values.multiEmail.split(/[\r\n ,;]+/).filter((item: string) => item))];
 
-    // TODO: add perms to users already in the system
-    // generate invites (for emails not already in the system)
-    await inviteService.createInvites(
-      props.resourceType,
-      props.resource,
-      getUser.value?.profile,
-      emailArray,
-      expiresAt,
-      values.permCodes
+    // for each email, if user exists in db then give permissions, otherwise send invite
+    let permData: Array<{ userId: string; permCode: string }> = [];
+    let newUsers: Array<string> = [];
+    const result = await Promise.all(
+      emailArray.map(async (email) => {
+        const user = (await userService.searchForUsers({ email: email })).data;
+        // if an exact match on one account
+        if (user.length > 0 && user[0].email === email) {
+          values.permCodes.forEach((pc: string) => {
+            permData.push({ userId: user[0].userId, permCode: pc });
+          });
+          return {
+            email: email,
+            userId: user[0].userId,
+            permissions: []
+          };
+        } else {
+          newUsers.push(email);
+          return {
+            email: email
+          };
+        }
+      })
     );
-    // TODO: output report (list of invites sent, CHES trx ID (?))
+    // add to results array
+    results.value[0].result = result;
+
+    // give permissions to users already in the system
+    if (permData.length > 0) {
+      const permResponse = await permissionService.bucketAddPermissions(props.resource.bucketId, permData);
+      permResponse.data.forEach((p: any) => {
+        const el = results.value[0].result.find((r: any) => r.userId === p.userId);
+        el.permissions.push({
+          createdAt: p.createdAt,
+          permCode: p.permCode
+        });
+      });
+    }
+
+    // generate invites (for emails not already in the system)
+    if (newUsers.length > 0) {
+      const expiresAt = Math.floor(Date.now() / 1000) + values.expiresAt;
+      const emailResponse = await inviteService.createInvites(
+        props.resourceType,
+        props.resource,
+        getUser.value?.profile,
+        newUsers,
+        expiresAt,
+        values.permCodes
+      );
+      // add to results
+      emailResponse.data.messages.forEach((msg: { msgId: string; to: Array<string> }) => {
+        results.value[0].result.find((r: any) => r.email === msg.to[0]).chesMsgId = msg.msgId;
+      });
+    }
+    results.value[0].result = toBulkResult(results.value[0].result);
+    // console.log('results', JSON.stringify(results.value));
     toast.success('', 'Invite notifications sent.', { life: 5000 });
   } catch (error: any) {
     toast.error('Creating Invite', error.response?.data.detail, { life: 0 });
   }
-  inviteLoading.value = false;
+  loading.value = false;
 });
 </script>
 
@@ -268,7 +321,7 @@ const onSubmit = handleSubmit(async (values: any) => {
     <div class="my-4 inline-flex">
       <Button
         class="p-button p-button-primary mr-3"
-        :disabled="inviteLoading"
+        :disabled="loading"
         type="submit"
       >
         <font-awesome-icon
@@ -279,7 +332,7 @@ const onSubmit = handleSubmit(async (values: any) => {
         <span v-else>Send invites</span>
       </Button>
       <Spinner
-        v-if="inviteLoading"
+        v-if="loading"
         class="h-2rem w-2rem"
       />
     </div>
