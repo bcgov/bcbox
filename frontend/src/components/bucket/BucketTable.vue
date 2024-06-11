@@ -6,7 +6,7 @@ import { BucketChildConfig, BucketPermission, BucketTableBucketName } from '@/co
 import { Spinner } from '@/components/layout';
 import { SyncButton, ShareButton } from '@/components/common';
 import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
-import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
+import { useAppStore, useAuthStore, useBucketStore, useNavStore, usePermissionStore } from '@/store';
 import { DELIMITER, Permissions } from '@/utils/constants';
 import { getBucketPath, joinPath } from '@/utils/utils';
 
@@ -20,6 +20,7 @@ const permissionStore = usePermissionStore();
 const { getIsLoading } = storeToRefs(useAppStore());
 const { getUserId } = storeToRefs(useAuthStore());
 const { getBuckets } = storeToRefs(bucketStore);
+const { focusedElement } = storeToRefs(useNavStore());
 
 // State
 const expandedKeys: Ref<TreeTableExpandedKeys> = ref({});
@@ -58,6 +59,7 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
   permissionsVisible.value = true;
   permissionsBucketId.value = bucketId;
   permissionBucketName.value = bucketName;
+  focusedElement.value = document.activeElement;
 };
 
 const confirmDeleteBucket = (bucketId: string) => {
@@ -238,10 +240,9 @@ watch(getBuckets, () => {
   treeData.value = tree;
 });
 const onDialogHide = () => {
-  console.log('jatinder');
-  debugger;
-  document.getElementById('folder_permissions').focus();
-  //debugger;
+  focusedElement.value?.focus();
+  focusedElement.value = null;
+  permissionsVisible.value = false;
 };
 </script>
 
@@ -357,7 +358,6 @@ const onDialogHide = () => {
       </template>
     </Column>
   </TreeTable>
-
   <!-- eslint-disable vue/no-v-model-argument -->
   <Dialog
     id="permissions_dialog"
@@ -367,7 +367,7 @@ const onDialogHide = () => {
     class="bcbox-info-dialog"
     aria-labelledby="permissions_label"
     aria-describedby="permissions_desc"
-    @hide="onDialogHide"
+    @after-hide="onDialogHide"
     focus-trap
   >
     <!-- eslint-enable vue/no-v-model-argument -->
