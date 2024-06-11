@@ -78,6 +78,7 @@ onBeforeMount(() => {
       <Button
         class="mt-1 mb-4"
         @click="showSearchUsers = true"
+        @keyup.enter="showSearchUsers = true"
       >
         <font-awesome-icon
           icon="fa-solid fa-user-plus"
@@ -104,6 +105,7 @@ onBeforeMount(() => {
       current-page-report-template="{first}-{last} of {totalRecords}"
       :rows-per-page-options="[10, 20, 50]"
       sort-field="fullName"
+      aria-label="File Permissions"
       :sort-order="1"
     >
       <template #empty>
@@ -146,6 +148,7 @@ onBeforeMount(() => {
           <Checkbox
             v-model="data.update"
             input-id="update"
+            aria-label="update"
             :binary="true"
             @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.UPDATE)"
           />
@@ -160,6 +163,7 @@ onBeforeMount(() => {
           <Checkbox
             v-model="data.delete"
             input-id="delete"
+            aria-label="delete"
             :binary="true"
             @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.DELETE)"
           />
@@ -174,6 +178,7 @@ onBeforeMount(() => {
           <Checkbox
             v-model="data.manage"
             input-id="manage"
+            aria-label="manage"
             :binary="true"
             @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.MANAGE)"
           />
@@ -184,7 +189,9 @@ onBeforeMount(() => {
           <Button
             class="p-button-lg p-button-text"
             severity="danger"
+            aria-label="remove"
             @click="removeObjectUser(data.userId)"
+            @keyup.enter="removeObjectUser(data.userId)"
           >
             <font-awesome-icon icon="fa-solid fa-user-xmark" />
           </Button>

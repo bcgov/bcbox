@@ -8,6 +8,7 @@ import { useAlert } from '@/composables/useAlert';
 import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
 import { usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
+
 import type { Ref } from 'vue';
 import type { UserPermissions } from '@/types';
 
@@ -195,6 +196,7 @@ onBeforeMount(async () => {
           <Button
             class="p-button-lg p-button-text"
             severity="danger"
+            aria-label="remove"
             @click="removeBucketUser(data.userId)"
           >
             <font-awesome-icon icon="fa-solid fa-user-xmark" />

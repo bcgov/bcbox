@@ -1,7 +1,10 @@
+import { storeToRefs } from 'pinia';
+
 import { DELIMITER } from '@/utils/constants';
 import ConfigService from '@/services/configService';
 import { ExcludeTypes } from '@/utils/enums';
 import type { Bucket } from '@/types';
+import { useNavStore } from '@/store';
 
 /**
  * @function differential
@@ -126,9 +129,7 @@ export function setDispositionHeader(filename: string) {
  * @returns {string} full canonical url or path to bucket
  */
 export function getBucketPath(bucket: Bucket, justPath = false): string {
-  return justPath ?
-    `${bucket.bucket}/${bucket.key}` :
-    `${bucket.endpoint}/${bucket.bucket}/${bucket.key}`;
+  return justPath ? `${bucket.bucket}/${bucket.key}` : `${bucket.endpoint}/${bucket.bucket}/${bucket.key}`;
 }
 
 /**
@@ -140,4 +141,15 @@ export function getBucketPath(bucket: Bucket, justPath = false): string {
 export function getLastSegment(path: string) {
   const p = path.replace(/\/+$/, '');
   return p.slice(p.lastIndexOf('/') + 1);
+}
+
+/**
+ * @function onDialogHide
+ * Return focus to the button which trigger model visibility
+ * @type {focusedElement} stores dom element which needs to be focused
+ */
+export function onDialogHide() {
+  const { focusedElement } = storeToRefs(useNavStore());
+  focusedElement.value?.focus();
+  focusedElement.value = null;
 }

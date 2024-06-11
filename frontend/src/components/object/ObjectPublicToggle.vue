@@ -66,6 +66,7 @@ watch(props, () => {
 <template>
   <InputSwitch
     v-model="isPublic"
+    aria-label="Toggle to make public"
     :disabled="
       !(
         usePermissionStore().isUserElevatedRights() &&

@@ -8,7 +8,7 @@ import { SyncButton, ShareButton } from '@/components/common';
 import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, useNavStore, usePermissionStore } from '@/store';
 import { DELIMITER, Permissions } from '@/utils/constants';
-import { getBucketPath, joinPath } from '@/utils/utils';
+import { getBucketPath, joinPath, onDialogHide } from '@/utils/utils';
 
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import type { Ref } from 'vue';
@@ -239,11 +239,6 @@ watch(getBuckets, () => {
   bucketTreeNodeMap.forEach((_v, k) => (expandedKeys.value[k] = true));
   treeData.value = tree;
 });
-const onDialogHide = () => {
-  focusedElement.value?.focus();
-  focusedElement.value = null;
-  permissionsVisible.value = false;
-};
 </script>
 
 <template>
@@ -358,6 +353,7 @@ const onDialogHide = () => {
       </template>
     </Column>
   </TreeTable>
+
   <!-- eslint-disable vue/no-v-model-argument -->
   <Dialog
     id="permissions_dialog"
@@ -368,7 +364,6 @@ const onDialogHide = () => {
     aria-labelledby="permissions_label"
     aria-describedby="permissions_desc"
     @after-hide="onDialogHide"
-    focus-trap
   >
     <!-- eslint-enable vue/no-v-model-argument -->
     <template #header>
