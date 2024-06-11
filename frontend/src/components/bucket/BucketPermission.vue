@@ -8,7 +8,6 @@ import { useAlert } from '@/composables/useAlert';
 import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
 import { usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
-import FocusTrap from 'primevue/focustrap';
 import type { Ref } from 'vue';
 import type { UserPermissions } from '@/types';
 
