@@ -37,8 +37,8 @@ const { getConfig } = storeToRefs(useConfigStore());
         users can upload and share files.
         <br />
         <br />
-        BCBox displays files in folders, which are visualizations of &quot;bucket&quot; storage
-        location sources required to use BCBox. If you are new to this and don't know a bucket manager, contact
+        BCBox displays files in folders, which are visualizations of &quot;bucket&quot; storage location sources
+        required to use BCBox. If you are new to this and don't know a bucket manager, contact
         <a href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701">NRIDS Optimization</a>
         (NRM only) or your ministry's service desk to get credentials for a &quot;bucket&quot; storage location source.
         Then come back, log in, and add it in BCBox to have it show up as a folder.
@@ -91,7 +91,7 @@ const { getConfig } = storeToRefs(useConfigStore());
             <br />
             IDIR users can also choose to share files with public links. Contact your organization's privacy and
             security teams to see if this fits your intended use. Make sure you don't upload personal or private
-            information without the consent of your Ministry Privacy Officer.
+            information without first consulting your Ministry Privacy Officer.
           </p>
         </div>
         <div class="col-6">
@@ -161,8 +161,8 @@ const { getConfig } = storeToRefs(useConfigStore());
               indicating your BCeID-related intentions
             </li>
             <li>
-              All other inquiries around getting or using &quot;bucket&quot;
-              storage location sources should be directed to
+              All other inquiries around getting or using &quot;bucket&quot; storage location sources should be directed
+              to
               <a
                 href="https://apps.nrs.gov.bc.ca/int/jira/servicedesk/customer/portal/1/create/701"
                 target="_blank"
@@ -172,8 +172,8 @@ const { getConfig } = storeToRefs(useConfigStore());
               (Natural Resource ministries) or your ministry's service desk
             </li>
             <li>
-              Storage and custodianship of just the metadata and tags, not the objects themselves,
-              is maintained by Natural Resource Information &amp; Digital Services
+              Storage and custodianship of just the metadata and tags, not the objects themselves, is maintained by
+              Natural Resource Information &amp; Digital Services
             </li>
             <li>
               You will refer to and adhere to

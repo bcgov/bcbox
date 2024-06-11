@@ -42,24 +42,35 @@ export function toKebabCase(str: string | null) {
 /**
  * @function toBulkResult
  * transforms an array of invite/add/remove data into an array of human-readable descriptions
+ * @param {string} notFound if user not found (eg: 'invite' or 'ignore')
+ * @param {string} action permission action (eg: 'add' or 'remove')
  * @param {object[]} data results invite/add/remove
  * @returns {object[]} an array of human-readable descriptions
  */
 export function toBulkResult(
+  notFound: string,
+  action: string,
   data: Array<{ email: string; chesMsgId: string; permissions: Array<{ permCode: string }> | undefined }>
 ) {
   const result = data.map((r) => {
-    let description = '';
-
-    if (r.chesMsgId) description = 'Success: Invite emailed';
+    let description = 'No action taken';
+    // invites
+    if (r.chesMsgId && notFound === 'invite') description = 'Invite emailed';
+    else if (notFound === 'ignore' && !r.permissions) {
+      description = 'No invite was emailed';
+    }
+    // permission updates
     else if (r.permissions && r.permissions.length > 0) {
       const perms = r.permissions.map((p) => {
         return Permissionlabels[p.permCode as keyof typeof Permissionlabels];
       });
-      description = `Success: Permissions applied ( ${perms.join(' and ')})`;
-    } else if (r.permissions && r.permissions.length == 0) {
-      description = 'Success: Permissions already existed';
+      description = `Permissions ${action === 'add' ? 'added' : 'removed'} (${perms.join(' and ')})`;
+    } else if (r.permissions && r.permissions.length == 0 && action === 'add') {
+      description = 'Permissions already existed';
+    } else if (r.permissions && r.permissions.length == 0 && action === 'remove') {
+      description = 'Permissions did not exist';
     }
+
     return new Object({
       email: r.email,
       description: description

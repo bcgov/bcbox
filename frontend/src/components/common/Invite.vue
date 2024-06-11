@@ -29,20 +29,21 @@ const { getUser } = storeToRefs(useAuthStore());
 const toast = useToast();
 
 // State
+const resourceId: Ref<string> = computed(() =>
+  props.resourceType === 'object' ? props.resource.id : props.resource.bucketId
+);
 const loading: Ref<boolean> = ref(false);
+const complete: Ref<boolean> = ref(false);
 const permHelpLink: Ref<string> = computed(() => {
   return props.resourceType === 'bucket'
     ? 'https://github.com/bcgov/bcbox/wiki/My-Files#folder-permissions'
     : 'https://github.com/bcgov/bcbox/wiki/Files#file-permissions';
 });
-const resourceId: Ref<string> = computed(() =>
-  props.resourceType === 'object' ? props.resource.id : props.resource.bucketId
-);
 const results: Ref<Array<any>> = ref([
   {
     resourceType: props.resourceType,
     resourceId: resourceId.value,
-    results: []
+    result: []
   }
 ]);
 
@@ -119,8 +120,9 @@ const [multiEmail] = defineField('multiEmail', {});
 const isDisabled = (optionValue: string) => {
   return props.resourceType === 'object' && optionValue === 'READ';
 };
+
 // Invite form is submitted
-const onSubmit = handleSubmit(async (values: any) => {
+const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
   loading.value = true;
   try {
     // put email(s) into an array, delimit, de-dupe and remove empty
@@ -128,27 +130,21 @@ const onSubmit = handleSubmit(async (values: any) => {
     if (values.emailType === 'single') emailArray = [values.email];
     else emailArray = [...new Set(values.multiEmail.split(/[\r\n ,;]+/).filter((item: string) => item))];
 
-    // for each email, if user exists in db then give permissions, otherwise send invite
+    // for each email, if user already exists in db then give permissions, otherwise send invite
     let permData: Array<{ userId: string; permCode: string }> = [];
-    let newUsers: Array<string> = [];
+    let inviteUsers: Array<string> = [];
     const result = await Promise.all(
       emailArray.map(async (email) => {
-        const user = (await userService.searchForUsers({ email: email })).data;
+        const users = (await userService.searchForUsers({ email: email })).data;
         // if an exact match on one account
-        if (user.length > 0 && user[0].email === email) {
+        if (users.length === 1 && users[0].email === email) {
           values.permCodes.forEach((pc: string) => {
-            permData.push({ userId: user[0].userId, permCode: pc });
+            permData.push({ userId: users[0].userId, permCode: pc });
           });
-          return {
-            email: email,
-            userId: user[0].userId,
-            permissions: []
-          };
+          return { email: email, userId: users[0].userId, permissions: [] };
         } else {
-          newUsers.push(email);
-          return {
-            email: email
-          };
+          inviteUsers.push(email);
+          return { email: email };
         }
       })
     );
@@ -157,7 +153,10 @@ const onSubmit = handleSubmit(async (values: any) => {
 
     // give permissions to users already in the system
     if (permData.length > 0) {
-      const permResponse = await permissionService.bucketAddPermissions(props.resource.bucketId, permData);
+      const permResponse =
+        props.resourceType === 'object'
+          ? await permissionService.objectAddPermissions(resourceId.value, permData)
+          : await permissionService.bucketAddPermissions(resourceId.value, permData);
       permResponse.data.forEach((p: any) => {
         const el = results.value[0].result.find((r: any) => r.userId === p.userId);
         el.permissions.push({
@@ -168,13 +167,13 @@ const onSubmit = handleSubmit(async (values: any) => {
     }
 
     // generate invites (for emails not already in the system)
-    if (newUsers.length > 0) {
+    if (inviteUsers.length > 0) {
       const expiresAt = Math.floor(Date.now() / 1000) + values.expiresAt;
       const emailResponse = await inviteService.createInvites(
         props.resourceType,
         props.resource,
         getUser.value?.profile,
-        newUsers,
+        inviteUsers,
         expiresAt,
         values.permCodes
       );
@@ -183,9 +182,10 @@ const onSubmit = handleSubmit(async (values: any) => {
         results.value[0].result.find((r: any) => r.email === msg.to[0]).chesMsgId = msg.msgId;
       });
     }
-    results.value[0].result = toBulkResult(results.value[0].result);
-    // console.log('results', JSON.stringify(results.value));
-    toast.success('', 'Invite notifications sent.', { life: 5000 });
+    // format results into human-readable descriptions
+    results.value[0].result = toBulkResult('invite', 'add', results.value[0].result);
+    complete.value = true;
+    resetForm();
   } catch (error: any) {
     toast.error('Creating Invite', error.response?.data.detail, { life: 0 });
   }
@@ -289,9 +289,9 @@ const onSubmit = handleSubmit(async (values: any) => {
         name="email"
         type="text"
         placeholder="Enter email"
-        :help-text="`Enter an email address of person you are inviting to access this
+        :help-text="`Enter an email address of the person you are inviting to access this
           ${props.resourceType === 'bucket' ? 'folder' : 'file'}. <br />
-          The email address must be associated with the account they use to sign in to BCBox.`"
+          The email address must be associated with the account they will use to sign in to BCBox.`"
         class="invite-email"
       />
     </div>
@@ -303,7 +303,7 @@ const onSubmit = handleSubmit(async (values: any) => {
           name="multiEmail"
           type="textarea"
           placeholder="Enter email(s) separated by commas (, ) or semicolons (; ) - for example: email1@gov.bc.ca, email2@gov.bc.ca"
-          class="multi-email block"
+          class="w-full block"
         />
         <!-- eslint-enable -->
         <small
@@ -312,7 +312,7 @@ const onSubmit = handleSubmit(async (values: any) => {
         >
           Enter an email address for each person you are inviting to access this
           {{ props.resourceType === 'bucket' ? 'folder' : 'file' }}. The email address must be associated with the
-          account they use to sign in to BCBox.
+          account they will use to sign in to BCBox.
         </small>
         <ErrorMessage name="multiEmail" />
       </div>
@@ -337,14 +337,12 @@ const onSubmit = handleSubmit(async (values: any) => {
       />
     </div>
   </form>
+  <pre v-if="complete">{{ results }}</pre>
 </template>
 
 <style scoped lang="scss">
 div:has(.invite-email),
 .invite-email:deep(input) {
   width: 80%;
-}
-.multi-email {
-  width: 100%;
 }
 </style>
