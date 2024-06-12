@@ -12,8 +12,9 @@ import {
 } from '@/components/object';
 import { SyncButton, ShareButton } from '@/components/common';
 import { Button, Column, DataTable, Dialog, InputText, useToast } from '@/lib/primevue';
-import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
+import { useAuthStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
+import { onDialogHide } from '@/utils/utils';
 import { ButtonMode } from '@/utils/enums';
 import { formatDateLong } from '@/utils/formatters';
 import { objectService } from '@/services';
@@ -50,6 +51,7 @@ const emit = defineEmits(['show-object-info']);
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const { getUserId } = storeToRefs(useAuthStore());
+const { focusedElement } = storeToRefs(useNavStore());
 
 // State
 const permissionsVisible = ref(false);
@@ -83,6 +85,7 @@ async function showPermissions(objectId: string) {
   permissionsVisible.value = true;
   permissionsObjectId.value = objectId;
   permissionsObjectName.value = objectStore.getObject(objectId)?.name;
+  focusedElement.value = document.activeElement;
 }
 
 onMounted(() => {
@@ -339,6 +342,7 @@ const selectedFilters = (payload: any) => {
             v-if="
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.MANAGE, props.bucketId as string)
             "
+            id="file_permissions"
             v-tooltip.bottom="'File permissions'"
             class="p-button-lg p-button-text"
             aria-label="File permissions"
@@ -376,10 +380,14 @@ const selectedFilters = (payload: any) => {
 
     <!-- eslint-disable vue/no-v-model-argument -->
     <Dialog
+      id="permissions_dialog"
       v-model:visible="permissionsVisible"
       :draggable="false"
       :modal="true"
       class="bcbox-info-dialog"
+      aria-labelledby="permissions_label"
+      aria-describedby="permissions_desc"
+      @after-hide="onDialogHide"
     >
       <!-- eslint-enable vue/no-v-model-argument -->
       <template #header>
@@ -387,10 +395,18 @@ const selectedFilters = (payload: any) => {
           icon="fas fa-users"
           fixed-width
         />
-        <span class="p-dialog-title">File Permissions</span>
+        <span
+          id="permissions_label"
+          class="p-dialog-title"
+        >
+          File Permissions
+        </span>
       </template>
 
-      <h3 class="bcbox-info-dialog-subhead">
+      <h3
+        id="permissions_desc"
+        class="bcbox-info-dialog-subhead"
+      >
         {{ permissionsObjectName }}
       </h3>
 

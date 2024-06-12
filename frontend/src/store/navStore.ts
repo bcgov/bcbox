@@ -7,6 +7,7 @@ import type { RouteLocationNormalized } from 'vue-router';
 export type NavStoreState = {
   home: Ref<Object>;
   items: Ref<Array<any>>;
+  focusedElement: Ref<any>;
 };
 
 export const useNavStore = defineStore('nav', () => {
@@ -16,7 +17,8 @@ export const useNavStore = defineStore('nav', () => {
       label: 'Home',
       to: '/'
     }),
-    items: ref([])
+    items: ref([]),
+    focusedElement: ref(null)
   };
 
   // Getters

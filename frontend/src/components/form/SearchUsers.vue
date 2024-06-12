@@ -114,8 +114,8 @@ onMounted(() => {
 
 <template>
   <div>
-    <div v-if="getConfig.idpList.length <= 3">
-      <div
+    <ul v-if="getConfig.idpList.length <= 3">
+      <li
         v-for="idp of getConfig.idpList"
         :key="idp.idp"
         class="field-radiobutton mt-1"
@@ -128,8 +128,8 @@ onMounted(() => {
           @click="onReset"
         />
         <label :for="idp.idp">{{ idp.name }}</label>
-      </div>
-    </div>
+      </li>
+    </ul>
     <div v-else>
       <Dropdown
         v-model="selectedIDP"

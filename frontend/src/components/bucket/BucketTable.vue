@@ -6,9 +6,9 @@ import { BucketChildConfig, BucketPermission, BucketTableBucketName } from '@/co
 import { Spinner } from '@/components/layout';
 import { SyncButton, ShareButton } from '@/components/common';
 import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
-import { useAppStore, useAuthStore, useBucketStore, usePermissionStore } from '@/store';
+import { useAppStore, useAuthStore, useBucketStore, useNavStore, usePermissionStore } from '@/store';
 import { DELIMITER, Permissions } from '@/utils/constants';
-import { getBucketPath, joinPath } from '@/utils/utils';
+import { getBucketPath, joinPath, onDialogHide } from '@/utils/utils';
 
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import type { Ref } from 'vue';
@@ -20,6 +20,7 @@ const permissionStore = usePermissionStore();
 const { getIsLoading } = storeToRefs(useAppStore());
 const { getUserId } = storeToRefs(useAuthStore());
 const { getBuckets } = storeToRefs(bucketStore);
+const { focusedElement } = storeToRefs(useNavStore());
 
 // State
 const expandedKeys: Ref<TreeTableExpandedKeys> = ref({});
@@ -58,6 +59,7 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
   permissionsVisible.value = true;
   permissionsBucketId.value = bucketId;
   permissionBucketName.value = bucketName;
+  focusedElement.value = document.activeElement;
 };
 
 const confirmDeleteBucket = (bucketId: string) => {
@@ -313,6 +315,7 @@ watch(getBuckets, () => {
           </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
+            id="folder_permissions"
             v-tooltip.bottom="'Folder permissions'"
             class="p-button-lg p-button-text"
             aria-label="Folder permissions"
@@ -353,10 +356,14 @@ watch(getBuckets, () => {
 
   <!-- eslint-disable vue/no-v-model-argument -->
   <Dialog
+    id="permissions_dialog"
     v-model:visible="permissionsVisible"
     :draggable="false"
     :modal="true"
     class="bcbox-info-dialog"
+    aria-labelledby="permissions_label"
+    aria-describedby="permissions_desc"
+    @after-hide="onDialogHide"
   >
     <!-- eslint-enable vue/no-v-model-argument -->
     <template #header>
@@ -364,10 +371,18 @@ watch(getBuckets, () => {
         icon="fas fa-users"
         fixed-width
       />
-      <span class="p-dialog-title">Folder permissions</span>
+      <span
+        id="permissions_label"
+        class="p-dialog-title"
+      >
+        Folder permissions
+      </span>
     </template>
 
-    <h3 class="bcbox-info-dialog-subhead">
+    <h3
+      id="permissions_desc"
+      class="bcbox-info-dialog-subhead"
+    >
       {{ permissionBucketName }}
     </h3>
 
