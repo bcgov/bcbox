@@ -6,7 +6,8 @@ import { object, string } from 'yup';
 
 import TextInput from '@/components/form/TextInput.vue';
 import { Button, Dialog, Message, useToast } from '@/lib/primevue';
-import { useAuthStore, useBucketStore } from '@/store';
+import { useAuthStore, useBucketStore, useNavStore } from '@/store';
+import { onDialogHide } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { Bucket } from '@/types';
@@ -19,6 +20,7 @@ const props = defineProps<{
 // Store
 const bucketStore = useBucketStore();
 const { getUserId } = storeToRefs(useAuthStore());
+const { focusedElement } = storeToRefs(useNavStore());
 
 // Form validation
 const validationMessages: Ref<Array<string>> = ref([]);
@@ -34,6 +36,9 @@ const toast = useToast();
 const dialogIsVisible: Ref<boolean> = ref(false);
 const showDialog = (x: boolean) => {
   dialogIsVisible.value = x;
+  if (dialogIsVisible.value) {
+    focusedElement.value = document.activeElement;
+  }
 };
 
 const onSubmit = async (values: any) => {
@@ -64,32 +69,46 @@ const onCancel = () => {
     class="p-button-lg p-button-text"
     aria-label="Add subfolder"
     @click="showDialog(true)"
-    @keyup.enter="showDialog(true)"
   >
     <font-awesome-icon icon="fa-solid fa-folder-plus" />
   </Button>
 
   <Dialog
+    aria-labelledby="subfolder_label"
+    aria-describedby="subfolder_desc"
     class="bcbox-info-dialog"
     :style="{ width: '50vw' }"
     :modal="true"
     :visible="dialogIsVisible"
     @update:visible="showDialog(false)"
+    @after-hide="onDialogHide"
   >
     <template #header>
       <font-awesome-icon
         icon="fas fa-cog"
         fixed-width
       />
-      <span class="p-dialog-title">Add subfolder</span>
+      <span
+        id="subfolder_label"
+        class="p-dialog-title"
+      >
+        Add subfolder
+      </span>
     </template>
-
-    <h3 class="bcbox-info-dialog-subhead mb-0">{{ props.parentBucket.bucketName }}</h3>
+    <h3
+      id="subfolder_desc"
+      class="bcbox-info-dialog-subhead mb-0"
+    >
+      {{ props.parentBucket.bucketName }}
+    </h3>
     <ul class="mt-0 pl-3">
       <li>Sets a subfolder to appear within a folder</li>
     </ul>
     <Form
+      id="add-subfolder"
+      aria-label="Add subfolder"
       :validation-schema="schema"
+      role="form"
       @submit="onSubmit"
     >
       <Message
@@ -108,6 +127,7 @@ const onCancel = () => {
           but it can't be changed after it is set.<br />
           Folder levels are supported using '/' between levels (for example: 2024/January/my-documents).`"
         class="child-input"
+        focus-trap
       />
       <TextInput
         name="bucketName"
@@ -115,7 +135,6 @@ const onCancel = () => {
         placeholder="My Documents"
         help-text="Your custom display name for the subfolder - any name as you would like to see it listed in BCBox."
         class="child-input"
-        autofocus
       />
       <Button
         class="p-button mt-2 mr-2"

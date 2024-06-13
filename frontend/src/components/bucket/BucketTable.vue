@@ -320,7 +320,6 @@ watch(getBuckets, () => {
             class="p-button-lg p-button-text"
             aria-label="Folder permissions"
             @click="showPermissions(node.data.bucketId, node.data.bucketName)"
-            @keyup.enter="showPermissions(node.data.bucketId, node.data.bucketName)"
           >
             <font-awesome-icon icon="fa-solid fa-users" />
           </Button>
