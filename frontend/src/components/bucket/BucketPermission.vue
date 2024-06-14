@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import BucketPermissionAddUser from '@/components/bucket/BucketPermissionAddUser.vue';
+import { BulkPermission } from '@/components/common';
 import { useAlert } from '@/composables/useAlert';
-import { Button, Checkbox, Column, DataTable } from '@/lib/primevue';
-import { usePermissionStore } from '@/store';
+import { Button, Checkbox, Column, DataTable, TabPanel, TabView } from '@/lib/primevue';
+
+import { useBucketStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
-import type { UserPermissions } from '@/types';
+import type { Bucket, UserPermissions } from '@/types';
 
 // Props
 type Props = {
@@ -21,10 +23,14 @@ const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const permissionStore = usePermissionStore();
+const bucketStore = useBucketStore();
 const { getMappedBucketToUserPermissions } = storeToRefs(permissionStore);
 
 // State
 const showSearchUsers: Ref<boolean> = ref(false);
+const bucket: Ref<Bucket | undefined> = computed(() => {
+  return bucketStore.getBucket(props.bucketId);
+});
 
 // Actions
 const removeManageAlert = useAlert('Warning', 'Cannot remove last user with MANAGE permission.');
@@ -70,141 +76,150 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div>
-    <div v-if="!showSearchUsers">
-      <Button
-        class="mt-1 mb-4"
-        @click="showSearchUsers = true"
-        @keyup.enter="showSearchUsers = true"
-      >
-        <font-awesome-icon
-          icon="fa-solid fa-user-plus"
-          class="mr-1"
-        />
-        Add user
-      </Button>
-    </div>
-    <div v-else>
-      <BucketPermissionAddUser @cancel-search-users="cancelSearchUsers" />
-    </div>
+  <TabView>
+    <TabPanel header="Manage permissions">
+      <div v-if="!showSearchUsers">
+        <Button
+          class="mt-1 mb-4"
+          @click="showSearchUsers = true"
+          @keyup.enter="showSearchUsers = true"
+        >
+          <font-awesome-icon
+            icon="fa-solid fa-user-plus"
+            class="mr-1"
+          />
+          Add user
+        </Button>
+      </div>
+      <div v-else>
+        <BucketPermissionAddUser @cancel-search-users="cancelSearchUsers" />
+      </div>
 
-    <DataTable
-      :value="getMappedBucketToUserPermissions"
-      data-key="bucketId"
-      class="p-datatable-sm"
-      responsive-layout="scroll"
-      :paginator="true"
-      :rows="10"
-      paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
-      current-page-report-template="{first}-{last} of {totalRecords}"
-      :rows-per-page-options="[10, 20, 50]"
-      sort-field="fullName"
-      :sort-order="1"
-      aria-label="Bucket Permissions"
-    >
-      <template #empty>
-        <div class="flex justify-content-center">
-          <h3>There are no users associated with this bucket.</h3>
-        </div>
-      </template>
-      <Column
-        field="fullName"
-        header="Name"
-        aria-labelledby="upload_checkbox"
+      <DataTable
+        :value="getMappedBucketToUserPermissions"
+        data-key="bucketId"
+        class="p-datatable-sm"
+        responsive-layout="scroll"
+        :paginator="true"
+        :rows="10"
+        paginator-template="RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink "
+        current-page-report-template="{first}-{last} of {totalRecords}"
+        :rows-per-page-options="[10, 20, 50]"
+        sort-field="fullName"
+        :sort-order="1"
+        aria-label="Bucket Permissions"
+      >
+        <template #empty>
+          <div class="flex justify-content-center">
+            <h3>There are no users associated with this bucket.</h3>
+          </div>
+        </template>
+        <Column
+          field="fullName"
+          header="Name"
+          aria-labelledby="upload_checkbox"
+        />
+        <Column
+          field="idpName"
+          header="Provider"
+        />
+        <Column
+          header="Upload"
+          header-class="header-center"
+          body-class="content-center"
+        >
+          <template #body="{ data }">
+            <Checkbox
+              v-model="data.create"
+              input-id="create"
+              aria-label="upload"
+              :binary="true"
+              @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.CREATE)"
+            />
+          </template>
+        </Column>
+        <Column
+          header="Read"
+          header-class="header-center"
+          body-class="content-center"
+        >
+          <template #body="{ data }">
+            <Checkbox
+              v-model="data.read"
+              input-id="read"
+              aria-label="Read"
+              :binary="true"
+              @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.READ)"
+            />
+          </template>
+        </Column>
+        <Column
+          header="Update"
+          header-class="header-center"
+          body-class="content-center"
+        >
+          <template #body="{ data }">
+            <Checkbox
+              v-model="data.update"
+              input-id="update"
+              aria-label="Update"
+              :binary="true"
+              @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.UPDATE)"
+            />
+          </template>
+        </Column>
+        <Column
+          header="Delete"
+          header-class="header-center"
+          body-class="content-center"
+        >
+          <template #body="{ data }">
+            <Checkbox
+              v-model="data.delete"
+              input-id="delete"
+              aria-label="delete"
+              :binary="true"
+              @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.DELETE)"
+            />
+          </template>
+        </Column>
+        <Column
+          header="Manage"
+          header-class="header-center"
+          body-class="content-center"
+        >
+          <template #body="{ data }">
+            <Checkbox
+              v-model="data.manage"
+              input-id="manage"
+              aria-label="manage"
+              :binary="true"
+              :disabled="!data.elevatedRights"
+              @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.MANAGE)"
+            />
+          </template>
+        </Column>
+        <Column header="Remove">
+          <template #body="{ data }">
+            <Button
+              class="p-button-lg p-button-text"
+              severity="danger"
+              aria-label="remove"
+              @click="removeBucketUser(data.userId)"
+            >
+              <font-awesome-icon icon="fa-solid fa-user-xmark" />
+            </Button>
+          </template>
+        </Column>
+      </DataTable>
+    </TabPanel>
+    <TabPanel header="Bulk add/remove">
+      <BulkPermission
+        resource-type="bucket"
+        :resource="bucket"
       />
-      <Column
-        field="idpName"
-        header="Provider"
-      />
-      <Column
-        header="Upload"
-        header-class="header-center"
-        body-class="content-center"
-      >
-        <template #body="{ data }">
-          <Checkbox
-            v-model="data.create"
-            input-id="create"
-            aria-label="upload"
-            :binary="true"
-            @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.CREATE)"
-          />
-        </template>
-      </Column>
-      <Column
-        header="Read"
-        header-class="header-center"
-        body-class="content-center"
-      >
-        <template #body="{ data }">
-          <Checkbox
-            v-model="data.read"
-            input-id="read"
-            aria-label="Read"
-            :binary="true"
-            @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.READ)"
-          />
-        </template>
-      </Column>
-      <Column
-        header="Update"
-        header-class="header-center"
-        body-class="content-center"
-      >
-        <template #body="{ data }">
-          <Checkbox
-            v-model="data.update"
-            input-id="update"
-            aria-label="Update"
-            :binary="true"
-            @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.UPDATE)"
-          />
-        </template>
-      </Column>
-      <Column
-        header="Delete"
-        header-class="header-center"
-        body-class="content-center"
-      >
-        <template #body="{ data }">
-          <Checkbox
-            v-model="data.delete"
-            input-id="delete"
-            aria-label="delete"
-            :binary="true"
-            @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.DELETE)"
-          />
-        </template>
-      </Column>
-      <Column
-        header="Manage"
-        header-class="header-center"
-        body-class="content-center"
-      >
-        <template #body="{ data }">
-          <Checkbox
-            v-model="data.manage"
-            input-id="manage"
-            :binary="true"
-            :disabled="!data.elevatedRights"
-            @update:model-value="(value: boolean) => updateBucketPermission(value, data.userId, Permissions.MANAGE)"
-          />
-        </template>
-      </Column>
-      <Column header="Remove">
-        <template #body="{ data }">
-          <Button
-            class="p-button-lg p-button-text"
-            severity="danger"
-            aria-label="remove"
-            @click="removeBucketUser(data.userId)"
-          >
-            <font-awesome-icon icon="fa-solid fa-user-xmark" />
-          </Button>
-        </template>
-      </Column>
-    </DataTable>
-  </div>
+    </TabPanel>
+  </TabView>
 </template>
 
 <style lang="scss" scoped>

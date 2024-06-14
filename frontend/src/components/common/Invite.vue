@@ -7,21 +7,21 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Button, RadioButton, Checkbox, useToast, TextArea } from '@/lib/primevue';
 import TextInput from '@/components/form/TextInput.vue';
 import { Spinner } from '@/components/layout';
+import { BulkPermissionResults } from '@/components/common';
 
 import { Regex } from '@/utils/constants';
+import { toBulkResult } from '@/utils/formatters';
 
-import { inviteService } from '@/services';
+import { inviteService, permissionService, userService } from '@/services';
 import { useAuthStore } from '@/store';
 
 import type { Ref } from 'vue';
 
 // Types
 type Props = {
-  label: string;
   resourceType: string;
   resource: any;
 };
-
 // Props
 const props = withDefaults(defineProps<Props>(), {});
 
@@ -30,12 +30,17 @@ const { getUser } = storeToRefs(useAuthStore());
 const toast = useToast();
 
 // State
-const inviteLoading: Ref<boolean> = ref(false);
+const resourceId: Ref<string> = computed(() =>
+  props.resourceType === 'object' ? props.resource.id : props.resource.bucketId
+);
+const loading: Ref<boolean> = ref(false);
+const complete: Ref<boolean> = ref(false);
 const permHelpLink: Ref<string> = computed(() => {
   return props.resourceType === 'bucket'
     ? 'https://github.com/bcgov/bcbox/wiki/My-Files#folder-permissions'
     : 'https://github.com/bcgov/bcbox/wiki/Files#file-permissions';
 });
+const results: Ref<Array<any>> = ref([]);
 
 const timeFrames: Record<string, number> = {
   '1 Hour': 3600,
@@ -110,39 +115,79 @@ const [multiEmail] = defineField('multiEmail', {});
 const isDisabled = (optionValue: string) => {
   return props.resourceType === 'object' && optionValue === 'READ';
 };
+
 // Invite form is submitted
-const onSubmit = handleSubmit(async (values: any) => {
-  inviteLoading.value = true;
+const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
+  loading.value = true;
   try {
-    // set expiry date
-    const expiresAt = Math.floor(Date.now() / 1000) + values.expiresAt;
-    // put email(s) into an array
+    // put email(s) into an array, delimit, de-dupe and remove empty
     let emailArray;
     if (values.emailType === 'single') emailArray = [values.email];
-    // for list of emails, delimit, de-dupe and remove empty
     else emailArray = [...new Set(values.multiEmail.split(/[\r\n ,;]+/).filter((item: string) => item))];
 
-    // TODO: add perms to users already in the system
-    // generate invites (for emails not already in the system)
-    await inviteService.createInvites(
-      props.resourceType,
-      props.resource,
-      getUser.value?.profile,
-      emailArray,
-      expiresAt,
-      values.permCodes
+    // for each email, if user already exists in db then give permissions, otherwise send invite
+    let permData: Array<{ userId: string; permCode: string }> = [];
+    let newUsers: Array<string> = [];
+    let resultData: any = await Promise.all(
+      emailArray.map(async (email) => {
+        const users = (await userService.searchForUsers({ email: email })).data;
+        // if an exact match on one account
+        if (users.length === 1 && users[0].email === email) {
+          values.permCodes.forEach((pc: string) => {
+            permData.push({ userId: users[0].userId, permCode: pc });
+          });
+          return { email: email, userId: users[0].userId, permissions: [] };
+        } else {
+          newUsers.push(email);
+          return { email: email };
+        }
+      })
     );
-    // TODO: output report (list of invites sent, CHES trx ID (?))
-    toast.success('', 'Invite notifications sent.', { life: 5000 });
+
+    // give permissions to users already in the system
+    if (permData.length > 0) {
+      const permResponse =
+        props.resourceType === 'object'
+          ? await permissionService.objectAddPermissions(resourceId.value, permData)
+          : await permissionService.bucketAddPermissions(resourceId.value, permData);
+      permResponse.data.forEach((p: any) => {
+        const el = resultData.find((r: any) => r.userId === p.userId);
+        el.permissions.push({
+          createdAt: p.createdAt,
+          permCode: p.permCode
+        });
+      });
+    }
+
+    // generate invites (for emails not already in the system)
+    if (newUsers.length > 0) {
+      const expiresAt = Math.floor(Date.now() / 1000) + values.expiresAt;
+      const emailResponse = await inviteService.createInvites(
+        props.resourceType,
+        props.resource,
+        getUser.value?.profile,
+        newUsers,
+        expiresAt,
+        values.permCodes
+      );
+      // add to results
+      emailResponse.data.messages.forEach((msg: { msgId: string; to: Array<string> }) => {
+        resultData.find((r: any) => r.email === msg.to[0]).chesMsgId = msg.msgId;
+      });
+    }
+    // format results into human-readable descriptions
+    results.value = toBulkResult('invite', 'add', resultData);
+    complete.value = true;
+    resetForm();
   } catch (error: any) {
     toast.error('Creating Invite', error.response?.data.detail, { life: 0 });
   }
-  inviteLoading.value = false;
+  loading.value = false;
 });
 </script>
 
 <template>
-  <h3 class="mt-1 mb-2">{{ props.label }}</h3>
+  <h3 class="mt-1 mb-2">{{ props.resourceType === 'object' ? 'File invite' : 'Folder invite' }}</h3>
   <form @submit="onSubmit">
     <p class="mb-2">Make invite available for</p>
     <div class="flex flex-wrap gap-3 field">
@@ -167,7 +212,7 @@ const onSubmit = handleSubmit(async (values: any) => {
 
     <p class="mb-2">Access options</p>
     <div class="field">
-      <div class="flex flex-wrap gap-3">
+      <div class="flex flex-wrap gap-3 align-items-center">
         <div
           v-for="(name, value) in selectedOptions"
           :key="value"
@@ -237,7 +282,9 @@ const onSubmit = handleSubmit(async (values: any) => {
         name="email"
         type="text"
         placeholder="Enter email"
-        help-text="The Invite will be emailed to this person"
+        :help-text="`Enter an email address of the person you are inviting to access this
+          ${props.resourceType === 'bucket' ? 'folder' : 'file'}. <br />
+          The email address must be associated with the account they will use to sign in to BCBox.`"
         class="invite-email"
       />
     </div>
@@ -249,7 +296,7 @@ const onSubmit = handleSubmit(async (values: any) => {
           name="multiEmail"
           type="textarea"
           placeholder="Enter email(s) separated by commas (, ) or semicolons (; ) - for example: email1@gov.bc.ca, email2@gov.bc.ca"
-          class="multi-email block"
+          class="w-full block"
         />
         <!-- eslint-enable -->
         <small
@@ -258,7 +305,7 @@ const onSubmit = handleSubmit(async (values: any) => {
         >
           Enter an email address for each person you are inviting to access this
           {{ props.resourceType === 'bucket' ? 'folder' : 'file' }}. The email address must be associated with the
-          account they use to sign in to BCBox.
+          account they will use to sign in to BCBox.
         </small>
         <ErrorMessage name="multiEmail" />
       </div>
@@ -267,31 +314,33 @@ const onSubmit = handleSubmit(async (values: any) => {
     <div class="my-4 inline-flex">
       <Button
         class="p-button p-button-primary mr-3"
-        :disabled="inviteLoading"
+        :disabled="loading"
         type="submit"
       >
         <font-awesome-icon
           icon="fa fa-envelope"
           class="mr-2"
         />
-        Send invite link
+        <span v-if="values.emailType === 'single'">Send invite link</span>
+        <span v-else>Send invites</span>
       </Button>
       <Spinner
-        v-if="inviteLoading"
+        v-if="loading"
         class="h-2rem w-2rem"
       />
     </div>
   </form>
+  <BulkPermissionResults
+    v-model="complete"
+    :results="results"
+    :resource="resource"
+    :resource-type="resourceType"
+  />
 </template>
 
 <style scoped lang="scss">
+div:has(.invite-email),
 .invite-email:deep(input) {
   width: 80%;
-}
-.multi-email {
-  width: 100%;
-}
-.help {
-  line-height: 1.6rem;
 }
 </style>

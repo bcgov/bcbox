@@ -46,7 +46,7 @@ describe('BucketPermission.vue', async () => {
       },
       global: {
         plugins: [ConfirmationService, PrimeVue, testingPinia, ToastService],
-        stubs: ['font-awesome-icon', 'DataTable']
+        stubs: ['font-awesome-icon', 'DataTable', 'bulkPermission']
       }
     });
 

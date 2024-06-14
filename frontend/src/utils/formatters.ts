@@ -1,4 +1,5 @@
 import { format, parseJSON } from 'date-fns';
+import { Permissionlabels } from '@/utils/constants';
 
 function _dateFnsFormat(value: string, formatter: string) {
   const formatted = '';
@@ -36,4 +37,54 @@ export function formatDateLong(value: string) {
 export function toKebabCase(str: string | null) {
   const strs = str && str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g);
   return strs ? strs.join('-').toLocaleLowerCase() : '';
+}
+
+/**
+ * @function toBulkResult
+ * transforms an array of invite/add/remove data into an array of human-readable descriptions
+ * @param {string} notFound if user not found (eg: 'invite' or 'ignore')
+ * @param {string} action permission action (eg: 'add' or 'remove')
+ * @param {object[]} data results invite/add/remove
+ * @returns {object[]} an array of human-readable descriptions
+ */
+export function toBulkResult(
+  notFound: string,
+  action: string,
+  data: Array<{ email: string; chesMsgId: string; permissions: Array<{ permCode: string }> | undefined }>
+) {
+  const result = data.map((r) => {
+    let description: string = 'No action taken';
+    let status: number = 1;
+    // invites
+    if (r.chesMsgId && notFound === 'invite') description = 'Invite emailed';
+    else if (notFound === 'ignore' && !r.permissions) {
+      description = 'No invite was emailed';
+      status = 0;
+    }
+    // adding permission
+    else if (action === 'add' && r.permissions) {
+      if (r.permissions.length > 0) {
+        const perms = r.permissions.map((p) => {
+          return Permissionlabels[p.permCode as keyof typeof Permissionlabels];
+        });
+        description = `Permissions added (${perms.join(' and ')})`;
+      } else {
+        description = 'Permissions already existed';
+        status = 0;
+      }
+    }
+    // removing permissions
+    else if (action === 'remove' && r.permissions) {
+      if (r.permissions.length == 0) {
+        description = 'Permissions did not exist';
+        status = 0;
+      } else description = 'All Permissions removed';
+    }
+    return new Object({
+      email: r.email,
+      description: description,
+      status: status
+    });
+  });
+  return result;
 }
