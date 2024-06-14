@@ -5,6 +5,7 @@ import { useForm, ErrorMessage } from 'vee-validate';
 import * as yup from 'yup';
 import { Button, RadioButton, Checkbox, useToast, TextArea } from '@/lib/primevue';
 import { Spinner } from '@/components/layout';
+import { BulkPermissionResults } from '@/components/common';
 
 import { Permissions, Regex } from '@/utils/constants';
 import { toBulkResult } from '@/utils/formatters';
@@ -38,13 +39,7 @@ const permHelpLink: Ref<string> = computed(() => {
     ? 'https://github.com/bcgov/bcbox/wiki/My-Files#folder-permissions'
     : 'https://github.com/bcgov/bcbox/wiki/Files#file-permissions';
 });
-const results: Ref<Array<any>> = ref([
-  {
-    resourceType: props.resourceType,
-    resourceId: resourceId.value,
-    result: []
-  }
-]);
+const results: Ref<Array<any>> = ref([]);
 
 const timeFrames: Record<string, number> = {
   '1 Hour': 3600,
@@ -127,8 +122,8 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
 
     // for each email, if user exists in db then give permissions, otherwise send invite
     let permData: Array<{ userId: string; permCode: string }> = [];
-    let inviteUsers: Array<string> = [];
-    const result = await Promise.all(
+    let newUsers: Array<string> = [];
+    let resultData = await Promise.all(
       emailArray.map(async (email: string) => {
         const users = (await userService.searchForUsers({ email: email })).data;
         // if an exact match on one account
@@ -142,15 +137,26 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
               permData.push({ userId: users[0].userId, permCode: pc });
             });
           }
-          return { email: email, userId: users[0].userId, permissions: [] };
-        } else if (values.action === 'add') {
-          inviteUsers.push(email);
+          return { email: email, users: [users[0].userId], permissions: [] };
+        }
+        // else if adding perms (and users not found)
+        else if (values.action === 'add') {
+          newUsers.push(email);
           return { email: email };
+        }
+        // else if removing permissions and more than one matching user was found
+        else if (values.action === 'remove' && users.length > 1) {
+          users.forEach((u: any) => {
+            if (u.email === email) {
+              Object.values(Permissions).forEach((pc: string) => {
+                permData.push({ userId: u.userId, permCode: pc });
+              });
+            }
+          });
+          return { email: email, users: users.map((u: any) => u.userId), permissions: [] };
         }
       })
     );
-    // add to results
-    results.value[0].result = result;
 
     // handle permission updates for users already in the system
     if (permData.length > 0) {
@@ -163,7 +169,11 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
             : await permissionService.bucketAddPermissions(resourceId.value, permData);
       } else {
         // else removing
-        const deletePermData = { userId: permData[0].userId, permCode: permData.map((p) => p.permCode) };
+        const deletePermData = {
+          userId: [...new Set(permData.map((item) => item.userId))],
+          permCode: Object.values(Permissions)
+        };
+
         permResponse =
           props.resourceType === 'object'
             ? await permissionService.objectDeletePermission(resourceId.value, deletePermData)
@@ -171,7 +181,7 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
       }
       // add updated permissions to results
       permResponse.data.forEach((p: any) => {
-        const el = results.value[0].result.find((r: any) => r.userId === p.userId);
+        const el = resultData.find((r: any) => r.users.includes(p.userId));
         el.permissions.push({
           createdAt: p.createdAt,
           permCode: p.permCode
@@ -180,24 +190,24 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
     }
 
     // generate invites (for emails not already in the system)
-    if (values.notFound === 'invite' && inviteUsers.length > 0 && values.action === 'add') {
+    if (values.action === 'add' && values.notFound === 'invite' && newUsers.length > 0) {
       const expiresAt = Math.floor(Date.now() / 1000) + values.expiresAt;
       const emailResponse = await inviteService.createInvites(
         props.resourceType,
         props.resource,
         getUser.value?.profile,
-        inviteUsers,
+        newUsers,
         expiresAt,
         values.permCodes
       );
-      // add to results
+      // add CHES msgId's to results
       emailResponse.data.messages.forEach((msg: { msgId: string; to: Array<string> }) => {
-        results.value[0].result.find((r: any) => r.email === msg.to[0]).chesMsgId = msg.msgId;
+        resultData.find((r: any) => r.email === msg.to[0]).chesMsgId = msg.msgId;
       });
     }
 
     // format results into human-readable descriptions
-    results.value[0].result = toBulkResult(values.notFound, values.action, results.value[0].result);
+    results.value = toBulkResult(values.notFound, values.action, resultData);
 
     // refresh store
     if (props.resourceType === 'object') {
@@ -392,5 +402,12 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
       />
     </div>
   </form>
+  <BulkPermissionResults
+    v-model="complete"
+    :results="results"
+    :resource="resource"
+    :resource-type="resourceType"
+  />
+
   <pre v-if="complete">{{ results }}</pre>
 </template>

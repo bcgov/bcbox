@@ -53,27 +53,37 @@ export function toBulkResult(
   data: Array<{ email: string; chesMsgId: string; permissions: Array<{ permCode: string }> | undefined }>
 ) {
   const result = data.map((r) => {
-    let description = 'No action taken';
+    let description: string = 'No action taken';
+    let status: number = 1;
     // invites
     if (r.chesMsgId && notFound === 'invite') description = 'Invite emailed';
     else if (notFound === 'ignore' && !r.permissions) {
       description = 'No invite was emailed';
+      status = 0;
     }
-    // permission updates
-    else if (r.permissions && r.permissions.length > 0) {
-      const perms = r.permissions.map((p) => {
-        return Permissionlabels[p.permCode as keyof typeof Permissionlabels];
-      });
-      description = `Permissions ${action === 'add' ? 'added' : 'removed'} (${perms.join(' and ')})`;
-    } else if (r.permissions && r.permissions.length == 0 && action === 'add') {
-      description = 'Permissions already existed';
-    } else if (r.permissions && r.permissions.length == 0 && action === 'remove') {
-      description = 'Permissions did not exist';
+    // adding permission
+    else if (action === 'add' && r.permissions) {
+      if (r.permissions.length > 0) {
+        const perms = r.permissions.map((p) => {
+          return Permissionlabels[p.permCode as keyof typeof Permissionlabels];
+        });
+        description = `Permissions added (${perms.join(' and ')})`;
+      } else {
+        description = 'Permissions already existed';
+        status = 0;
+      }
     }
-
+    // removing permissions
+    else if (action === 'remove' && r.permissions) {
+      if (r.permissions.length == 0) {
+        description = 'Permissions did not exist';
+        status = 0;
+      } else description = 'All Permissions removed';
+    }
     return new Object({
       email: r.email,
-      description: description
+      description: description,
+      status: status
     });
   });
   return result;
