@@ -19,7 +19,7 @@ const modelValue = defineModel<boolean>({ default: false });
 // Exports DataTable results
 const batchResults = ref();
 
-const exportCSV = (event: any) => {
+const exportCSV = () => {
   batchResults.value.exportCSV();
 };
 </script>
@@ -39,13 +39,10 @@ const exportCSV = (event: any) => {
         <Button
           v-tooltip.bottom="'Save results'"
           aria-label="Save results"
-          class="p-button"
-          @click="exportCSV($event)"
+          class="p-button p-button-text"
+          @click="exportCSV()"
         >
-          <font-awesome-icon
-            icon="fa-download"
-            class="pl-1 pr-1 pt-1 pb-1"
-          />
+          <font-awesome-icon icon="fas fa-download" />
         </Button>
       </div>
       <Column
