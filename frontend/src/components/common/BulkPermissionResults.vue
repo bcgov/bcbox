@@ -15,6 +15,13 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const modelValue = defineModel<boolean>({ default: false });
+
+// Exports DataTable results
+const batchResults = ref();
+
+const exportCSV = (event: any) => {
+  batchResults.value.exportCSV();
+};
 </script>
 <template>
   <Dialog
@@ -23,9 +30,24 @@ const modelValue = defineModel<boolean>({ default: false });
     :modal="true"
   >
     <DataTable
+      ref="batchResults"
+      :export-filename="`${resourceType === 'object' ? resource.name.replace(/\.[^/.]+$/, '') : resource.bucketName}_bulk_results`"
       :value="props.results"
       class="p-datatable-striped"
     >
+      <div class="action-buttons">
+        <Button
+          v-tooltip.bottom="'Save results'"
+          aria-label="Save results"
+          class="p-button"
+          @click="exportCSV($event)"
+        >
+          <font-awesome-icon
+            icon="fa-download"
+            class="pl-1 pr-1 pt-1 pb-1"
+          />
+        </Button>
+      </div>
       <Column
         field="email"
         header="Email"
@@ -47,11 +69,6 @@ const modelValue = defineModel<boolean>({ default: false });
                 icon="fa-circle-minus"
                 class="icon-noaction"
               />
-              <!--
-                Errors aren't really returned at the moment
-                  (e.g. CHES doesn't return emailing errors)
-                so errors won't ever appear here (yet!).
-              -->
               <font-awesome-icon
                 v-else
                 icon="fa-circle-xmark"
