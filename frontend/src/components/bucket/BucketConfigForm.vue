@@ -125,7 +125,7 @@ const onCancel = () => {
         placeholder="My Documents"
         help-text="Your custom display name for the storage location,
           shown in BCBox as a folder. Any name as you would like to see it listed in BCBox."
-        autofocus
+        focus-trap
       />
       <TextInput
         name="bucket"

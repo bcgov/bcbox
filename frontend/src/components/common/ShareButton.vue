@@ -7,7 +7,8 @@ import { Invite, Share } from '@/components/common';
 import { Button, Dialog, TabView, TabPanel } from '@/lib/primevue';
 
 import { Permissions } from '@/utils/constants';
-import { useAuthStore, useObjectStore, usePermissionStore, useBucketStore } from '@/store';
+import { useAuthStore, useObjectStore, usePermissionStore, useBucketStore, useNavStore } from '@/store';
+import { onDialogHide } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 
@@ -32,6 +33,7 @@ const objectStore = useObjectStore();
 const bucketStore = useBucketStore();
 const { getUserId } = storeToRefs(useAuthStore());
 const permissionStore = usePermissionStore();
+const { focusedElement } = storeToRefs(useNavStore());
 
 // State
 const resourceType = props.objectId ? ref('object') : ref('bucket');
@@ -54,6 +56,13 @@ const hasManagePermission: Ref<boolean> = computed(() => {
 
 // Dialog
 const displayShareDialog = ref(false);
+
+const showDialog = (x: boolean) => {
+  displayShareDialog.value = x;
+  if (displayShareDialog.value) {
+    focusedElement.value = document.activeElement;
+  }
+};
 </script>
 
 <template>
@@ -67,6 +76,7 @@ const displayShareDialog = ref(false);
     aria-labelledby="share_dialog_label"
     aria-describedby="share_dialog_desc"
     focus-trap
+    @after-hide="onDialogHide"
   >
     <template #header>
       <font-awesome-icon
@@ -139,8 +149,7 @@ const displayShareDialog = ref(false);
     v-tooltip.bottom="`Share ${props.labelText.toLocaleLowerCase()}`"
     class="p-button-lg p-button-text primary"
     :aria-label="`Share ${props.labelText.toLocaleLowerCase()}`"
-    @click="displayShareDialog = true"
-    @keyup.enter="displayShareDialog = true"
+    @click="showDialog(true)"
   >
     <font-awesome-icon icon="fa-solid fa-share-alt" />
   </Button>

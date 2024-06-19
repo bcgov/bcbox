@@ -52,6 +52,7 @@ const showSidebarInfo = async (id: number) => {
 };
 
 const showBucketConfig = async (bucket: Bucket) => {
+  focusedElement.value = document.activeElement;
   emit('show-bucket-config', bucket);
 };
 
@@ -309,7 +310,6 @@ watch(getBuckets, () => {
             class="p-button-lg p-button-text"
             aria-label="Configure folder"
             @click="showBucketConfig(node.data)"
-            @keyup.enter="showBucketConfig(node.data)"
           >
             <font-awesome-icon icon="fas fa-cog" />
           </Button>

@@ -6,6 +6,7 @@ import { BucketConfigForm, BucketSidebar, BucketTable } from '@/components/bucke
 import { Button, Dialog, Message } from '@/lib/primevue';
 import { useAuthStore, useBucketStore, useConfigStore, usePermissionStore } from '@/store';
 import { BucketConfig } from '@/utils/constants';
+import { onDialogHide } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { Bucket } from '@/types';
@@ -38,6 +39,7 @@ const showBucketConfig = (bucket?: Bucket) => {
 
 const closeBucketConfig = () => {
   displayBucketConfig.value = false;
+  onDialogHide();
 };
 
 onMounted(async () => {
@@ -78,10 +80,13 @@ onMounted(async () => {
 
       <!-- Bucket config dialog -->
       <Dialog
+        id="config_dialog"
         class="bcbox-info-dialog"
         :visible="displayBucketConfig"
         :style="{ width: '50vw' }"
         :modal="true"
+        aria-labelledby="config_dialog_label"
+        aria-describedby="config_dialog_desc"
         @update:visible="closeBucketConfig"
       >
         <template #header>
@@ -89,10 +94,18 @@ onMounted(async () => {
             icon="fas fa-cog"
             fixed-width
           />
-          <span class="p-dialog-title">{{ BucketConfig.HEADER_NEW_BUCKET }}</span>
+          <span
+            id="config_dialog_label"
+            class="p-dialog-title"
+          >
+            {{ BucketConfig.HEADER_NEW_BUCKET }}
+          </span>
         </template>
 
-        <h3 class="bcbox-info-dialog-subhead">
+        <h3
+          id="config_dialog_label"
+          class="bcbox-info-dialog-subhead"
+        >
           {{ bucketConfigTitle }}
         </h3>
 
