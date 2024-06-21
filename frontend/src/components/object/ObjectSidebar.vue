@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { watch } from 'vue';
+import { watch, onMounted } from 'vue';
 import { ObjectMetadata, ObjectProperties, ObjectTag } from '@/components/object';
 import { Button } from '@/lib/primevue';
 import { useAuthStore, useMetadataStore, useObjectStore, usePermissionStore, useTagStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
+import { onDialogHide } from '@/utils/utils';
 
 // Props
 type Props = {
@@ -25,10 +26,15 @@ const { getUserId } = storeToRefs(useAuthStore());
 
 // Actions
 const closeObjectInfo = async () => {
+  onDialogHide();
   emit('close-object-info');
 };
 
 const obj = objectStore.getObject(props.objectId);
+
+onMounted(() => {
+  document.getElementById('side-panel')?.focus();
+});
 
 watch(
   props,
@@ -46,11 +52,24 @@ watch(
 </script>
 
 <template>
-  <div class="side-panel pl-4 pt-2">
+  <div
+    id="side-panel"
+    tabindex="0"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="side-panel_label"
+    class="side-panel pl-4 pt-2"
+  >
     <div class="flex panel-header align-items-start">
       <font-awesome-icon icon="fa-solid fa-circle-info" />
-      <h1 class="mt-0 flex-grow-1">File details</h1>
+      <h1
+        id="side-panel_label"
+        class="mt-0 flex-grow-1"
+      >
+        File details
+      </h1>
       <Button
+        aria-label="Close"
         class="p-button-rounded p-button-text pt-0 mt-0"
         @click="closeObjectInfo"
       >
@@ -77,6 +96,7 @@ watch(
         :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objectId: props.objectId } }"
       >
         <Button
+          aria-label="View all details"
           label="Primary"
           class="p-button-outlined"
           @click="navigate"

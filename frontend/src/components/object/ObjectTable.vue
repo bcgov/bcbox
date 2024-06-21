@@ -77,7 +77,10 @@ const onDeletedSuccess = () => {
   loadLazyData();
 };
 
-const showInfo = (id: string) => emit('show-object-info', id);
+const showInfo = (id: string) => {
+  emit('show-object-info', id);
+  focusedElement.value = document.activeElement;
+};
 
 async function showPermissions(objectId: string) {
   await permissionStore.fetchObjectPermissions({ objectId });
