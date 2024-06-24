@@ -4,7 +4,6 @@ import { emailJoi } from './common';
 import { validate } from '../middleware/validation';
 
 const schema = {
-
   mergeSchema: {
     body: Joi.object().keys({
       body: Joi.string().required(),
@@ -13,13 +12,13 @@ const schema = {
         Joi.object().keys({
           to: Joi.array().items(emailJoi).required(),
           context: Joi.object().keys({
-            token: Joi.string().required(),
+            token: Joi.string(),
+            fullName: Joi.string()
           })
         })
       )
     })
-  },
-
+  }
 };
 
 export default {

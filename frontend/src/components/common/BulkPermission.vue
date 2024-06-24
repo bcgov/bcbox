@@ -207,7 +207,7 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
     }
 
     // format results into human-readable descriptions
-    results.value = toBulkResult(values.notFound, values.action, resultData);
+    results.value = toBulkResult(values.notFound, values.action, false, resultData);
 
     // refresh store
     if (props.resourceType === 'object') {
