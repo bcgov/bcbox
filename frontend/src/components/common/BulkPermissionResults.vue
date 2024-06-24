@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Column, DataTable, Dialog } from '@/lib/primevue';
+import { Button, Column, DataTable, Dialog } from '@/lib/primevue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 // Props

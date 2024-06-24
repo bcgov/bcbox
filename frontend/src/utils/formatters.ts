@@ -44,19 +44,21 @@ export function toKebabCase(str: string | null) {
  * transforms an array of invite/add/remove data into an array of human-readable descriptions
  * @param {string} notFound if user not found (eg: 'invite' or 'ignore')
  * @param {string} action permission action (eg: 'add' or 'remove')
+ * @param {boolean} notify whether existing users were notified
  * @param {object[]} data results invite/add/remove
  * @returns {object[]} an array of human-readable descriptions
  */
 export function toBulkResult(
   notFound: string,
   action: string,
+  notify: boolean = false,
   data: Array<{ email: string; chesMsgId: string; permissions: Array<{ permCode: string }> | undefined }>
 ) {
   const result = data.map((r) => {
     let description: string = 'No action taken';
     let status: number = 1;
     // invites
-    if (r.chesMsgId && notFound === 'invite') description = 'Invite emailed';
+    if (r.chesMsgId && notFound === 'invite' && !r.permissions) description = 'Invite emailed';
     else if (notFound === 'ignore' && !r.permissions) {
       description = 'No invite was emailed';
       status = 0;
@@ -72,6 +74,7 @@ export function toBulkResult(
         description = 'Permissions already existed';
         status = 0;
       }
+      if (notify) description += '; notification emailed';
     }
     // removing permissions
     else if (action === 'remove' && r.permissions) {

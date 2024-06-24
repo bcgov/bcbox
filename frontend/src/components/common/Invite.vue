@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useForm, ErrorMessage } from 'vee-validate';
 import * as yup from 'yup';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { Button, RadioButton, Checkbox, useToast, TextArea } from '@/lib/primevue';
+import { Button, RadioButton, Checkbox, InputSwitch, useToast, TextArea } from '@/lib/primevue';
 import TextInput from '@/components/form/TextInput.vue';
 import { Spinner } from '@/components/layout';
 import { BulkPermissionResults } from '@/components/common';
@@ -101,7 +101,8 @@ const { values, defineField, handleSubmit } = useForm({
     permCodes: props.resourceType === 'object' ? ['READ'] : [],
     email: '',
     emailType: 'single',
-    multiEmail: ''
+    multiEmail: '',
+    notify: true
   }
 });
 // maps the input models for vee-validate
@@ -110,6 +111,7 @@ const [permCodes] = defineField('permCodes', {});
 const [emailType] = defineField('emailType', {});
 const [email] = defineField('email', {});
 const [multiEmail] = defineField('multiEmail', {});
+const [notify] = defineField('notify', {});
 
 // require READ perm for file invites
 const isDisabled = (optionValue: string) => {
@@ -136,7 +138,7 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
           values.permCodes.forEach((pc: string) => {
             permData.push({ userId: users[0].userId, permCode: pc });
           });
-          return { email: email, userId: users[0].userId, permissions: [] };
+          return { email: email, user: users[0], permissions: [] };
         } else {
           newUsers.push(email);
           return { email: email };
@@ -150,13 +152,25 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
         props.resourceType === 'object'
           ? await permissionService.objectAddPermissions(resourceId.value, permData)
           : await permissionService.bucketAddPermissions(resourceId.value, permData);
+      // add permissions data to result
       permResponse.data.forEach((p: any) => {
-        const el = resultData.find((r: any) => r.userId === p.userId);
-        el.permissions.push({
-          createdAt: p.createdAt,
-          permCode: p.permCode
-        });
+        const el = resultData.find((r: any) => r.user.userId === p.userId);
+        el.permissions.push({ createdAt: p.createdAt, permCode: p.permCode });
       });
+      // if notifying existing users about this file/folder
+      if (values.notify) {
+        const users = resultData.filter((r: any) => r.user).map((r: any) => r.user);
+        const emailResponse = await inviteService.notifyUsers(
+          props.resourceType,
+          props.resource,
+          getUser.value?.profile,
+          users
+        );
+        // add to results
+        emailResponse.data.messages.forEach((msg: { msgId: string; to: Array<string> }) => {
+          resultData.find((r: any) => r.email === msg.to[0]).chesMsgId = msg.msgId;
+        });
+      }
     }
 
     // generate invites (for emails not already in the system)
@@ -176,7 +190,7 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
       });
     }
     // format results into human-readable descriptions
-    results.value = toBulkResult('invite', 'add', resultData);
+    results.value = toBulkResult('invite', 'add', values.notify, resultData);
     complete.value = true;
     resetForm();
   } catch (error: any) {
@@ -309,6 +323,16 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
         </small>
         <ErrorMessage name="multiEmail" />
       </div>
+    </div>
+
+    <p class="mb-2">If a person you are inviting is already using BCBox</p>
+    <div class="flex flex-wrap gap-3 mb-3">
+      <InputSwitch
+        v-model="notify"
+        aria-label="Notify existing BCBox users"
+      />
+      <span v-if="notify">email them a link to the {{ props.resourceType === 'bucket' ? 'folder' : 'file' }}</span>
+      <span v-else>don't send them a notification</span>
     </div>
 
     <div class="my-4 inline-flex">
