@@ -65,6 +65,7 @@ const showPermissions = async (bucketId: string, bucketName: string) => {
 };
 
 const confirmDeleteBucket = (bucketId: string) => {
+  focusedElement.value = document.activeElement;
   confirm.require({
     message:
       'Are you sure you want to delete this folder in BCBox? \
@@ -73,7 +74,9 @@ const confirmDeleteBucket = (bucketId: string) => {
     header: 'Delete folder',
     acceptLabel: 'Confirm',
     rejectLabel: 'Cancel',
-    accept: () => deleteBucket(bucketId)
+    accept: () => deleteBucket(bucketId),
+    onHide: () => onDialogHide(),
+    reject: () => onDialogHide()
   });
 };
 
@@ -344,7 +347,6 @@ watch(getBuckets, () => {
             class="p-button-lg p-button-text p-button-danger"
             aria-label="Delete folder"
             @click="confirmDeleteBucket(node.data.bucketId)"
-            @keyup.enter="confirmDeleteBucket(node.data.bucketId)"
           >
             <font-awesome-icon icon="fa-solid fa-trash" />
           </Button>
