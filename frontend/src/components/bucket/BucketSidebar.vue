@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, onMounted, ref, watch } from 'vue';
 
 import { Button } from '@/lib/primevue';
 import { usePermissionStore, useUserStore } from '@/store';
@@ -9,6 +9,7 @@ import { formatDateLong } from '@/utils/formatters';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketPermission } from '@/types';
+import { onDialogHide } from '@/utils/utils';
 
 // Props
 type Props = {
@@ -31,6 +32,7 @@ const managedBy: Ref<string | undefined> = ref();
 
 // Actions
 const closeSidebarInfo = async () => {
+  onDialogHide();
   emit('close-sidebar-info');
 };
 
@@ -60,17 +62,30 @@ onBeforeMount(() => {
   load();
 });
 
+onMounted(() => {
+  document.getElementById('side-panel')?.focus();
+});
+
 watch(props, () => {
   load();
 });
 </script>
 
 <template>
-  <div class="side-panel pl-4">
+  <div
+    id="side-panel"
+    tabindex="0"
+    class="side-panel pl-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="side-panel_label"
+    aria-describedby="side-panel_desc"
+  >
     <div class="flex panel-header align-items-start">
       <font-awesome-icon icon="fa-solid fa-circle-info" />
       <h1 class="mt-0 ml-3 flex-grow-1">Folder details</h1>
       <Button
+        aria-label="Close"
         class="p-button-text pt-0"
         @click="closeSidebarInfo"
       >

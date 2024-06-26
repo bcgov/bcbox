@@ -49,6 +49,7 @@ const endpointMap = new Map<string, Array<Bucket>>();
 
 const showSidebarInfo = async (id: number) => {
   emit('show-sidebar-info', id);
+  focusedElement.value = document.activeElement;
 };
 
 const showBucketConfig = async (bucket: Bucket) => {
@@ -334,7 +335,6 @@ watch(getBuckets, () => {
             class="p-button-lg p-button-rounded p-button-text"
             aria-label="Folder details"
             @click="showSidebarInfo(node.data.bucketId)"
-            @keyup.enter="showSidebarInfo(node.data.bucketId)"
           >
             <font-awesome-icon icon="fa-solid fa-circle-info" />
           </Button>
