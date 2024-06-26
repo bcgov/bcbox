@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { Button, Dialog, useConfirm } from '@/lib/primevue';
-import { useObjectStore } from '@/store/objectStore';
+import { useNavStore, useObjectStore } from '@/store';
 import { ButtonMode } from '@/utils/enums';
+import { onDialogHide } from '@/utils/utils';
 
 // Props
 type Props = {
@@ -23,6 +25,7 @@ const emit = defineEmits(['on-deleted-success', 'on-deleted-error']);
 
 // Store
 const objectStore = useObjectStore();
+const { focusedElement } = storeToRefs(useNavStore());
 
 // State
 const displayNoFileDialog = ref(false);
@@ -31,6 +34,7 @@ const displayNoFileDialog = ref(false);
 const confirm = useConfirm();
 
 const confirmDelete = () => {
+  focusedElement.value = document.activeElement;
   if (props.ids.length) {
     const item = props.versionId ? 'version' : 'object';
     const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} ${item}s` : `this ${item}`;
@@ -46,7 +50,9 @@ const confirmDelete = () => {
             .then(() => emit('on-deleted-success', props.versionId))
             .catch(() => {});
         });
-      }
+      },
+      onHide: () => onDialogHide(),
+      reject: () => onDialogHide()
     });
   } else {
     displayNoFileDialog.value = true;
