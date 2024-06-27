@@ -16,6 +16,11 @@ const props = withDefaults(defineProps<Props>(), {
 
 const modelValue = defineModel<boolean>({ default: false });
 
+const exportFileName =
+  props.resourceType === 'object'
+    ? props.resource.name.replace(/\.[^/.]+$/, '')
+    : `${props.resource.bucketName}_bulk_results`;
+
 // Exports DataTable results
 const batchResults = ref();
 
@@ -31,9 +36,9 @@ const exportCSV = () => {
   >
     <DataTable
       ref="batchResults"
-      :export-filename="`${resourceType === 'object' ? resource.name.replace(/\.[^/.]+$/, '') : resource.bucketName}_bulk_results`"
+      :export-filename="exportFileName"
       :value="props.results"
-      class="p-datatable-striped"
+      class="p-datatable-striped results-modal-table"
     >
       <div class="action-buttons">
         <Button
@@ -54,7 +59,7 @@ const exportCSV = () => {
         header="Result"
       >
         <template #body="{ data }">
-          <span>
+          <span class="mr-3">
             <span class="m-1">
               <font-awesome-icon
                 v-if="data.status === 1"
@@ -89,5 +94,10 @@ const exportCSV = () => {
 }
 .icon-noaction {
   color: $bcbox-noaction;
+}
+
+.results-modal-table {
+  text-wrap: nowrap;
+  min-width: 35em;
 }
 </style>

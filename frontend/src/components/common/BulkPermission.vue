@@ -408,6 +408,4 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
     :resource="resource"
     :resource-type="resourceType"
   />
-
-  <pre v-if="complete">{{ results }}</pre>
 </template>
