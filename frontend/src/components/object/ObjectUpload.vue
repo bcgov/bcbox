@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
 import { Button, FileUpload, useToast } from '@/lib/primevue';
@@ -63,7 +63,7 @@ const onUpload = async (event: any) => {
           );
           successfulFiles.value.push(file);
         } catch (error: any) {
-          toast.error(`Failed to upload file ${file.name}`, error, {life: 0});
+          toast.error(`Failed to upload file ${file.name}`, error, { life: 0 });
           failedFiles.value.push(file);
         } finally {
           appStore.endUploading();
@@ -96,6 +96,10 @@ const onRemoveFailedFile = async (index: number) => {
 const noFilesChosen = (files?: Array<File>): boolean => !files?.length;
 
 const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => (formData = values);
+
+onMounted(() => {
+  document.getElementById('upload-panel')?.focus();
+});
 </script>
 
 <template>
@@ -108,7 +112,14 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
   >
     <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
       <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
-        <div class="flex gap-2">
+        <div
+          id="upload-panel"
+          tabindex="0"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="upload-panel-label"
+          class="flex gap-2"
+        >
           <Button
             :class="{ 'p-button-outlined': !noFilesChosen(files) }"
             @click="chooseCallback()"
@@ -125,12 +136,14 @@ const submitObjectMetaTagConfig = (values: Array<ObjectMetadataTagFormType>) => 
             @click="uploadCallback()"
           >
             <font-awesome-icon
+              id="upload-panel-label"
               icon="fa-solid fa-upload"
               class="mr-1"
             />
             Start upload
           </Button>
           <Button
+            aria-label="Close"
             class="p-button-outlined"
             @click="
               () => {

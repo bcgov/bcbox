@@ -10,9 +10,10 @@ import {
   ObjectUpload
 } from '@/components/object';
 import { Button } from '@/lib/primevue';
-import { useAuthStore, useObjectStore, usePermissionStore } from '@/store';
+import { useAuthStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
+import { onDialogHide } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 
@@ -28,6 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
 //const navStore = useNavStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
+const { focusedElement } = storeToRefs(useNavStore());
 
 const { getSelectedObjects } = storeToRefs(objectStore);
 const { getUserId } = storeToRefs(useAuthStore());
@@ -51,9 +53,11 @@ const closeObjectInfo = () => {
 
 const showUpload = () => {
   displayUpload.value = true;
+  focusedElement.value = document.activeElement;
 };
 
 const closeUpload = () => {
+  onDialogHide();
   displayUpload.value = false;
   objectTableKey.value += 1;
 };
