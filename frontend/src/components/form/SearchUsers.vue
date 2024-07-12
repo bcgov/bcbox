@@ -135,7 +135,7 @@ onMounted(() => {
         v-model="selectedIDP"
         :options="getConfig.idpList"
         :option-label="
-          (option) => {
+          (option: any) => {
             return `${option.name} (${option.elevatedRights ? 'internal' : 'external'})`;
           }
         "
@@ -149,7 +149,7 @@ onMounted(() => {
         <Dropdown
           v-model="userSearchInput"
           :options="userSearch"
-          :option-label="(option) => getUserDropdownLabel(option)"
+          :option-label="(option: any) => getUserDropdownLabel(option)"
           editable
           :placeholder="userSearchPlaceholder"
           class="mt-1 mb-4"
