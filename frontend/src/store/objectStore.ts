@@ -66,8 +66,20 @@ export const useObjectStore = defineStore('object', () => {
       await objectService.createObject(object, headers, params, axiosOptions);
     } catch(error: any) {
       if (error.response?.status === 409){
-        throw new Error(error.response.data.detail);
-      } else {
+        // New behaviour:
+        // if file already exists in bucket
+        // do updateObject operation instead
+        const newVersionId = await updateObject(
+          error.response.data.existingObjectId,
+          object,
+          headers,
+          params,
+          axiosOptions
+        );
+        return { newVersionId: newVersionId };
+      }
+
+      else {
         throw new Error('Network error');
       }
     } finally {
