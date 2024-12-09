@@ -55,12 +55,17 @@ const onUpload = async (event: any) => {
 
           const data = formData.find((x: ObjectMetadataTagFormType) => x.filename === file.name);
 
-          await objectStore.createObject(
+          const response = await objectStore.createObject(
             file,
             { metadata: data?.metadata },
             { bucketId: bucketId, tagset: data?.tagset },
             { timeout: 0 } // Infinite timeout for big files upload to avoid timeout error
           );
+
+          // show toast for any object updates
+          if (response?.newVersionId) toast.info(
+            `A new version of file '${file.name}' has been created`,'', { life: 0 });
+
           successfulFiles.value.push(file);
         } catch (error: any) {
           toast.error(`Failed to upload file ${file.name}`, error, { life: 0 });
