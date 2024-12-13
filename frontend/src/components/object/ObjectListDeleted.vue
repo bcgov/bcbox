@@ -4,16 +4,12 @@ import { computed, ref } from 'vue';
 
 import {
   DeleteObjectButton,
-  DownloadObjectButton,
   ObjectSidebar,
-  ObjectTable,
-  ObjectUpload
+  ObjectTableDeleted,
 } from '@/components/object';
-import { Button } from '@/lib/primevue';
-import { useAuthStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
-import { Permissions, RouteNames } from '@/utils/constants';
+import { useObjectStore } from '@/store';
+import { RouteNames } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
-import { onDialogHide } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 
@@ -28,14 +24,10 @@ const props = withDefaults(defineProps<Props>(), {
 
 //const navStore = useNavStore();
 const objectStore = useObjectStore();
-const permissionStore = usePermissionStore();
-const { focusedElement } = storeToRefs(useNavStore());
 
 const { getSelectedObjects } = storeToRefs(objectStore);
-const { getUserId } = storeToRefs(useAuthStore());
 
 // State
-const displayUpload = ref(false);
 const objectInfoId: Ref<string | undefined> = ref(undefined);
 const objectTableKey = ref(0);
 
@@ -51,17 +43,6 @@ const closeObjectInfo = () => {
   objectInfoId.value = undefined;
 };
 
-const showUpload = () => {
-  displayUpload.value = true;
-  focusedElement.value = document.activeElement;
-};
-
-const closeUpload = () => {
-  onDialogHide();
-  displayUpload.value = false;
-  objectTableKey.value += 1;
-};
-
 const onDeletedSuccess = () => {
   objectTableKey.value += 1;
 };
@@ -69,52 +50,22 @@ const onDeletedSuccess = () => {
 
 <template>
   <div>
-    <div
-      v-if="displayUpload"
-      class="mb-4"
-    >
-      <ObjectUpload
-        :bucket-id="props.bucketId"
-        :close-callback="closeUpload"
-      />
-    </div>
-    <div>
-      <Button
-        v-if="permissionStore.isBucketActionAllowed(props.bucketId as string, getUserId, Permissions.CREATE)"
-        v-tooltip.bottom="'Upload file'"
-        class="mr-2"
-        :disabled="displayUpload"
-        aria-label="Upload file"
-        @click="showUpload"
-      >
-        <font-awesome-icon
-          icon="fa-solid fa-upload"
-          class="mr-1"
-        />
-        Upload
-      </Button>
-      <DownloadObjectButton
-        v-if="selectedObjectIds.length > 0"
-        :disabled="displayUpload"
-        :ids="selectedObjectIds"
-        :mode="ButtonMode.BUTTON"
-      />
+    <div class="head-actions">
       <DeleteObjectButton
         v-if="selectedObjectIds.length > 0"
-        :disabled="displayUpload"
         :ids="selectedObjectIds"
         :mode="ButtonMode.BUTTON"
-        :hard="false"
+        :hard="true"
         @on-deleted-success="onDeletedSuccess"
       />
     </div>
 
     <div
       class="flex mt-4"
-      :class="{ 'disable-overlay': displayUpload }"
+      :class="{ 'disable-overlay': false }"
     >
       <div class="flex-grow-1">
-        <ObjectTable
+        <ObjectTableDeleted
           :key="objectTableKey"
           :bucket-id="props.bucketId"
           :object-info-id="objectInfoId"
@@ -131,8 +82,11 @@ const onDeletedSuccess = () => {
         />
       </div>
     </div>
-    <router-link :to="{ name: RouteNames.LIST_OBJECTS_DELETED, query: { bucketId: props.bucketId } }">
-        Recycle Bin
+    <router-link
+      class="deleted-files-link"
+      :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: props.bucketId } }"
+    >
+      Back to folder
     </router-link>
   </div>
 </template>

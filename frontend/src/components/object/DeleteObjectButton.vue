@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { Button, Dialog, useConfirm } from '@/lib/primevue';
@@ -14,10 +14,12 @@ type Props = {
   ids: Array<string>;
   mode: ButtonMode;
   versionId?: string; // Only use this when deleting a single object
+  hard?: boolean
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  versionId: undefined
+  versionId: undefined,
+  hard: false
 });
 
 // Emits
@@ -36,20 +38,38 @@ const confirm = useConfirm();
 const confirmDelete = () => {
   focusedElement.value = document.activeElement;
   if (props.ids.length) {
-    const item = props.versionId ? 'version' : 'object';
+    const item = props.versionId ? 'version' : 'file';
     const msgContext = props.ids.length > 1 ? `the selected ${props.ids.length} ${item}s` : `this ${item}`;
+    const permText = props.hard || props.versionId  ? 'permanently ' : '';
     confirm.require({
-      message: `Please confirm that you want to delete ${msgContext}.`,
+      message: `Please confirm that you want to ${permText}delete ${msgContext}.`,
       header: `Delete ${props.ids.length > 1 ? item + 's' : item}`,
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
       accept: () => {
-        props.ids?.forEach((id: string) => {
+
+
+        // props.ids?.forEach((id: string) => {
+        //   objectStore
+        //     .deleteObject(id, props.versionId, props.hard)
+        //     .then(() => emit('on-deleted-success',
+        //       props.versionId, // version Id or undefined
+        //       props.versionId || false, // true or false
+        //       props.hard)) // if doing hard delete of object
+        //     .catch(() => {});
+        // });
+
+        for (const id of props.ids) {
           objectStore
-            .deleteObject(id, props.versionId)
-            .then(() => emit('on-deleted-success', props.versionId))
+            .deleteObject(id, props.versionId, props.hard)
+            .then(() => emit('on-deleted-success',
+              props.versionId, // version Id or undefined
+              props.versionId || false, // true or false
+              props.hard)) // if doing hard delete of object
             .catch(() => {});
-        });
+        };
+
+
       },
       onHide: () => onDialogHide(),
       reject: () => onDialogHide()
@@ -58,6 +78,13 @@ const confirmDelete = () => {
     displayNoFileDialog.value = true;
   }
 };
+const buttonLabel = computed(() => {
+  return props.hard ?
+    (props.versionId ?
+      'Permanently delete version' : (props.ids.length > 1 ?
+        'Permanently delete these files' : 'Permanently delete file')) :
+    (props.versionId ? 'Delete version' : 'Delete file' );
+});
 </script>
 
 <template>
@@ -78,20 +105,20 @@ const confirmDelete = () => {
 
   <Button
     v-if="props.mode === ButtonMode.ICON"
-    v-tooltip.bottom="props.versionId ? 'Delete version' : 'Delete file'"
+    v-tooltip.bottom="buttonLabel"
     class="p-button-lg p-button-text p-button-danger"
     :disabled="props.disabled"
-    :aria-label="props.versionId ? 'Delete version' : 'Delete file'"
+    :aria-label="buttonLabel"
     @click="confirmDelete()"
   >
     <font-awesome-icon icon="fa-solid fa-trash" />
   </Button>
   <Button
     v-else
-    v-tooltip.bottom="props.versionId ? 'Delete version' : 'Delete file'"
+    v-tooltip.bottom="buttonLabel"
     class="p-button-outlined p-button-danger"
     :disabled="props.disabled"
-    :aria-label="props.versionId ? 'Delete version' : 'Delete file'"
+    :aria-label="buttonLabel"
     @click="confirmDelete()"
   >
     <font-awesome-icon

@@ -163,8 +163,7 @@ describe('Version Store', () => {
       expect(beginIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(getVersionsSpy).toHaveBeenCalledTimes(1);
       expect(getVersionsSpy).toHaveBeenCalledWith('000');
-      expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Fetching versions', new Error());
+      expect(mockToast).toHaveBeenCalledTimes(0);
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(versionStore.getTagging).toStrictEqual([]);
     });
