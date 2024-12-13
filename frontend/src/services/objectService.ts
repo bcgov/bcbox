@@ -149,6 +149,22 @@ export default {
   },
 
   /**
+   * @function copyObjectVersion
+   * Copies a previous version of an object and places on top of the version 'stack'.
+   * If no version is provided to copy, the latest existing version will be copied.
+   * @param {string} objectId The id for the object to get
+   * @param {string} versionId An optional versionId
+   * @returns {Promise} An axios response
+   */
+  copyObjectVersion(objectId: string, versionId: string) {
+    return comsAxios().put(`${PATH}/${objectId}/version`,  undefined, {
+      params: {
+        versionId: versionId
+      }
+    });
+  },
+
+  /**
    * @function listObjectVersion
    * Returns the object version history
    * @param {string} objectId The id for the object to get

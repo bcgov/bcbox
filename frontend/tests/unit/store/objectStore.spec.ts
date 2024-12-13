@@ -189,8 +189,7 @@ describe('Object Store', () => {
         {
           bucketId: ['000'],
           objectId: ['000'],
-          deleteMarker: false,
-          latest: true
+          tagset: undefined
         },
         {}
       );
@@ -216,8 +215,7 @@ describe('Object Store', () => {
         {
           bucketId: ['000'],
           objectId: ['000'],
-          deleteMarker: false,
-          latest: true
+          tagset: undefined
         },
         {}
       );

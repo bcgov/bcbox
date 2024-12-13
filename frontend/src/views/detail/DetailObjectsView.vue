@@ -49,7 +49,7 @@ onBeforeMount(async () => {
         :version-id="versionId"
       />
       <div v-else>
-        <h3 class="font-bold">No object or version provided</h3>
+        <h3 class="font-bold">File not found</h3>
       </div>
     </div>
     <div v-else>

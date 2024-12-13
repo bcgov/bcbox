@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
-import { useAppStore, useAuthStore, usePermissionStore } from '@/store';
+import { useAppStore, useAuthStore, usePermissionStore, useVersionStore } from '@/store';
 import { partition } from '@/utils/utils';
 
 import type { AxiosRequestConfig } from 'axios';
@@ -22,6 +22,7 @@ export const useObjectStore = defineStore('object', () => {
   // Store
   const appStore = useAppStore();
   const permissionStore = usePermissionStore();
+  const versionStore = useVersionStore();
   const { getUserId } = storeToRefs(useAuthStore());
 
   // State
@@ -87,16 +88,54 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  async function deleteObject(objectId: string, versionId?: string) {
+  async function deleteObject(objectId: string, versionId?: string, hard = false) {
     const bucketId = getters.getObject.value(objectId)?.bucketId;
-
     try {
       appStore.beginIndeterminateLoading();
-      await objectService.deleteObject(objectId, versionId);
+
+
+
+      if(!versionId) {
+        if(hard) {
+          // await versionStore.fetchVersions({ objectId: objectId });
+          const versions = await versionStore.getVersionsByObjectId(objectId);
+          for (const v of versions) {
+            await objectService.deleteObject(objectId, v.id);
+          }
+        } else{
+          await objectService.deleteObject(objectId, versionId);
+        }
+        toast.success('File deleted');
+      }
+      else{
+        await objectService.deleteObject(objectId, versionId);
+        toast.success('Version deleted');
+      }
       removeSelectedObject(objectId);
-      toast.success('Object deleted');
     } catch (error: any) {
       toast.error('deleting object.');
+      throw error;
+    } finally {
+      fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
+      appStore.endIndeterminateLoading();
+    }
+  }
+
+  async function restoreObject(objectId: string, versionId?: string) {
+    const bucketId = getters.getObject.value(objectId)?.bucketId;
+    try {
+      appStore.beginIndeterminateLoading();
+      // if restoring a specific version.. copy and make latest
+      if(versionId) {
+        await objectService.copyObjectVersion(objectId, versionId);
+      }
+      const versions = await versionStore.getVersionsByObjectId(objectId);
+      versions
+        .filter(v => v.deleteMarker)
+        .forEach(v => objectService.deleteObject(objectId, v.id));
+      toast.success('File restored');
+    } catch (error: any) {
+      toast.error('restoring file');
       throw error;
     } finally {
       fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
@@ -155,8 +194,8 @@ export const useObjectStore = defineStore('object', () => {
 
                 // Added to allow deletion of objects before versioning implementation
                 // TODO: Verify if needed after versioning implemented
-                deleteMarker: false,
-                latest: true
+                // deleteMarker: false,
+                // latest: true
               },
               headers
             )
@@ -197,7 +236,7 @@ export const useObjectStore = defineStore('object', () => {
       // Return full response as data will always be No Content
       return await objectService.headObject(objectId);
     } catch (error: any) {
-      toast.error('Fetching head', error);
+      // toast.error('Fetching head', error);
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -284,6 +323,7 @@ export const useObjectStore = defineStore('object', () => {
     // Actions
     createObject,
     deleteObject,
+    restoreObject,
     getObjectUrl,
     fetchObjects,
     headObject,

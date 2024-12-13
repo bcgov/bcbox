@@ -121,6 +121,10 @@ div:focus-visible {
   box-shadow: 0 6px 6px -1px rgb(145, 145, 145);
 }
 
+.p-tooltip{
+  max-width: 400px !important;
+}
+
 /* layout */
 .layout-main {
   margin: 1rem;
@@ -230,6 +234,9 @@ div:focus-visible {
       &.p-highlight,
       &.selected-row {
         background: $bcbox-highlight-background !important;
+      }
+      &.deleted-row td:not(.action-buttons) {
+        opacity: 0.6 !important;
       }
     }
   }
