@@ -28,7 +28,7 @@ const { getUser } = storeToRefs(userStore);
 
 const object: Ref<COMSObject> = computed((): any => getObject.value(props.objectId));
 const bucket: Ref<Bucket | undefined> = computed(() => getBucket.value(object.value?.bucketId as string));
-const createdBy: Ref<string | undefined> = computed(() => getUser.value(object.value.createdBy)?.fullName);
+const createdBy: Ref<string | undefined> = computed(() => getUser.value(object.value?.createdBy)?.fullName);
 const updatedBy: Ref<string | undefined> = computed(() => getUser.value(object.value?.updatedBy)?.fullName);
 
 onMounted(() => {

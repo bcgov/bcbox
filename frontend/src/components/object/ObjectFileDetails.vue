@@ -51,29 +51,40 @@ const versionStore = useVersionStore();
 
 const { getUserId } = storeToRefs(useAuthStore());
 const { getObject } = storeToRefs(objectStore);
-const { getVersionsByObjectId, getLatestVersionIdByObjectId } = storeToRefs(versionStore);
+const { getIsDeleted, getLatestVersionIdByObjectId, getVersionsByObjectId } = storeToRefs(versionStore);
 
 // State
 const object: Ref<COMSObject | undefined> = ref(undefined);
 const bucketId: Ref<string> = ref('');
-
-const currentVersionId: Ref<string | undefined> = ref(props.versionId);
-const latestVersionId = computed(() => getLatestVersionIdByObjectId.value(props.objectId));
 const permissionsVisible: Ref<boolean> = ref(false);
 
-async function onVersionsChanged() {
-  await Promise.all([
-    versionStore.fetchVersions({ objectId: props.objectId }),
-    metadataStore.fetchMetadata({ objectId: props.objectId }),
-    tagStore.fetchTagging({ objectId: props.objectId })
-  ]).then(async () => {
-    currentVersionId.value = latestVersionId.value;
+// version stuff
+const currentVersionId: Ref<string | undefined> = ref(props.versionId);
+const latestVersionId = computed(() => getLatestVersionIdByObjectId.value(props.objectId));
+const isDeleted: Ref<boolean> = computed(() => getIsDeleted.value(props.objectId));
 
+async function onVersionsChanged(changedVersionId: string | undefined, isVersion: boolean, hardDelete: boolean) {
+  // if doing hard delete or no versions left, redirect to object list
+  const otherVersions = getVersionsByObjectId.value(props.objectId)
+    .filter(v=>v.id !== changedVersionId);
+
+  if (hardDelete || (isVersion && otherVersions.length === 0)) {
+    router.push({ path: '/list/objects', query: { bucketId: bucketId.value }});
+  }
+  // else stay on page
+  else {
     await Promise.all([
-      versionStore.fetchMetadata({ objectId: props.objectId }),
-      versionStore.fetchTagging({ objectId: props.objectId })
-    ]);
-  });
+      versionStore.fetchVersions({ objectId: props.objectId }),
+      metadataStore.fetchMetadata({ objectId: props.objectId }),
+      tagStore.fetchTagging({ objectId: props.objectId })
+    ]).then(async () => {
+      currentVersionId.value = latestVersionId.value;
+      await Promise.all([
+        versionStore.fetchMetadata({ objectId: props.objectId }),
+        versionStore.fetchTagging({ objectId: props.objectId })
+      ]);
+    });
+  }
 }
 
 onMounted(async () => {
@@ -84,7 +95,7 @@ onMounted(async () => {
   object.value = getObject.value(props.objectId);
   bucketId.value = object.value ? object.value.bucketId : '';
   if (
-    head?.status !== 204 &&
+    (head?.status !== 204 && !isDeleted.value) &&
     (!object.value ||
       !permissionStore.isObjectActionAllowed(object.value.id, getUserId.value, Permissions.READ, object.value.bucketId))
   ) {
@@ -121,19 +132,21 @@ onMounted(async () => {
 
         <div class="action-buttons">
           <ShareButton
+            v-if="!isDeleted"
             :object-id="props.objectId"
             label-text="File"
           />
           <DownloadObjectButton
-            v-if="
-              object.public || permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.READ, bucketId)
-            "
+            v-if="(object.public ||
+              permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.READ, bucketId)) &&
+              !isDeleted"
             :mode="ButtonMode.ICON"
             :ids="[object.id]"
             :version-id="currentVersionId"
           />
           <Button
-            v-if="permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.MANAGE, bucketId)"
+            v-if="permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.MANAGE, bucketId) &&
+              !isDeleted"
             v-tooltip.bottom="'File permissions'"
             class="p-button-lg p-button-text"
             aria-label="File permissions"
@@ -145,8 +158,7 @@ onMounted(async () => {
             v-if="permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.DELETE, bucketId)"
             :mode="ButtonMode.ICON"
             :ids="[object.id]"
-            :version-id="currentVersionId"
-            :disabled="getVersionsByObjectId(object.id).length === 1"
+            :hard="isDeleted"
             @on-deleted-success="onVersionsChanged"
           />
         </div>
@@ -162,7 +174,7 @@ onMounted(async () => {
         <ObjectAccess :object-id="object.id" />
         <ObjectMetadata
           v-model:version-id="currentVersionId"
-          :editable="currentVersionId === latestVersionId"
+          :editable="!isDeleted && (currentVersionId === latestVersionId)"
           :object-id="object.id"
           @on-metadata-success="onVersionsChanged"
         />
@@ -182,10 +194,12 @@ onMounted(async () => {
           :bucket-id="bucketId"
           :object-id="object.id"
           @on-deleted-success="onVersionsChanged"
+          @on-restored-success="onVersionsChanged"
         />
         <ObjectTag
           v-model:version-id="currentVersionId"
           :object-id="object.id"
+          :editable="!isDeleted"
         />
       </div>
     </div>

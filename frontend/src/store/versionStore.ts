@@ -39,6 +39,9 @@ export const useVersionStore = defineStore('version', () => {
     getVersionsByObjectId: computed(
       () => (objectId: string) => state.versions.value.filter((x: Version) => x.objectId === objectId)
     ),
+    getIsDeleted: computed(() => (objectId: string) => state.versions.value.find((x: Version) =>
+      ((x.objectId === objectId) && (x.isLatest) && (x.deleteMarker))) ? true : false
+    ),
     getLatestVersionIdByObjectId: computed(
       () => (objectId: string) => state.versions.value.find((x: Version) => x.objectId === objectId && x.isLatest)?.id
     ),
@@ -94,7 +97,8 @@ export const useVersionStore = defineStore('version', () => {
       appStore.beginIndeterminateLoading();
       state.versions.value = (await objectService.listObjectVersion(params.objectId)).data;
     } catch (error: any) {
-      toast.error('Fetching versions', error);
+      // toast.error('Fetching versions', error);
+      state.versions.value = [];
     } finally {
       appStore.endIndeterminateLoading();
     }
