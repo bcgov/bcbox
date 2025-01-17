@@ -1,6 +1,7 @@
 import type { IAudit } from '@/interfaces';
 
 export type Version = {
+  createdAt: string;
   deleteMarker: boolean;
   isLatest: boolean;
   id: string;

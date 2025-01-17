@@ -25,7 +25,7 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {});
 
 // Emits
-const emit = defineEmits(['on-deleted-success', 'on-restored-success']);
+const emit = defineEmits(['on-version-deleted', 'on-version-restored', 'on-object-deleted']);
 
 // Store
 const permissionStore = usePermissionStore();
@@ -34,11 +34,13 @@ const versionStore = useVersionStore();
 // getters
 const { getUserId } = storeToRefs(useAuthStore());
 const { getUser } = storeToRefs(userStore);
-const { getIsDeleted, getVersionsByObjectId } = storeToRefs(versionStore);
+const { getIsDeleted, getVersionsByObjectId, getIsVersioningEnabled } = storeToRefs(versionStore);
 
 // State
 const versionId = defineModel<string>('versionId');
 const versions: Ref<Array<Version>> = computed(() => getVersionsByObjectId.value(props.objectId));
+const bucketVersioningEnabled = computed(() => getIsVersioningEnabled.value(props.objectId));
+
 // object is currently deleted (ie lastet versionis a dm)
 const isDeleted: Ref<boolean> = computed(() => getIsDeleted.value(props.objectId));
 // version table data
@@ -54,15 +56,14 @@ const tableData: Ref<Array<VersionDataSource>> = computed(() => {
     }));
 });
 // Highlight row for currently selected version
-const rowClass = (data: any) => [{ 'selected-row': data.id === versionId.value, 'deleted-row': data.isDeleted }];
+const rowClass = (data: any) => [{
+  'selected-row': data.id === versionId.value && !data.isDeleted,
+  'deleted-row': data.isDeleted
+}];
 
-// re-emit up to File Details component
-async function onDeletedSuccess(versionId: string | undefined, isVersion: boolean, hard: boolean) {
-  emit('on-deleted-success', versionId, isVersion, hard);
-}
-async function onRestoredSuccess(versionId: string | undefined) {
-  emit('on-restored-success', versionId, true, false);
-}
+const emitToParent = (versionId: string) => {
+  emit('on-version-restored', versionId);
+};
 
 const onVersionClick = (e: any) => {
   versionId.value = e.data.id;
@@ -163,15 +164,19 @@ watch(props, () => {
               :mode="ButtonMode.ICON"
               :ids="[props.objectId]"
               :version-id="data.id"
-              :hard="false"
-              @on-deleted-success="onDeletedSuccess"
+              :hard-delete="false"
+              @on-version-deleted="
+                bucketVersioningEnabled ?
+                emit('on-version-deleted', { versionId: versionId }) :
+                emit('on-object-deleted', { hardDelete: true })
+              "
             />
             <RestoreObjectButton
               v-if="isDeleted"
               :mode="ButtonMode.ICON"
               :ids="[props.objectId]"
               :version-id="data.id"
-              @on-restored-success="onRestoredSuccess"
+              @on-version-restored="emitToParent"
             />
           </template>
         </Column>

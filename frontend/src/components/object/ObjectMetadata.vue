@@ -33,6 +33,9 @@ const { getMetadataByObjectId } = storeToRefs(metadataStore);
 // State
 const obj = computed(() => objectStore.getObject(props.objectId));
 const versionId = defineModel<string>('versionId');
+const metadata  = computed(() => (versionId.value ?
+  getMetadataByVersionId.value(versionId.value) :
+  getMetadataByObjectId.value(props.objectId))?.metadata ?? []);
 const editing: Ref<boolean> = ref(false);
 const formData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
@@ -56,16 +59,14 @@ const confirmUpdate = (values: ObjectMetadataTagFormType) => {
 
 const showModal = () => {
   formData.value.filename = obj.value?.name ?? '';
-  formData.value.metadata = (
-    versionId.value ? getMetadataByVersionId.value(versionId.value) : getMetadataByObjectId.value(props.objectId)
-  )?.metadata;
+  formData.value.metadata = metadata.value;
 
   editing.value = true;
 };
 
 const submitModal = async (values: ObjectMetadataTagFormType) => {
-  await metadataStore.replaceMetadata(props.objectId, values.metadata ?? [], versionId.value);
-  emit('on-metadata-success');
+  const newVersion = await metadataStore.replaceMetadata(props.objectId, values.metadata ?? [], versionId.value);
+  emit('on-metadata-success', newVersion);
   closeModal();
 };
 
@@ -76,11 +77,14 @@ const closeModal = () => {
 
 <template>
   <div class="grid details-grid grid-nogutter mb-2">
-    <div class="col-12">
+    <div
+      v-if="metadata.length > 0 "
+      class="col-12"
+    >
       <h2>Metadata</h2>
     </div>
     <GridRow
-      v-for="meta in (versionId ? getMetadataByVersionId(versionId) : getMetadataByObjectId(props.objectId))?.metadata"
+      v-for="meta in metadata"
       :key="meta.key + meta.value"
       :label="meta.key"
       :value="meta.value"

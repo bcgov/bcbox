@@ -11,7 +11,7 @@ import {
 } from '@/components/object';
 import { Button } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
-import { Permissions, RouteNames } from '@/utils/constants';
+import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 import { onDialogHide } from '@/utils/utils';
 
@@ -62,7 +62,7 @@ const closeUpload = () => {
   objectTableKey.value += 1;
 };
 
-const onDeletedSuccess = () => {
+const onObjectDeleted = () => {
   objectTableKey.value += 1;
 };
 </script>
@@ -94,18 +94,16 @@ const onDeletedSuccess = () => {
         Upload
       </Button>
       <DownloadObjectButton
-        v-if="selectedObjectIds.length > 0"
-        :disabled="displayUpload"
+        :disabled="displayUpload || selectedObjectIds.length === 0"
         :ids="selectedObjectIds"
         :mode="ButtonMode.BUTTON"
       />
       <DeleteObjectButton
-        v-if="selectedObjectIds.length > 0"
-        :disabled="displayUpload"
+        :disabled="displayUpload || selectedObjectIds.length === 0"
         :ids="selectedObjectIds"
         :mode="ButtonMode.BUTTON"
-        :hard="false"
-        @on-deleted-success="onDeletedSuccess"
+        :hard-delete="false"
+        @on-object-deleted="onObjectDeleted"
       />
     </div>
 
@@ -131,9 +129,6 @@ const onDeletedSuccess = () => {
         />
       </div>
     </div>
-    <router-link :to="{ name: RouteNames.LIST_OBJECTS_DELETED, query: { bucketId: props.bucketId } }">
-        Recycle Bin
-    </router-link>
   </div>
 </template>
 

@@ -1,9 +1,9 @@
-import { defineStore, storeToRefs } from 'pinia';
+import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { objectService } from '@/services';
-import { useAppStore, useAuthStore, usePermissionStore, useVersionStore } from '@/store';
+import { useAppStore, usePermissionStore, useVersionStore } from '@/store';
 import { partition } from '@/utils/utils';
 
 import type { AxiosRequestConfig } from 'axios';
@@ -23,7 +23,6 @@ export const useObjectStore = defineStore('object', () => {
   const appStore = useAppStore();
   const permissionStore = usePermissionStore();
   const versionStore = useVersionStore();
-  const { getUserId } = storeToRefs(useAuthStore());
 
   // State
   const state: ObjectStoreState = {
@@ -65,11 +64,10 @@ export const useObjectStore = defineStore('object', () => {
       }
 
       await objectService.createObject(object, headers, params, axiosOptions);
-    } catch(error: any) {
+    }
+    // if file already exists in bucket do updateObject operation instead
+    catch(error: any) {
       if (error.response?.status === 409){
-        // New behaviour:
-        // if file already exists in bucket
-        // do updateObject operation instead
         const newVersionId = await updateObject(
           error.response.data.existingObjectId,
           object,
@@ -79,7 +77,6 @@ export const useObjectStore = defineStore('object', () => {
         );
         return { newVersionId: newVersionId };
       }
-
       else {
         throw new Error('Network error');
       }
@@ -88,57 +85,42 @@ export const useObjectStore = defineStore('object', () => {
     }
   }
 
-  async function deleteObject(objectId: string, versionId?: string, hard = false) {
-    const bucketId = getters.getObject.value(objectId)?.bucketId;
+  async function deleteObject(objectId: string, hard = false) {
     try {
       appStore.beginIndeterminateLoading();
-
-
-
-      if(!versionId) {
-        if(hard) {
-          // await versionStore.fetchVersions({ objectId: objectId });
-          const versions = await versionStore.getVersionsByObjectId(objectId);
-          for (const v of versions) {
-            await objectService.deleteObject(objectId, v.id);
-          }
-        } else{
-          await objectService.deleteObject(objectId, versionId);
+      // if doing hard delete, delete all versions of the object
+      if(hard) {
+        await versionStore.fetchVersions({ objectId: objectId });
+        const versions = await versionStore.getVersionsByObjectId(objectId);
+        for (const v of versions) {
+          await objectService.deleteObject(objectId, v.id);
         }
-        toast.success('File deleted');
       }
-      else{
-        await objectService.deleteObject(objectId, versionId);
-        toast.success('Version deleted');
-      }
+      // else delete object (creates delete-marker)
+      else { await objectService.deleteObject(objectId); }
       removeSelectedObject(objectId);
-    } catch (error: any) {
-      toast.error('deleting object.');
-      throw error;
-    } finally {
-      fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
+    }
+    finally {
       appStore.endIndeterminateLoading();
     }
   }
 
-  async function restoreObject(objectId: string, versionId?: string) {
-    const bucketId = getters.getObject.value(objectId)?.bucketId;
+  async function deleteVersion(objectId: string, versionId: string | undefined) {
     try {
       appStore.beginIndeterminateLoading();
-      // if restoring a specific version.. copy and make latest
-      if(versionId) {
-        await objectService.copyObjectVersion(objectId, versionId);
-      }
-      const versions = await versionStore.getVersionsByObjectId(objectId);
-      versions
-        .filter(v => v.deleteMarker)
-        .forEach(v => objectService.deleteObject(objectId, v.id));
-      toast.success('File restored');
-    } catch (error: any) {
-      toast.error('restoring file');
-      throw error;
+      await objectService.deleteObject(objectId, versionId);
+      removeSelectedObject(objectId);
     } finally {
-      fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
+      appStore.endIndeterminateLoading();
+    }
+  }
+
+  async function restoreObject(objectId: string, versionId: string | undefined) {
+    try {
+      appStore.beginIndeterminateLoading();
+      // restore either provided version or latest existing
+      return await objectService.copyObjectVersion(objectId, versionId);
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -176,6 +158,7 @@ export const useObjectStore = defineStore('object', () => {
         ];
 
         let response = Array<COMSObject>();
+
         if (uniqueIds.length) {
           // If metadata specified, search for objects with matching metadata
           const headers: Record<string, string> = {};
@@ -191,11 +174,13 @@ export const useObjectStore = defineStore('object', () => {
                 bucketId: params.bucketId ? [params.bucketId] : undefined,
                 objectId: uniqueIds,
                 tagset: tagset ? tagset.reduce((acc, cur) => ({ ...acc, [cur.key]: cur.value }), {}) : undefined,
-
-                // Added to allow deletion of objects before versioning implementation
-                // TODO: Verify if needed after versioning implemented
-                // deleteMarker: false,
-                // latest: true
+                // set hard limits to avoid caching an excessive number of objects in a simgle bucket/folder
+                // This function fetchObjects() should allow sort/limit/page on the object records.
+                // But it currently fetches permissions first (`uniqueIds`) and joins results on those values
+                limit: params.limit ? params.limit : 50,
+                sort: params.sort ? params.sort : 'updatedAt',
+                order: params.order ? params.order : 'desc',
+                page: params.page ? params.page : 1,
               },
               headers
             )
@@ -323,6 +308,7 @@ export const useObjectStore = defineStore('object', () => {
     // Actions
     createObject,
     deleteObject,
+    deleteVersion,
     restoreObject,
     getObjectUrl,
     fetchObjects,

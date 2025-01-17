@@ -45,6 +45,17 @@ export const useVersionStore = defineStore('version', () => {
     getLatestVersionIdByObjectId: computed(
       () => (objectId: string) => state.versions.value.find((x: Version) => x.objectId === objectId && x.isLatest)?.id
     ),
+    getLatestNonDmVersionIdByObjectId: computed(
+      () => (objectId: string) => state.versions.value
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .find((x: Version) =>
+          x.objectId === objectId &&
+          !x.deleteMarker
+        )?.id
+    ),
+    getIsVersioningEnabled: computed(
+      () => (objectId: string) => state.versions.value.filter((x: Version) => x.objectId === objectId)[0]?.s3VersionId
+    ),
     getMetadata: computed(() => state.metadata.value),
     getMetadataByVersionId: computed(
       () => (versionId: string) => state.metadata.value.find((x: Metadata) => x.versionId === versionId)
@@ -108,9 +119,6 @@ export const useVersionStore = defineStore('version', () => {
     return getters.getMetadataByVersionId.value(versionId)?.metadata.find((x) => x.key === key)?.value;
   }
 
-  function findS3VersionByObjectId(objectId: string) {
-    return state.versions.value.filter((x: Version) => x.objectId === objectId)[0]?.s3VersionId;
-  }
   return {
     // State
     ...state,
@@ -123,7 +131,6 @@ export const useVersionStore = defineStore('version', () => {
     fetchTagging,
     fetchVersions,
     findMetadataValue,
-    findS3VersionByObjectId
   };
 });
 

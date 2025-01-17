@@ -6,10 +6,11 @@ import { Spinner } from '@/components/layout';
 import {
   DeleteObjectButton,
   ObjectPermission,
+  RestoreObjectButton
 } from '@/components/object';
 import { SyncButton } from '@/components/common';
-import { Button, Column, DataTable, Dialog, InputText, useToast } from '@/lib/primevue';
-import { useAuthStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
+import { Button, Column, DataTable, Dialog, InputText } from '@/lib/primevue';
+import { useAuthStore, useBucketStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 import { onDialogHide } from '@/utils/utils';
 import { ButtonMode } from '@/utils/enums';
@@ -30,23 +31,15 @@ type DataTableObjectSource = {
 type DataTableFilter = {
   [key: string]: { value: any; matchMode: string };
 };
-// Props
-type Props = {
-  bucketId?: string;
-  objectInfoId?: string;
-};
-
-const props = withDefaults(defineProps<Props>(), {
-  bucketId: undefined,
-  objectInfoId: undefined
-});
 
 // Emits
 const emit = defineEmits(['show-object-info']);
 
 // Store
+const bucketStore = useBucketStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
+const { getBuckets } = storeToRefs(useBucketStore());
 const { getUserId } = storeToRefs(useAuthStore());
 const { focusedElement } = storeToRefs(useNavStore());
 
@@ -65,9 +58,11 @@ const filters: Ref<DataTableFilter> = ref({
 });
 
 // Actions
-const toast = useToast();
-const onDeletedSuccess = () => {
-  toast.success('File deleted');
+const onObjectDeleted = () => {
+  loading.value = true;
+  loadLazyData();
+};
+const onObjectRestored = () => {
   loadLazyData();
 };
 
@@ -85,8 +80,10 @@ async function showPermissions(objectId: string) {
   focusedElement.value = document.activeElement;
 }
 
-onMounted(() => {
+onMounted( async () => {
   loading.value = true;
+  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+
   lazyParams.value = {
     first: 0,
     rows: lazyDataTable.value.rows,
@@ -103,7 +100,6 @@ const loadLazyData = (event?: any) => {
   objectService
     .searchObjects(
       {
-        bucketId: props.bucketId ? [props.bucketId] : undefined,
         deleteMarker: true,
         latest: true,
         page: lazyParams.value?.page ? ++lazyParams.value.page : 1,
@@ -114,10 +110,16 @@ const loadLazyData = (event?: any) => {
       }
     )
     .then((r: any) => {
-      tableData.value = r.data.map((item: any) => ({
-        ...item,
-        updatedAt: item.updatedAt === null ? item.createdAt : item.updatedAt
-      }));
+      // add full object url to table data
+      tableData.value = r.data.map((o: COMSObject) => {
+        const bucket = getBuckets.value.find((b) =>  b.bucketId === o.bucketId);
+        return {
+          ...o,
+          location: `${bucket?.endpoint}/${bucket?.bucket}/${o.path}`,
+          updatedAt: o.updatedAt === null ? o.createdAt : o.updatedAt
+        };
+      });
+
       totalRecords.value = +r?.headers['x-total-rows'];
       // add objects to store
       objectStore.setObjects(r.data);
@@ -221,7 +223,7 @@ onUnmounted(() => {
           v-if="!loading"
           class="flex justify-content-center"
         >
-          <h4 class="py-5">There are no deleted files in this folder</h4>
+          <h4 class="py-5">Looks like you don't have any recently deleted files.</h4>
         </div>
       </template>
       <template #loading>
@@ -248,25 +250,20 @@ onUnmounted(() => {
           </div>
         </template>
       </Column>
-      <!-- <Column
-        field="id"
+      <Column
+        field="location"
         sortable
-        header="Object ID"
-        style="width: 150px"
+        header="Original Location"
       >
         <template #body="{ data }">
-          <div
-            v-tooltip.bottom="{ value: data.id }"
-            :data-objectId="data.id"
-          >
-            {{ formatShortUuid(data.id) }}
-          </div>
+          <span v-tooltip.bottom="'The Original location of this fie'">
+            {{ data.location }}
+        </span>
         </template>
-      </Column> -->
+      </Column>
       <Column
         field="updatedAt"
-        header="Updated date"
-        style="width: 300px"
+        header="Deleted date"
         sortable
       >
         <template #body="{ data }">
@@ -275,14 +272,14 @@ onUnmounted(() => {
       </Column>
       <Column
         header="Actions"
-        header-style="min-width: 270px"
+        header-style="min-width: 150px"
         header-class="header-right"
         body-class="action-buttons"
       >
         <template #body="{ data }">
           <Button
             v-if="
-              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.MANAGE, props.bucketId as string)
+              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.MANAGE, data.bucketId as string)
             "
             id="file_permissions"
             v-tooltip.bottom="'File permissions'"
@@ -299,7 +296,7 @@ onUnmounted(() => {
           <Button
             v-if="
               data.public ||
-              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, props.bucketId as string)
+              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, data.bucketId as string)
             "
             v-tooltip.bottom="'File details'"
             class="p-button-lg p-button-rounded p-button-text"
@@ -310,12 +307,17 @@ onUnmounted(() => {
           </Button>
           <DeleteObjectButton
             v-if="
-              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.DELETE, props.bucketId as string)
+              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.DELETE, data.bucketId as string)
             "
-            :hard="true"
+            :hard-delete="true"
             :mode="ButtonMode.ICON"
             :ids="[data.id]"
-            @on-deleted-success="onDeletedSuccess"
+            @on-object-deleted="onObjectDeleted"
+          />
+          <RestoreObjectButton
+            :mode="ButtonMode.ICON"
+            :ids="[data.id]"
+            @on-object-restored="onObjectRestored"
           />
         </template>
       </Column>

@@ -3,7 +3,13 @@ import { comsAxios } from './interceptors';
 import { excludeMetaTag, setDispositionHeader } from '@/utils/utils';
 
 import type { AxiosRequestConfig } from 'axios';
-import type { GetMetadataOptions, GetObjectTaggingOptions, MetadataPair, SearchObjectsOptions, Tag } from '@/types';
+import type {
+  COMSObject,
+  GetMetadataOptions,
+  GetObjectTaggingOptions,
+  MetadataPair,
+  SearchObjectsOptions,
+  Tag } from '@/types';
 import { ExcludeTypes } from '@/utils/enums';
 
 const PATH = '/object';
@@ -156,7 +162,7 @@ export default {
    * @param {string} versionId An optional versionId
    * @returns {Promise} An axios response
    */
-  copyObjectVersion(objectId: string, versionId: string) {
+  copyObjectVersion(objectId: string, versionId: string | undefined) {
     return comsAxios().put(`${PATH}/${objectId}/version`,  undefined, {
       params: {
         versionId: versionId
@@ -240,7 +246,8 @@ export default {
   async searchObjects(params: SearchObjectsOptions = {}, headers: any = {}) {
     if (params.objectId && params.objectId[0] === undefined) delete params.objectId;
 
-    if (params.objectId) {
+    // if searching with more than one objectId
+    if (params.objectId && params.objectId.length > 1) {
       /**
        * split calls to COMS if query params (eg objectId's)
        * will cause url length to excede 2000 characters
@@ -273,11 +280,22 @@ export default {
       const space = urlLimit;
       const groupSize = Math.floor(space / 48);
 
+      // params.objectId is a list of objectsId's from permission search
+      // to apply the provided sort/limit query on OBJECT records,
+      // first return all matching objects (without filtering on permissions)
+      // and then intersect with permissions (params.objectId) list
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+      const { objectId, ...paramsWithoutObjectId } = params;
+      const objectResponse: COMSObject[] = (await comsAxios()
+        .get(PATH, { params: paramsWithoutObjectId, headers: headers })).data;
+      // and build correctly sorted list of objectId's
+      const objIds = objectResponse.filter(o => params.objectId?.includes(o.id)).map(o=> o.id);
+
       // loop through each group and push COMS result to `groups` array
-      const iterations = Math.ceil(params.objectId.length / groupSize);
+      const iterations = Math.ceil(objIds.length / groupSize);
       const groups = [];
       for (let i = 0; i < iterations; i++) {
-        const ids = params.objectId.slice(i * groupSize, i * groupSize + groupSize);
+        const ids = objIds.slice(i * groupSize, i * groupSize + groupSize);
         groups.push(await comsAxios().get(PATH, { params: { ...params, objectId: ids }, headers: headers }));
       }
       return Promise.resolve({ data: groups.flatMap((result) => result.data) });

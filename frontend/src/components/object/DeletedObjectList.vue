@@ -5,22 +5,13 @@ import { computed, ref } from 'vue';
 import {
   DeleteObjectButton,
   ObjectSidebar,
-  ObjectTableDeleted,
+  DeletedObjectTable,
+  RestoreObjectButton
 } from '@/components/object';
 import { useObjectStore } from '@/store';
-import { RouteNames } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
 
 import type { Ref } from 'vue';
-
-// Props
-type Props = {
-  bucketId?: string;
-};
-
-const props = withDefaults(defineProps<Props>(), {
-  bucketId: undefined
-});
 
 //const navStore = useNavStore();
 const objectStore = useObjectStore();
@@ -43,20 +34,30 @@ const closeObjectInfo = () => {
   objectInfoId.value = undefined;
 };
 
-const onDeletedSuccess = () => {
+const onObjectDeleted = () => {
+  objectTableKey.value += 1;
+};
+
+const onOjectRestored = () => {
   objectTableKey.value += 1;
 };
 </script>
 
 <template>
   <div>
-    <div class="head-actions">
-      <DeleteObjectButton
-        v-if="selectedObjectIds.length > 0"
+    <div class="flex align-items-center justify-content-start">
+      <RestoreObjectButton
+        :disabled="selectedObjectIds.length === 0"
         :ids="selectedObjectIds"
         :mode="ButtonMode.BUTTON"
-        :hard="true"
-        @on-deleted-success="onDeletedSuccess"
+        @on-object-restored="onOjectRestored"
+      />
+      <DeleteObjectButton
+        :disabled="selectedObjectIds.length === 0"
+        :ids="selectedObjectIds"
+        :mode="ButtonMode.BUTTON"
+        :hard-delete="true"
+        @on-object-deleted="onObjectDeleted"
       />
     </div>
 
@@ -65,9 +66,8 @@ const onDeletedSuccess = () => {
       :class="{ 'disable-overlay': false }"
     >
       <div class="flex-grow-1">
-        <ObjectTableDeleted
+        <DeletedObjectTable
           :key="objectTableKey"
-          :bucket-id="props.bucketId"
           :object-info-id="objectInfoId"
           @show-object-info="showObjectInfo"
         />
@@ -82,12 +82,6 @@ const onDeletedSuccess = () => {
         />
       </div>
     </div>
-    <router-link
-      class="deleted-files-link"
-      :to="{ name: RouteNames.LIST_OBJECTS, query: { bucketId: props.bucketId } }"
-    >
-      Back to folder
-    </router-link>
   </div>
 </template>
 

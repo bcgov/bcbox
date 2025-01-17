@@ -27,6 +27,9 @@ const objectStore = useObjectStore();
 const tagStore = useTagStore();
 const versionStore = useVersionStore();
 
+// Getters
+const { getIsVersioningEnabled } = storeToRefs(versionStore);
+
 // State
 const { getObject } = storeToRefs(objectStore);
 const { getTaggingByObjectId } = storeToRefs(tagStore);
@@ -48,7 +51,7 @@ const toast = useToast();
 
 const confirmUpdate = () => {
   let confirmMessage = 'Please confirm that you want to upload a new version.';
-  if (versionStore.findS3VersionByObjectId(props.objectId) === null) {
+  if (!getIsVersioningEnabled.value(props.objectId)) {
     confirmMessage = 'This is a non-versioned bucket. ' + 'Uploading a new version will overwrite the current version.';
   }
   confirm.require({
@@ -79,7 +82,7 @@ const onUpload = async () => {
       toast.info('File upload starting...');
       appStore.beginUploading();
 
-      const newVersion = await objectStore.updateObject(
+      const newVersionId = await objectStore.updateObject(
         props.objectId,
         file.value,
         { metadata: objectMetadata },
@@ -90,7 +93,7 @@ const onUpload = async () => {
       // No finally block as we need this called before potential navigation
       appStore.endUploading();
 
-      emit('on-file-uploaded', newVersion);
+      emit('on-file-uploaded', newVersionId);
       toast.success('File uploaded');
     }
   } catch (error: any) {

@@ -32,6 +32,9 @@ const { getTaggingByObjectId } = storeToRefs(tagStore);
 // State
 const obj = computed(() => objectStore.getObject(props.objectId));
 const versionId = defineModel<string>('versionId');
+const tags = computed(() => (versionId.value ?
+  getTaggingByVersionId.value(versionId.value) :
+  getTaggingByObjectId.value(props.objectId))?.tagset ?? []);
 const editing: Ref<boolean> = ref(false);
 const formData: Ref<ObjectMetadataTagFormType> = ref({
   filename: ''
@@ -40,9 +43,7 @@ const formData: Ref<ObjectMetadataTagFormType> = ref({
 // Actions
 const showModal = () => {
   formData.value.filename = obj.value?.name ?? '';
-  formData.value.tagset = (
-    versionId.value ? getTaggingByVersionId.value(versionId.value) : getTaggingByObjectId.value(props.objectId)
-  )?.tagset;
+  formData.value.tagset = tags.value;
 
   editing.value = true;
 };
@@ -64,11 +65,14 @@ const closeModal = () => {
 
 <template>
   <div class="grid details-grid grid-nogutter mb-2">
-    <div class="col-12">
+    <div
+      v-if="tags.length > 0 "
+      class="col-12"
+    >
       <h2>Tags</h2>
     </div>
     <div
-      v-for="tag in (versionId ? getTaggingByVersionId(versionId) : getTaggingByObjectId(props.objectId))?.tagset"
+      v-for="tag in tags"
       :key="tag.key + tag.value"
     >
       <div class="grid">

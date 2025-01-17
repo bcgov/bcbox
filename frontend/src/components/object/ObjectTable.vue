@@ -11,7 +11,7 @@ import {
   ObjectPublicToggle
 } from '@/components/object';
 import { SyncButton, ShareButton } from '@/components/common';
-import { Button, Column, DataTable, Dialog, InputText, useToast } from '@/lib/primevue';
+import { Button, Column, DataTable, Dialog, InputText } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 import { onDialogHide } from '@/utils/utils';
@@ -70,10 +70,8 @@ const filters: Ref<DataTableFilter> = ref({
 });
 
 // Actions
-const toast = useToast();
 const formatShortUuid = (uuid: string) => uuid?.slice(0, 8) ?? uuid;
-const onDeletedSuccess = () => {
-  toast.success('File deleted');
+const onObjectDeleted = () => {
   loadLazyData();
 };
 
@@ -374,9 +372,9 @@ const selectedFilters = (payload: any) => {
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.DELETE, props.bucketId as string)
             "
             :mode="ButtonMode.ICON"
-            :hard="false"
+            :hard-delete="false"
             :ids="[data.id]"
-            @on-deleted-success="onDeletedSuccess"
+            @on-object-deleted="onObjectDeleted"
           />
         </template>
       </Column>
