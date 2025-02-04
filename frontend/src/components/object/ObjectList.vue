@@ -62,7 +62,7 @@ const closeUpload = () => {
   objectTableKey.value += 1;
 };
 
-const onDeletedSuccess = () => {
+const onObjectDeleted = () => {
   objectTableKey.value += 1;
 };
 </script>
@@ -94,15 +94,16 @@ const onDeletedSuccess = () => {
         Upload
       </Button>
       <DownloadObjectButton
-        :disabled="displayUpload"
+        :disabled="displayUpload || selectedObjectIds.length === 0"
         :ids="selectedObjectIds"
         :mode="ButtonMode.BUTTON"
       />
       <DeleteObjectButton
-        :disabled="displayUpload"
+        :disabled="displayUpload || selectedObjectIds.length === 0"
         :ids="selectedObjectIds"
         :mode="ButtonMode.BUTTON"
-        @on-deleted-success="onDeletedSuccess"
+        :hard-delete="false"
+        @on-object-deleted="onObjectDeleted"
       />
     </div>
 

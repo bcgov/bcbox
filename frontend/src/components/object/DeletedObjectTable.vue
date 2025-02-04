@@ -5,14 +5,12 @@ import { onUnmounted, onMounted, ref } from 'vue';
 import { Spinner } from '@/components/layout';
 import {
   DeleteObjectButton,
-  DownloadObjectButton,
-  ObjectFilters,
   ObjectPermission,
-  ObjectPublicToggle
+  RestoreObjectButton
 } from '@/components/object';
-import { SyncButton, ShareButton } from '@/components/common';
+import { SyncButton } from '@/components/common';
 import { Button, Column, DataTable, Dialog, InputText } from '@/lib/primevue';
-import { useAuthStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
+import { useAuthStore, useBucketStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 import { onDialogHide } from '@/utils/utils';
 import { ButtonMode } from '@/utils/enums';
@@ -33,23 +31,15 @@ type DataTableObjectSource = {
 type DataTableFilter = {
   [key: string]: { value: any; matchMode: string };
 };
-// Props
-type Props = {
-  bucketId?: string;
-  objectInfoId?: string;
-};
-
-const props = withDefaults(defineProps<Props>(), {
-  bucketId: undefined,
-  objectInfoId: undefined
-});
 
 // Emits
 const emit = defineEmits(['show-object-info']);
 
 // Store
+const bucketStore = useBucketStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
+const { getBuckets } = storeToRefs(useBucketStore());
 const { getUserId } = storeToRefs(useAuthStore());
 const { focusedElement } = storeToRefs(useNavStore());
 
@@ -64,14 +54,15 @@ const lazyParams: Ref<DataTableObjectSource> = ref({});
 const totalRecords: Ref<number> = ref(0);
 const first: Ref<number> = ref(0);
 const filters: Ref<DataTableFilter> = ref({
-  name: { value: undefined, matchMode: 'contains' },
-  tags: { value: undefined, matchMode: 'contains' },
-  meta: { value: undefined, matchMode: 'contains' }
+  name: { value: undefined, matchMode: 'contains' }
 });
 
 // Actions
-const formatShortUuid = (uuid: string) => uuid?.slice(0, 8) ?? uuid;
 const onObjectDeleted = () => {
+  loading.value = true;
+  loadLazyData();
+};
+const onObjectRestored = () => {
   loadLazyData();
 };
 
@@ -89,8 +80,10 @@ async function showPermissions(objectId: string) {
   focusedElement.value = document.activeElement;
 }
 
-onMounted(() => {
+onMounted( async () => {
   loading.value = true;
+  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+
   lazyParams.value = {
     first: 0,
     rows: lazyDataTable.value.rows,
@@ -107,23 +100,26 @@ const loadLazyData = (event?: any) => {
   objectService
     .searchObjects(
       {
-        bucketId: props.bucketId ? [props.bucketId] : undefined,
-        deleteMarker: false,
+        deleteMarker: true,
         latest: true,
         page: lazyParams.value?.page ? ++lazyParams.value.page : 1,
         name: lazyParams.value?.filters?.name.value ? lazyParams.value?.filters?.name.value : undefined,
         limit: lazyParams.value.rows,
         sort: lazyParams.value.sortField,
         order: lazyParams.value.sortOrder === 1 ? 'asc' : 'desc',
-        tagset: lazyParams.value?.filters?.tags.value
-      },
-      lazyParams.value?.filters?.meta.value //Header
+      }
     )
     .then((r: any) => {
-      tableData.value = r.data.map((item: any) => ({
-        ...item,
-        updatedAt: item.updatedAt === null ? item.createdAt : item.updatedAt
-      }));
+      // add full object url to table data
+      tableData.value = r.data.map((o: COMSObject) => {
+        const bucket = getBuckets.value.find((b) =>  b.bucketId === o.bucketId);
+        return {
+          ...o,
+          location: `${bucket?.endpoint}/${bucket?.bucket}/${o.path}`,
+          updatedAt: o.updatedAt === null ? o.createdAt : o.updatedAt
+        };
+      });
+
       totalRecords.value = +r?.headers['x-total-rows'];
       // add objects to store
       objectStore.setObjects(r.data);
@@ -160,26 +156,6 @@ onUnmounted(() => {
   objectStore.setSelectedObjects([]);
 });
 
-const selectedFilters = (payload: any) => {
-  filters.value.meta.value = payload.metaToSearch
-    .flatMap((o: any) => ({ [o.key]: o.value }))
-    .reduce((r: any, c: any) => {
-      const key = Object.keys(c)[0];
-      const value = c[key];
-      r['x-amz-meta-' + key] = value;
-      return r;
-    }, {});
-  filters.value.tags.value = payload.tagSetToSearch
-    .flatMap((o: any) => ({ [o.key]: o.value }))
-    .reduce((r: any, c: any) => {
-      const key = Object.keys(c)[0];
-      const value = c[key];
-      r[key] = value;
-      return r;
-    }, {});
-  lazyParams.value.filters = filters;
-  loadLazyData();
-};
 </script>
 
 <template>
@@ -210,11 +186,6 @@ const selectedFilters = (payload: any) => {
     >
       <template #header>
         <div class="flex justify-content-end">
-          <ObjectFilters
-            :bucket-id="props.bucketId"
-            @selected-filters="selectedFilters"
-          />
-
           <span class="ml-4">
             <InputText
               v-model="filters.name.value"
@@ -252,7 +223,7 @@ const selectedFilters = (payload: any) => {
           v-if="!loading"
           class="flex justify-content-center"
         >
-          <h4 class="py-5">There are no files associated with your account in this folder.</h4>
+          <h4 class="py-5">Looks like you don't have any recently deleted files.</h4>
         </div>
       </template>
       <template #loading>
@@ -280,24 +251,19 @@ const selectedFilters = (payload: any) => {
         </template>
       </Column>
       <Column
-        field="id"
+        field="location"
         sortable
-        header="Object ID"
-        style="width: 150px"
+        header="Original Location"
       >
         <template #body="{ data }">
-          <div
-            v-tooltip.bottom="{ value: data.id }"
-            :data-objectId="data.id"
-          >
-            {{ formatShortUuid(data.id) }}
-          </div>
+          <span v-tooltip.bottom="'The Original location of this fie'">
+            {{ data.location }}
+        </span>
         </template>
       </Column>
       <Column
         field="updatedAt"
-        header="Updated date"
-        style="width: 300px"
+        header="Deleted date"
         sortable
       >
         <template #body="{ data }">
@@ -305,43 +271,15 @@ const selectedFilters = (payload: any) => {
         </template>
       </Column>
       <Column
-        field="publicSharing"
-        header="Public"
-        style="width: 100px"
-      >
-        <template #body="{ data }">
-          <ObjectPublicToggle
-            v-if="props.bucketId && getUserId"
-            :bucket-id="props.bucketId"
-            :object-id="data.id"
-            :object-name="data.name"
-            :object-public="data.public"
-            :user-id="getUserId"
-          />
-        </template>
-      </Column>
-      <Column
         header="Actions"
-        header-style="min-width: 270px"
+        header-style="min-width: 150px"
         header-class="header-right"
         body-class="action-buttons"
       >
         <template #body="{ data }">
-          <ShareButton
-            :object-id="data.id"
-            label-text="File"
-          />
-          <DownloadObjectButton
-            v-if="
-              data.public ||
-              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, props.bucketId as string)
-            "
-            :mode="ButtonMode.ICON"
-            :ids="[data.id]"
-          />
           <Button
             v-if="
-              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.MANAGE, props.bucketId as string)
+              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.MANAGE, data.bucketId as string)
             "
             id="file_permissions"
             v-tooltip.bottom="'File permissions'"
@@ -358,7 +296,7 @@ const selectedFilters = (payload: any) => {
           <Button
             v-if="
               data.public ||
-              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, props.bucketId as string)
+              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, data.bucketId as string)
             "
             v-tooltip.bottom="'File details'"
             class="p-button-lg p-button-rounded p-button-text"
@@ -369,12 +307,17 @@ const selectedFilters = (payload: any) => {
           </Button>
           <DeleteObjectButton
             v-if="
-              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.DELETE, props.bucketId as string)
+              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.DELETE, data.bucketId as string)
             "
+            :hard-delete="true"
             :mode="ButtonMode.ICON"
-            :hard-delete="false"
             :ids="[data.id]"
             @on-object-deleted="onObjectDeleted"
+          />
+          <RestoreObjectButton
+            :mode="ButtonMode.ICON"
+            :ids="[data.id]"
+            @on-object-restored="onObjectRestored"
           />
         </template>
       </Column>

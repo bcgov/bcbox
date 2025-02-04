@@ -2,8 +2,8 @@
 import { storeToRefs } from 'pinia';
 import { watch, computed } from 'vue';
 
-import { DeleteObjectButton, DownloadObjectButton } from '@/components/object';
-import { Button, Column, DataTable } from '@/lib/primevue';
+import { DeleteObjectButton, DownloadObjectButton, RestoreObjectButton } from '@/components/object';
+import { Column, DataTable } from '@/lib/primevue';
 import { useAppStore, useAuthStore, usePermissionStore, useUserStore, useVersionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 import { ButtonMode } from '@/utils/enums';
@@ -25,7 +25,7 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {});
 
 // Emits
-const emit = defineEmits(['on-deleted-success']);
+const emit = defineEmits(['on-version-deleted', 'on-version-restored', 'on-object-deleted']);
 
 // Store
 const permissionStore = usePermissionStore();
@@ -34,30 +34,40 @@ const versionStore = useVersionStore();
 // getters
 const { getUserId } = storeToRefs(useAuthStore());
 const { getUser } = storeToRefs(userStore);
-const { getVersionsByObjectId } = storeToRefs(versionStore);
+const { getIsDeleted, getVersionsByObjectId, getIsVersioningEnabled } = storeToRefs(versionStore);
 
 // State
 const versionId = defineModel<string>('versionId');
 const versions: Ref<Array<Version>> = computed(() => getVersionsByObjectId.value(props.objectId));
+const bucketVersioningEnabled = computed(() => getIsVersioningEnabled.value(props.objectId));
+
+// object is currently deleted (ie lastet versionis a dm)
+const isDeleted: Ref<boolean> = computed(() => getIsDeleted.value(props.objectId));
+// version table data
 const tableData: Ref<Array<VersionDataSource>> = computed(() => {
-  return versions.value.map((v: Version, index, arr) => ({
-    ...v,
-    createdByName: getUser.value(v.createdBy)?.fullName,
-    versionNumber: arr.length - index
-  }));
+  return versions.value
+    .filter(v => !v.deleteMarker)
+    .map((v: Version, index, arr) => ({
+      ...v,
+      createdByName: getUser.value(v.createdBy)?.fullName,
+      versionNumber: arr.length - index,
+      isDeleted:  isDeleted.value,
+
+    }));
 });
-
 // Highlight row for currently selected version
-const rowClass = (data: any) => [{ 'selected-row': data.id === versionId.value }];
+const rowClass = (data: any) => [{
+  'selected-row': data.id === versionId.value && !data.isDeleted,
+  'deleted-row': data.isDeleted
+}];
 
-async function onDeletedSuccess() {
-  emit('on-deleted-success');
-}
+const emitToParent = (versionId: string) => {
+  emit('on-version-restored', versionId);
+};
 
 const onVersionClick = (e: any) => {
   versionId.value = e.data.id;
 };
-
 watch(props, () => {
   userStore.fetchUsers({ userId: versions.value.map((x: Version) => x.createdBy) });
 });
@@ -142,12 +152,6 @@ watch(props, () => {
               :ids="[props.objectId]"
               :version-id="data.id"
             />
-            <Button
-              v-tooltip.bottom="'Version details'"
-              class="p-button-lg p-button-rounded p-button-text"
-            >
-              <font-awesome-icon icon="fa-solid fa-circle-info" />
-            </Button>
             <DeleteObjectButton
               v-if="
                 permissionStore.isObjectActionAllowed(
@@ -155,13 +159,24 @@ watch(props, () => {
                   getUserId,
                   Permissions.DELETE,
                   props.bucketId as string
-                )
+                ) && !isDeleted
               "
               :mode="ButtonMode.ICON"
               :ids="[props.objectId]"
               :version-id="data.id"
-              :disabled="tableData.length === 1"
-              @on-deleted-success="onDeletedSuccess"
+              :hard-delete="false"
+              @on-version-deleted="
+                bucketVersioningEnabled ?
+                emit('on-version-deleted', { versionId: versionId }) :
+                emit('on-object-deleted', { hardDelete: true })
+              "
+            />
+            <RestoreObjectButton
+              v-if="isDeleted"
+              :mode="ButtonMode.ICON"
+              :ids="[props.objectId]"
+              :version-id="data.id"
+              @on-version-restored="emitToParent"
             />
           </template>
         </Column>

@@ -1,3 +1,5 @@
+export { default as DeletedObjectList } from './DeletedObjectList.vue';
+export { default as DeletedObjectTable } from './DeletedObjectTable.vue';
 export { default as DeleteObjectButton } from './DeleteObjectButton.vue';
 export { default as DownloadObjectButton } from './DownloadObjectButton.vue';
 export { default as ObjectAccess } from './ObjectAccess.vue';
@@ -17,3 +19,4 @@ export { default as ObjectUpload } from './ObjectUpload.vue';
 export { default as ObjectUploadBasic } from './ObjectUploadBasic.vue';
 export { default as ObjectUploadFile } from './ObjectUploadFile.vue';
 export { default as ObjectVersion } from './ObjectVersion.vue';
+export { default as RestoreObjectButton } from './RestoreObjectButton.vue';

@@ -58,6 +58,13 @@ const routes: Array<RouteRecordRaw> = [
         name: RouteNames.LIST_OBJECTS,
         component: () => import('@/views/list/ListObjectsView.vue'),
         meta: { requiresAuth: true, breadcrumb: '__listObjectsDynamic', title: 'My Objects' },
+        props: createProps,
+      },
+      {
+        path: 'deleted',
+        name: RouteNames.LIST_OBJECTS_DELETED,
+        component: () => import('@/views/list/ListDeletedObjectsView.vue'),
+        meta: { requiresAuth: true, breadcrumb: '__listDeletedObjectsDynamic', title: 'My Deleted Objects' },
         props: createProps
       }
     ]

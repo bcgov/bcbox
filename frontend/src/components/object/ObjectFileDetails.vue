@@ -51,29 +51,71 @@ const versionStore = useVersionStore();
 
 const { getUserId } = storeToRefs(useAuthStore());
 const { getObject } = storeToRefs(objectStore);
-const { getVersionsByObjectId, getLatestVersionIdByObjectId } = storeToRefs(versionStore);
+const {
+  getIsDeleted,
+  getLatestVersionIdByObjectId,
+  getLatestNonDmVersionIdByObjectId,
+  getVersionsByObjectId,
+  getIsVersioningEnabled
+} = storeToRefs(versionStore);
 
 // State
 const object: Ref<COMSObject | undefined> = ref(undefined);
 const bucketId: Ref<string> = ref('');
-
-const currentVersionId: Ref<string | undefined> = ref(props.versionId);
-const latestVersionId = computed(() => getLatestVersionIdByObjectId.value(props.objectId));
 const permissionsVisible: Ref<boolean> = ref(false);
 
-async function onVersionsChanged() {
-  await Promise.all([
-    versionStore.fetchVersions({ objectId: props.objectId }),
-    metadataStore.fetchMetadata({ objectId: props.objectId }),
-    tagStore.fetchTagging({ objectId: props.objectId })
-  ]).then(async () => {
-    currentVersionId.value = latestVersionId.value;
+// version stuff
+const bucketVersioningEnabled = computed(() => getIsVersioningEnabled.value(props.objectId));
+const currentVersionId: Ref<string | undefined> = ref(props.versionId);
+const latestVersionId = computed(() => getLatestVersionIdByObjectId.value(props.objectId));
+const allVersions = computed(() => getVersionsByObjectId.value(props.objectId));
+const latestNonDmVersionId = computed(() => getLatestNonDmVersionIdByObjectId.value(props.objectId));
 
+const isDeleted: Ref<boolean> = computed(() => getIsDeleted.value(props.objectId));
+
+async function fetchFileDetails(objectId: string){
+  await Promise.all([
+    versionStore.fetchVersions({ objectId: objectId }),
+    metadataStore.fetchMetadata({ objectId: objectId }),
+    tagStore.fetchTagging({ objectId: objectId })
+  ]).then(async () => {
     await Promise.all([
-      versionStore.fetchMetadata({ objectId: props.objectId }),
-      versionStore.fetchTagging({ objectId: props.objectId })
+      versionStore.fetchMetadata({ objectId: objectId }),
+      versionStore.fetchTagging({ objectId: objectId })
     ]);
   });
+}
+
+async function onObjectDeleted({ hardDelete }: { hardDelete:boolean }) {
+  // if doing hard delete redirect to parent folder
+  if (hardDelete || !bucketVersioningEnabled.value) {
+    router.push({ path: '/list/objects', query: { bucketId: bucketId.value }});
+  }
+  else {
+    await fetchFileDetails(props.objectId);
+    currentVersionId.value = latestNonDmVersionId.value;
+  }
+}
+
+async function onVersionDeleted(changedVersionId: string | undefined, isVersion: boolean, hardDelete: boolean) {
+  // if doing hard delete or no versions left, redirect to parent folder
+  const otherVersions = allVersions.value.filter(v=>v.id !== changedVersionId);
+  if (hardDelete || (isVersion && otherVersions.length === 0)) {
+    router.push({ path: '/list/objects', query: { bucketId: bucketId.value }});
+  }
+  // else stay on page
+  else {
+    await fetchFileDetails(props.objectId);
+    currentVersionId.value = latestNonDmVersionId.value;
+  }
+}
+
+async function onVersionCreated() {
+  await fetchFileDetails(props.objectId)
+    .then(() => {
+      currentVersionId.value = latestNonDmVersionId.value;
+    });
+
 }
 
 onMounted(async () => {
@@ -84,7 +126,7 @@ onMounted(async () => {
   object.value = getObject.value(props.objectId);
   bucketId.value = object.value ? object.value.bucketId : '';
   if (
-    head?.status !== 204 &&
+    (head?.status !== 204 && !isDeleted.value) &&
     (!object.value ||
       !permissionStore.isObjectActionAllowed(object.value.id, getUserId.value, Permissions.READ, object.value.bucketId))
   ) {
@@ -93,11 +135,7 @@ onMounted(async () => {
   // fetch data for child components
   await Promise.all([
     bucketStore.fetchBuckets({ bucketId: bucketId.value }),
-    versionStore.fetchVersions({ objectId: props.objectId }),
-    metadataStore.fetchMetadata({ objectId: props.objectId }),
-    tagStore.fetchTagging({ objectId: props.objectId }),
-    versionStore.fetchTagging({ objectId: props.objectId }),
-    versionStore.fetchMetadata({ objectId: props.objectId })
+    fetchFileDetails(props.objectId)
   ]);
 });
 </script>
@@ -121,19 +159,21 @@ onMounted(async () => {
 
         <div class="action-buttons">
           <ShareButton
+            v-if="!isDeleted"
             :object-id="props.objectId"
             label-text="File"
           />
           <DownloadObjectButton
-            v-if="
-              object.public || permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.READ, bucketId)
-            "
+            v-if="(object.public ||
+              permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.READ, bucketId)) &&
+              !isDeleted"
             :mode="ButtonMode.ICON"
             :ids="[object.id]"
             :version-id="currentVersionId"
           />
           <Button
-            v-if="permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.MANAGE, bucketId)"
+            v-if="permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.MANAGE, bucketId) &&
+              !isDeleted"
             v-tooltip.bottom="'File permissions'"
             class="p-button-lg p-button-text"
             aria-label="File permissions"
@@ -145,9 +185,8 @@ onMounted(async () => {
             v-if="permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.DELETE, bucketId)"
             :mode="ButtonMode.ICON"
             :ids="[object.id]"
-            :version-id="currentVersionId"
-            :disabled="getVersionsByObjectId(object.id).length === 1"
-            @on-deleted-success="onVersionsChanged"
+            :hard-delete="isDeleted || !bucketVersioningEnabled"
+            @on-object-deleted="onObjectDeleted"
           />
         </div>
       </div>
@@ -162,9 +201,9 @@ onMounted(async () => {
         <ObjectAccess :object-id="object.id" />
         <ObjectMetadata
           v-model:version-id="currentVersionId"
-          :editable="currentVersionId === latestVersionId"
+          :editable="!isDeleted && (currentVersionId === latestVersionId)"
           :object-id="object.id"
-          @on-metadata-success="onVersionsChanged"
+          @on-metadata-success="onVersionCreated"
         />
       </div>
       <Divider layout="vertical" />
@@ -174,18 +213,21 @@ onMounted(async () => {
             v-if="permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.UPDATE, object.bucketId)"
             :bucket-id="bucketId"
             :object-id="object.id"
-            @on-file-uploaded="onVersionsChanged"
+            @on-file-uploaded="onVersionCreated"
           />
         </div>
         <ObjectVersion
           v-model:version-id="currentVersionId"
           :bucket-id="bucketId"
           :object-id="object.id"
-          @on-deleted-success="onVersionsChanged"
+          @on-object-deleted="onObjectDeleted"
+          @on-version-deleted="onVersionDeleted"
+          @on-version-restored="onVersionCreated"
         />
         <ObjectTag
           v-model:version-id="currentVersionId"
           :object-id="object.id"
+          :editable="!isDeleted"
         />
       </div>
     </div>

@@ -64,7 +64,7 @@ const onUpload = async (event: any) => {
 
           // show toast for any object updates
           if (response?.newVersionId) toast.info(
-            `A new version of file '${file.name}' has been created`,'', { life: 0 });
+            `A new version of file '${file.name}' has been created`);
 
           successfulFiles.value.push(file);
         } catch (error: any) {

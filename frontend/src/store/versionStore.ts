@@ -39,8 +39,22 @@ export const useVersionStore = defineStore('version', () => {
     getVersionsByObjectId: computed(
       () => (objectId: string) => state.versions.value.filter((x: Version) => x.objectId === objectId)
     ),
+    getIsDeleted: computed(() => (objectId: string) => state.versions.value.find((x: Version) =>
+      ((x.objectId === objectId) && (x.isLatest) && (x.deleteMarker))) ? true : false
+    ),
     getLatestVersionIdByObjectId: computed(
       () => (objectId: string) => state.versions.value.find((x: Version) => x.objectId === objectId && x.isLatest)?.id
+    ),
+    getLatestNonDmVersionIdByObjectId: computed(
+      () => (objectId: string) => state.versions.value
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .find((x: Version) =>
+          x.objectId === objectId &&
+          !x.deleteMarker
+        )?.id
+    ),
+    getIsVersioningEnabled: computed(
+      () => (objectId: string) => state.versions.value.filter((x: Version) => x.objectId === objectId)[0]?.s3VersionId
     ),
     getMetadata: computed(() => state.metadata.value),
     getMetadataByVersionId: computed(
@@ -94,7 +108,8 @@ export const useVersionStore = defineStore('version', () => {
       appStore.beginIndeterminateLoading();
       state.versions.value = (await objectService.listObjectVersion(params.objectId)).data;
     } catch (error: any) {
-      toast.error('Fetching versions', error);
+      // toast.error('Fetching versions', error);
+      state.versions.value = [];
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -104,9 +119,6 @@ export const useVersionStore = defineStore('version', () => {
     return getters.getMetadataByVersionId.value(versionId)?.metadata.find((x) => x.key === key)?.value;
   }
 
-  function findS3VersionByObjectId(objectId: string) {
-    return state.versions.value.filter((x: Version) => x.objectId === objectId)[0]?.s3VersionId;
-  }
   return {
     // State
     ...state,
@@ -119,7 +131,6 @@ export const useVersionStore = defineStore('version', () => {
     fetchTagging,
     fetchVersions,
     findMetadataValue,
-    findS3VersionByObjectId
   };
 });
 

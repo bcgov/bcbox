@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const versionStore = useVersionStore();
-const { getLatestVersionIdByObjectId } = storeToRefs(versionStore);
+const { getLatestNonDmVersionIdByObjectId } = storeToRefs(versionStore);
 
 // State
 const loading: Ref<boolean> = ref(true);
@@ -33,7 +33,7 @@ onBeforeMount(async () => {
     await versionStore.fetchVersions({ objectId: props.objectId });
 
     if (!versionId.value) {
-      versionId.value = getLatestVersionIdByObjectId.value(props.objectId);
+      versionId.value = getLatestNonDmVersionIdByObjectId.value(props.objectId);
     }
     loading.value = false;
   }
@@ -49,7 +49,7 @@ onBeforeMount(async () => {
         :version-id="versionId"
       />
       <div v-else>
-        <h3 class="font-bold">No object or version provided</h3>
+        <h3 class="font-bold">File not found</h3>
       </div>
     </div>
     <div v-else>

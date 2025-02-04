@@ -28,6 +28,17 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
               My Files
             </router-link>
           </li>
+          <li
+            v-if="getIsAuthenticated"
+            class="mr-2"
+          >
+            <router-link
+              :to="{ name: RouteNames.LIST_OBJECTS_DELETED }"
+              aria-label="Recycle Bin"
+            >
+            Recycle Bin
+            </router-link>
+          </li>
           <li class="mr-2">
             <a
               target="_blank"
