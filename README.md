@@ -21,7 +21,7 @@ app/                       - Application Root
 ├── src/                   - Node.js web application
 │   └── components/        - Components Layer
 └── tests/                 - Node.js web application tests
-chart/                     - General Helm Charts
+charts/                     - General Helm Charts
 └── bcbox/                 - BCBox Helm Chart Repository
     └── templates/         - BCBox Helm Chart Template manifests
 frontend/                  - Frontend Root
