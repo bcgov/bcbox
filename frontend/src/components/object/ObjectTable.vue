@@ -349,7 +349,7 @@ const selectedFilters = (payload: any) => {
             aria-label="File permissions"
             @click="showPermissions(data.id)"
           >
-            <font-awesome-icon icon="fa-solid fa-users" />
+            <span class="material-icons-outlined">supervisor_account</span>
           </Button>
           <SyncButton
             label-text="Synchronize file"
@@ -365,8 +365,8 @@ const selectedFilters = (payload: any) => {
             aria-label="File details"
             @click="showInfo(data.id)"
           >
-            <font-awesome-icon icon="fa-solid fa-circle-info" />
-          </Button>
+          <span class="material-icons-outlined">info</span>
+        </Button>
           <DeleteObjectButton
             v-if="
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.DELETE, props.bucketId as string)
@@ -393,10 +393,7 @@ const selectedFilters = (payload: any) => {
     >
       <!-- eslint-enable vue/no-v-model-argument -->
       <template #header>
-        <font-awesome-icon
-          icon="fas fa-users"
-          fixed-width
-        />
+        <span class="material-icons-outlined">supervisor_account</span>
         <span
           id="permissions_label"
           class="p-dialog-title"

@@ -296,8 +296,8 @@ watch(getBuckets, () => {
       header="Actions"
       header-class="text-right"
       body-class="action-buttons"
-      style="width: 300px"
-    >
+      header-style="width: 320px"
+      >
       <template #body="{ node }">
         <span v-if="!node.data.dummy">
           <ShareButton
@@ -315,7 +315,7 @@ watch(getBuckets, () => {
             aria-label="Configure folder"
             @click="showBucketConfig(node.data)"
           >
-            <font-awesome-icon icon="fas fa-cog" />
+            <span class="material-icons-outlined">settings</span>
           </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
@@ -325,7 +325,7 @@ watch(getBuckets, () => {
             aria-label="Folder permissions"
             @click="showPermissions(node.data.bucketId, node.data.bucketName)"
           >
-            <font-awesome-icon icon="fa-solid fa-users" />
+            <span class="material-icons-outlined">supervisor_account</span>
           </Button>
           <SyncButton
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
@@ -339,8 +339,8 @@ watch(getBuckets, () => {
             aria-label="Folder details"
             @click="showSidebarInfo(node.data.bucketId)"
           >
-            <font-awesome-icon icon="fa-solid fa-circle-info" />
-          </Button>
+          <span class="material-icons-outlined">info</span>
+        </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.DELETE)"
             v-tooltip.bottom="'Delete folder'"
@@ -348,8 +348,8 @@ watch(getBuckets, () => {
             aria-label="Delete folder"
             @click="confirmDeleteBucket(node.data.bucketId)"
           >
-            <font-awesome-icon icon="fa-solid fa-trash" />
-          </Button>
+          <span class="material-icons-outlined">delete</span>
+        </Button>
         </span>
       </template>
     </Column>
@@ -368,10 +368,7 @@ watch(getBuckets, () => {
   >
     <!-- eslint-enable vue/no-v-model-argument -->
     <template #header>
-      <font-awesome-icon
-        icon="fas fa-users"
-        fixed-width
-      />
+      <span class="material-icons-outlined">supervisor_account</span>
       <span
         id="permissions_label"
         class="p-dialog-title"

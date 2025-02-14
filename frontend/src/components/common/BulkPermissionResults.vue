@@ -47,7 +47,7 @@ const exportCSV = () => {
           class="p-button p-button-text"
           @click="exportCSV()"
         >
-          <font-awesome-icon icon="fas fa-download" />
+        <span class="material-icons-outlined">file_download</span>  
         </Button>
       </div>
       <Column
