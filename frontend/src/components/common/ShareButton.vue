@@ -2,7 +2,6 @@
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Invite, Share } from '@/components/common';
 import { Button, Dialog, TabView, TabPanel } from '@/lib/primevue';
 
@@ -79,10 +78,7 @@ const showDialog = (x: boolean) => {
     @after-hide="onDialogHide"
   >
     <template #header>
-      <font-awesome-icon
-        icon="fa-solid fa-share-alt"
-        fixed-width
-      />
+      <span class="material-icons-outlined">ios_share</span>
       <span
         id="share_dialog_label"
         class="p-dialog-title"
@@ -151,8 +147,8 @@ const showDialog = (x: boolean) => {
     :aria-label="`Share ${props.labelText.toLocaleLowerCase()}`"
     @click="showDialog(true)"
   >
-    <font-awesome-icon icon="fa-solid fa-share-alt" />
-  </Button>
+  <span class="material-icons-outlined">ios_share</span>
+</Button>
 </template>
 
 <style scoped lang="scss">

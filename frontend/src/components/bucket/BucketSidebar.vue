@@ -82,7 +82,7 @@ watch(props, () => {
     aria-describedby="side-panel_desc"
   >
     <div class="flex panel-header align-items-start">
-      <font-awesome-icon icon="fa-solid fa-circle-info" />
+      <span class="material-icons-outlined">info</span>
       <h1 class="mt-0 ml-3 flex-grow-1">Folder details</h1>
       <Button
         aria-label="Close"

@@ -50,7 +50,7 @@ describe('BucketList.vue', async () => {
     expect(wrapper).toBeTruthy();
   });
 
-  it('shows connect bucket button', async () => {
+  it('shows connect storage button', async () => {
     // Mock isUserElevatedRights to return true
     const pinia = createTestingPinia();
     const permStore = usePermissionStore(pinia);
@@ -59,11 +59,11 @@ describe('BucketList.vue', async () => {
     const wrapper = mount(BucketList, {
       global: {
         plugins: [PrimeVue, ToastService, pinia],
-        stubs: ['font-awesome-icon', 'BucketTable']
+        stubs: ['BucketTable']
       }
     });
 
-    const button = wrapper.find('[data-test="connect-bucket"]');
+    const button = wrapper.find('[data-test="connect-storage"]');
 
     expect(button.isVisible()).toBeTruthy();
   });

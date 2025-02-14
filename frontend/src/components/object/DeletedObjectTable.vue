@@ -254,17 +254,21 @@ onUnmounted(() => {
         field="location"
         sortable
         header="Original Location"
+        body-class="truncate"
       >
         <template #body="{ data }">
-          <span v-tooltip.bottom="'The Original location of this fie'">
+          <div>
+            <span v-tooltip.bottom="data.location">
             {{ data.location }}
-        </span>
-        </template>
+          </span>
+        </div>
+      </template>
       </Column>
       <Column
         field="updatedAt"
         header="Deleted date"
         sortable
+        header-style="width: 250px"
       >
         <template #body="{ data }">
           {{ formatDateLong(data.updatedAt) }}
@@ -272,7 +276,7 @@ onUnmounted(() => {
       </Column>
       <Column
         header="Actions"
-        header-style="min-width: 150px"
+        header-style="width: 250px"
         header-class="header-right"
         body-class="action-buttons"
       >
@@ -287,7 +291,7 @@ onUnmounted(() => {
             aria-label="File permissions"
             @click="showPermissions(data.id)"
           >
-            <font-awesome-icon icon="fa-solid fa-users" />
+            <span class="material-icons-outlined">supervisor_account</span>
           </Button>
           <SyncButton
             label-text="Synchronize file"
@@ -303,8 +307,8 @@ onUnmounted(() => {
             aria-label="File details"
             @click="showInfo(data.id)"
           >
-            <font-awesome-icon icon="fa-solid fa-circle-info" />
-          </Button>
+          <span class="material-icons-outlined">info</span>
+        </Button>
           <DeleteObjectButton
             v-if="
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.DELETE, data.bucketId as string)
@@ -336,10 +340,7 @@ onUnmounted(() => {
     >
       <!-- eslint-enable vue/no-v-model-argument -->
       <template #header>
-        <font-awesome-icon
-          icon="fas fa-users"
-          fixed-width
-        />
+        <span class="material-icons-outlined">supervisor_account</span>
         <span
           id="permissions_label"
           class="p-dialog-title"

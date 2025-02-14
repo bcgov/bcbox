@@ -126,10 +126,12 @@ const closeModal = () => {
     outlined
     @click="onSelectFile"
   >
-    <font-awesome-icon
-      icon="fa-solid fa-upload"
-      class="mr-1"
-    />
+    <span
+      id="upload-panel-label"
+      class="material-icons-outlined mr-1"
+    >
+      file_upload
+    </span>
     Upload new version
   </Button>
   <input

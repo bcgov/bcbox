@@ -78,7 +78,7 @@ const onObjectDeleted = () => {
         :close-callback="closeUpload"
       />
     </div>
-    <div>
+    <div v-if="!displayUpload">
       <Button
         v-if="permissionStore.isBucketActionAllowed(props.bucketId as string, getUserId, Permissions.CREATE)"
         v-tooltip.bottom="'Upload file'"
@@ -87,10 +87,12 @@ const onObjectDeleted = () => {
         aria-label="Upload file"
         @click="showUpload"
       >
-        <font-awesome-icon
-          icon="fa-solid fa-upload"
-          class="mr-1"
-        />
+        <span
+          id="upload-panel-label"
+          class="material-icons-outlined mr-1"
+        >
+          file_upload
+        </span>
         Upload
       </Button>
       <DownloadObjectButton
