@@ -2,7 +2,6 @@
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Button, Dialog, useToast } from '@/lib/primevue';
 import { useObjectStore, useBucketStore, useNavStore } from '@/store';
 import { formatDateLong } from '@/utils/formatters';
@@ -78,10 +77,7 @@ const onClick = () => {
     @after-hide="onDialogHide"
   >
     <template #header>
-      <font-awesome-icon
-        icon="fas fa-sync"
-        fixed-width
-      />
+      <span class="material-icons-outlined">sync</span>
       <span
         v-if="props.bucketId"
         id="sync_dialog_label"
@@ -146,6 +142,6 @@ const onClick = () => {
     :aria-label="labelText"
     @click="onClick"
   >
-    <font-awesome-icon icon="fa-solid fa-sync" />
+  <span class="material-icons-outlined">sync</span>
   </Button>
 </template>

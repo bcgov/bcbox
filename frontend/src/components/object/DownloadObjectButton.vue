@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { Button, Dialog, useToast } from '@/lib/primevue';
 import { useObjectStore } from '@/store';
@@ -73,7 +72,7 @@ const download = () => {
     aria-label="Download file"
     @click="download()"
   >
-    <font-awesome-icon icon="fa-solid fa-download" />
+  <span class="material-icons-outlined">file_download</span>
   </Button>
   <Button
     v-else
@@ -84,10 +83,7 @@ const download = () => {
     aria-label="Download file"
     @click="download()"
   >
-    <font-awesome-icon
-      icon="fa-solid fa-download"
-      class="mr-1"
-    />
+    <span class="material-icons-outlined">file_download</span>
     Download
   </Button>
 </template>

@@ -134,6 +134,7 @@ watch(props, () => {
         </Column>
         <Column
           header="Actions"
+          header-style="width: 120px"
           header-class="header-right"
           body-class="action-buttons"
         >

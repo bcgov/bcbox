@@ -70,7 +70,7 @@ const onCancel = () => {
     aria-label="Add subfolder"
     @click="showDialog(true)"
   >
-    <font-awesome-icon icon="fa-solid fa-folder-plus" />
+    <span class="material-icons-outlined">create_new_folder</span>
   </Button>
 
   <Dialog
@@ -84,10 +84,7 @@ const onCancel = () => {
     @after-hide="onDialogHide"
   >
     <template #header>
-      <font-awesome-icon
-        icon="fas fa-cog"
-        fixed-width
-      />
+      <span class="material-icons-outlined">create_new_folder</span>
       <span
         id="subfolder_label"
         class="p-dialog-title"

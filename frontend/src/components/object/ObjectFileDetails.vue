@@ -147,11 +147,8 @@ onMounted(async () => {
         <h1 class="heading">File details</h1>
       </div>
       <div class="flex col justify-content-start">
-        <div class="flex col align-items-center heading">
-          <font-awesome-icon
-            icon="fa-solid fa-circle-info"
-            class="text-3xl pr-3"
-          />
+        <div class="flex col align-items-center heading pl-0">
+          <span class="material-icons-outlined icon-large pr-2">info</span>
           <h2 class="">
             {{ object.name }}
           </h2>
@@ -179,10 +176,11 @@ onMounted(async () => {
             aria-label="File permissions"
             @click="permissionsVisible = true"
           >
-            <font-awesome-icon icon="fa-solid fa-users" />
+            <span class="material-icons-outlined">supervisor_account</span>
           </Button>
           <DeleteObjectButton
             v-if="permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.DELETE, bucketId)"
+            class="xl"
             :mode="ButtonMode.ICON"
             :ids="[object.id]"
             :hard-delete="isDeleted || !bucketVersioningEnabled"
@@ -240,10 +238,7 @@ onMounted(async () => {
     class="bcbox-info-dialog"
   >
     <template #header>
-      <font-awesome-icon
-        icon="fas fa-users"
-        fixed-width
-      />
+      <span class="material-icons-outlined">supervisor_account</span>
       <span class="p-dialog-title">File Permissions</span>
     </template>
 

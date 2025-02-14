@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { Button, Dialog, useConfirm, useToast} from '@/lib/primevue';
 import { useNavStore, useObjectStore, useVersionStore } from '@/store';
@@ -138,25 +137,22 @@ const buttonLabel = computed(() => {
   <Button
     v-if="props.mode === ButtonMode.ICON"
     v-tooltip.bottom="buttonLabel"
-    class="p-button-lg p-button-text p-button-primary"
+    class="p-button-lg p-button-text p-button-primary btn-delete-text"
     :disabled="props.disabled"
     :aria-label="buttonLabel"
     @click="confirmDelete()"
   >
-    <font-awesome-icon icon="fa-solid fa-trash" />
+  <span class="material-icons-outlined">delete</span>
   </Button>
   <Button
     v-else
     v-tooltip.bottom="buttonLabel"
-    class="p-button-outlined"
+    class="p-button-outlined btn-delete"
     :disabled="props.disabled"
     :aria-label="buttonLabel"
     @click="confirmDelete()"
   >
-    <font-awesome-icon
-      icon="fa-solid fa-trash"
-      class="mr-1"
-    />
+  <span class="material-icons-outlined mr-1">delete</span>
     Delete
   </Button>
 </template>
