@@ -1,7 +1,7 @@
 ---
 data_management_roles:
   data_custodian: Fraser Marshall
-  product_owner: Sharolyn Hurley
+  product_owner: Shabari Khaniyan Kunnumel
 product_external_dependencies:
   common_components:
     - Common-Object-Management-Service
@@ -9,12 +9,15 @@ product_external_dependencies:
     - IDIR
     - BceId
     - Business-BceId
+  notification_standard: []
 product_information:
+  api_specifications: []
+  business_capabilities_custom: >-
+    Document Management, Manage Object Storage Objects (CRUD), Manage Object
+    Storage Objects (Search/Filter), Manage Object Storage Objects (Permission
+    Management), Manage Object Storage Objects (Share publicly)
   business_capabilities_standard:
-    - Manage Object Storage Objects (CRUD)
-    - Manage Object Storage Objects (Search/Filter)
-    - Manage Object Storage Objects (Permission Management)
-    - Manage Object Storage Objects (Share publicly)
+    - Other
   ministry:
     - Water, Land and Resource Stewardship
   product_acronym: BCBox
