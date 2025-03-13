@@ -69,14 +69,17 @@ onMounted(async () => {
     <div class="flex-none align-items-right">
       <Button
         v-if="usePermissionStore().isUserElevatedRights()"
-        label="Add a new storage location source"
-        class="p-button-outlined my-4"
-        data-test="connect-bucket"
+        v-tooltip.bottom="'Add a new storage location source'"
+        label="Connect Storage"
+        class="my-4 p-button-primary"
+        data-test="connect-storage"
         aria-label="Add a new storage location source"
-        icon="pi pi-plus"
         @click="showBucketConfig()"
         @keyup.enter="showBucketConfig()"
-      />
+      >
+        <span class="material-icons-outlined mr-2 primary">create_new_folder</span>
+        Connect Storage
+      </Button>
 
       <!-- Bucket config dialog -->
       <Dialog
@@ -90,10 +93,7 @@ onMounted(async () => {
         @update:visible="closeBucketConfig"
       >
         <template #header>
-          <font-awesome-icon
-            icon="fas fa-cog"
-            fixed-width
-          />
+          <span class="material-icons-outlined">settings</span>
           <span
             id="config_dialog_label"
             class="p-dialog-title"

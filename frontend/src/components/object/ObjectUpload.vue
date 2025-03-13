@@ -140,11 +140,12 @@ onMounted(() => {
             :disabled="noFilesChosen(files)"
             @click="uploadCallback()"
           >
-            <font-awesome-icon
+            <span
               id="upload-panel-label"
-              icon="fa-solid fa-upload"
-              class="mr-1"
-            />
+              class="material-icons-outlined mr-1"
+            >
+              file_upload
+            </span>
             Start upload
           </Button>
           <Button
@@ -168,10 +169,12 @@ onMounted(() => {
     </template>
     <template #empty>
       <div class="flex align-items-center justify-content-center flex-column mb-3">
-        <font-awesome-icon
-          icon="fa-solid fa-upload"
-          class="border-2 border-dashed border-circle p-5 text-7xl text-400 border-400"
-        />
+        <span
+          id="upload-panel-label"
+          class="material-icons-outlined border-2 border-dashed border-circle p-5 text-7xl text-400 border-400"
+        >
+          file_upload
+        </span>
         <p class="mt-4 mb-0">Drag and drop files here to select for upload. Then click "Start upload".</p>
       </div>
     </template>

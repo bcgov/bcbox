@@ -44,7 +44,7 @@ const onOjectRestored = () => {
 </script>
 
 <template>
-  <div>
+  <div class="deleted-object-list">
     <div class="flex align-items-center justify-content-start">
       <RestoreObjectButton
         :disabled="selectedObjectIds.length === 0"

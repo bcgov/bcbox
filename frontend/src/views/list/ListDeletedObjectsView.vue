@@ -6,15 +6,10 @@ import { DeletedObjectList } from '@/components/object';
 
 <template>
   <div>
-    <h2
-      class="mb-1 flex overflow-hidden"
-    >
-      <font-awesome-icon
-        icon="fa-solid fa-trash"
-        class="mr-2 mt-2"
-      />
-      <span class="wrap-block w-11">Recycle Bin</span>
-    </h2>
+    <div class="flex col align-items-center heading pl-0">
+      <span class="material-icons-outlined icon-large pr-2">delete</span>
+      <h2 class="">Recycle Bin</h2>
+    </div>
     <p>Select a deleted file to restore, or permanently delete it.</p>
     <DeletedObjectList />
   </div>

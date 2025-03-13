@@ -61,7 +61,7 @@ watch(
     class="side-panel pl-4 pt-2"
   >
     <div class="flex panel-header align-items-start">
-      <font-awesome-icon icon="fa-solid fa-circle-info" />
+      <span class="material-icons-outlined icon-medium mt-2">info</span>
       <h1
         id="side-panel_label"
         class="mt-0 flex-grow-1"

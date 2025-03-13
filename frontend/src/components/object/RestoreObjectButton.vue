@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { Button, Dialog, useConfirm, useToast } from '@/lib/primevue';
 import { useNavStore, useObjectStore } from '@/store';
@@ -130,7 +129,7 @@ const confirmRestore = () => {
     :aria-label="props.versionId ? 'Restore this version' : 'Restore latest version'"
     @click="confirmRestore()"
   >
-    <font-awesome-icon icon="fa-solid fa-trash-restore" />
+  <span class="material-icons-outlined">restore</span>
   </Button>
   <Button
     v-else
@@ -140,10 +139,7 @@ const confirmRestore = () => {
     :aria-label="props.versionId ? 'Restore this version' : 'Restore selected files'"
     @click="confirmRestore()"
   >
-    <font-awesome-icon
-      icon="fa-solid fa-trash-restore"
-      class="mr-1 primary"
-    />
+    <span class="material-icons-outlined mr-2">restore</span>
     Restore
   </Button>
 </template>
