@@ -78,10 +78,13 @@ const onSubmit = async (values: any) => {
 
     const bucketChanges = differential(formBucket, initialValues);
 
-    props.bucket
+    const bucketModel = props.bucket
       ? await bucketStore.updateBucket(props.bucket?.bucketId, bucketChanges)
       : await bucketStore.createBucket(formBucket);
 
+    // if successfully added a new configuration, do a recursive sync of this bucket
+    if(!props.bucket) await bucketStore.syncBucket(bucketModel.bucketId, true);
+    // refresh bucket list
     await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 
     // trim trailing "//", if present

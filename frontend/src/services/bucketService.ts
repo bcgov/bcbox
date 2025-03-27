@@ -64,7 +64,11 @@ export default {
    * @param {string} bucketId Bucket ID for the bucket to synchronize
    * @returns {Promise} An axios response
    */
-  syncBucket(bucketId: string) {
-    return comsAxios().get(`${BUCKET_PATH}/${bucketId}/sync`);
+  syncBucket(bucketId: string, recursive: boolean ) {
+    return comsAxios().get(`${BUCKET_PATH}/${bucketId}/sync`, {
+      params: {
+        recursive: recursive,
+      }
+    });
   }
 };

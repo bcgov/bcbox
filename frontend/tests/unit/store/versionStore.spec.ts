@@ -31,7 +31,8 @@ const version: Version = {
   objectId: '000',
   s3VersionId: 's3123',
   isLatest: true,
-  createdAt: '2023-05-01T22:18:12.553Z'
+  createdAt: '2023-05-01T22:18:12.553Z',
+  lastModifiedDate: '2023-05-01T22:18:12.553Z',
 };
 
 const versionOld: Version = {
@@ -41,7 +42,8 @@ const versionOld: Version = {
   objectId: '000',
   s3VersionId: 's2000',
   isLatest: false,
-  createdAt: '2022-05-01T18:25:42.462Z'
+  createdAt: '2022-05-01T18:25:42.462Z',
+  lastModifiedDate: '2023-05-01T22:18:12.553Z',
 };
 
 const mockToast = vi.fn();

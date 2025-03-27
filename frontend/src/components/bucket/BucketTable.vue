@@ -240,8 +240,7 @@ watch(getBuckets, () => {
     }
   }
 
-  // Expand all nodes and set tree state
-  bucketTreeNodeMap.forEach((_v, k) => (expandedKeys.value[k] = true));
+  //set tree state
   treeData.value = tree;
 });
 </script>
