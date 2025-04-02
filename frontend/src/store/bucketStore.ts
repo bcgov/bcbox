@@ -51,11 +51,11 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  async function deleteBucket(bucketId: string) {
+  async function deleteBucket(bucketId: string, recursive: boolean){
     try {
       appStore.beginIndeterminateLoading();
 
-      await bucketService.deleteBucket(bucketId);
+      await bucketService.deleteBucket(bucketId, recursive );
     } finally {
       appStore.endIndeterminateLoading();
     }

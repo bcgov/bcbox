@@ -39,13 +39,17 @@ export default {
 
   /**
    * @function deleteBucket
-   * Deletes a bucket
-   * This is a COMS DB delete only. The S3 bucket remains intact
+   * Deletes a bucket and optionally sub-folders
+   * This is a COMS DB delete only. The S3 bucket(s) remains intact
    * @param {string} bucketId Bucket ID for the bucket to delete
    * @returns {Promise} An axios response
    */
-  deleteBucket(bucketId: string) {
-    return comsAxios().delete(`${BUCKET_PATH}/${bucketId}`);
+  deleteBucket(bucketId: string, recursive: boolean ) {
+    return comsAxios().delete(`${BUCKET_PATH}/${bucketId}`, {
+      params: {
+        recursive: recursive,
+      }
+    });
   },
 
   /**
