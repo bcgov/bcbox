@@ -41,7 +41,7 @@ const onSubmit = () => {
   if (props.objectId) {
     objectStore.syncObject(props.objectId);
   } else if (props.bucketId) {
-    bucketStore.syncBucket(props.bucketId);
+    bucketStore.syncBucket(props.bucketId, false);
   } else {
     toast.error('', 'Unable to synchronize');
   }

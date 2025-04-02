@@ -51,11 +51,11 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  async function deleteBucket(bucketId: string) {
+  async function deleteBucket(bucketId: string, recursive: boolean){
     try {
       appStore.beginIndeterminateLoading();
 
-      await bucketService.deleteBucket(bucketId);
+      await bucketService.deleteBucket(bucketId, recursive );
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -112,11 +112,11 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  async function syncBucket(bucketId: string) {
+  async function syncBucket(bucketId: string, recursive: boolean) {
     try {
       appStore.beginIndeterminateLoading();
 
-      await bucketService.syncBucket(bucketId);
+      await bucketService.syncBucket(bucketId, recursive );
       toast.success('', 'Sync is in queue and will begin soon');
     } catch (error: any) {
       toast.error('Unable to sync', error);

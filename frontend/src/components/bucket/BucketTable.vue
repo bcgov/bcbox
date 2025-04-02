@@ -69,19 +69,19 @@ const confirmDeleteBucket = (bucketId: string) => {
   confirm.require({
     message:
       'Are you sure you want to delete this folder in BCBox? \
-      This will drop all related objects and permissions from BCBox, \
+      This will drop all sub-folders and related objects and permissions from BCBox, \
       but the files will still remain in the actual source storage location.',
     header: 'Delete folder',
     acceptLabel: 'Confirm',
     rejectLabel: 'Cancel',
-    accept: () => deleteBucket(bucketId),
+    accept: () => deleteBucket(bucketId, true),
     onHide: () => onDialogHide(),
     reject: () => onDialogHide()
   });
 };
 
-async function deleteBucket(bucketId: string) {
-  await bucketStore.deleteBucket(bucketId);
+async function deleteBucket(bucketId: string, recursive=true) {
+  await bucketStore.deleteBucket(bucketId, recursive);
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 }
 
@@ -240,8 +240,7 @@ watch(getBuckets, () => {
     }
   }
 
-  // Expand all nodes and set tree state
-  bucketTreeNodeMap.forEach((_v, k) => (expandedKeys.value[k] = true));
+  //set tree state
   treeData.value = tree;
 });
 </script>

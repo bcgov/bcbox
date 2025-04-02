@@ -47,12 +47,14 @@ const isDeleted: Ref<boolean> = computed(() => getIsDeleted.value(props.objectId
 const tableData: Ref<Array<VersionDataSource>> = computed(() => {
   return versions.value
     .filter(v => !v.deleteMarker)
+    .sort((a, b) => {
+      return new Date(a.lastModifiedDate) < new Date(b.lastModifiedDate) ? 1 : -1;
+    })
     .map((v: Version, index, arr) => ({
       ...v,
       createdByName: getUser.value(v.createdBy)?.fullName,
       versionNumber: arr.length - index,
       isDeleted:  isDeleted.value,
-
     }));
 });
 // Highlight row for currently selected version

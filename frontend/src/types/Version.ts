@@ -8,4 +8,5 @@ export type Version = {
   mimeType: string;
   objectId: string;
   s3VersionId: string;
+  lastModifiedDate: string;
 } & IAudit;
