@@ -5,8 +5,11 @@ import { object, string } from 'yup';
 
 import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
+import { SyncButton } from '@/components/common';
+
 import { Button, useToast } from '@/lib/primevue';
 import { useAuthStore, useBucketStore } from '@/store';
+import { ButtonMode } from '@/utils/enums';
 import { differential, getBucketPath, joinPath } from '@/utils/utils';
 
 import type { Bucket } from '@/types';
@@ -170,11 +173,20 @@ const onCancel = () => {
         icon="pi pi-check"
       />
       <Button
-        class="p-button-outlined mt-2"
+        class="p-button-outlined mt-2 mr-1"
         label="Cancel"
         icon="pi pi-times"
         @click="onCancel"
       />
+      <SyncButton
+        v-if="props.bucket"
+        class="p-button-outlined mt-2 mr-1"
+        label="Sync"
+        label-text="Synchronize all files and sub-folders"
+        :bucket-id="bucket?.bucketId"
+        :mode="ButtonMode.BUTTON"
+        :recursive="true"
+        />
     </Form>
   </div>
 </template>

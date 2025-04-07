@@ -296,6 +296,7 @@ onUnmounted(() => {
           <SyncButton
             label-text="Synchronize file"
             :object-id="data.id"
+            :mode="ButtonMode.ICON"
           />
           <Button
             v-if="

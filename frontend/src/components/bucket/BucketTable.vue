@@ -9,6 +9,7 @@ import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, useNavStore, usePermissionStore } from '@/store';
 import { DELIMITER, Permissions } from '@/utils/constants';
 import { getBucketPath, joinPath, onDialogHide } from '@/utils/utils';
+import { ButtonMode } from '@/utils/enums';
 
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import type { Ref } from 'vue';
@@ -328,8 +329,9 @@ watch(getBuckets, () => {
           </Button>
           <SyncButton
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
-            label-text="Synchronize storage location"
+            label-text="Synchronize files in this folder"
             :bucket-id="node.data.bucketId"
+            :mode="ButtonMode.ICON"
           />
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
