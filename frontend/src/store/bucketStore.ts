@@ -54,8 +54,10 @@ export const useBucketStore = defineStore('bucket', () => {
   async function deleteBucket(bucketId: string, recursive: boolean){
     try {
       appStore.beginIndeterminateLoading();
-
       await bucketService.deleteBucket(bucketId, recursive );
+      toast.success('', 'Folder deleted');
+    } catch (error: any) {
+      toast.error('Unable to delete folder', error);
     } finally {
       appStore.endIndeterminateLoading();
     }
