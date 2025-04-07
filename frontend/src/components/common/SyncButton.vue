@@ -4,6 +4,7 @@ import { ref } from 'vue';
 
 import { Button, Dialog, useToast } from '@/lib/primevue';
 import { useObjectStore, useBucketStore, useNavStore } from '@/store';
+import { ButtonMode } from '@/utils/enums';
 import { formatDateLong } from '@/utils/formatters';
 import { onDialogHide } from '@/utils/utils';
 
@@ -13,13 +14,18 @@ import type { Ref } from 'vue';
 type Props = {
   bucketId?: string;
   objectId?: string;
+  recursive: boolean;
   labelText?: string;
+  disabled?: boolean;
+  mode: ButtonMode;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   bucketId: '',
   objectId: '',
-  labelText: ''
+  recursive: false,
+  labelText: '',
+  disabled: false
 });
 
 // State
@@ -40,8 +46,10 @@ const displaySyncDialog = ref(false);
 const onSubmit = () => {
   if (props.objectId) {
     objectStore.syncObject(props.objectId);
-  } else if (props.bucketId) {
+  } else if (props.bucketId && !props.recursive) {
     bucketStore.syncBucket(props.bucketId, false);
+  } else if (props.bucketId && props.recursive) {
+    bucketStore.syncBucket(props.bucketId, true);
   } else {
     toast.error('', 'Unable to synchronize');
   }
@@ -101,20 +109,28 @@ const onClick = () => {
     </h3>
 
     <span class="mr-2">Last sync date:</span>
-    <span v-if="lastSyncRequestedDate">
-      {{ lastSyncRequestedDate }}
-    </span>
-    <span v-else-if="lastSyncedDate">
-      {{ lastSyncedDate }}
-    </span>
-    <span v-else>(none)</span>
+    <strong>
+      <span v-if="lastSyncRequestedDate">
+        {{ lastSyncRequestedDate }}
+      </span>
+      <span v-else-if="lastSyncedDate">
+        {{ lastSyncedDate }}
+      </span>
+      <span v-else>(none)</span>
+    </strong>
 
     <ul class="mb-4 ml-1.5">
-      <li v-if="props.bucketId">
-        This will schedule a synchronization of the folder's contents with its source storage location
-        (&quot;bucket&quot;)
+      <!-- recursive bucket-->
+      <li v-if="props.bucketId && props.recursive">
+        This will schedule a <strong>Full</strong> synchronization of all files
+        and any sub-folders with the source storage location.
       </li>
-      <li v-else>This will schedule a synchronization of the file</li>
+      <!-- flat bucket -->
+      <li v-else-if="props.bucketId">
+        This will schedule a synchronization of the folder's contents with its source storage location.
+      </li>
+      <!-- object -->
+      <li v-else>This will schedule a synchronization of any new versions or metadata found in the storage location</li>
       <li>
         Use this if you are modifying it outside of BCBox, such as in another software application, and want to see
         those changes reflected in BCBox
@@ -136,12 +152,35 @@ const onClick = () => {
     />
   </Dialog>
 
-  <Button
+  <!-- <Button
     v-tooltip.bottom="{ value: labelText }"
     class="p-button-lg p-button-text"
     :aria-label="labelText"
     @click="onClick"
   >
   <span class="material-icons-outlined">sync</span>
+  </Button> -->
+
+
+  <Button
+    v-if="props.mode === ButtonMode.ICON"
+    v-tooltip.bottom="{ value: labelText }"
+    class="p-button-lg p-button-text p-button-primary btn-delete-text"
+    :disabled="props.disabled"
+    :aria-label="labelText"
+    @click="onClick"
+  >
+  <span class="material-icons-outlined">sync</span>
+  </Button>
+  <Button
+    v-else
+    v-tooltip.bottom="{ value: labelText }"
+    class="p-button-outlined btn-delete"
+    :disabled="props.disabled"
+    :aria-label="labelText"
+    @click="onClick"
+  >
+  <span class="material-icons-outlined mr-1 sync-icon">sync</span>
+    Sync
   </Button>
 </template>
