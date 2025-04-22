@@ -48,7 +48,9 @@ const tableData: Ref<Array<VersionDataSource>> = computed(() => {
   return versions.value
     .filter(v => !v.deleteMarker)
     .sort((a, b) => {
-      return new Date(a.lastModifiedDate) < new Date(b.lastModifiedDate) ? 1 : -1;
+      // raise if no last modified date or modified date is less than next
+      return (new Date(a.lastModifiedDate) > new Date(b.lastModifiedDate)) ||
+        !a.lastModifiedDate ? -1 : 1;
     })
     .map((v: Version, index, arr) => ({
       ...v,
@@ -114,7 +116,7 @@ watch(props, () => {
         </Column>
         <Column
           field="updatedAt"
-          header="Creation date"
+          header="Date Created"
         >
           <template #body="{ data }">
             <div>
