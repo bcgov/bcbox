@@ -119,7 +119,7 @@ watch(props, () => {
           <template #body="{ data }">
             <div>
               <span>
-                {{ formatDateLong(data.s3VersionId ? data.createdAt : data.createdAt ?? data.updatedAt) }}
+                {{ formatDateLong(data.s3VersionId ? data.lastModifiedDate ?? data.createdAt : data.createdAt) }}
               </span>
             </div>
           </template>
