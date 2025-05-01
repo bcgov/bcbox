@@ -53,6 +53,16 @@ export default {
   },
 
   /**
+   * @function getBucket
+   * Get a bucket
+   * @param {string} bucketId The id for the bucket to get
+   * @returns {Promise} An axios response
+   */
+  fetchBucket(bucketId: string) {
+    return comsAxios().get(`${BUCKET_PATH}/${bucketId}`);
+  },
+
+  /**
    * @function updateBucket
    * Updates a bucket
    * @param {Bucket} data Bucket object containing the data to update bucket
@@ -61,6 +71,22 @@ export default {
   updateBucket(bucketId: string, data: Bucket) {
     return comsAxios().patch(`${BUCKET_PATH}/${bucketId}`, data);
   },
+
+  /**
+   * @function togglePublic
+   * Toggles the public property for a bucket
+   * @param {string} bucketId The id for the bucket
+   * @param {boolean} isPublic Boolean on public status
+   * @returns {Promise} An axios response
+   */
+  togglePublic(bucketId: string, isPublic: boolean) {
+    return comsAxios().patch(`${BUCKET_PATH}/${bucketId}/public`, null, {
+      params: {
+        public: isPublic
+      }
+    });
+  },
+
 
   /**
    * @function syncBucket
