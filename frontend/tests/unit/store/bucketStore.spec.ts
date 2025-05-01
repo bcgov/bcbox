@@ -139,7 +139,7 @@ describe('Bucket Store', () => {
       expect(searchBucketsSpy).toHaveBeenCalledTimes(1);
       expect(searchBucketsSpy).toBeCalledWith({ bucketId: ['000'] });
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Fetching buckets', new Error());
+      expect(mockToast).toHaveBeenCalledWith('Fetching buckets', new Error(), { life: 0 });
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(bucketStore.getBuckets).toStrictEqual([]);
     });

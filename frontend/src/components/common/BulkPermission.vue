@@ -220,7 +220,7 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
     complete.value = true;
     resetForm();
   } catch (error: any) {
-    toast.error('Bulk permission operation failed', error.response?.data.detail, { life: 0 });
+    toast.error('Bulk permission operation failed', error.response?.data.detail ?? error, { life: 0 });
   }
   loading.value = false;
 });

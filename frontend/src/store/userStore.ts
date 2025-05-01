@@ -69,7 +69,7 @@ export const useUserStore = defineStore('user', () => {
       // Merge and assign
       state.userSearch.value = difference.concat(response);
     } catch (error: any) {
-      toast.error('Searching users', error);
+      toast.error('Searching users', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }

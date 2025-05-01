@@ -51,7 +51,7 @@ export const useMetadataStore = defineStore('metadata', () => {
       // Merge and assign
       state.metadata.value = difference.concat(response);
     } catch (error: any) {
-      toast.error('Fetching metadata', error);
+      toast.error('Fetching metadata', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -80,7 +80,7 @@ export const useMetadataStore = defineStore('metadata', () => {
       await objectService.replaceMetadata(objectId, metadata, versionId);
       await fetchMetadata({ objectId: objectId });
     } catch (error: any) {
-      toast.error('Updating metadata', error);
+      toast.error('Updating metadata', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -92,7 +92,7 @@ export const useMetadataStore = defineStore('metadata', () => {
       const response = (await objectService.searchMetadata({ metadata: metadataSet }, bucketId)).data;
       state.metadataSearchResults.value = response;
     } catch (error: any) {
-      toast.error('Searching metadata', error);
+      toast.error('Searching metadata', error.response?.data.detail ?? error, { life: 0 });
     }
   }
 

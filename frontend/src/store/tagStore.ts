@@ -41,7 +41,7 @@ export const useTagStore = defineStore('tag', () => {
       await objectService.deleteTagging(objectId, tagging, versionId);
       await fetchTagging({ objectId: objectId });
     } catch (error: any) {
-      toast.error('Deleting tags', error);
+      toast.error('Deleting tags', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -64,7 +64,7 @@ export const useTagStore = defineStore('tag', () => {
       // Merge and assign
       state.tagging.value = difference.concat(response);
     } catch (error: any) {
-      toast.error('Fetching tags', error);
+      toast.error('Fetching tags', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -77,7 +77,7 @@ export const useTagStore = defineStore('tag', () => {
       await objectService.replaceTagging(objectId, tagging, versionId);
       await fetchTagging({ objectId: objectId });
     } catch (error: any) {
-      toast.error('Updating tags', error);
+      toast.error('Updating tags', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -90,7 +90,7 @@ export const useTagStore = defineStore('tag', () => {
       const response = (await objectService.searchTagging(tagset, bucketId)).data;
       state.tagSearchResults.value = response;
     } catch (error: any) {
-      toast.error('Searching tags', error);
+      toast.error('Searching tags', error.response?.data.detail ?? error, { life: 0 });
     }
   }
 

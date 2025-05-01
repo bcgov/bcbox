@@ -51,7 +51,7 @@ const onSubmit = () => {
   } else if (props.bucketId && props.recursive) {
     bucketStore.syncBucket(props.bucketId, true);
   } else {
-    toast.error('', 'Unable to synchronize');
+    toast.error('', 'Unable to synchronize', { life: 0 });
   }
 
   displaySyncDialog.value = false;
@@ -122,8 +122,9 @@ const onClick = () => {
     <ul class="mb-4 ml-1.5">
       <!-- recursive bucket-->
       <li v-if="props.bucketId && props.recursive">
-        This will schedule a <strong>Full</strong> synchronization of all files
-        and any sub-folders with the source storage location.
+        This will schedule a
+        <strong>Full</strong>
+        synchronization of all files and any sub-folders with the source storage location.
       </li>
       <!-- flat bucket -->
       <li v-else-if="props.bucketId">
@@ -161,7 +162,6 @@ const onClick = () => {
   <span class="material-icons-outlined">sync</span>
   </Button> -->
 
-
   <Button
     v-if="props.mode === ButtonMode.ICON"
     v-tooltip.bottom="{ value: labelText }"
@@ -170,7 +170,7 @@ const onClick = () => {
     :aria-label="labelText"
     @click="onClick"
   >
-  <span class="material-icons-outlined">sync</span>
+    <span class="material-icons-outlined">sync</span>
   </Button>
   <Button
     v-else
@@ -180,7 +180,7 @@ const onClick = () => {
     :aria-label="labelText"
     @click="onClick"
   >
-  <span class="material-icons-outlined mr-1 sync-icon">sync</span>
+    <span class="material-icons-outlined mr-1 sync-icon">sync</span>
     Sync
   </Button>
 </template>

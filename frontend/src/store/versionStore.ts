@@ -39,19 +39,20 @@ export const useVersionStore = defineStore('version', () => {
     getVersionsByObjectId: computed(
       () => (objectId: string) => state.versions.value.filter((x: Version) => x.objectId === objectId)
     ),
-    getIsDeleted: computed(() => (objectId: string) => state.versions.value.find((x: Version) =>
-      ((x.objectId === objectId) && (x.isLatest) && (x.deleteMarker))) ? true : false
+    getIsDeleted: computed(
+      () => (objectId: string) =>
+        state.versions.value.find((x: Version) => x.objectId === objectId && x.isLatest && x.deleteMarker)
+          ? true
+          : false
     ),
     getLatestVersionIdByObjectId: computed(
       () => (objectId: string) => state.versions.value.find((x: Version) => x.objectId === objectId && x.isLatest)?.id
     ),
     getLatestNonDmVersionIdByObjectId: computed(
-      () => (objectId: string) => state.versions.value
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .find((x: Version) =>
-          x.objectId === objectId &&
-          !x.deleteMarker
-        )?.id
+      () => (objectId: string) =>
+        state.versions.value
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .find((x: Version) => x.objectId === objectId && !x.deleteMarker)?.id
     ),
     getIsVersioningEnabled: computed(
       () => (objectId: string) => state.versions.value.filter((x: Version) => x.objectId === objectId)[0]?.s3VersionId
@@ -81,7 +82,7 @@ export const useVersionStore = defineStore('version', () => {
         state.metadata.value = (await versionService.getMetadata(null, params)).data;
       }
     } catch (error: any) {
-      toast.error('Fetching metadata', error);
+      toast.error('Fetching metadata', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -97,7 +98,7 @@ export const useVersionStore = defineStore('version', () => {
         state.tagging.value = (await versionService.getObjectTagging(params)).data;
       }
     } catch (error: any) {
-      toast.error('Fetching tags', error);
+      toast.error('Fetching tags', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -130,7 +131,7 @@ export const useVersionStore = defineStore('version', () => {
     fetchMetadata,
     fetchTagging,
     fetchVersions,
-    findMetadataValue,
+    findMetadataValue
   };
 });
 
