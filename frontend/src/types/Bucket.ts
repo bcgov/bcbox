@@ -9,6 +9,7 @@ export type Bucket = {
   endpoint: string;
   key: string;
   lastSyncRequestedDate?: string;
+  public: boolean,
   region: string;
   secretAccessKey: string;
 } & IAudit;
