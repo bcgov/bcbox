@@ -19,6 +19,7 @@ const testSidebarInfo = {
   secretAccessKey: 'REDACTED',
   region: 'null',
   active: true,
+  public: false,
   createdBy: '11111111-2222-3333-4444-555555555555',
   createdAt: '2023-09-28T21:25:38.927Z',
   updatedBy: '2023-09-28T21:25:38.927Z',

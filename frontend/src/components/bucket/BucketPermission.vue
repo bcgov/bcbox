@@ -3,12 +3,13 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeMount, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+import BucketPublicToggle from '@/components/bucket/BucketPublicToggle.vue';
 import BucketPermissionAddUser from '@/components/bucket/BucketPermissionAddUser.vue';
 import { BulkPermission } from '@/components/common';
 import { useAlert } from '@/composables/useAlert';
 import { Button, Checkbox, Column, DataTable, Message, TabPanel, TabView } from '@/lib/primevue';
 
-import { useBucketStore, usePermissionStore } from '@/store';
+import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -25,6 +26,8 @@ const props = withDefaults(defineProps<Props>(), {});
 const permissionStore = usePermissionStore();
 const bucketStore = useBucketStore();
 const { getMappedBucketToUserPermissions } = storeToRefs(permissionStore);
+const { getUserId } = storeToRefs(useAuthStore());
+
 
 // State
 const showSearchUsers: Ref<boolean> = ref(false);
@@ -78,6 +81,25 @@ onBeforeMount(async () => {
 <template>
   <TabView>
     <TabPanel header="Manage permissions">
+      <!-- public toggle -->
+      <div class="flex flex-row gap-6 pb-3">
+        <div>
+          <h3 class="pb-1">Public</h3>
+          <ul>
+            <li>This option toggles all files in this folder to be publicly available and accessible to anyone</li>
+            <li>To instead set explicit permissions, add users and use the options below</li>
+          </ul>
+        </div>
+        <BucketPublicToggle
+          v-if="bucket && getUserId"
+          class="ml-4"
+          :bucket-id="bucket.bucketId"
+          :bucket-name="bucket.bucketName"
+          :bucket-public="bucket.public"
+          :user-id="getUserId"
+        />
+      </div>
+      <!-- user search -->
       <div v-if="!showSearchUsers">
         <Button
           class="mt-1 mb-4"

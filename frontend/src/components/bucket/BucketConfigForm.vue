@@ -132,33 +132,33 @@ const onCancel = () => {
       <TextInput
         name="bucketName"
         label="Folder name *"
-        placeholder="My Documents"
+        placeholder="eg: My Documents"
         help-text="Your custom display name for the storage location,
-          shown in BCBox as a folder. Any name as you would like to see it listed in BCBox."
+          shown in BCBox as a folder."
         focus-trap
       />
       <TextInput
         name="bucket"
         label="Bucket *"
-        placeholder="bucket0123456789"
+        placeholder="eg: mybucket"
         :help-text="'The name of the bucket given to you. For example: \'yxwgj\'.'"
       />
       <TextInput
         name="endpoint"
         label="Endpoint *"
-        placeholder="https://example.com"
+        placeholder="eg: https://nrs.objectstore.gov.bc.ca"
         help-text="The URL of your object storage namespace without the bucket identifier/name."
       />
       <Password
         name="accessKeyId"
-        label="Access key identifier / User account *"
-        placeholder="username"
+        label="Access key ID *"
+        placeholder=""
         help-text="User/Account identifier or username."
       />
       <Password
         name="secretAccessKey"
         label="Secret access key *"
-        placeholder="password"
+        placeholder=""
         help-text="A password used to access the bucket."
       />
       <TextInput
