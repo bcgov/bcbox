@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 
 import { InputSwitch, useConfirm, useToast } from '@/lib/primevue';
-import { useObjectStore, usePermissionStore } from '@/store';
+import { useBucketStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -10,20 +10,19 @@ import type { Ref } from 'vue';
 // Props
 type Props = {
   bucketId: string;
-  objectId: string;
-  objectName: string;
-  objectPublic: boolean;
+  bucketName: string;
+  bucketPublic: boolean;
   userId: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {});
 
 // Store
-const objectStore = useObjectStore();
+const bucketStore = useBucketStore();
 const permissionStore = usePermissionStore();
 
 // State
-const isPublic: Ref<boolean> = ref(props.objectPublic);
+const isPublic: Ref<boolean> = ref(props.bucketPublic);
 
 // Actions
 const toast = useToast();
@@ -33,36 +32,33 @@ const togglePublic = async (setPublicValue: boolean) => {
   if (setPublicValue) {
     confirm.require({
       message:
-        'Please confirm that you want to set the file(s) to public. ' +
+        'Please confirm that you want to set folder to public. ' +
         'This allows the share link to be accessible by anyone, even without credentials.',
       header: 'Confirm set to public',
       acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
       accept: () => {
-        objectStore
-          .togglePublic(props.objectId, true)
+        bucketStore
+          .togglePublic(props.bucketId, true)
           .then(() => {
-            toast.success(`"${props.objectName}" set to public`);
+            toast.success(`"${props.bucketName}" set to public`);
           })
-          .catch((e) => {
-            toast.error('Changing public state', e.response.data.detail, { life: 0 });
-          });
-        return true;
+          .catch((e) => toast.error(e));
       },
       reject: () => (isPublic.value = false),
       onHide: () => (isPublic.value = false)
     });
   } else
-    try {
-      await objectStore .togglePublic(props.objectId, false);
-      toast.success(`"${props.objectName}" is no longer public`);
-    } catch(e:any) {
-      toast.error('Changing public state', e.response.data.detail, { life: 0 });
-    }
+    bucketStore
+      .togglePublic(props.bucketId, false)
+      .then(() => {
+        toast.success(`"${props.bucketName}" is no longer public`);
+      })
+      .catch((e) => toast.error(e));
 };
 
 watch(props, () => {
-  isPublic.value = props.objectPublic;
+  isPublic.value = props.bucketPublic;
 });
 </script>
 
@@ -74,7 +70,7 @@ watch(props, () => {
       !(
         usePermissionStore().isUserElevatedRights() &&
         permissionStore.isObjectActionAllowed(
-          props.objectId,
+          props.bucketId,
           props.userId,
           Permissions.MANAGE,
           props.bucketId as string

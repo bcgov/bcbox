@@ -47,6 +47,7 @@ export const RouteNames = Object.freeze({
   LIST_BUCKETS: 'listBuckets',
   LIST_OBJECTS: 'listObjects',
   LIST_OBJECTS_DELETED: 'listObjectsDeleted',
+  LIST_OBJECTS_PUBLIC: 'listObjectsPublic',
   LOGIN: 'login',
   LOGOUT: 'logout'
 });
