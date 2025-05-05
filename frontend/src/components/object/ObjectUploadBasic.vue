@@ -98,7 +98,7 @@ const onUpload = async () => {
     }
   } catch (error: any) {
     appStore.endUploading();
-    toast.error(`File upload: ${file.value?.name}`, error);
+    toast.error(`File upload: ${file.value?.name}`, error.response?.data.detail ?? error, { life: 0 });
   }
 };
 

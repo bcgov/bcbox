@@ -83,7 +83,7 @@ onMounted(() => {
     .catch((error: any) => {
       const errData = error?.response?.data;
       if (errData.status) {
-        toast.error(errData.status, errData.detail);
+        toast.error(errData.status, errData.detail, { life: 0 });
         setErrorMessage(errData.status);
       }
       invalidInvite.value = true;

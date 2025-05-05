@@ -116,7 +116,7 @@ describe('User Store', () => {
       expect(searchForUsersSpy).toHaveBeenCalledWith({ lastName: 'bar' });
       expect(useToastSpy).toHaveBeenCalledTimes(1);
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Searching users', new Error());
+      expect(mockToast).toHaveBeenCalledWith('Searching users', new Error(), { life: 0 });
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(userStore.userSearch).toStrictEqual([]);
     });

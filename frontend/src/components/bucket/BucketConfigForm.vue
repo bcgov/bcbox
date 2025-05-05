@@ -86,7 +86,7 @@ const onSubmit = async (values: any) => {
       : await bucketStore.createBucket(formBucket);
 
     // if successfully added a new configuration, do a recursive sync of this bucket
-    if(!props.bucket) await bucketStore.syncBucket(bucketModel.bucketId, true);
+    if (!props.bucket) await bucketStore.syncBucket(bucketModel.bucketId, true);
     // refresh bucket list
     await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 
@@ -109,7 +109,7 @@ const onSubmit = async (values: any) => {
       });
     }
   } catch (error: any) {
-    toast.error('Configuring storage location source', error);
+    toast.error('Configuring storage location source', error.response?.data.detail ?? error, { life: 0 });
   }
 };
 
@@ -186,7 +186,7 @@ const onCancel = () => {
         :bucket-id="bucket?.bucketId"
         :mode="ButtonMode.BUTTON"
         :recursive="true"
-        />
+      />
     </Form>
   </div>
 </template>

@@ -32,7 +32,7 @@ const version: Version = {
   s3VersionId: 's3123',
   isLatest: true,
   createdAt: '2023-05-01T22:18:12.553Z',
-  lastModifiedDate: '2023-05-01T22:18:12.553Z',
+  lastModifiedDate: '2023-05-01T22:18:12.553Z'
 };
 
 const versionOld: Version = {
@@ -43,7 +43,7 @@ const versionOld: Version = {
   s3VersionId: 's2000',
   isLatest: false,
   createdAt: '2022-05-01T18:25:42.462Z',
-  lastModifiedDate: '2023-05-01T22:18:12.553Z',
+  lastModifiedDate: '2023-05-01T22:18:12.553Z'
 };
 
 const mockToast = vi.fn();
@@ -106,7 +106,7 @@ describe('Version Store', () => {
       expect(getMetadataSpy).toHaveBeenCalledTimes(1);
       expect(getMetadataSpy).toHaveBeenCalledWith(null, { versionId: '000' });
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Fetching metadata', new Error());
+      expect(mockToast).toHaveBeenCalledWith('Fetching metadata', new Error(), { life: 0 });
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(versionStore.getMetadata).toStrictEqual([]);
     });
@@ -136,7 +136,7 @@ describe('Version Store', () => {
       expect(getTaggingSpy).toHaveBeenCalledTimes(1);
       expect(getTaggingSpy).toHaveBeenCalledWith({ versionId: '000' });
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Fetching tags', new Error());
+      expect(mockToast).toHaveBeenCalledWith('Fetching tags', new Error(), { life: 0 });
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(versionStore.getTagging).toStrictEqual([]);
     });

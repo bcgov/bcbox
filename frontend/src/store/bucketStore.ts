@@ -51,13 +51,13 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  async function deleteBucket(bucketId: string, recursive: boolean){
+  async function deleteBucket(bucketId: string, recursive: boolean) {
     try {
       appStore.beginIndeterminateLoading();
-      await bucketService.deleteBucket(bucketId, recursive );
+      await bucketService.deleteBucket(bucketId, recursive);
       toast.success('', 'Folder deleted');
     } catch (error: any) {
-      toast.error('Unable to delete folder', error);
+      toast.error('Unable to delete folder', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -98,7 +98,7 @@ export const useBucketStore = defineStore('bucket', () => {
         return response;
       } else return [];
     } catch (error: any) {
-      toast.error('Fetching buckets', error);
+      toast.error('Fetching buckets', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -118,10 +118,10 @@ export const useBucketStore = defineStore('bucket', () => {
     try {
       appStore.beginIndeterminateLoading();
 
-      await bucketService.syncBucket(bucketId, recursive );
+      await bucketService.syncBucket(bucketId, recursive);
       toast.success('', 'Sync is in queue and will begin soon');
     } catch (error: any) {
-      toast.error('Unable to sync', error);
+      toast.error('Unable to sync', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }

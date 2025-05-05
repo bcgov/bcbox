@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 
-import { Button, Dialog, useConfirm, useToast} from '@/lib/primevue';
+import { Button, Dialog, useConfirm, useToast } from '@/lib/primevue';
 import { useNavStore, useObjectStore, useVersionStore } from '@/store';
 import { ButtonMode } from '@/utils/enums';
 import { onDialogHide } from '@/utils/utils';
@@ -13,7 +13,7 @@ type Props = {
   ids: Array<string>;
   mode: ButtonMode;
   versionId?: string; // Only use this when deleting a single object
-  hardDelete?: boolean // are we doing a hardDelete delete?
+  hardDelete?: boolean; // are we doing a hardDelete delete?
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -47,7 +47,7 @@ const confirmDelete = async () => {
     // refresh version store to determine if bucketVersioningEnabled
     await versionStore.fetchVersions({ objectId: props.ids[0] });
     // if versionId provided, and versioning is enabled on bucket, delete version
-    if(props.versionId && bucketVersioningEnabled.value) {
+    if (props.versionId && bucketVersioningEnabled.value) {
       confirm.require({
         message: 'Are you sure you want to permanently delete this version?',
         header: 'Delete Version?',
@@ -58,9 +58,8 @@ const confirmDelete = async () => {
             await objectStore.deleteVersion(props.ids[0], props.versionId);
             emit('on-version-deleted', { versionId: props.versionId });
             toast.success('Version deleted');
-          }
-          catch (error) {
-            toast.error('Unable to delete version');
+          } catch (error: any) {
+            toast.error('Unable to delete version', error.response?.data.detail ?? error, { life: 0 });
           }
         },
         onHide: () => onDialogHide(),
@@ -72,13 +71,13 @@ const confirmDelete = async () => {
       const isPermanent = props.hardDelete || !bucketVersioningEnabled.value;
       const msgContext = numberOfObjects > 1 ? `the selected ${numberOfObjects} files` : 'this file';
       let header, message;
-      if(!isPermanent){
-        header =`Delete ${numberOfObjects > 1 ? 'files' : 'file'}?`,
-        message =  `Are you sure you want to delete ${msgContext}?
+      if (!isPermanent) {
+        header = `Delete ${numberOfObjects > 1 ? 'files' : 'file'}?`,
+        message = `Are you sure you want to delete ${msgContext}?
           If Versioning is enabled on the object storage server, deleted files are moved to the Recycle Bin`;
       } else {
-        header =`Permanently Delete ${numberOfObjects > 1 ? 'files' : 'file'}?`,
-        message =  `This action cannot be undone. Are you sure you want to permanently delete ${msgContext}.
+        header = `Permanently Delete ${numberOfObjects > 1 ? 'files' : 'file'}?`,
+        message = `This action cannot be undone. Are you sure you want to permanently delete ${msgContext}.
           Once deleted, these files cannot be restored`;
       }
       confirm.require({
@@ -90,31 +89,32 @@ const confirmDelete = async () => {
           try {
             for (const id of props.ids) {
               await objectStore.deleteObject(id, props.hardDelete);
-            };
+            }
             // to break on single failure (use promise.all ?)
             toast.success(`${numberOfObjects} ${numberOfObjects > 1 ? 'files' : 'file'} deleted`);
             emit('on-object-deleted', { hardDelete: props.hardDelete });
-          }
-          catch (error) {
-            toast.error('Unable to delete File(s)');
+          } catch (error: any) {
+            toast.error('Unable to delete File(s)', error.response?.data.detail ?? error, { life: 0 });
           }
         },
         onHide: () => onDialogHide(),
         reject: () => onDialogHide()
       });
     }
-  }
-
-  else {
+  } else {
     displayNoFileDialog.value = true;
   }
 };
 const buttonLabel = computed(() => {
-  return props.hardDelete ?
-    (props.versionId ?
-      'Permanently delete version' : (props.ids.length > 1 ?
-        'Permanently delete selected files' : 'Permanently delete file')) :
-    (props.versionId ? 'Delete version' : 'Delete file' );
+  return props.hardDelete
+    ? props.versionId
+      ? 'Permanently delete version'
+      : props.ids.length > 1
+        ? 'Permanently delete selected files'
+        : 'Permanently delete file'
+    : props.versionId
+      ? 'Delete version'
+      : 'Delete file';
 });
 </script>
 
@@ -142,7 +142,7 @@ const buttonLabel = computed(() => {
     :aria-label="buttonLabel"
     @click="confirmDelete()"
   >
-  <span class="material-icons-outlined">delete</span>
+    <span class="material-icons-outlined">delete</span>
   </Button>
   <Button
     v-else
@@ -152,7 +152,7 @@ const buttonLabel = computed(() => {
     :aria-label="buttonLabel"
     @click="confirmDelete()"
   >
-  <span class="material-icons-outlined mr-1">delete</span>
+    <span class="material-icons-outlined mr-1">delete</span>
     Delete
   </Button>
 </template>

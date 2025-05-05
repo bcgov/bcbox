@@ -63,12 +63,11 @@ const onUpload = async (event: any) => {
           );
 
           // show toast for any object updates
-          if (response?.newVersionId) toast.info(
-            `A new version of file '${file.name}' has been created`);
+          if (response?.newVersionId) toast.info(`A new version of file '${file.name}' has been created`);
 
           successfulFiles.value.push(file);
         } catch (error: any) {
-          toast.error(`Failed to upload file ${file.name}`, error, { life: 0 });
+          toast.error(`Failed to upload file ${file.name}`, error.response?.data.detail ?? error, { life: 0 });
           failedFiles.value.push(file);
         } finally {
           appStore.endUploading();
@@ -85,7 +84,7 @@ const onUpload = async (event: any) => {
     // Update object store
     await objectStore.fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
   } else {
-    toast.error('Updating file', 'Failed to acquire bucket ID');
+    toast.error('Updating file', 'Failed to acquire bucket ID', { life: 0 });
   }
 };
 

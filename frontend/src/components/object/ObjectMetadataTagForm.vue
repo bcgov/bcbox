@@ -53,7 +53,7 @@ const onSubmit = async (values: any) => {
       tagset: values.tagset
     } as ObjectMetadataTagFormType);
   } catch (error: any) {
-    toast.error('Adding metadata and tags', error);
+    toast.error('Adding metadata and tags', error.response?.data.detail ?? error, { life: 0 });
   }
 };
 

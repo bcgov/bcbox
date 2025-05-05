@@ -51,7 +51,7 @@ export const useObjectStore = defineStore('object', () => {
     },
     axiosOptions?: AxiosRequestConfig
   ) {
-    try{
+    try {
       appStore.beginIndeterminateLoading();
 
       // Ensure x-amz-meta- prefix exists
@@ -64,10 +64,9 @@ export const useObjectStore = defineStore('object', () => {
       }
 
       await objectService.createObject(object, headers, params, axiosOptions);
-    }
-    // if file already exists in bucket do updateObject operation instead
-    catch(error: any) {
-      if (error.response?.status === 409){
+    } catch (error: any) {
+      // if file already exists in bucket do updateObject operation instead
+      if (error.response?.status === 409) {
         const newVersionId = await updateObject(
           error.response.data.existingObjectId,
           object,
@@ -76,8 +75,7 @@ export const useObjectStore = defineStore('object', () => {
           axiosOptions
         );
         return { newVersionId: newVersionId };
-      }
-      else {
+      } else {
         throw new Error('Network error');
       }
     } finally {
@@ -89,7 +87,7 @@ export const useObjectStore = defineStore('object', () => {
     try {
       appStore.beginIndeterminateLoading();
       // if doing hard delete, delete all versions of the object
-      if(hard) {
+      if (hard) {
         await versionStore.fetchVersions({ objectId: objectId });
         const versions = await versionStore.getVersionsByObjectId(objectId);
         for (const v of versions) {
@@ -97,10 +95,11 @@ export const useObjectStore = defineStore('object', () => {
         }
       }
       // else delete object (creates delete-marker)
-      else { await objectService.deleteObject(objectId); }
+      else {
+        await objectService.deleteObject(objectId);
+      }
       removeSelectedObject(objectId);
-    }
-    finally {
+    } finally {
       appStore.endIndeterminateLoading();
     }
   }
@@ -130,7 +129,7 @@ export const useObjectStore = defineStore('object', () => {
       appStore.beginIndeterminateLoading();
       return objectService.getObject(objectId, versionId).then((response) => response.data);
     } catch (error: any) {
-      toast.error('Downloading object', error);
+      toast.error('Downloading object', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -180,7 +179,7 @@ export const useObjectStore = defineStore('object', () => {
                 limit: params.limit ? params.limit : 50,
                 sort: params.sort ? params.sort : 'updatedAt',
                 order: params.order ? params.order : 'desc',
-                page: params.page ? params.page : 1,
+                page: params.page ? params.page : 1
               },
               headers
             )
@@ -208,7 +207,7 @@ export const useObjectStore = defineStore('object', () => {
         }
       }
     } catch (error: any) {
-      toast.error('Fetching objects', error);
+      toast.error('Fetching objects', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -248,7 +247,7 @@ export const useObjectStore = defineStore('object', () => {
       const obj = getters.getObject.value(objectId);
       if (obj) obj.public = isPublic;
     } catch (error: any) {
-      toast.error('Changing public state', error);
+      toast.error('Changing public state', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -280,7 +279,7 @@ export const useObjectStore = defineStore('object', () => {
       const newObject = await objectService.updateObject(objectId, object, headers, params, axiosOptions);
       return newObject.data.versionId;
     } catch (error: any) {
-      toast.error('Updating object', error);
+      toast.error('Updating object', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -292,7 +291,7 @@ export const useObjectStore = defineStore('object', () => {
       await objectService.syncObject(objectId);
       toast.success('', 'Sync is in queue and will begin soon');
     } catch (error: any) {
-      toast.error('Unable to sync', error);
+      toast.error('Unable to sync', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }

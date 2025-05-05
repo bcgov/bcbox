@@ -72,7 +72,7 @@ describe('Metadata Store', () => {
       expect(getMetadataSpy).toHaveBeenCalledTimes(1);
       expect(getMetadataSpy).toHaveBeenCalledWith(null, { objectId: '000' });
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Fetching metadata', new Error());
+      expect(mockToast).toHaveBeenCalledWith('Fetching metadata', new Error(), { life: 0 });
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(metadataStore.getMetadata).toStrictEqual([]);
     });

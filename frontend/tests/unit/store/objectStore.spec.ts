@@ -167,7 +167,7 @@ describe('Object Store', () => {
       expect(getObjectSpy).toHaveBeenCalledTimes(1);
       expect(getObjectSpy).toHaveBeenCalledWith(obj.id, undefined);
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Downloading object', new Error());
+      expect(mockToast).toHaveBeenCalledWith('Downloading object', new Error(), { life: 0 });
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
     });
   });
@@ -220,7 +220,7 @@ describe('Object Store', () => {
       //   {}
       // );
       expect(mockToast).toHaveBeenCalledTimes(1);
-      expect(mockToast).toHaveBeenCalledWith('Fetching objects', new Error());
+      expect(mockToast).toHaveBeenCalledWith('Fetching objects', new Error(), { life: 0 });
       expect(endIndeterminateLoadingSpy).toHaveBeenCalledTimes(1);
       expect(objectStore.getObjects).toStrictEqual([]);
     });

@@ -44,7 +44,7 @@ const togglePublic = async (setPublicValue: boolean) => {
           .then(() => {
             toast.success(`"${props.objectName}" set to public`);
           })
-          .catch((e) => toast.error(e));
+          .catch((e) => toast.error('Setting file to public', e.response?.data.detail, { life: 0 }));
       },
       reject: () => (isPublic.value = false),
       onHide: () => (isPublic.value = false)
@@ -55,7 +55,7 @@ const togglePublic = async (setPublicValue: boolean) => {
       .then(() => {
         toast.success(`"${props.objectName}" is no longer public`);
       })
-      .catch((e) => toast.error(e));
+      .catch((e) => toast.error('Setting file to non-public', e.response?.data.detail, { life: 0 }));
 };
 
 watch(props, () => {
