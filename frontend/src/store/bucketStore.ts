@@ -127,6 +127,20 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
+
+  async function syncBucketStatus(bucketId: string) {
+    try {
+      appStore.beginIndeterminateLoading();
+
+      const response = await bucketService.syncBucketStatus({ bucketId });
+      return response.data;
+    } catch (error: any) {
+      toast.error('Unable to get sync status', error.response?.data.detail ?? error, { life: 0 });
+    } finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   return {
     // State
     ...state,
@@ -140,6 +154,7 @@ export const useBucketStore = defineStore('bucket', () => {
     deleteBucket,
     fetchBuckets,
     syncBucket,
+    syncBucketStatus,
     updateBucket
   };
 });
