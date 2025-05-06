@@ -4,6 +4,7 @@ import { onBeforeMount, onErrorCaptured, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { ObjectList } from '@/components/object';
+import { BucketSyncStatus } from '@/components/bucket';
 import { useToast } from '@/lib/primevue';
 import { useAuthStore, useBucketStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
@@ -52,23 +53,28 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div v-if="ready">
-    <h2
-      v-if="bucket"
-      class="mb-3 flex overflow-hidden"
-    >
-      <font-awesome-icon
-        icon="fa-solid fa-folder"
-        class="mr-2 mt-2"
-      />
-      <span class="wrap-block w-11">{{ bucket.bucketName }}</span>
-    </h2>
+  <div v-if="ready && bucket">
+    <!-- header-->
+    <div class="flex overflow-hidden">
+      <div class="flex flex-grow-1 heading pl-0 mb-4">
+        <h2 class="">
+          <font-awesome-icon
+            icon="fa-solid fa-folder"
+            class="mr-2 mt-2"
+          />
+          {{ bucket.bucketName }}
+        </h2>
+      </div>
+      <div class="flex flex-none">
+        <BucketSyncStatus :bucket-id="props.bucketId" />
+      </div>
+    </div>
+    <!-- main content-->
     <ObjectList :bucket-id="props.bucketId" />
   </div>
 </template>
-
 <style scoped lang="scss">
-h2 svg {
+.heading svg {
   color: $bcbox-primary;
 }
 </style>

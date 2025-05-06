@@ -12,6 +12,7 @@ export { default as Dropdown } from 'primevue/dropdown';
 export { default as FileUpload } from 'primevue/fileupload';
 export { default as InputSwitch } from 'primevue/inputswitch';
 export { default as InputText } from 'primevue/inputtext';
+export { default as InlineMessage  } from 'primevue/inlinemessage';
 export { default as Message } from 'primevue/message';
 export { default as MultiSelect } from 'primevue/multiselect';
 export { default as Password } from 'primevue/password';
