@@ -19,5 +19,12 @@
     "idp": "bceidbusiness",
     "identityKey": "bceid_user_guid",
     "searchable": false
+  },
+  {
+    "name": "BC Services Card",
+    "elevatedRights": false,
+    "idp": "bc-box-local-4545",
+    "identityKey": "sub",
+    "searchable": false
   }
 ]

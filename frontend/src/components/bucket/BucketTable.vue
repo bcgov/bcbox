@@ -133,24 +133,26 @@ function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
 
     // Fix broken endpoints caused by delimiter splitting
     fullPath = fullPath.replace(/^https?:\//i, (match) => `${match}/`);
+    if(getBuckets.value.find(b => b.key === key || (key).startsWith(b.bucket+'/'+b.key))){
 
-    dummyNodes.push({
-      key: fullPath,
-      data: {
-        accessKeyId: '',
-        active: false,
-        bucket: node.data.bucket,
-        bucketId: '',
-        bucketName: nodeParts[i - 1],
-        dummy: true,
-        endpoint: node.data.endpoint,
-        key: key,
-        region: '',
-        secretAccessKey: ''
-      },
-      children: new Array(),
-      isRoot: false
-    });
+      dummyNodes.push({
+        key: fullPath,
+        data: {
+          accessKeyId: '',
+          active: false,
+          bucket: node.data.bucket,
+          bucketId: '',
+          bucketName: nodeParts[i - 1],
+          dummy: true,
+          endpoint: node.data.endpoint,
+          key: key,
+          region: '',
+          secretAccessKey: ''
+        },
+        children: new Array(),
+        isRoot: false
+      });
+    }
   }
 
   let current = neighbour;
