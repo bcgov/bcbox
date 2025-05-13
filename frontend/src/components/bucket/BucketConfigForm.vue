@@ -85,8 +85,16 @@ const onSubmit = async (values: any) => {
       ? await bucketStore.updateBucket(props.bucket?.bucketId, bucketChanges)
       : await bucketStore.createBucket(formBucket);
 
-    // if successfully added a new configuration, do a recursive sync of this bucket
-    if (!props.bucket) await bucketStore.syncBucket(bucketModel.bucketId, true);
+    emit('submit-bucket-config');
+    toast.success('Configuring storage', '');
+
+    // If added a new configuration, do a recursive sync of this bucket
+    if (!props.bucket) {
+      await bucketStore.syncBucket(bucketModel.bucketId, true)
+        .then(() => toast.info('Sync in progress', ''))
+        .catch(error => toast.error('Unable to sync with storage location', error, { life: 0 }));
+    }
+
     // refresh bucket list
     await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 
@@ -99,17 +107,13 @@ const onSubmit = async (values: any) => {
       (b) => getBucketPath(b).includes(currBucketPath) && getBucketPath(b) !== currBucketPath
     );
 
-    emit('submit-bucket-config');
-
-    toast.success('Configuring storage location source', 'Configuration successful');
-
     if ((bucketChanges.accessKeyId || bucketChanges.secretAccessKey) && hasChildren) {
       toast.info('Subfolders exist', 'Remember to update their credentials where applicable', {
         life: 10000
       });
     }
   } catch (error: any) {
-    toast.error('Configuring storage location source', error.response?.data.detail ?? error, { life: 0 });
+    toast.error('Configuring storage', error.response?.data.detail ?? error, { life: 0 });
   }
 };
 

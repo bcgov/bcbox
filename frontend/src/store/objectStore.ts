@@ -288,10 +288,9 @@ export const useObjectStore = defineStore('object', () => {
   async function syncObject(objectId: string) {
     try {
       appStore.beginIndeterminateLoading();
-      await objectService.syncObject(objectId);
-      toast.success('', 'Sync is in queue and will begin soon');
+      return await objectService.syncObject(objectId);
     } catch (error: any) {
-      toast.error('Unable to sync', error.response?.data.detail ?? error, { life: 0 });
+      throw new Error('Unable to Sync file');
     } finally {
       appStore.endIndeterminateLoading();
     }

@@ -43,17 +43,17 @@ const { focusedElement } = storeToRefs(useNavStore());
 const displaySyncDialog = ref(false);
 
 // Actions
-const onSubmit = () => {
-  if (props.objectId) {
-    objectStore.syncObject(props.objectId);
-  } else if (props.bucketId && !props.recursive) {
-    bucketStore.syncBucket(props.bucketId, false);
-  } else if (props.bucketId && props.recursive) {
-    bucketStore.syncBucket(props.bucketId, true);
-  } else {
-    toast.error('', 'Unable to synchronize', { life: 0 });
+const onSubmit = async () => {
+  try{
+    if (props.objectId) {
+      await objectStore.syncObject(props.objectId);
+    } else if (props.bucketId) {
+      await bucketStore.syncBucket(props.bucketId, props.recursive);
+    }
+    toast.info('Sync in progress', '');
+  } catch(error: any){
+    toast.error(error, '', { life: 0 });
   }
-
   displaySyncDialog.value = false;
 };
 
