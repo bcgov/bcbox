@@ -74,5 +74,16 @@ export default {
         recursive: recursive,
       }
     });
+  },
+
+  /**
+   * @function syncBucketStatus
+   * get sync status for a folder
+   * returns the number of objects in the given folder that remain in the COMS sync queue
+   * @param {string} bucketId Bucket ID (folder)
+   * @returns {Promise} An axios response
+   */
+  syncBucketStatus(params: { bucketId: string } ) {
+    return comsAxios().get('sync/status', { params: params });
   }
 };

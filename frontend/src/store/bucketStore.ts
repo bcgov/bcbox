@@ -117,11 +117,22 @@ export const useBucketStore = defineStore('bucket', () => {
   async function syncBucket(bucketId: string, recursive: boolean) {
     try {
       appStore.beginIndeterminateLoading();
-
-      await bucketService.syncBucket(bucketId, recursive);
-      toast.success('', 'Sync is in queue and will begin soon');
+      return await bucketService.syncBucket(bucketId, recursive);
     } catch (error: any) {
-      toast.error('Unable to sync', error.response?.data.detail ?? error, { life: 0 });
+      throw new Error('Unable to Sync folder');
+    } finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
+
+  async function syncBucketStatus(bucketId: string) {
+    try {
+      appStore.beginIndeterminateLoading();
+      const response = await bucketService.syncBucketStatus({ bucketId });
+      return response.data;
+    } catch (error: any) {
+      toast.error('Unable to get sync status', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -140,6 +151,7 @@ export const useBucketStore = defineStore('bucket', () => {
     deleteBucket,
     fetchBuckets,
     syncBucket,
+    syncBucketStatus,
     updateBucket
   };
 });
