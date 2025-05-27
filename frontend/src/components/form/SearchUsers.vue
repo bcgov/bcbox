@@ -1,15 +1,16 @@
+<!-- eslint-disable vue/no-v-html -->
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { isProxy, onMounted, ref, watch } from 'vue';
 
-import { Button, Dropdown, RadioButton } from '@/lib/primevue';
-import { useConfigStore, useUserStore } from '@/store';
+import { Button, OverlayPanel, Dropdown, RadioButton } from '@/lib/primevue';
+import { useUserStore } from '@/store';
 import { Regex } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { IInputEvent } from '@/interfaces';
 import type { DropdownChangeEvent } from '@/lib/primevue';
-import type { IdentityProvider, User, UserPermissions } from '@/types';
+import type { User, UserPermissions } from '@/types';
 
 // Props
 type Props = {
@@ -23,20 +24,19 @@ const emit = defineEmits(['add-user', 'cancel-search-users']);
 
 // Store
 const userStore = useUserStore();
-const { getConfig } = storeToRefs(useConfigStore());
-const { userSearch } = storeToRefs(useUserStore());
+const { getExternalUsers, userSearch } = storeToRefs(useUserStore());
 
 // State
 const invalidSelectedUser: Ref<boolean> = ref(false);
-const selectedIDP: Ref<IdentityProvider | null> = ref(null);
+const selectedIdpType: Ref<string | undefined> = ref('internal');
 const selectedUser: Ref<User | null> = ref(null);
 const userSearchInput: Ref<string | undefined> = ref('');
-const userSearchPlaceholder: Ref<string | undefined> = ref('');
+const userSearchPlaceholder: Ref<string | undefined> = ref('Name or email address');
 
 // Actions
 const getUserDropdownLabel = (option: User) => {
-  if (selectedIDP.value?.idp) {
-    if (selectedIDP.value.searchable) {
+  if (selectedIdpType.value) {
+    if (selectedIdpType.value === 'internal') {
       return `${option.fullName} [${option.email}]`;
     } else {
       return option.email;
@@ -73,15 +73,15 @@ const onChange = (event: DropdownChangeEvent) => {
 
 const onInput = (event: IInputEvent) => {
   const input: string = event.target.value;
-  if (selectedIDP.value?.idp) {
+  if (selectedIdpType.value) {
     // Reset selection on any input change
     selectedUser.value = null;
     invalidSelectedUser.value = false;
-
-    if (selectedIDP.value.searchable && input.length >= 3) {
-      userStore.fetchUsers({ idp: selectedIDP.value.idp, search: input });
-    } else if (input.match(Regex.EMAIL)) {
-      userStore.fetchUsers({ idp: selectedIDP.value.idp, email: input });
+    if (selectedIdpType.value === 'internal' && input.length >= 3) {
+      userStore.fetchUsers({ idp: 'idir', search: input });
+    }
+    else if (input.match(Regex.EMAIL)) {
+      userStore.fetchUsers({ email: input });
     } else {
       userStore.clearSearch();
     }
@@ -96,59 +96,98 @@ const onReset = () => {
   userSearchInput.value = '';
 };
 
-watch(selectedIDP, () => {
-  if (selectedIDP.value?.searchable) {
-    userSearchPlaceholder.value = `Enter the full name or email address of an existing ${selectedIDP.value?.name}`;
-  } else {
-    userSearchPlaceholder.value = `Enter an existing user's ${selectedIDP.value?.name} email address`;
-  }
+watch(selectedIdpType, () => {
+  // user search field placeholder
+  userSearchPlaceholder.value = selectedIdpType.value === 'internal' ?
+    'Name or email address' : 'Complete email address';
 });
 
-onMounted(() => {
-  // Set default IDP
-  selectedIDP.value = getConfig.value.idpList[0];
+const helpText = ref('');
+const help1 = ref();
+const help2 = ref();
 
+const toggleHelp = (id: string | undefined, event:any) => {
+  switch(id) {
+    case 'help1':
+      help1.value.toggle(event);
+      helpText.value = 'Select the authentication method this person will use to sign into BCBox.';
+      break;
+    case 'help2':
+      help2.value.toggle(event);
+      helpText.value = 'Note: If the person you are adding is new to BCBox, ' +
+        'please ask them to sign in to the website, so we can find them in the system.';
+      break;
+  }
+};
+
+onMounted(() => {
   onReset();
 });
 </script>
 
 <template>
   <div>
-    <ul v-if="getConfig.idpList.length <= 3">
-      <li
-        v-for="idp of getConfig.idpList"
-        :key="idp.idp"
-        class="field-radiobutton mt-1"
+    <h4 class="mb-3">Add User(s)</h4>
+    <div class="mb-2">
+      <lable>How will his person sign in to BCBox?</lable>
+      <span
+        class="help-link material-icons-outlined"
+        @click="toggleHelp('help1', $event)"
       >
-        <RadioButton
-          v-model="selectedIDP"
-          :input-id="idp.idp"
-          name="idp"
-          :value="idp"
-          @click="onReset"
-        />
-        <label :for="idp.idp">{{ idp.name }}</label>
-      </li>
-    </ul>
-    <div v-else>
-      <Dropdown
-        v-model="selectedIDP"
-        :options="getConfig.idpList"
-        :option-label="
-          (option: any) => {
-            return `${option.name} (${option.elevatedRights ? 'internal' : 'external'})`;
-          }
-        "
-        class="mt-1"
-        @change="onReset"
-      />
+        help_outline
+      </span>
+      <OverlayPanel
+        ref="help1"
+        class="max-w-25rem"
+      >
+        <span>{{ helpText }}</span>
+      </OverlayPanel>
+    </div>
+    <div class="card flex justify-center mb-4">
+      <div class="flex flex-wrap gap-4">
+          <div class="flex items-center align-items-center gap-2">
+            <RadioButton
+              v-model="selectedIdpType"
+              input-id="internal"
+              name="idpType"
+              value="internal"
+              @click="onReset"
+            />
+          <label for="internal">Government IDIR</label>
+        </div>
+        <div class="flex align-items-center items-center gap-2">
+            <RadioButton
+              v-model="selectedIdpType"
+              input-id="external"
+              name="idpType"
+              value="external"
+              @click="onReset"
+            />
+            <label for="external">External (eg: BCeID or BC Services Card)</label>
+        </div>
+      </div>
     </div>
 
+    <div class="mb-2">
+      <label>Search for user</label>
+      <span
+        class="help-link material-icons-outlined"
+        @click="toggleHelp('help2', $event)"
+      >
+        help_outline
+      </span>
+      <OverlayPanel
+        ref="help2"
+        class="max-w-25rem"
+      >
+        <span>{{ helpText }}</span>
+      </OverlayPanel>
+    </div>
     <div class="flex">
       <div class="flex flex-auto">
         <Dropdown
           v-model="userSearchInput"
-          :options="userSearch"
+          :options="( selectedIdpType === 'external' ? getExternalUsers : userSearch)"
           :option-label="(option: any) => getUserDropdownLabel(option)"
           editable
           :placeholder="userSearchPlaceholder"
