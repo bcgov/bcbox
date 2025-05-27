@@ -125,6 +125,16 @@ div:focus-visible {
   max-width: 400px !important;
 }
 
+.help-link {
+  font-size: 100%;
+  cursor: pointer;
+  position: relative;
+  top: -.25rem;
+  margin-left: .1rem;
+  opacity: .5;
+  color: $bcbox-primary;
+}
+
 /* layout */
 .layout-main {
   margin: 1rem;
