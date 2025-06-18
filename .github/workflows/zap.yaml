@@ -3,7 +3,6 @@ on:
   workflow_dispatch:
   schedule:
       - cron: '0 0 * * 0' # Every Sunday at midnight
-  pull_request: # remove it after testing
 jobs:
   zap:
    name: ZAP Scan
