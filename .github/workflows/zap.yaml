@@ -1,0 +1,21 @@
+name: ZAP Scan - Pen Tests
+on:
+  workflow_dispatch:
+  schedule:
+      - cron: '0 0 * * 0' # Every Sunday at midnight
+jobs:
+  zap:
+   name: ZAP Scan
+   permissions:
+      issues: write
+      contents: read
+   runs-on: ubuntu-24.04
+   steps:
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@75ee1686750ab1511a73b26b77a2aedd295053ed # v0.12.0
+        with:
+          allow_issue_writing: true
+          artifact_name: bcbox
+          issue_title: "ZAP Security Report: bcbox"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target: https://bcbox.nrs.gov.bc.ca/
