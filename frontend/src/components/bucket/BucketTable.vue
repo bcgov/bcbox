@@ -307,7 +307,7 @@ watch(getBuckets, () => {
             label-text="Folder"
           />
           <BucketChildConfig
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
+            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.CREATE)"
             :parent-bucket="node.data"
           />
           <Button

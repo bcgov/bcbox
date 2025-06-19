@@ -1,10 +1,10 @@
 <!-- eslint-disable vue/no-v-html -->
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { isProxy, onMounted, ref, watch } from 'vue';
+import { computed, isProxy, onMounted, ref, watch } from 'vue';
 
 import { Button, OverlayPanel, Dropdown, RadioButton } from '@/lib/primevue';
-import { useUserStore } from '@/store';
+import { useUserStore, useAuthStore } from '@/store';
 import { Regex } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -25,6 +25,7 @@ const emit = defineEmits(['add-user', 'cancel-search-users']);
 // Store
 const userStore = useUserStore();
 const { getExternalUsers, userSearch } = storeToRefs(useUserStore());
+const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const invalidSelectedUser: Ref<boolean> = ref(false);
@@ -32,6 +33,12 @@ const selectedIdpType: Ref<string | undefined> = ref('internal');
 const selectedUser: Ref<User | null> = ref(null);
 const userSearchInput: Ref<string | undefined> = ref('');
 const userSearchPlaceholder: Ref<string | undefined> = ref('Name or email address');
+// search results
+const userSearchResults: Ref<User[]> = computed(() => {
+  return (selectedIdpType.value === 'internal' ? userSearch.value : getExternalUsers.value)
+    // filter current user
+    .filter((user: User) => user.userId !== getUserId.value);
+});
 
 // Actions
 const getUserDropdownLabel = (option: User) => {
@@ -115,7 +122,7 @@ const toggleHelp = (id: string | undefined, event:any) => {
     case 'help2':
       help2.value.toggle(event);
       helpText.value = 'Note: If the person you are adding is new to BCBox, ' +
-        'please ask them to sign in to the website, so we can find them in the system.';
+        'please ask them to first sign in to the website, so we can find them in the system.';
       break;
   }
 };
@@ -129,7 +136,7 @@ onMounted(() => {
   <div>
     <h4 class="mb-3">Add User(s)</h4>
     <div class="mb-2">
-      <lable>How will his person sign in to BCBox?</lable>
+      <label>How will his person sign in to BCBox?</label>
       <span
         class="help-link material-icons-outlined"
         @click="toggleHelp('help1', $event)"
@@ -187,7 +194,7 @@ onMounted(() => {
       <div class="flex flex-auto">
         <Dropdown
           v-model="userSearchInput"
-          :options="( selectedIdpType === 'external' ? getExternalUsers : userSearch)"
+          :options="userSearchResults"
           :option-label="(option: any) => getUserDropdownLabel(option)"
           editable
           :placeholder="userSearchPlaceholder"
