@@ -23,8 +23,10 @@ export default {
    * @param {Array<BucketAddPermissionsOptions>} data Array containing permissions to add
    * @returns {Promise} An axios response
    */
-  bucketAddPermissions(bucketId: string, data: Array<BucketAddPermissionsOptions>) {
-    return comsAxios().put(`${PATH}/${BUCKET}/${bucketId}`, data);
+  bucketAddPermissions(bucketId: string, data: Array<BucketAddPermissionsOptions>, params = { recursive: false }) {
+    return comsAxios().put(`${PATH}/${BUCKET}/${bucketId}`, data, {
+      params: params
+    });
   },
 
   /**

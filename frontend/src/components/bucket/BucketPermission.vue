@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import BucketPermissionAddUser from '@/components/bucket/BucketPermissionAddUser.vue';
 import { BulkPermission } from '@/components/common';
 import { useAlert } from '@/composables/useAlert';
-import { Button, Checkbox, Column, DataTable, TabPanel, TabView } from '@/lib/primevue';
+import { Button, Checkbox, Column, DataTable, Message, TabPanel, TabView } from '@/lib/primevue';
 
 import { useBucketStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
@@ -94,6 +94,14 @@ onBeforeMount(async () => {
       <div v-else>
         <BucketPermissionAddUser @cancel-search-users="cancelSearchUsers" />
       </div>
+      <Message
+        v-if="getMappedBucketToUserPermissions.length"
+        severity="info"
+        class="mb-4"
+        size="small"
+      >
+      Permission changes apply to all sub-folders and files.
+      </Message>
 
       <DataTable
         :value="getMappedBucketToUserPermissions"
@@ -223,6 +231,9 @@ onBeforeMount(async () => {
 </template>
 
 <style lang="scss" scoped>
+:deep(.p-message-wrapper){
+  padding: .5rem;
+}
 :deep(.p-button.p-button-lg) {
   padding: 0;
   margin-left: 1rem;

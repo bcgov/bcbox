@@ -151,7 +151,7 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
       const permResponse =
         props.resourceType === 'object'
           ? await permissionService.objectAddPermissions(resourceId.value, permData)
-          : await permissionService.bucketAddPermissions(resourceId.value, permData);
+          : await permissionService.bucketAddPermissions(resourceId.value, permData, { recursive: false });
       // add permissions data to result
       permResponse.data.forEach((p: any) => {
         const el = resultData.find((r: any) => r.user.userId === p.userId);

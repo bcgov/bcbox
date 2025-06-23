@@ -56,7 +56,8 @@ export const usePermissionStore = defineStore('permission', () => {
   async function addBucketPermission(bucketId: string, userId: string, permCode: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
-      await permissionService.bucketAddPermissions(bucketId, [{ userId, permCode }]);
+      // note: permission changes always cascade to subfolders for which current user has MANAGE permission
+      await permissionService.bucketAddPermissions(bucketId, [{ userId, permCode }], { recursive: true });
     } catch (error: any) {
       toast.error('Adding bucket permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
@@ -98,7 +99,8 @@ export const usePermissionStore = defineStore('permission', () => {
   async function deleteBucketPermission(bucketId: string, userId: string, permCode: string): Promise<void> {
     try {
       appStore.beginIndeterminateLoading();
-      await permissionService.bucketDeletePermission(bucketId, { userId, permCode });
+      // note: permission changes always cascade to subfolders for which current user has MANAGE permission
+      await permissionService.bucketDeletePermission(bucketId, { userId, permCode, recursive: true });
     } catch (error: any) {
       toast.error('Deleting bucket permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
@@ -276,7 +278,8 @@ export const usePermissionStore = defineStore('permission', () => {
     try {
       appStore.beginIndeterminateLoading();
       for (const value of Object.values(Permissions)) {
-        await permissionService.bucketDeletePermission(bucketId, { userId, permCode: value });
+        // note: permission changes always cascade to subfolders for which current user has MANAGE permission
+        await permissionService.bucketDeletePermission(bucketId, { userId, permCode: value, recursive: true });
       }
     } catch (error: any) {
       toast.error('Removing bucket user', error.response?.data.detail ?? error, { life: 0 });

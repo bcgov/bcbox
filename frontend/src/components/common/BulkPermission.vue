@@ -166,7 +166,7 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
         permResponse =
           props.resourceType === 'object'
             ? await permissionService.objectAddPermissions(resourceId.value, permData)
-            : await permissionService.bucketAddPermissions(resourceId.value, permData);
+            : await permissionService.bucketAddPermissions(resourceId.value, permData, { recursive: false });
       } else {
         // else removing
         const deletePermData = {
@@ -177,7 +177,7 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
         permResponse =
           props.resourceType === 'object'
             ? await permissionService.objectDeletePermission(resourceId.value, deletePermData)
-            : await permissionService.bucketDeletePermission(resourceId.value, deletePermData);
+            : await permissionService.bucketDeletePermission(resourceId.value, { ...deletePermData, recursive: false });
       }
       // add updated permissions to results
       permResponse.data.forEach((p: any) => {
