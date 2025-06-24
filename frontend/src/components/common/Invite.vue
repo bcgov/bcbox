@@ -151,12 +151,15 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
       const permResponse =
         props.resourceType === 'object'
           ? await permissionService.objectAddPermissions(resourceId.value, permData)
-          : await permissionService.bucketAddPermissions(resourceId.value, permData, { recursive: false });
+          : await permissionService.bucketAddPermissions(resourceId.value, permData, { recursive: true });
       // add permissions data to result
-      permResponse.data.forEach((p: any) => {
-        const el = resultData.find((r: any) => r.user.userId === p.userId);
-        el.permissions.push({ createdAt: p.createdAt, permCode: p.permCode });
-      });
+      permResponse.data
+        // only add parent bucket permission actions to result
+        .filter((p: any) => props.resourceType === 'object' ? true : p.bucketId === props.resource)
+        .forEach((p: any) => {
+          const el = resultData.find((r: any) => r.user.userId === p.userId);
+          el.permissions.push({ createdAt: p.createdAt, permCode: p.permCode });
+        });
       // if notifying existing users about this file/folder
       if (values.notify) {
         const users = resultData.filter((r: any) => r.user).map((r: any) => r.user);
@@ -181,6 +184,7 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
         props.resource,
         getUser.value?.profile,
         newUsers,
+        true, // always make invitees permissions cascade to sub-folders
         expiresAt,
         values.permCodes
       );

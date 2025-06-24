@@ -12,6 +12,7 @@ export default {
    * @param {COMSObject | Bucket } resource the COMS object or bucket record
    * @param {User | null} currentUser current user sending the invite
    * @param {Array<string>} emails array of email adddresses for invitees
+   * @param {Boolean} recursive whether a folder invite is recursive
    * @param {string} expiresAt timestamp for invite token expiry
    * @param {Array<string>} permCodes array of permCodes for the invite
    *
@@ -26,12 +27,14 @@ export default {
     resource: any,
     currentUser: any,
     emails: Array<string>,
+    recursive: boolean,
     expiresAt?: number,
     permCodes?: Array<string>
   ) {
     const inviteData = {
       bucketId: resourceType === 'bucket' ? resource?.bucketId : undefined,
       objectId: resourceType === 'object' ? resource.id : undefined,
+      recursive: recursive,
       expiresAt: expiresAt,
       permCodes: permCodes
     };
