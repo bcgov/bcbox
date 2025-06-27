@@ -5,6 +5,7 @@ export { default as Button } from 'primevue/button';
 export { default as Checkbox } from 'primevue/checkbox';
 export { default as Column } from 'primevue/column';
 export { default as ConfirmDialog } from 'primevue/confirmdialog';
+export { default as OverlayPanel  } from 'primevue/overlaypanel';
 export { default as DataTable } from 'primevue/datatable';
 export { default as Dialog } from 'primevue/dialog';
 export { default as Divider } from 'primevue/divider';

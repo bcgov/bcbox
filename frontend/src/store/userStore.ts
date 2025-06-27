@@ -44,7 +44,10 @@ export const useUserStore = defineStore('user', () => {
       } else {
         return state.userSearch.value;
       }
-    })
+    }),
+    getExternalUsers: computed(() => state.userSearch.value.filter((x: User) => x.idp !== 'idir')
+    ),
+
   };
 
   // Actions

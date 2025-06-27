@@ -215,12 +215,15 @@ export const usePermissionStore = defineStore('permission', () => {
 
       const userPermissions: UserPermissions[] = [];
       uniqueUsers.forEach((user: User) => {
-        const idp = getConfig.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
+        const configuredIdp = getConfig.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
+        // If IDP is not specified in our IDP list config, assume it's BC Services Card
+        const idpName = configuredIdp?.name || 'BCSC';
+        const idpElevated = configuredIdp?.elevatedRights || false;
 
         userPermissions.push({
           userId: user.userId,
-          idpName: idp?.name,
-          elevatedRights: idp?.elevatedRights,
+          idpName: idpName,
+          elevatedRights: idpElevated,
           fullName: user.fullName,
           create: hasPermission(user.userId, Permissions.CREATE),
           read: hasPermission(user.userId, Permissions.READ),
@@ -251,12 +254,15 @@ export const usePermissionStore = defineStore('permission', () => {
 
       const userPermissions: UserPermissions[] = [];
       uniqueUsers.forEach((user: User) => {
-        const idp = getConfig.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
+        const configuredIdp = getConfig.value.idpList.find((idp: IdentityProvider) => idp.idp === user.idp);
+        // If IDP is not specified in our IDP list config, assume it's BC Services Card
+        const idpName = configuredIdp?.name || 'BCSC';
+        const idpElevated = configuredIdp?.elevatedRights || false;
 
         userPermissions.push({
           userId: user.userId,
-          idpName: idp?.name,
-          elevatedRights: idp?.elevatedRights,
+          idpName: idpName,
+          elevatedRights: idpElevated,
           fullName: user.fullName,
           create: hasPermission(user.userId, Permissions.CREATE),
           read: hasPermission(user.userId, Permissions.READ),

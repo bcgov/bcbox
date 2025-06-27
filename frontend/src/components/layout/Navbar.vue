@@ -5,8 +5,7 @@ import { Toolbar } from '@/lib/primevue';
 import { useAuthStore } from '@/store';
 import { RouteNames } from '@/utils/constants';
 
-// const { home, items } = storeToRefs(useNavStore());
-const { getIsAuthenticated } = storeToRefs(useAuthStore());
+const { getIsAuthenticated, getProfile } = storeToRefs(useAuthStore());
 </script>
 
 <template>
@@ -14,7 +13,11 @@ const { getIsAuthenticated } = storeToRefs(useAuthStore());
     <Toolbar>
       <template #start>
         <ol class="list-none m-0 p-0 flex flex-row align-items-center font-semibold">
-          <li class="mr-2">
+          <!-- hide Home nav for non-idir users-->
+          <li
+            v-if="!getIsAuthenticated || (getIsAuthenticated && getProfile?.identity_provider === 'idir')"
+            class="mr-2"
+          >
             <router-link :to="{ name: RouteNames.HOME }">Home</router-link>
           </li>
           <li

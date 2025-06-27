@@ -386,8 +386,8 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
         class="block"
       >
         Enter an email address for each person whose permissions you wish to update for this
-        {{ props.resourceType === 'bucket' ? 'folder' : 'file' }}. The email address should be associated with the IDIR
-        or BCeID account they will use to sign in to BCBox.
+        {{ props.resourceType === 'bucket' ? 'folder' : 'file' }}. The email address should be associated with the
+        account they will use to sign in to BCBox.
       </small>
       <ErrorMessage name="multiEmail" />
     </div>

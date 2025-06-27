@@ -70,10 +70,13 @@ export const useAuthStore = defineStore('auth', () => {
     const user = await authService.getUser();
     const profile = user?.profile;
     const isAuthenticated = !!user && !user.expired;
-    const identityId = configService
+    // gets identityId from jwt.<first found identityKey idpList>
+    let identityId = configService
       .getConfig()
       .idpList.map((provider: IdentityProvider) => (profile ? profile[provider.identityKey] : undefined))
       .filter((item?: string) => item)[0];
+    // try and get using one of configured identityKey's otherwise use `sub` field
+    if(profile) identityId = identityId ?? profile['sub'];
 
     state.accessToken.value = user?.access_token;
     state.expiresAt.value = user?.expires_at;
