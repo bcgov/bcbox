@@ -166,7 +166,7 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
         permResponse =
           props.resourceType === 'object'
             ? await permissionService.objectAddPermissions(resourceId.value, permData)
-            : await permissionService.bucketAddPermissions(resourceId.value, permData);
+            : await permissionService.bucketAddPermissions(resourceId.value, permData, { recursive: true });
       } else {
         // else removing
         const deletePermData = {
@@ -177,16 +177,19 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
         permResponse =
           props.resourceType === 'object'
             ? await permissionService.objectDeletePermission(resourceId.value, deletePermData)
-            : await permissionService.bucketDeletePermission(resourceId.value, deletePermData);
+            : await permissionService.bucketDeletePermission(resourceId.value, { ...deletePermData, recursive: true });
       }
       // add updated permissions to results
-      permResponse.data.forEach((p: any) => {
-        const el = resultData.find((r: any) => r.users.includes(p.userId));
-        el.permissions.push({
-          createdAt: p.createdAt,
-          permCode: p.permCode
+      permResponse.data
+        // only add parent bucket permission actions to result
+        .filter((p: any) => props.resourceType === 'object' ? true : p.bucketId === resourceId.value)
+        .forEach((p: any) => {
+          const el = resultData.find((r: any) => r.users.includes(p.userId));
+          el.permissions.push({
+            createdAt: p.createdAt,
+            permCode: p.permCode
+          });
         });
-      });
     }
 
     // generate invites (for emails not already in the system)
@@ -197,6 +200,7 @@ const onSubmit = handleSubmit(async (values: any, { resetForm }) => {
         props.resource,
         getUser.value?.profile,
         newUsers,
+        true, // always make invitees permissions cascade to sub-folders
         expiresAt,
         values.permCodes
       );

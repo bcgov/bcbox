@@ -6,8 +6,8 @@ import { differenceInSeconds } from 'date-fns';
 
 import { ObjectList } from '@/components/object';
 import { useToast } from '@/lib/primevue';
-import { useAuthStore, useBucketStore } from '@/store';
-import { RouteNames } from '@/utils/constants';
+import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
+import { RouteNames, Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
 import type { Bucket } from '@/types';
@@ -24,6 +24,9 @@ const props = withDefaults(defineProps<Props>(), {
 // Store
 const bucketStore = useBucketStore();
 const { getUserId } = storeToRefs(useAuthStore());
+const permissionStore = usePermissionStore();
+const { getBucketPermissions } = storeToRefs(permissionStore);
+
 const toast = useToast();
 
 // State
@@ -67,13 +70,13 @@ onBeforeMount(async () => {
     bucket.value = bucketResponse[0];
     ready.value = true;
     // sync bucket if necessary
-    await autoSync();
+    const hasRead = getBucketPermissions.value.filter((p) => p.permCode === Permissions.READ);
+    if(hasRead.length > 0) await autoSync();
   } else {
     router.replace({ name: RouteNames.FORBIDDEN });
   }
 });
 </script>
-
 <template>
   <div v-if="ready">
     <h2
