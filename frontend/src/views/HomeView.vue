@@ -23,18 +23,8 @@ const { getConfig } = storeToRefs(useConfigStore());
       <h1 class="mb-4">Store and share files in BCBox</h1>
       <p class="text-xl">
         This website uses the
-        <a href="https://bcgov.github.io/common-service-showcase/services/coms.html">
-          Common Object Management Service
-        </a>
-        so
-        <a
-          href="https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/id-services/idir"
-        >
-          IDIR
-        </a>
-        and
-        <a href="https://www.bceid.ca/">BCeID</a>
-        users can upload and share files.
+        <a href="https://bcgov.github.io/common-service-showcase/services/coms.html">Common Object Management Service</a>
+        so people can upload and share files.
         <br />
         <br />
         BCBox displays files in folders, which are visualizations of &quot;bucket&quot; storage location sources
@@ -86,7 +76,7 @@ const { getConfig } = storeToRefs(useConfigStore());
         <div class="col-6 pr-5">
           <h3 class="mb-3">Manage access and share</h3>
           <p class="text-xl">
-            You can assign custom permissions to other users through IDIR or BCeID authentication.
+            You can assign custom permissions to others using IDIR, BCeID, or BC Services Card authentication.
             <br />
             <br />
             IDIR users can also choose to share files with public links. Contact your organization's privacy and
@@ -156,9 +146,9 @@ const { getConfig } = storeToRefs(useConfigStore());
               and to complete assessments as required
             </li>
             <li>
-              If you intend to advise users to access with BCeID, please send an email to the
-              <a href="mailto:IDIM.Consulting@gov.bc.ca">Provincial Identity Information Management Program</a>
-              indicating your BCeID-related intentions
+              If you are advising your users to use either BCeID or BC Services Card account,
+              please send <a href="mailto:IDIM.Consulting@gov.bc.ca">IDIM.Consulting@gov.bc.ca</a>
+              a heads up on your preferred login type.
             </li>
             <li>
               All other inquiries around getting or using &quot;bucket&quot; storage location sources should be directed

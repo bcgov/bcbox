@@ -42,7 +42,7 @@ describe('Navbar.vue', () => {
         plugins: [
           createTestingPinia({
             initialState: {
-              auth: { isAuthenticated: true }
+              auth: { isAuthenticated: true, profile: { identity_provider: 'idir'} }
             }
           }),
           PrimeVue

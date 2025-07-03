@@ -109,6 +109,11 @@ onMounted(async () => {
           {{ bucketConfigTitle }}
         </h3>
 
+        <Message severity="warn">
+          If you intend to share files in your bucket with BCeID or BC Services Card users, please notify
+          <a href="mailto:IDIM.Consulting@gov.bc.ca">IDIM.Consulting@gov.bc.ca</a> that you plan to use BCBox.
+        </Message>
+
         <Message severity="info">
           Please contact
           <a
@@ -119,12 +124,6 @@ onMounted(async () => {
           </a>
           (Natural Resource ministries) or your ministry's service desk if you need help with &quot;bucket&quot; storage
           location sources.
-        </Message>
-
-        <Message severity="warn">
-          If you intend to share files in your bucket with BCeID users, you are required to email
-          <a href="mailto:IDIM.Consulting@gov.bc.ca">IDIM.Consulting@gov.bc.ca</a>
-          to share your BCeID-related intentions and where you intend to advertise this.
         </Message>
 
         <BucketConfigForm

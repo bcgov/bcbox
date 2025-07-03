@@ -134,6 +134,8 @@ function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
     // Fix broken endpoints caused by delimiter splitting
     fullPath = fullPath.replace(/^https?:\//i, (match) => `${match}/`);
 
+    // TODO: exclude un-mapped parent folders
+    // if(getBuckets.value.find(b => b.key === key || (key).startsWith(b.bucket+'/'+b.key))){
     dummyNodes.push({
       key: fullPath,
       data: {
@@ -305,7 +307,7 @@ watch(getBuckets, () => {
             label-text="Folder"
           />
           <BucketChildConfig
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
+            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.CREATE)"
             :parent-bucket="node.data"
           />
           <Button
