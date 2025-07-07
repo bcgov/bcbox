@@ -35,9 +35,7 @@ const userSearchInput: Ref<string | undefined> = ref('');
 const userSearchPlaceholder: Ref<string | undefined> = ref('Name or email address');
 // search results
 const userSearchResults: Ref<User[]> = computed(() => {
-  return (selectedIdpType.value === 'internal' ? userSearch.value : getExternalUsers.value)
-    // filter current user
-    .filter((user: User) => user.userId !== getUserId.value);
+  return selectedIdpType.value === 'internal' ? userSearch.value : getExternalUsers.value;
 });
 
 // Actions
