@@ -1,3 +1,4 @@
+import ConfigService from './configService';
 import { comsAxios } from './interceptors';
 
 import type { Bucket, SearchBucketsOptions } from '@/types';
@@ -11,8 +12,51 @@ export default {
    * @param {SearchBucketsOptions} params Optional object containing the data to filter against
    * @returns {Promise} An axios response
    */
-  searchBuckets(params?: SearchBucketsOptions) {
-    return comsAxios().get(`${BUCKET_PATH}`, { params: params });
+  async searchBuckets(params: SearchBucketsOptions) {
+    if (params.bucketId && params.bucketId[0] === undefined) delete params.bucketId;
+
+    // if searching with more than one objectId
+    if (params.bucketId && params.bucketId.length > 1) {
+      /**
+       * split calls to COMS if query params (eg bucketId's)
+       * will cause url length to excede 2000 characters
+       * see: https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
+       */
+      let urlLimit = 2000;
+
+      const baseUrl = new URL(`${new ConfigService().getConfig().coms.apiPath}${BUCKET_PATH}`).toString();
+      urlLimit -= baseUrl.length;
+
+      // account for query params
+      if (params.active !== undefined) urlLimit -= '&active=false'.length;
+      if (params.key) urlLimit -= `&key=${encodeURIComponent(params.key)}`.length;
+      if (params.bucketName) urlLimit -= `&bucketName=${encodeURIComponent(params.bucketName)}`.length;
+
+      // account for bucketId param
+      const BUCKET_ID_PARAM_LENGTH = '&bucketId[]='.length + 36; // uuidv4's have 36 chars, including dashes
+      const groupSize = Math.floor(urlLimit / BUCKET_ID_PARAM_LENGTH);
+
+      // loop through each group and push COMS result to `groups` array
+      const iterations = Math.ceil(params.bucketId.length / groupSize);
+      const groups = [];
+
+      // loop through each group and push COMS result to `groups` array
+      for (let i = 0; i < iterations; i++) {
+        const ids = params.bucketId.slice(i * groupSize, i * groupSize + groupSize);
+        groups.push(
+          // if server load becomes an issue, change these parallel calls to sequential ones
+          comsAxios().get(BUCKET_PATH, { params: { ...params, bucketId: ids } })
+        );
+      }
+      const responses = await Promise.all(groups);
+      return {
+        data: responses.flatMap((r) => r.data)
+      };
+    }
+    // else just call COMS once
+    else {
+      return comsAxios().get(BUCKET_PATH, { params });
+    }
   },
 
   /**
@@ -44,10 +88,10 @@ export default {
    * @param {string} bucketId Bucket ID for the bucket to delete
    * @returns {Promise} An axios response
    */
-  deleteBucket(bucketId: string, recursive: boolean ) {
+  deleteBucket(bucketId: string, recursive: boolean) {
     return comsAxios().delete(`${BUCKET_PATH}/${bucketId}`, {
       params: {
-        recursive: recursive,
+        recursive: recursive
       }
     });
   },
@@ -68,10 +112,10 @@ export default {
    * @param {string} bucketId Bucket ID for the bucket to synchronize
    * @returns {Promise} An axios response
    */
-  syncBucket(bucketId: string, recursive: boolean ) {
+  syncBucket(bucketId: string, recursive: boolean) {
     return comsAxios().get(`${BUCKET_PATH}/${bucketId}/sync`, {
       params: {
-        recursive: recursive,
+        recursive: recursive
       }
     });
   },
@@ -83,7 +127,7 @@ export default {
    * @param {string} bucketId Bucket ID (folder)
    * @returns {Promise} An axios response
    */
-  syncBucketStatus(params: { bucketId: string } ) {
+  syncBucketStatus(params: { bucketId: string }) {
     return comsAxios().get('sync/status', { params: params });
   }
 };
