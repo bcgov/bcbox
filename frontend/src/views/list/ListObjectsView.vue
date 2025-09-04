@@ -87,7 +87,21 @@ onBeforeMount(async () => {
         icon="fa-solid fa-folder"
         class="mr-2 mt-2"
       />
-      <span class="wrap-block w-11">{{ bucket.bucketName }}</span>
+      <span class="wrap-block w-11">
+        {{ bucket.bucketName }}
+        <Tag
+          v-if="bucket.public"
+          v-tooltip="
+            'This folder and its contents are set to public. Change the settings in &quot;Folder permissions.&quot;'
+          "
+          style="margin-left: 30px"
+          value="Public"
+          severity="danger"
+          rounded
+          icon="pi pi-info-circle"
+          class="public-folder"
+        />
+      </span>
     </h2>
     <ObjectList :bucket-id="props.bucketId" />
   </div>

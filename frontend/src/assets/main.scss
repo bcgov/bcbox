@@ -256,6 +256,21 @@ div:focus-visible {
   font-weight: 400;
 }
 
+.p-tag-danger {
+  background-color: #fef1d8;
+  outline-style: solid;
+  outline-color: #f8bb47;
+  outline-width: thin;
+
+  .p-tag-value {
+    color: #474543;
+  }
+
+  .p-tag-icon {
+    color: #474543
+  }
+}
+
 /* datatable */
 .p-datatable,
 .p-treetable {
@@ -312,6 +327,7 @@ div:focus-visible {
   }
   .action-buttons {
     text-align: right;
+    white-space: nowrap;
     // width: 150px;
   }
 

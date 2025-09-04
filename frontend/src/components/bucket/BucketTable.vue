@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 
 import { BucketChildConfig, BucketPermission, BucketTableBucketName } from '@/components/bucket';
 import { Spinner } from '@/components/layout';
 import { SyncButton, ShareButton } from '@/components/common';
-import { Button, Column, Dialog, TreeTable, useConfirm } from '@/lib/primevue';
+import { Button, Column, Dialog, Tag, TreeTable, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, useNavStore, usePermissionStore } from '@/store';
 import { DELIMITER, Permissions } from '@/utils/constants';
 import { getBucketPath, joinPath, onDialogHide } from '@/utils/utils';
@@ -40,6 +40,24 @@ const columnProps = {
     tabindex: 0
   })
 };
+const getBucketPublicStatus = computed(() => {
+  return (node: BucketTreeNode): boolean => {
+    if (node.data.dummy) {
+      return false;
+    } else if (node.data.bucketId) {
+      const storeBucket = getBuckets.value.find((bucket) => bucket.bucketId === node.data.bucketId);
+      return storeBucket?.public || false;
+    }
+
+    const nodePath = getBucketPath(node.data);
+    const matchingBucket = getBuckets.value.find((bucket) => {
+      const bucketPath = getBucketPath(bucket);
+      return nodePath.startsWith(bucketPath) || bucketPath.startsWith(nodePath);
+    });
+
+    return matchingBucket?.public || false;
+  };
+});
 
 const emit = defineEmits(['show-bucket-config', 'show-sidebar-info']);
 
@@ -81,7 +99,7 @@ const confirmDeleteBucket = (bucketId: string) => {
   });
 };
 
-async function deleteBucket(bucketId: string, recursive=true) {
+async function deleteBucket(bucketId: string, recursive = true) {
   await bucketStore.deleteBucket(bucketId, recursive);
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 }
@@ -147,6 +165,7 @@ function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
         dummy: true,
         endpoint: node.data.endpoint,
         key: key,
+        public: false,
         region: '',
         secretAccessKey: ''
       },
@@ -166,10 +185,12 @@ function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
 }
 
 watch(getBuckets, () => {
-  // Make sure everything is clear for a rebuild
+  // Make sure everything is clear for a rebuild...
   endpointMap.clear();
   bucketTreeNodeMap.clear();
-  expandedKeys.value = {};
+
+  // ...except for what rows are curerently expanded
+  const currentExpandedKeys = { ...expandedKeys.value };
 
   // Split buckets into arrays based on endpoint
   for (const bucket of getBuckets.value) {
@@ -223,6 +244,7 @@ watch(getBuckets, () => {
                 dummy: true,
                 endpoint: node.data.endpoint,
                 key: '/',
+                public: false,
                 region: '',
                 secretAccessKey: ''
               },
@@ -245,6 +267,11 @@ watch(getBuckets, () => {
 
   //set tree state
   treeData.value = tree;
+
+  // restore previously-expanded TreeTable rows
+  nextTick(() => {
+    expandedKeys.value = currentExpandedKeys;
+  });
 });
 </script>
 
@@ -299,9 +326,20 @@ watch(getBuckets, () => {
       header-class="text-right"
       body-class="action-buttons"
       header-style="width: 320px"
-      >
+    >
       <template #body="{ node }">
         <span v-if="!node.data.dummy">
+          <Tag
+            v-if="getBucketPublicStatus(node)"
+            v-tooltip="
+              'This folder and its contents are set to public. Change the settings in &quot;Folder permissions.&quot;'
+            "
+            value="Public"
+            severity="danger"
+            rounded
+            icon="pi pi-info-circle"
+            class="public-folder"
+          />
           <ShareButton
             :bucket-id="node.data.bucketId"
             label-text="Folder"
@@ -342,8 +380,8 @@ watch(getBuckets, () => {
             aria-label="Folder details"
             @click="showSidebarInfo(node.data.bucketId)"
           >
-          <span class="material-icons-outlined">info</span>
-        </Button>
+            <span class="material-icons-outlined">info</span>
+          </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.DELETE)"
             v-tooltip.bottom="'Delete folder'"
@@ -351,8 +389,8 @@ watch(getBuckets, () => {
             aria-label="Delete folder"
             @click="confirmDeleteBucket(node.data.bucketId)"
           >
-          <span class="material-icons-outlined">delete</span>
-        </Button>
+            <span class="material-icons-outlined">delete</span>
+          </Button>
         </span>
       </template>
     </Column>

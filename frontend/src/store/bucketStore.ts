@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { bucketService } from '@/services';
-import { useAppStore, usePermissionStore } from '@/store';
+import { useAppStore, useAuthStore, usePermissionStore } from '@/store';
 import { partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
@@ -18,6 +18,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
   // Store
   const appStore = useAppStore();
+  const authStore = useAuthStore();
   const permissionStore = usePermissionStore();
 
   // State
@@ -157,8 +158,7 @@ export const useBucketStore = defineStore('bucket', () => {
     try {
       appStore.beginIndeterminateLoading();
       await bucketService.togglePublic(bucketId, isPublic);
-      const bucket = getters.getBucket.value(bucketId);
-      if (bucket) bucket.public = isPublic;
+      await fetchBuckets({ userId: authStore.getUserId, objectPerms: true });
     } catch (error: any) {
       toast.error('Changing public state', error);
     } finally {
@@ -176,7 +176,6 @@ export const useBucketStore = defineStore('bucket', () => {
       appStore.endIndeterminateLoading();
     }
   }
-
 
   async function syncBucketStatus(bucketId: string) {
     try {
