@@ -153,3 +153,11 @@ export function onDialogHide() {
   focusedElement.value?.focus();
   focusedElement.value = null;
 }
+/**
+ * Trims a URL of any trailing slashes, as well as any leading/trailing whitespace
+ * @param {string} input the string to cleanup
+ * @returns the cleaned-up string, less any trailing slashes and leading/trailing whitespace
+ */
+export function trimUrl(input: string) {
+  return input.trim().replace(/\/+$/, '');
+}

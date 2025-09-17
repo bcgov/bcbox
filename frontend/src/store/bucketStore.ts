@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { useToast } from '@/lib/primevue';
 import { bucketService } from '@/services';
 import { useAppStore, useAuthStore, usePermissionStore } from '@/store';
-import { partition } from '@/utils/utils';
+import { getBucketPath, partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketSearchPermissionsOptions } from '@/types';
@@ -29,6 +29,9 @@ export const useBucketStore = defineStore('bucket', () => {
   // Getters
   const getters = {
     getBucket: computed(() => (id: string) => state.buckets.value.find((bucket) => bucket.bucketId === id)),
+    getBucketByFullPath: computed(
+      () => (fullPath: string) => state.buckets.value.find((bucket) => getBucketPath(bucket) === fullPath)
+    ),
     getBuckets: computed(() => state.buckets.value)
   };
 
@@ -159,8 +162,6 @@ export const useBucketStore = defineStore('bucket', () => {
       appStore.beginIndeterminateLoading();
       await bucketService.togglePublic(bucketId, isPublic);
       await fetchBuckets({ userId: authStore.getUserId, objectPerms: true });
-    } catch (error: any) {
-      toast.error('Changing public state', error);
     } finally {
       appStore.endIndeterminateLoading();
     }
