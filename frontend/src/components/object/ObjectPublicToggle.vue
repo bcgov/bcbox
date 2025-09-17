@@ -10,6 +10,7 @@ import type { Ref } from 'vue';
 // Props
 type Props = {
   bucketId: string;
+  bucketPublic?: boolean;
   objectId: string;
   objectName: string;
   objectPublic: boolean;
@@ -69,6 +70,7 @@ watch(props, () => {
     aria-label="Toggle to make public"
     :disabled="
       !(
+        !bucketPublic &&
         usePermissionStore().isUserElevatedRights() &&
         permissionStore.isObjectActionAllowed(
           props.objectId,

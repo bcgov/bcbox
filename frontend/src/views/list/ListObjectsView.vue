@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 import { differenceInSeconds } from 'date-fns';
 
 import { ObjectList } from '@/components/object';
-import { useToast } from '@/lib/primevue';
+import { Tag, useToast } from '@/lib/primevue';
 import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { RouteNames, Permissions } from '@/utils/constants';
 
@@ -23,10 +23,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const bucketStore = useBucketStore();
-const { getUserId } = storeToRefs(useAuthStore());
+const { getUserId, getIsAuthenticated } = storeToRefs(useAuthStore());
 const permissionStore = usePermissionStore();
 const { getBucketPermissions } = storeToRefs(permissionStore);
-
 const toast = useToast();
 
 // State
@@ -41,13 +40,15 @@ const autoSync = async () => {
   const last = new Date(lastSyncRequestedDate.value as string);
   const now = new Date();
   const since = differenceInSeconds(now, last);
-  if(since > 3600){
-    await bucketStore.syncBucket(props.bucketId, false );
-    toast.info('Sync in progress.',
-      'It\'s been a while since we checked for changes on the file server. ' +
-      'Please refresh this page to ensure the file listing is up-to-date.', { life: 0 });
-  }
-  else if(syncQueueSize.value > 0){
+  if (since > 3600) {
+    await bucketStore.syncBucket(props.bucketId, false);
+    toast.info(
+      'Sync in progress.',
+      "It's been a while since we checked for changes on the file server. " +
+        'Please refresh this page to ensure the file listing is up-to-date.',
+      { life: 0 }
+    );
+  } else if (syncQueueSize.value > 0) {
     const word = syncQueueSize.value > 1 ? 'files' : 'file';
     toast.info('Sync in progress.', `${syncQueueSize.value} ${word} remaining.`, { life: 0 });
   }
@@ -61,17 +62,25 @@ onBeforeMount(async () => {
   const router = useRouter();
 
   // fetch buckets (which is already scoped by cur user's permissions) and populates bucket and permissions in store
-  const bucketResponse = await bucketStore.fetchBuckets({
-    bucketId: props.bucketId,
-    userId: getUserId.value,
-    objectPerms: true
-  });
+  let bucketResponse: any = [];
+  if (props?.bucketId) {
+    if (getIsAuthenticated.value) {
+      bucketResponse = await bucketStore.fetchBuckets({
+        bucketId: props.bucketId,
+        userId: getUserId.value,
+        objectPerms: true
+      });
+    } else {
+      bucketResponse = [await bucketStore.fetchBucket(props.bucketId)];
+    }
+  }
+
   if (bucketResponse?.length) {
     bucket.value = bucketResponse[0];
     ready.value = true;
     // sync bucket if necessary
     const hasRead = getBucketPermissions.value.filter((p) => p.permCode === Permissions.READ);
-    if(hasRead.length > 0) await autoSync();
+    if (hasRead.length > 0) await autoSync();
   } else {
     router.replace({ name: RouteNames.FORBIDDEN });
   }
@@ -103,7 +112,10 @@ onBeforeMount(async () => {
         />
       </span>
     </h2>
-    <ObjectList :bucket-id="props.bucketId" />
+    <ObjectList
+      :bucket-id="props.bucketId"
+      :is-bucket-public="bucket?.public"
+    />
   </div>
 </template>
 <style scoped lang="scss">

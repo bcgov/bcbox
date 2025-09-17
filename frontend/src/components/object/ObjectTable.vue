@@ -36,11 +36,13 @@ type DataTableFilter = {
 // Props
 type Props = {
   bucketId?: string;
+  isBucketPublic?: boolean;
   objectInfoId?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   bucketId: undefined,
+  isBucketPublic: undefined,
   objectInfoId: undefined
 });
 
@@ -50,7 +52,7 @@ const emit = defineEmits(['show-object-info']);
 // Store
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
-const { getUserId } = storeToRefs(useAuthStore());
+const { getUserId, getIsAuthenticated } = storeToRefs(useAuthStore());
 const { focusedElement } = storeToRefs(useNavStore());
 
 // State
@@ -108,14 +110,15 @@ const loadLazyData = (event?: any) => {
     .searchObjects(
       {
         bucketId: props.bucketId ? [props.bucketId] : undefined,
-        deleteMarker: false,
-        latest: true,
+        deleteMarker: getIsAuthenticated.value ? false : undefined,
+        latest: getIsAuthenticated.value ? true : undefined,
         page: lazyParams.value?.page ? ++lazyParams.value.page : 1,
         name: lazyParams.value?.filters?.name.value ? lazyParams.value?.filters?.name.value : undefined,
         limit: lazyParams.value.rows,
         sort: lazyParams.value.sortField,
         order: lazyParams.value.sortOrder === 1 ? 'asc' : 'desc',
-        tagset: lazyParams.value?.filters?.tags.value
+        public: !getIsAuthenticated.value ? true : undefined,
+        tagset: getIsAuthenticated.value ? lazyParams.value?.filters?.tags.value : undefined
       },
       lazyParams.value?.filters?.meta.value //Header
     )
@@ -132,8 +135,10 @@ const loadLazyData = (event?: any) => {
     })
     // add object permissions to store
     .then((objects: Array<COMSObjectDataSource>) => {
-      if (objects.length > 0) {
-        permissionStore.fetchObjectPermissions({ objectId: objects.map((o: COMSObject) => o.id) });
+      if (objects.length > 0 && getIsAuthenticated.value) {
+        permissionStore.fetchObjectPermissions({
+          objectId: objects.map((o: COMSObject) => o.id)
+        });
       }
     });
 };
@@ -180,6 +185,10 @@ const selectedFilters = (payload: any) => {
   lazyParams.value.filters = filters;
   loadLazyData();
 };
+
+async function downloadPublicObject(objectId: string) {
+  window.open(await objectStore.getObjectUrl(objectId));
+}
 </script>
 
 <template>
@@ -209,7 +218,10 @@ const selectedFilters = (payload: any) => {
       @filter="onFilter($event)"
     >
       <template #header>
-        <div class="flex justify-content-end">
+        <div
+          v-if="getIsAuthenticated"
+          class="flex justify-content-end"
+        >
           <ObjectFilters
             :bucket-id="props.bucketId"
             @selected-filters="selectedFilters"
@@ -271,11 +283,27 @@ const selectedFilters = (payload: any) => {
       >
         <template #body="{ data }">
           <div>
-            <router-link :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objectId: data.id } }">
+            <!-- public "file details" page and sidebar to be implemented later -->
+            <!-- for now, just redirect to direct file download -->
+            <router-link
+              v-if="getIsAuthenticated"
+              :to="{ name: RouteNames.DETAIL_OBJECTS, query: { objectId: data.id } }"
+            >
               <span v-tooltip.bottom="'View file details'">
                 {{ data.name }}
               </span>
             </router-link>
+            <a
+              v-else
+              @click="downloadPublicObject(data.id)"
+            >
+              <span
+                v-tooltip.bottom="'Download file'"
+                style="cursor: pointer"
+              >
+                {{ data.name }}
+              </span>
+            </a>
           </div>
         </template>
       </Column>
@@ -305,6 +333,7 @@ const selectedFilters = (payload: any) => {
         </template>
       </Column>
       <Column
+        v-if="getIsAuthenticated"
         field="publicSharing"
         header="Public"
         style="width: 100px"
@@ -313,6 +342,7 @@ const selectedFilters = (payload: any) => {
           <ObjectPublicToggle
             v-if="props.bucketId && getUserId"
             :bucket-id="props.bucketId"
+            :bucket-public="props.isBucketPublic"
             :object-id="data.id"
             :object-name="data.name"
             :object-public="data.public"
@@ -322,7 +352,7 @@ const selectedFilters = (payload: any) => {
       </Column>
       <Column
         header="Actions"
-        header-style="min-width: 270px"
+        :header-style="getIsAuthenticated ? 'min-width: 270px' : 'width: 40px'"
         header-class="header-right"
         body-class="action-buttons"
       >
@@ -352,22 +382,24 @@ const selectedFilters = (payload: any) => {
             <span class="material-icons-outlined">supervisor_account</span>
           </Button>
           <SyncButton
+            v-if="getIsAuthenticated"
             label-text="Synchronize file"
             :object-id="data.id"
             :mode="ButtonMode.ICON"
           />
           <Button
             v-if="
-              data.public ||
-              permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, props.bucketId as string)
+              getIsAuthenticated &&
+              (data.public ||
+                permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.READ, props.bucketId as string))
             "
             v-tooltip.bottom="'File details'"
             class="p-button-lg p-button-rounded p-button-text"
             aria-label="File details"
             @click="showInfo(data.id)"
           >
-          <span class="material-icons-outlined">info</span>
-        </Button>
+            <span class="material-icons-outlined">info</span>
+          </Button>
           <DeleteObjectButton
             v-if="
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.DELETE, props.bucketId as string)

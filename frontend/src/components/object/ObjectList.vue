@@ -20,10 +20,12 @@ import type { Ref } from 'vue';
 // Props
 type Props = {
   bucketId?: string;
+  isBucketPublic?: boolean;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  bucketId: undefined
+  bucketId: undefined,
+  isBucketPublic: undefined
 });
 
 //const navStore = useNavStore();
@@ -32,7 +34,7 @@ const permissionStore = usePermissionStore();
 const { focusedElement } = storeToRefs(useNavStore());
 
 const { getSelectedObjects } = storeToRefs(objectStore);
-const { getUserId } = storeToRefs(useAuthStore());
+const { getIsAuthenticated, getUserId } = storeToRefs(useAuthStore());
 
 // State
 const displayUpload = ref(false);
@@ -101,6 +103,7 @@ const onObjectDeleted = () => {
         :mode="ButtonMode.BUTTON"
       />
       <DeleteObjectButton
+        v-if="getIsAuthenticated"
         :disabled="displayUpload || selectedObjectIds.length === 0"
         :ids="selectedObjectIds"
         :mode="ButtonMode.BUTTON"
@@ -117,6 +120,7 @@ const onObjectDeleted = () => {
         <ObjectTable
           :key="objectTableKey"
           :bucket-id="props.bucketId"
+          :is-bucket-public="props.isBucketPublic"
           :object-info-id="objectInfoId"
           @show-object-info="showObjectInfo"
         />
