@@ -22,16 +22,19 @@ const props = withDefaults(defineProps<Props>(), {
 // store
 const { getConfig } = storeToRefs(useConfigStore());
 
+// TODO: public folders
 // Share link
-const shareLink: Ref<string>  = computed(() => {
-  if(props.inviteLink) return props.inviteLink; // use invite link if defined in prop
-  else if(props.resource.public) { // else if a public file
+const shareLink: Ref<string> = computed(() => {
+  if (props.inviteLink)
+    return props.inviteLink; // use invite link if defined in prop
+  else if (props.resource.public && props.resourceType === 'object') {
     return `${getConfig.value.coms?.apiPath}/object/${props.resource.id}`;
-  } else { // else either a protected file or bucket
-    const path = props.resourceType === 'object'
-      // eslint-disable-next-line max-len
-      ? `detail/objects?objectId=${props.resource.id}`
-      : `list/objects?bucketId=${props.resource.bucketId}`;
+  } else {
+    // else either a bucket or protected file
+    const path =
+      props.resourceType === 'object'
+        ? `detail/objects?objectId=${props.resource.id}`
+        : `list/objects?bucketId=${props.resource.bucketId}`;
     return `${window.location.origin}/${path}`;
   }
 });

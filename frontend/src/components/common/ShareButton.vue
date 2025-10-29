@@ -110,7 +110,7 @@ const showDialog = (x: boolean) => {
     </div>
     <TabView>
       <TabPanel
-        v-if="resource?.public"
+        v-if="resource?.public && resourceType === 'object'"
         header="Direct public file link"
       >
         <Share
@@ -121,11 +121,11 @@ const showDialog = (x: boolean) => {
       </TabPanel>
       <!-- Disable for public until unauthed File Details page works -->
       <TabPanel
-        header="Share link"
-        :disabled="resource?.public"
+        :header="`BCBox ${resource?.public ? 'public ' : ''}link`"
+        :disabled="resourceType === 'object' && resource?.public"
       >
         <Share
-          label="Share link"
+          label="BCBox link"
           :resource-type="resourceType"
           :resource="resource"
         />
@@ -147,8 +147,8 @@ const showDialog = (x: boolean) => {
     :aria-label="`Share ${props.labelText.toLocaleLowerCase()}`"
     @click="showDialog(true)"
   >
-  <span class="material-icons-outlined">ios_share</span>
-</Button>
+    <span class="material-icons-outlined">ios_share</span>
+  </Button>
 </template>
 
 <style scoped lang="scss">
