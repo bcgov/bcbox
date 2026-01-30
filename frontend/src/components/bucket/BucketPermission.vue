@@ -28,7 +28,6 @@ const bucketStore = useBucketStore();
 const { getMappedBucketToUserPermissions } = storeToRefs(permissionStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
-
 // State
 const showSearchUsers: Ref<boolean> = ref(false);
 const bucket: Ref<Bucket | undefined> = computed(() => {
@@ -82,8 +81,8 @@ onBeforeMount(async () => {
   <TabView>
     <TabPanel header="Manage permissions">
       <!-- public toggle -->
-      <div class="flex flex-row gap-6 pb-3">
-        <div>
+      <div class="flex flex-row pb-3">
+        <div class="flex-grow-1">
           <h3 class="pb-1">Public</h3>
           <ul>
             <li>This option toggles all files in this folder to be publicly available and accessible to anyone</li>
@@ -92,7 +91,7 @@ onBeforeMount(async () => {
         </div>
         <BucketPublicToggle
           v-if="bucket && getUserId"
-          class="ml-4"
+          class=""
           :bucket-id="bucket.bucketId"
           :bucket-name="bucket.bucketName"
           :bucket-public="bucket.public"
@@ -122,7 +121,7 @@ onBeforeMount(async () => {
         class="mb-4"
         size="small"
       >
-      Permission changes apply to all sub-folders and files.
+        Permission changes apply to all sub-folders and files.
       </Message>
 
       <DataTable
@@ -253,8 +252,8 @@ onBeforeMount(async () => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.p-message-wrapper){
-  padding: .5rem;
+:deep(.p-message-wrapper) {
+  padding: 0.5rem;
 }
 :deep(.p-button.p-button-lg) {
   padding: 0;

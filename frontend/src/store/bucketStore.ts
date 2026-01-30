@@ -67,32 +67,6 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
-  // /**
-  //  * @function fetchPublicBucket
-  //  * - Adds bucket to store if bucket is public
-  //  * @param params search parameters
-  //  * @returns an array containing single bucket
-  //  */
-  // async function fetchPublicBucket(bucketId: string) {
-  //   try {
-  //     appStore.beginIndeterminateLoading();
-  //     //search for bucket
-  //     const bucket = (await bucketService.searchBuckets()).data;
-  //     console.log(bucket);
-  //     if(bucket?.length) {
-  //       // update store
-  //       const matches = (x: Bucket) => !bucketId || x.bucketId === bucketId;
-  //       const [, difference] = partition(state.buckets.value, matches);
-  //       state.buckets.value = difference.concat(bucket);
-  //       return bucket;
-  //     } else return [];
-  //   } catch (error: any) {
-  //     toast.error('Fetching public bucket', error);
-  //   } finally {
-  //     appStore.endIndeterminateLoading();
-  //   }
-  // }
-
   async function fetchBucket(bucketId: string) {
     try {
       appStore.beginIndeterminateLoading();

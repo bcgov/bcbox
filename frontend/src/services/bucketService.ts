@@ -127,10 +127,10 @@ export default {
     return comsAxios().patch(`${BUCKET_PATH}/${bucketId}/public`, null, {
       params: {
         public: isPublic
-      }
+      },
+      timeout: 60000
     });
   },
-
 
   /**
    * @function syncBucket

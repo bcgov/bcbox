@@ -57,8 +57,8 @@ onBeforeMount(() => {
 <template>
   <TabView>
     <TabPanel header="Manage permissions">
-      <div class="flex flex-row gap-6 pb-3">
-        <div>
+      <div class="flex flex-row pb-3">
+        <div class="flex-grow-1">
           <h3 class="pb-1">Public</h3>
           <ul>
             <li>This option toggles the file to be publicly available and accessible to anyone</li>
@@ -67,7 +67,7 @@ onBeforeMount(() => {
         </div>
         <ObjectPublicToggle
           v-if="object && getUserId"
-          class="ml-4"
+          class=""
           :bucket-id="object.bucketId"
           :object-id="object.id"
           :object-name="object.name"
