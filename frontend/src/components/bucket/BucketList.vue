@@ -58,12 +58,6 @@ onMounted(async () => {
   <div class="flex flex-wrap">
     <div class="flex-grow-1">
       <h1 class="">My files</h1>
-      <h4
-        id="tree_label"
-        class="mb-4"
-      >
-        Select a folder to view the files inside it.
-      </h4>
     </div>
 
     <div class="flex-none align-items-right">
@@ -71,7 +65,7 @@ onMounted(async () => {
         v-if="usePermissionStore().isUserElevatedRights()"
         v-tooltip.bottom="'Add a new storage location source'"
         label="Connect Storage"
-        class="my-4 p-button-primary"
+        class="mb-4 mt-1 p-button-primary"
         data-test="connect-storage"
         aria-label="Add a new storage location source"
         @click="showBucketConfig()"
@@ -111,7 +105,8 @@ onMounted(async () => {
 
         <Message severity="warn">
           If you intend to share files in your bucket with BCeID or BC Services Card users, please notify
-          <a href="mailto:IDIM.Consulting@gov.bc.ca">IDIM.Consulting@gov.bc.ca</a> that you plan to use BCBox.
+          <a href="mailto:IDIM.Consulting@gov.bc.ca">IDIM.Consulting@gov.bc.ca</a>
+          that you plan to use BCBox.
         </Message>
 
         <Message severity="info">

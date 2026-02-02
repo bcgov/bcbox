@@ -14,10 +14,10 @@ import type { Ref } from 'vue';
 type Props = {
   bucketId?: string;
   objectId?: string;
-  recursive: boolean;
+  recursive?: boolean;
   labelText?: string;
   disabled?: boolean;
-  mode: ButtonMode;
+  mode?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -25,7 +25,8 @@ const props = withDefaults(defineProps<Props>(), {
   objectId: '',
   recursive: false,
   labelText: '',
-  disabled: false
+  disabled: false,
+  mode: ButtonMode.ICON
 });
 
 // State
@@ -44,14 +45,14 @@ const displaySyncDialog = ref(false);
 
 // Actions
 const onSubmit = async () => {
-  try{
+  try {
     if (props.objectId) {
       await objectStore.syncObject(props.objectId);
     } else if (props.bucketId) {
       await bucketStore.syncBucket(props.bucketId, props.recursive);
     }
     toast.info('Sync in progress', '');
-  } catch(error: any){
+  } catch (error: any) {
     toast.error(error, '', { life: 0 });
   }
   displaySyncDialog.value = false;

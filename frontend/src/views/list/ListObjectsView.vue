@@ -90,26 +90,26 @@ onBeforeMount(async () => {
   <div v-if="ready">
     <h2
       v-if="bucket"
-      class="mb-3 flex overflow-hidden"
+      class="mb-3 flex flex-align-baseline overflow-hidden"
     >
       <font-awesome-icon
         icon="fa-solid fa-folder"
-        class="mr-2 mt-2"
+        class="flex align-items-center mr-2 mt-2"
       />
-      <span class="wrap-block w-11">
+      <span class="wrap-block w-11 flex flex-grow-1">
         {{ bucket.bucketName }}
-        <Tag
-          v-if="bucket.public"
-          v-tooltip="
-            'This folder and its contents are set to public. Change the settings in &quot;Folder permissions.&quot;'
-          "
-          style="margin-left: 30px"
-          value="Public"
-          severity="danger"
-          rounded
-          icon="pi pi-info-circle"
-          class="public-folder"
-        />
+        <span class="ml-3 flex align-items-center">
+          <Tag
+            v-if="bucket.public"
+            v-tooltip="
+              'This folder and its contents are set to public. Change the settings in &quot;Folder permissions.&quot;'
+            "
+            value="Public"
+            severity="danger"
+            rounded
+            icon="pi pi-info-circle"
+          />
+        </span>
       </span>
     </h2>
     <ObjectList

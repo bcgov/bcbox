@@ -3,10 +3,11 @@ import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 
 import { Invite, Share } from '@/components/common';
-import { Button, Dialog, TabView, TabPanel } from '@/lib/primevue';
+import { Button, Dialog, TabView, TabPanel, Tag } from '@/lib/primevue';
 
 import { Permissions } from '@/utils/constants';
 import { useAuthStore, useObjectStore, usePermissionStore, useBucketStore, useNavStore } from '@/store';
+import { useConfigStore } from '@/store';
 import { onDialogHide } from '@/utils/utils';
 
 import type { Ref } from 'vue';
@@ -33,6 +34,7 @@ const bucketStore = useBucketStore();
 const { getUserId } = storeToRefs(useAuthStore());
 const permissionStore = usePermissionStore();
 const { focusedElement } = storeToRefs(useNavStore());
+const { getConfig } = storeToRefs(useConfigStore());
 
 // State
 const resourceType = props.objectId ? ref('object') : ref('bucket');
@@ -51,6 +53,14 @@ const hasManagePermission: Ref<boolean> = computed(() => {
       )
     : permissionStore.isBucketActionAllowed(props.bucketId, getUserId.value, Permissions.MANAGE);
   /* eslint-enable */
+});
+
+// get share links
+const downloadLink = `${getConfig.value.coms?.apiPath}/object/${props.objectId}`;
+const bcboxLink: Ref<string> = computed(() => {
+  const baseUrl = window.location.origin;
+  if (resourceType.value === 'bucket') return `${baseUrl}/list/objects?bucketId=${props.bucketId}`;
+  else return `${baseUrl}/detail/objects?objectId=${props.objectId}`;
 });
 
 // Dialog
@@ -81,23 +91,38 @@ const showDialog = (x: boolean) => {
       <span class="material-icons-outlined">ios_share</span>
       <span
         id="share_dialog_label"
-        class="p-dialog-title"
+        class="p-dialog-title flex-grow-0"
       >
         Share
+      </span>
+      <span class="ml-3 text-sm flex-grow-1">
+        <Tag
+          v-if="resource?.public"
+          v-tooltip="
+            `This ${resourceType === 'object' ? 'file is' : 'folder and its contents are'} set to public. 
+              Change the settings in &quot;${resourceType === 'object' ? 'File' : 'Folder'} Permissions.&quot;`
+          "
+          value="Public"
+          severity="danger"
+          rounded
+          icon="pi pi-info-circle"
+        />
       </span>
     </template>
     <div
       tabindex="0"
       role="document"
     >
-      <h3 class="bcbox-info-dialog-subhead">
+      <h3 class="bcbox-info-dialog-subhead flex items-center">
         {{ resourceType === 'object' ? resource?.name : resource?.bucketName }}
       </h3>
       <ul
         id="share_dialog_desc"
         class="mb-4"
       >
-        <li>If a user already has permissions, you can link them with a share link</li>
+        <li v-if="resourceType === 'object' && resource?.public">
+          If a user already has permissions, you can link them with a share link
+        </li>
         <li>
           Invite someone using an invite link - the links are single-use; you must generate a new link for each user you
           intend to send this to
@@ -109,27 +134,26 @@ const showDialog = (x: boolean) => {
       </ul>
     </div>
     <TabView>
+      <!-- COMS download link -->
       <TabPanel
-        v-if="resource?.public && resourceType === 'object'"
-        header="Direct public file link"
+        v-if="resourceType === 'object' && resource?.public"
+        :header="`Public download link`"
       >
         <Share
-          label="Direct link"
-          :resource-type="resourceType"
-          :resource="resource"
+          label="Download link"
+          :share-link="downloadLink"
         />
       </TabPanel>
-      <!-- Disable for public until unauthed File Details page works -->
-      <TabPanel
-        :header="`BCBox ${resource?.public ? 'public ' : ''}link`"
-        :disabled="resourceType === 'object' && resource?.public"
-      >
+
+      <!-- BCBox link -->
+      <TabPanel :header="`${resource?.public && resourceType === 'bucket' ? 'Public ' : ''} BCBox link`">
         <Share
-          label="BCBox link"
-          :resource-type="resourceType"
-          :resource="resource"
+          :label="`${resource?.public && resourceType === 'bucket' ? 'Pubic ' : ''} BCBox Link`"
+          :share-link="bcboxLink"
         />
       </TabPanel>
+
+      <!-- Invite -->
       <TabPanel
         :header="`${resourceType === 'object' ? 'File' : 'Folder'} invite`"
         :disabled="!hasManagePermission"
