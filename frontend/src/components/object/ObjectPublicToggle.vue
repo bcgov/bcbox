@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 import { InputSwitch, useConfirm, useToast } from '@/lib/primevue';
-import { useObjectStore, usePermissionStore } from '@/store';
+import { useBucketStore, useObjectStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -21,10 +21,12 @@ const props = withDefaults(defineProps<Props>(), {});
 
 // Store
 const objectStore = useObjectStore();
+const bucketStore = useBucketStore();
 const permissionStore = usePermissionStore();
 
 // State
 const isPublic: Ref<boolean> = ref(props.objectPublic);
+const isParentPublic = ref<boolean>(false);
 
 // Actions
 const toast = useToast();
@@ -59,6 +61,20 @@ const togglePublic = async (setPublicValue: boolean) => {
       .catch((e) => toast.error('Setting file to non-public', e.response?.data.detail, { life: 0 }));
 };
 
+const isToggleEnabled = computed(() => {
+  return (
+    !isParentPublic.value &&
+    usePermissionStore().isUserElevatedRights() &&
+    permissionStore.isObjectActionAllowed(props.objectId, props.userId, Permissions.MANAGE, props.bucketId as string)
+  );
+});
+
+onMounted(async () => {
+  isPublic.value = props.objectPublic;
+  // @ts-ignore: bucketId will always be provided
+  isParentPublic.value = bucketStore.getBucket(props.bucketId).public ?? false;
+});
+
 watch(props, () => {
   isPublic.value = props.objectPublic;
 });
@@ -68,18 +84,7 @@ watch(props, () => {
   <InputSwitch
     v-model="isPublic"
     aria-label="Toggle to make public"
-    :disabled="
-      !(
-        !bucketPublic &&
-        usePermissionStore().isUserElevatedRights() &&
-        permissionStore.isObjectActionAllowed(
-          props.objectId,
-          props.userId,
-          Permissions.MANAGE,
-          props.bucketId as string
-        )
-      )
-    "
+    :disabled="!isToggleEnabled"
     @change="togglePublic(isPublic)"
   />
 </template>
