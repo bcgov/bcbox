@@ -4,12 +4,11 @@ import { computed, nextTick, ref, watch } from 'vue';
 
 import { BucketChildConfig, BucketPermission, BucketTableBucketName } from '@/components/bucket';
 import { Spinner } from '@/components/layout';
-import { SyncButton, ShareButton } from '@/components/common';
+import { ShareButton } from '@/components/common';
 import { Button, Column, Dialog, Tag, TreeTable, useConfirm } from '@/lib/primevue';
 import { useAppStore, useAuthStore, useBucketStore, useNavStore, usePermissionStore } from '@/store';
 import { DELIMITER, Permissions } from '@/utils/constants';
 import { getBucketPath, joinPath, onDialogHide } from '@/utils/utils';
-import { ButtonMode } from '@/utils/enums';
 
 import type { TreeTableExpandedKeys } from 'primevue/treetable';
 import type { Ref } from 'vue';
@@ -340,23 +339,10 @@ watch(getBuckets, () => {
             icon="pi pi-info-circle"
             class="public-folder"
           />
-          <ShareButton
-            :bucket-id="node.data.bucketId"
-            label-text="Folder"
-          />
           <BucketChildConfig
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.CREATE)"
             :parent-bucket="node.data"
           />
-          <Button
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
-            v-tooltip.bottom="'Configure folder'"
-            class="p-button-lg p-button-text"
-            aria-label="Configure folder"
-            @click="showBucketConfig(node.data)"
-          >
-            <span class="material-icons-outlined">settings</span>
-          </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
             id="folder_permissions"
@@ -367,12 +353,19 @@ watch(getBuckets, () => {
           >
             <span class="material-icons-outlined">supervisor_account</span>
           </Button>
-          <SyncButton
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
-            label-text="Synchronize files in this folder"
+          <ShareButton
             :bucket-id="node.data.bucketId"
-            :mode="ButtonMode.ICON"
+            label-text="Folder"
           />
+          <Button
+            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
+            v-tooltip.bottom="'Configure folder'"
+            class="p-button-lg p-button-text"
+            aria-label="Configure folder"
+            @click="showBucketConfig(node.data)"
+          >
+            <span class="material-icons-outlined">settings</span>
+          </Button>
           <Button
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
             v-tooltip.bottom="'Folder details'"

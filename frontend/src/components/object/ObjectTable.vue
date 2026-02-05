@@ -357,10 +357,6 @@ async function downloadPublicObject(objectId: string) {
         body-class="action-buttons"
       >
         <template #body="{ data }">
-          <ShareButton
-            :object-id="data.id"
-            label-text="File"
-          />
           <DownloadObjectButton
             v-if="
               data.public ||
@@ -381,11 +377,15 @@ async function downloadPublicObject(objectId: string) {
           >
             <span class="material-icons-outlined">supervisor_account</span>
           </Button>
-          <SyncButton
+          <!-- <SyncButton
             v-if="getIsAuthenticated"
             label-text="Synchronize file"
             :object-id="data.id"
             :mode="ButtonMode.ICON"
+          /> -->
+          <ShareButton
+            :object-id="data.id"
+            label-text="File"
           />
           <Button
             v-if="

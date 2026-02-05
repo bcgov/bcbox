@@ -42,6 +42,7 @@ const { focusedElement } = storeToRefs(useNavStore());
 
 // Dialog
 const displaySyncDialog = ref(false);
+const clicked = ref(false);
 
 // Actions
 const onSubmit = async () => {
@@ -52,6 +53,7 @@ const onSubmit = async () => {
       await bucketStore.syncBucket(props.bucketId, props.recursive);
     }
     toast.info('Sync in progress', '');
+    clicked.value = true;
   } catch (error: any) {
     toast.error(error, '', { life: 0 });
   }
@@ -167,7 +169,7 @@ const onClick = () => {
     v-if="props.mode === ButtonMode.ICON"
     v-tooltip.bottom="{ value: labelText }"
     class="p-button-lg p-button-text p-button-primary btn-delete-text"
-    :disabled="props.disabled"
+    :disabled="clicked || props.disabled"
     :aria-label="labelText"
     @click="onClick"
   >
@@ -177,7 +179,7 @@ const onClick = () => {
     v-else
     v-tooltip.bottom="{ value: labelText }"
     class="p-button-outlined btn-delete"
-    :disabled="props.disabled"
+    :disabled="clicked || props.disabled"
     :aria-label="labelText"
     @click="onClick"
   >

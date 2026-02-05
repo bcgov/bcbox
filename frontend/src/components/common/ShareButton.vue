@@ -146,9 +146,13 @@ const showDialog = (x: boolean) => {
       </TabPanel>
 
       <!-- BCBox link -->
-      <TabPanel :header="`${resource?.public && resourceType === 'bucket' ? 'Public ' : ''} BCBox link`">
+      <!-- <TabPanel :header="`${resource?.public && resourceType === 'bucket' ? 'Public ' : ''} BCBox link`"> -->
+      <TabPanel
+        v-if="resource?.public && resourceType === 'bucket'"
+        :header="`Public BCBox link`"
+      >
         <Share
-          :label="`${resource?.public && resourceType === 'bucket' ? 'Pubic ' : ''} BCBox Link`"
+          :label="'Public BCBox Link'"
           :share-link="bcboxLink"
         />
       </TabPanel>
