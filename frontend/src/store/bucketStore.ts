@@ -32,7 +32,14 @@ export const useBucketStore = defineStore('bucket', () => {
     getBucketByFullPath: computed(
       () => (fullPath: string) => state.buckets.value.find((bucket) => getBucketPath(bucket) === fullPath)
     ),
-    getBuckets: computed(() => state.buckets.value)
+    getBuckets: computed(() => state.buckets.value),
+    isTopBucket: computed(() => (bucketId: string) => {
+      const allBuckets = state.buckets.value;
+      const bucket = allBuckets.find((b) => b.bucketId === bucketId);
+      return bucket
+        ? allBuckets.filter((b) => b.bucket === bucket.bucket).every((b) => bucket.key.length <= b.key.length)
+        : false;
+    })
   };
 
   // Actions

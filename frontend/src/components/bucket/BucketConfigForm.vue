@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { onBeforeMount, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { Form } from 'vee-validate';
 import { object, string } from 'yup';
+import { differenceInSeconds } from 'date-fns';
 
 import Password from '@/components/form/Password.vue';
 import TextInput from '@/components/form/TextInput.vue';
@@ -12,6 +14,7 @@ import { useAuthStore, useBucketStore } from '@/store';
 import { ButtonMode } from '@/utils/enums';
 import { differential, getBucketPath, joinPath } from '@/utils/utils';
 
+import type { Ref } from 'vue';
 import type { Bucket } from '@/types';
 
 export type BucketForm = {
@@ -25,7 +28,7 @@ export type BucketForm = {
 
 // Props
 type Props = {
-  bucket?: Bucket;
+  bucket?: Bucket & { isRoot?: boolean };
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -90,9 +93,10 @@ const onSubmit = async (values: any) => {
 
     // If added a new configuration, do a recursive sync of this bucket
     if (!props.bucket) {
-      await bucketStore.syncBucket(bucketModel.bucketId, true)
+      await bucketStore
+        .syncBucket(bucketModel.bucketId, true)
         .then(() => toast.info('Sync in progress', ''))
-        .catch(error => toast.error('Unable to sync with storage location', error, { life: 0 }));
+        .catch((error) => toast.error('Unable to sync with storage location', error, { life: 0 }));
     }
 
     // refresh bucket list
@@ -120,6 +124,39 @@ const onSubmit = async (values: any) => {
 const onCancel = () => {
   emit('cancel-bucket-config');
 };
+
+// disable some form fields if configuring a subfolder
+const timeToNextManual: Ref<number> = ref(0);
+const syncButtonDisabled = ref(true);
+
+const updateSyncButtonStatus = async () => {
+  if (props.bucket) {
+    const manualMinimum = 1800; // 30 minutes
+    const now = new Date();
+    // if sync in progress, show status
+    const syncQueueSize: Ref<number> = ref(0);
+    syncQueueSize.value = await bucketStore.syncBucketStatus(props.bucket.bucketId);
+    if (syncQueueSize.value > 0) {
+      const word = syncQueueSize.value > 1 ? 'files' : 'file';
+      toast.info('Sync in progress.', `${syncQueueSize.value} ${word} remaining.`, { life: 0 });
+      timeToNextManual.value = manualMinimum;
+    } else {
+      const lastSyncDate = new Date(props.bucket.lastSyncRequestedDate as string);
+      const sinceLastSyncDate = differenceInSeconds(now, lastSyncDate);
+      // if havent synced for 30 minutes, enable button
+      if (sinceLastSyncDate > manualMinimum) {
+        syncButtonDisabled.value = false;
+      }
+      // else show time until minimum has passed since last
+      else {
+        timeToNextManual.value = Math.ceil((manualMinimum - sinceLastSyncDate) / 60);
+      }
+    }
+  }
+};
+onBeforeMount(async () => {
+  updateSyncButtonStatus();
+});
 </script>
 
 <template>
@@ -138,24 +175,28 @@ const onCancel = () => {
         focus-trap
       />
       <TextInput
+        :disabled="props.bucket && !props.bucket.isRoot"
         name="bucket"
         label="Bucket *"
         placeholder="eg: mybucket"
         :help-text="'The name of the bucket given to you. For example: \'yxwgj\'.'"
       />
       <TextInput
+        :disabled="props.bucket && !props.bucket.isRoot"
         name="endpoint"
         label="Endpoint *"
         placeholder="eg: https://nrs.objectstore.gov.bc.ca"
         help-text="The URL of your object storage namespace without the bucket identifier/name."
       />
       <Password
+        :disabled="props.bucket && !props.bucket.isRoot"
         name="accessKeyId"
         label="Access key ID *"
         placeholder=""
         help-text="User/Account identifier or username."
       />
       <Password
+        :disabled="props.bucket && !props.bucket.isRoot"
         name="secretAccessKey"
         label="Secret access key *"
         placeholder=""
@@ -170,27 +211,36 @@ const onCancel = () => {
           This will default to the root '/' if not provided."
         :disabled="!!props.bucket"
       />
-      <Button
-        class="p-button mt-2 mr-1"
-        label="Apply"
-        type="submit"
-        icon="pi pi-check"
-      />
-      <Button
-        class="p-button-outlined mt-2 mr-1"
-        label="Cancel"
-        icon="pi pi-times"
-        @click="onCancel"
-      />
-      <SyncButton
-        v-if="props.bucket"
-        class="p-button-outlined mt-2 mr-1"
-        label="Sync"
-        label-text="Synchronize all files and sub-folders"
-        :bucket-id="bucket?.bucketId"
-        :mode="ButtonMode.BUTTON"
-        :recursive="true"
-      />
+      <div class="flex flex-row">
+        <Button
+          class="flex p-button mt-2 mr-2"
+          label="Apply"
+          type="submit"
+          icon="pi pi-check"
+        />
+        <Button
+          class="flex p-button-outlined mt-2 mr-2"
+          label="Cancel"
+          icon="pi pi-times"
+          @click="onCancel"
+        />
+        <span
+          v-tooltip.left="
+            syncButtonDisabled
+              ? `Sync will be available in ${timeToNextManual} minutes`
+              : 'Sync all files and sub-folders with storage'
+          "
+          class="flex ml-auto mt-2"
+        >
+          <SyncButton
+            v-if="props.bucket"
+            :disabled="syncButtonDisabled"
+            :bucket-id="bucket?.bucketId"
+            :mode="ButtonMode.BUTTON"
+            :recursive="true"
+          />
+        </span>
+      </div>
     </Form>
   </div>
 </template>

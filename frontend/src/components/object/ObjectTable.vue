@@ -10,7 +10,7 @@ import {
   ObjectPermission,
   ObjectPublicToggle
 } from '@/components/object';
-import { SyncButton, ShareButton } from '@/components/common';
+import { ShareButton } from '@/components/common';
 import { Button, Column, DataTable, Dialog, InputText } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
@@ -439,6 +439,8 @@ async function downloadPublicObject(objectId: string) {
         id="permissions_desc"
         class="bcbox-info-dialog-subhead"
       >
+        Set permissions for:
+
         {{ permissionsObjectName }}
       </h3>
 

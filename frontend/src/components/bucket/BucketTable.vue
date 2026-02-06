@@ -151,8 +151,6 @@ function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
     // Fix broken endpoints caused by delimiter splitting
     fullPath = fullPath.replace(/^https?:\//i, (match) => `${match}/`);
 
-    // TODO: exclude un-mapped parent folders
-    // if(getBuckets.value.find(b => b.key === key || (key).startsWith(b.bucket+'/'+b.key))){
     dummyNodes.push({
       key: fullPath,
       data: {
@@ -229,34 +227,8 @@ watch(getBuckets, () => {
         if (neighbour) {
           createDummyNodes(neighbour, node).children.push(node);
         } else {
-          if (node.data.key !== '/') {
-            // Top level bucket not at root so create dummy hierarchy to reach it
-            const rootFullPath = `${node.data.endpoint}/${node.data.bucket}//`;
-            const dummyRootNode: BucketTreeNode = {
-              key: rootFullPath,
-              data: {
-                accessKeyId: '',
-                active: false,
-                bucket: node.data.bucket,
-                bucketId: '',
-                bucketName: node.data.bucket,
-                dummy: true,
-                endpoint: node.data.endpoint,
-                key: '/',
-                public: false,
-                region: '',
-                secretAccessKey: ''
-              },
-              children: new Array(),
-              isRoot: true
-            };
-            tree.push(dummyRootNode);
-            bucketTreeNodeMap.set(rootFullPath, dummyRootNode);
-            createDummyNodes(dummyRootNode, node).children.push(node);
-          } else {
-            node.isRoot = true;
-            tree.push(node);
-          }
+          node.isRoot = true;
+          tree.push(node);
         }
       }
 
@@ -362,7 +334,7 @@ watch(getBuckets, () => {
             v-tooltip.bottom="'Configure folder'"
             class="p-button-lg p-button-text"
             aria-label="Configure folder"
-            @click="showBucketConfig(node.data)"
+            @click="showBucketConfig({ ...node.data, isRoot: node.isRoot })"
           >
             <span class="material-icons-outlined">settings</span>
           </Button>
@@ -415,6 +387,11 @@ watch(getBuckets, () => {
       id="permissions_desc"
       class="bcbox-info-dialog-subhead"
     >
+      Set permissions for:
+      <font-awesome-icon
+        icon="fa-solid fa-folder"
+        class="mx-2 mt-2"
+      />
       {{ permissionBucketName }}
     </h3>
 

@@ -1,15 +1,32 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import QrcodeVue from 'qrcode.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Button, InputText, useToast } from '@/lib/primevue';
 
 // Props
 type Props = {
-  label: string;
+  linkType: string;
   shareLink: string;
 };
 const props = withDefaults(defineProps<Props>(), {
   shareLink: undefined
+});
+
+const text = computed(() => {
+  switch (props.linkType) {
+    case 'public-file':
+      return '<strong>Anyone</strong> with this link can download this file without authentication.';
+    case 'share-file':
+      return 'Only people who have permissions can access this file in BCBox.';
+    case 'share-public-folder':
+      return '<strong>Anyone</strong> with this link can view the contents of \
+      this folder in BCBox without authentication.';
+    case 'share-folder':
+      return 'Only people who have permissions can access this folder in BCBox.';
+    default:
+      return 'Share link';
+  }
 });
 
 // Actions
@@ -21,8 +38,15 @@ const copyLinkToClipboard = () => {
 </script>
 
 <template>
-  <!-- <label for="shareLink">{{ props.label }}:</label> -->
-  <div class="p-inputgroup my-4">
+  <h3 class="mb-2">Share link</h3>
+  <!-- eslint-disable vue/no-v-html -->
+  <label
+    class="mb-4 block"
+    for="shareLink"
+    v-html="text"
+  />
+  <!-- eslint-enable vue/no-v-html -->
+  <div class="p-inputgroup mt-2 mb-4">
     <InputText
       name="shareLink"
       readonly

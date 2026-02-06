@@ -59,11 +59,12 @@ onBeforeMount(() => {
     <TabPanel header="Manage permissions">
       <div class="flex flex-row pb-3">
         <div class="flex-grow-1">
-          <h3 class="pb-1">Public</h3>
-          <ul>
-            <li>This option toggles the file to be publicly available and accessible to anyone</li>
-            <li>To instead set explicit permissions, add users and use the options below</li>
-          </ul>
+          <h3 class="pb-1">Set to public</h3>
+          <p>
+            Setting a file to
+            <strong>public</strong>
+            allows anyone to access it without needing to authenticate.
+          </p>
         </div>
         <ObjectPublicToggle
           v-if="object && getUserId"

@@ -251,7 +251,7 @@ div:focus-visible {
 }
 .p-tag {
   background-color: $bcbox-primary;
-  font-size: 1rem;
+  font-size: .8rem;
   padding: 0.25rem 0.75rem;
   font-weight: 400;
 }
@@ -354,7 +354,8 @@ div:focus-visible {
 .bcbox-info-dialog {
   width: 800px;
   .p-dialog-header {
-    padding-bottom: 0;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
 
     .svg-inline--fa,
     span[class^="material-icons-"] {
@@ -368,12 +369,15 @@ div:focus-visible {
       @extend h2;
     }
   }
-
+  .p-dialog-content{
+        padding-top: .5rem;
+  }
   .bcbox-info-dialog-subhead {
+    font-size: 120%;
     font-weight: normal;
-    margin-bottom: 1.5rem;
-    padding-left: 2.6rem;
+    padding-left: .3rem;
     @extend .wrap-block;
+
   }
 }
 

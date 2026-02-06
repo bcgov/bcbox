@@ -19,5 +19,4 @@ export { default as ObjectUpload } from './ObjectUpload.vue';
 export { default as ObjectUploadBasic } from './ObjectUploadBasic.vue';
 export { default as ObjectUploadFile } from './ObjectUploadFile.vue';
 export { default as ObjectVersion } from './ObjectVersion.vue';
-export { default as PublicObjectTable } from './PublicObjectTable.vue';
 export { default as RestoreObjectButton } from './RestoreObjectButton.vue';

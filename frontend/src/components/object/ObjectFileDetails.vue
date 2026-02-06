@@ -118,10 +118,15 @@ async function onVersionCreated() {
 onMounted(async () => {
   const head = await objectStore.headObject(props.objectId);
 
-  await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
   await objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true });
   object.value = getObject.value(props.objectId);
   bucketId.value = object.value ? object.value.bucketId : '';
+
+  await permissionStore.fetchBucketPermissions({
+    userId: getUserId.value,
+    bucketId: bucketId.value,
+    objectPerms: true
+  });
   if (
     head?.status !== 204 &&
     !isDeleted.value &&
@@ -247,7 +252,15 @@ onMounted(async () => {
       <span class="p-dialog-title">File Permissions</span>
     </template>
 
-    <h3 class="bcbox-info-dialog-subhead">
+    <h3
+      id="permissions_desc"
+      class="bcbox-info-dialog-subhead"
+    >
+      Set permissions for:
+      <font-awesome-icon
+        icon="fa-solid fa-folder"
+        class="mx-2 mt-2"
+      />
       {{ object?.name }}
     </h3>
 

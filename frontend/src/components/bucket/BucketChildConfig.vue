@@ -92,17 +92,23 @@ const onCancel = () => {
         Add subfolder
       </span>
     </template>
+
     <h3
       id="subfolder_desc"
-      class="bcbox-info-dialog-subhead mb-0"
+      class="bcbox-info-dialog-subhead"
     >
+      Adding a subfolder below:
+      <br />
+      <font-awesome-icon
+        icon="fa-solid fa-folder"
+        class="mr-2 mt-2"
+      />
       {{ props.parentBucket.bucketName }}
     </h3>
-    <ul class="mt-0 pl-3">
-      <li>Sets a subfolder to appear within a folder</li>
-    </ul>
+
     <Form
       id="add-subfolder"
+      class="mt-4"
       aria-label="Add subfolder"
       :validation-schema="schema"
       role="form"
@@ -117,19 +123,18 @@ const onCancel = () => {
       </Message>
       <TextInput
         name="subKey"
-        label="Path"
-        placeholder="my-documents"
+        label="Path:"
+        placeholder="eg: 2024/January/my-documents"
         :help-text="`The relative path of the subfolder.
           You can pick a new path or choose an existing object storage path,
-          but it can't be changed after it is set.<br />
-          Folder levels are supported using '/' between levels (for example: 2024/January/my-documents).`"
+          but it can't be changed after it is set. Folder levels are supported using '/' between levels.`"
         class="child-input"
         focus-trap
       />
       <TextInput
         name="bucketName"
-        label="Folder display name *"
-        placeholder="My Documents"
+        label="Folder display name: *"
+        placeholder="eg: my Documents"
         help-text="Your custom display name for the subfolder - any name as you would like to see it listed in BCBox."
         class="child-input"
       />

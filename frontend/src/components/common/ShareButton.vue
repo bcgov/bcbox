@@ -113,54 +113,53 @@ const showDialog = (x: boolean) => {
       tabindex="0"
       role="document"
     >
-      <h3 class="bcbox-info-dialog-subhead flex items-center">
+      <h3 class="bcbox-info-dialog-subhead">
+        Sharing:
+        <font-awesome-icon
+          icon="fa-solid fa-folder"
+          class="mx-2 mt-2"
+        />
         {{ resourceType === 'object' ? resource?.name : resource?.bucketName }}
       </h3>
-      <ul
-        id="share_dialog_desc"
-        class="mb-4"
-      >
-        <li v-if="resourceType === 'object' && resource?.public">
-          If a user already has permissions, you can link them with a share link
-        </li>
-        <li>
-          Invite someone using an invite link - the links are single-use; you must generate a new link for each user you
-          intend to send this to
-        </li>
-        <li>
-          To share publicly or with a direct link, you must set the file to public - this only works for individual
-          files
-        </li>
-      </ul>
     </div>
     <TabView>
-      <!-- COMS download link -->
+      <!-- public file download link -->
       <TabPanel
         v-if="resourceType === 'object' && resource?.public"
         :header="`Public download link`"
       >
         <Share
-          label="Download link"
+          link-type="public-file"
           :share-link="downloadLink"
         />
       </TabPanel>
 
-      <!-- BCBox link -->
-      <!-- <TabPanel :header="`${resource?.public && resourceType === 'bucket' ? 'Public ' : ''} BCBox link`"> -->
+      <!-- file share link -->
       <TabPanel
-        v-if="resource?.public && resourceType === 'bucket'"
-        :header="`Public BCBox link`"
+        v-if="resourceType === 'object' && !resource?.public"
+        :header="`Share link`"
       >
         <Share
-          :label="'Public BCBox Link'"
+          link-type="share-file"
+          :share-link="bcboxLink"
+        />
+      </TabPanel>
+
+      <!-- folder share link -->
+      <TabPanel
+        v-if="resourceType === 'bucket'"
+        :header="`${resource?.public && resourceType === 'bucket' ? 'Public share' : 'Share'} link`"
+      >
+        <Share
+          :link-type="`share-${resource?.public ? 'public-' : ''}folder`"
           :share-link="bcboxLink"
         />
       </TabPanel>
 
       <!-- Invite -->
       <TabPanel
+        v-if="hasManagePermission"
         :header="`${resourceType === 'object' ? 'File' : 'Folder'} invite`"
-        :disabled="!hasManagePermission"
       >
         <Invite
           :resource-type="resourceType"
@@ -179,8 +178,14 @@ const showDialog = (x: boolean) => {
   </Button>
 </template>
 
-<style scoped lang="scss">
-ul {
-  padding-left: 22px;
+<style lang="scss" scoped>
+.p-tabview {
+  margin-top: 1rem;
+}
+:deep(.p-tabview-panels) {
+  padding-left: 0;
+  .p-tabview-panel {
+    padding-top: 1rem;
+  }
 }
 </style>
