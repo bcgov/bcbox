@@ -67,7 +67,7 @@ const copyLinkToClipboard = () => {
   <label class="block">QR code</label>
   <qrcode-vue
     :value="props.shareLink"
-    :size="250"
+    :size="150"
     level="L"
   />
 </template>

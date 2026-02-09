@@ -257,9 +257,10 @@ onMounted(async () => {
       class="bcbox-info-dialog-subhead"
     >
       Set permissions for:
+      <br />
       <font-awesome-icon
         icon="fa-solid fa-folder"
-        class="mx-2 mt-2"
+        class="mr-2 mt-2"
       />
       {{ object?.name }}
     </h3>

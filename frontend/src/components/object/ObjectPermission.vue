@@ -23,13 +23,53 @@ const props = withDefaults(defineProps<Props>(), {});
 // Store
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
-const { getMappedObjectToUserPermissions } = storeToRefs(permissionStore);
+const { getMappedObjectAndBucketToUserPermissions } = storeToRefs(permissionStore);
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const showSearchUsers: Ref<boolean> = ref(false);
 const object: Ref<COMSObject | undefined> = computed(() => {
   return objectStore.getObject(props.objectId);
+});
+
+// combine bucket and object permissions, showing bucket permissions as disabled when they apply
+const aggregatePermissionData = computed(() => {
+  const data = getMappedObjectAndBucketToUserPermissions.value;
+  const PERMS = ['create', 'read', 'update', 'delete', 'manage'];
+  const transform = (data: any[]) =>
+    Object.values(
+      data.reduce((acc, item) => {
+        const baseUser = acc[item.userId] ?? {
+          idpName: item.idpName,
+          elevatedRights: item.elevatedRights,
+          fullName: item.fullName,
+          resource: 'object',
+          userId: item.userId,
+          ...Object.fromEntries(PERMS.map((p) => [p, { value: false, disabled: false }]))
+        };
+
+        const nextPerms = Object.fromEntries(
+          PERMS.map((p) => {
+            const current = baseUser[p];
+            // If bucket exists AND permission is true → override + disable
+            if (item.resource === 'bucket' && item[p] === true) {
+              return [p, { value: true, disabled: true }];
+            }
+            // If we haven't already disabled it, use file value when present
+            if (!current.disabled && item.resource === 'object') {
+              return [p, { value: item[p], disabled: false }];
+            }
+            // Otherwise keep what we already have
+            return [p, current];
+          })
+        );
+        return {
+          ...acc,
+          [item.userId]: { ...baseUser, ...nextPerms }
+        };
+      }, {})
+    );
+  return transform(data);
 });
 
 // Actions
@@ -51,6 +91,7 @@ const updateObjectPermission = (value: boolean, userId: string, permCode: string
 
 onBeforeMount(() => {
   permissionStore.mapObjectToUserPermissions(props.objectId);
+  if (object.value) permissionStore.mapBucketToUserPermissions(object.value.bucketId);
 });
 </script>
 
@@ -77,7 +118,7 @@ onBeforeMount(() => {
         />
       </div>
 
-      <h3 class="mt-1 mb-2">User Permissions</h3>
+      <h3 class="my-2">User Permissions</h3>
 
       <div v-if="!showSearchUsers">
         <Button
@@ -100,7 +141,7 @@ onBeforeMount(() => {
       </div>
 
       <DataTable
-        :value="getMappedObjectToUserPermissions"
+        :value="aggregatePermissionData"
         data-key="userId"
         class="p-datatable-sm"
         responsive-layout="scroll"
@@ -135,14 +176,20 @@ onBeforeMount(() => {
           body-class="content-center"
         >
           <template #body="{ data }">
-            <Checkbox
-              v-model="data.read"
-              input-id="read"
-              aria-label="read"
-              :binary="true"
-              :disabled="data.read"
-              @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.READ)"
-            />
+            <span
+              v-tooltip="
+                data.read.disabled ? 'This permission is inherited from the folder and cannot be changed here' : ''
+              "
+            >
+              <Checkbox
+                v-model="data.read.value"
+                input-id="read"
+                aria-label="read"
+                :binary="true"
+                :disabled="data.read.value"
+                @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.READ)"
+              />
+            </span>
           </template>
         </Column>
         <Column
@@ -151,13 +198,20 @@ onBeforeMount(() => {
           body-class="content-center"
         >
           <template #body="{ data }">
-            <Checkbox
-              v-model="data.update"
-              input-id="update"
-              aria-label="update"
-              :binary="true"
-              @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.UPDATE)"
-            />
+            <span
+              v-tooltip="
+                data.update.disabled ? 'This permission is inherited from the folder and cannot be changed here' : ''
+              "
+            >
+              <Checkbox
+                v-model="data.update.value"
+                :disabled="data.update.disabled"
+                input-id="update"
+                aria-label="update"
+                :binary="true"
+                @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.UPDATE)"
+              />
+            </span>
           </template>
         </Column>
         <Column
@@ -166,13 +220,20 @@ onBeforeMount(() => {
           body-class="content-center"
         >
           <template #body="{ data }">
-            <Checkbox
-              v-model="data.delete"
-              input-id="delete"
-              aria-label="delete"
-              :binary="true"
-              @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.DELETE)"
-            />
+            <span
+              v-tooltip="
+                data.delete.disabled ? 'This permission is inherited from the folder and cannot be changed here' : ''
+              "
+            >
+              <Checkbox
+                v-model="data.delete.value"
+                :disabled="data.delete.disabled"
+                input-id="delete"
+                aria-label="delete"
+                :binary="true"
+                @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.DELETE)"
+              />
+            </span>
           </template>
         </Column>
         <Column
@@ -181,13 +242,20 @@ onBeforeMount(() => {
           body-class="content-center"
         >
           <template #body="{ data }">
-            <Checkbox
-              v-model="data.manage"
-              input-id="manage"
-              aria-label="manage"
-              :binary="true"
-              @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.MANAGE)"
-            />
+            <span
+              v-tooltip="
+                data.manage.disabled ? 'This permission is inherited from the folder and cannot be changed here' : ''
+              "
+            >
+              <Checkbox
+                v-model="data.manage.value"
+                :disabled="data.manage.disabled"
+                input-id="manage"
+                aria-label="manage"
+                :binary="true"
+                @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.MANAGE)"
+              />
+            </span>
           </template>
         </Column>
         <Column header="Remove">
@@ -215,6 +283,15 @@ onBeforeMount(() => {
 </template>
 
 <style lang="scss" scoped>
+.p-tabview {
+  margin-top: 1rem;
+}
+:deep(.p-tabview-panels) {
+  .p-tabview-panel {
+    padding-top: 1rem;
+  }
+  padding-left: 0;
+}
 :deep(.p-button.p-button-lg) {
   padding: 0;
   margin-left: 1rem;

@@ -108,9 +108,9 @@ const autoSync = async () => {
     } else {
       timeToNextManual.value = Math.ceil((manualMinimum - sinceLastSyncDate) / 60);
     }
-    // if more than 1 hour ago show date, otherwise use 'ago' format
+    // if more than 1 day ago show date, otherwise use 'ago' format
     syncStatus.value =
-      sinceLastSyncDate > 7200
+      sinceLastSyncDate > 86400
         ? `Sync requested: ${formatDateLong(bucket?.lastSyncRequestedDate || '')}`
         : `Sync requested: ${formatDistance(lastSyncDate, now, { addSuffix: true })}`;
   }

@@ -115,9 +115,10 @@ const showDialog = (x: boolean) => {
     >
       <h3 class="bcbox-info-dialog-subhead">
         Sharing:
+        <br />
         <font-awesome-icon
           icon="fa-solid fa-folder"
-          class="mx-2 mt-2"
+          class="mr-2 mt-2"
         />
         {{ resourceType === 'object' ? resource?.name : resource?.bucketName }}
       </h3>

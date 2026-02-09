@@ -98,12 +98,12 @@ onMounted(async () => {
 
         <h3
           id="config_dialog_label"
-          class="bcbox-info-dialog-subhead"
+          class="bcbox-info-dialog-subhead mb-3"
         >
           {{ bucketConfigTitle }}
         </h3>
 
-        <Message severity="warn">
+        <!-- <Message severity="warn">
           If you intend to share files in your bucket with BCeID or BC Services Card users, please notify
           <a href="mailto:IDIM.Consulting@gov.bc.ca">IDIM.Consulting@gov.bc.ca</a>
           that you plan to use BCBox.
@@ -119,7 +119,7 @@ onMounted(async () => {
           </a>
           (Natural Resource ministries) or your ministry's service desk if you need help with &quot;bucket&quot; storage
           location sources.
-        </Message>
+        </Message> -->
 
         <BucketConfigForm
           :bucket="bucketToUpdate"

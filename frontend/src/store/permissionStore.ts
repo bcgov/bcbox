@@ -48,6 +48,15 @@ export const usePermissionStore = defineStore('permission', () => {
     getBucketPermissions: computed(() => state.bucketPermissions.value),
     getMappedBucketToUserPermissions: computed(() => state.mappedBucketToUserPermissions.value),
     getMappedObjectToUserPermissions: computed(() => state.mappedObjectToUserPermissions.value),
+    getMappedObjectAndBucketToUserPermissions: computed(() => {
+      const op = state.mappedObjectToUserPermissions.value.map((o) => {
+        return { ...o, resource: 'object' };
+      });
+      const bp = state.mappedBucketToUserPermissions.value.map((b) => {
+        return { ...b, resource: 'bucket' };
+      });
+      return op.concat(bp);
+    }),
     getObjectPermissions: computed(() => state.objectPermissions.value),
     getPermissions: computed(() => state.permissions.value)
   };

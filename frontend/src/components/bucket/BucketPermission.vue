@@ -72,6 +72,8 @@ const updateBucketPermission = (value: boolean, userId: string, permCode: string
 };
 
 onBeforeMount(async () => {
+  // TODO: check for any permissions on parent bucket
+  // transform tale data to prevent overriding parent
   await permissionStore.fetchBucketPermissions({ bucketId: props.bucketId });
   await permissionStore.mapBucketToUserPermissions(props.bucketId);
 });

@@ -440,7 +440,7 @@ async function downloadPublicObject(objectId: string) {
         class="bcbox-info-dialog-subhead"
       >
         Set permissions for:
-
+        <br />
         {{ permissionsObjectName }}
       </h3>
 

@@ -179,7 +179,7 @@ onBeforeMount(async () => {
         name="bucket"
         label="Bucket *"
         placeholder="eg: mybucket"
-        :help-text="'The name of the bucket given to you. For example: \'yxwgj\'.'"
+        :help-text="'The name of the object storage bucket. For example: \'yxwgj\'.'"
       />
       <TextInput
         :disabled="props.bucket && !props.bucket.isRoot"
