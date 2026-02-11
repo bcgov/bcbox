@@ -16,14 +16,14 @@ const props = withDefaults(defineProps<Props>(), {
 const text = computed(() => {
   switch (props.linkType) {
     case 'public-file':
-      return '<strong>Anyone</strong> with this link can download this file without authentication.';
+      return '<strong>Anyone</strong> with the link can view and download this file without signing in.';
     case 'share-file':
-      return 'Only people who have permissions can access this file in BCBox.';
+      return 'Only people who already have access can view and download this file using the link.';
     case 'share-public-folder':
       return '<strong>Anyone</strong> with this link can view the contents of \
-      this folder in BCBox without authentication.';
+      this folder in BCBox without signing in.';
     case 'share-folder':
-      return 'Only people who have permissions can access this folder in BCBox.';
+      return 'Only people who already have access can view and download these files using the link.';
     default:
       return 'Share link';
   }

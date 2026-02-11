@@ -34,16 +34,16 @@ const togglePublic = async (setPublicValue: boolean) => {
   if (setPublicValue) {
     confirm.require({
       message:
-        'Please confirm that you want to set folder to public. ' +
-        'This allows the share link to be accessible by anyone, even without credentials.',
-      header: 'Confirm set to public',
-      acceptLabel: 'Confirm',
+        'Setting this folder to public will allow anyone to access all subfolders and files. ' +
+        'Anyone with a link can view the contents of this folder in BCBox without signing in.',
+      header: 'Set folder to public?',
+      acceptLabel: 'Set to public',
       rejectLabel: 'Cancel',
       accept: () => {
         bucketStore
           .togglePublic(props.bucketId, true)
           .then(() => {
-            toast.success(`"${props.bucketName}" set to public`);
+            toast.success('Folder set to public', `${props.bucketName} and all its contents are now public.`);
           })
           .catch((e) => toast.error('Changing public state', e.response?.data.detail ?? e, { life: 0 }));
       },
@@ -51,12 +51,24 @@ const togglePublic = async (setPublicValue: boolean) => {
       onHide: () => (isPublic.value = false)
     });
   } else
-    bucketStore
-      .togglePublic(props.bucketId, false)
-      .then(() => {
-        toast.success(`"${props.bucketName}" is no longer public`);
-      })
-      .catch((e) => toast.error('Changing public state', e.response?.data.detail ?? e, { life: 0 }));
+    confirm.require({
+      message:
+        'Setting this folder to private will remove public access to all subfolders and files. ' +
+        'Only users with permissions will be able to view and download them.',
+      header: 'Set folder to private?',
+      acceptLabel: 'Set to private',
+      rejectLabel: 'Cancel',
+      accept: () => {
+        bucketStore
+          .togglePublic(props.bucketId, false)
+          .then(() => {
+            toast.success('Folder set to private', `${props.bucketName} and all its contents are now private`);
+          })
+          .catch((e) => toast.error('Changing public state', e.response?.data.detail ?? e, { life: 0 }));
+      },
+      reject: () => (isPublic.value = true),
+      onHide: () => (isPublic.value = true)
+    });
 };
 
 const isParentBucketPublic = (): boolean => {
@@ -90,10 +102,12 @@ watch(props, () => {
 </script>
 
 <template>
-  <InputSwitch
-    v-model="isPublic"
-    aria-label="Toggle to make public"
-    :disabled="!isToggleEnabled"
-    @change="togglePublic(isPublic)"
-  />
+  <span v-tooltip="isToggleEnabled ? '' : 'Change the parent folder\'s public setting to update this folder'">
+    <InputSwitch
+      v-model="isPublic"
+      aria-label="Toggle to make public"
+      :disabled="!isToggleEnabled"
+      @change="togglePublic(isPublic)"
+    />
+  </span>
 </template>

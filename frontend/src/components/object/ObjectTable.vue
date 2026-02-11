@@ -422,7 +422,7 @@ async function downloadPublicObject(objectId: string) {
       class="bcbox-info-dialog"
       aria-labelledby="permissions_label"
       aria-describedby="permissions_desc"
-      @after-hide="onDialogHide"
+      @after-hide="onDialogHide(), loadLazyData()"
     >
       <!-- eslint-enable vue/no-v-model-argument -->
       <template #header>

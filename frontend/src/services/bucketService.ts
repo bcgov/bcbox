@@ -22,7 +22,7 @@ export default {
        * will cause url length to excede 2000 characters
        * see: https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
        */
-      let urlLimit = 2000;
+      let urlLimit = 1000;
 
       const baseUrl = new URL(`${new ConfigService().getConfig().coms.apiPath}${BUCKET_PATH}`).toString();
       urlLimit -= baseUrl.length;

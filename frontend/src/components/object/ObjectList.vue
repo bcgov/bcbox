@@ -111,8 +111,8 @@ const autoSync = async () => {
     // if more than 1 day ago show date, otherwise use 'ago' format
     syncStatus.value =
       sinceLastSyncDate > 86400
-        ? `Sync requested: ${formatDateLong(bucket?.lastSyncRequestedDate || '')}`
-        : `Sync requested: ${formatDistance(lastSyncDate, now, { addSuffix: true })}`;
+        ? `Last synced: ${formatDateLong(bucket?.lastSyncRequestedDate || '')}`
+        : `Last synced: ${formatDistance(lastSyncDate, now, { addSuffix: true })}`;
   }
 };
 

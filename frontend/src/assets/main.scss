@@ -314,6 +314,9 @@ div:focus-visible {
 
   .p-paginator {
     justify-content: right;
+    .p-dropdown-label {
+      padding-top: 0.2rem;
+    }
   }
 
   .header-center .p-column-header-content {
