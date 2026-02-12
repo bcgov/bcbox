@@ -1,56 +1,56 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
 import QrcodeVue from 'qrcode.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Button, InputText, useToast } from '@/lib/primevue';
-import { useConfigStore } from '@/store';
-
-import type { Ref } from 'vue';
 
 // Props
 type Props = {
-  label: string;
-  inviteLink?: string;
-  resourceType: string;
-  resource: any;
+  linkType: string;
+  shareLink: string;
 };
 const props = withDefaults(defineProps<Props>(), {
-  inviteLink: undefined
+  shareLink: undefined
 });
 
-// store
-const { getConfig } = storeToRefs(useConfigStore());
-
-// Share link
-const shareLink: Ref<string>  = computed(() => {
-  if(props.inviteLink) return props.inviteLink; // use invite link if defined in prop
-  else if(props.resource.public) { // else if a public file
-    return `${getConfig.value.coms?.apiPath}/object/${props.resource.id}`;
-  } else { // else either a protected file or bucket
-    const path = props.resourceType === 'object'
-      // eslint-disable-next-line max-len
-      ? `detail/objects?objectId=${props.resource.id}`
-      : `list/objects?bucketId=${props.resource.bucketId}`;
-    return `${window.location.origin}/${path}`;
+const text = computed(() => {
+  switch (props.linkType) {
+    case 'public-file':
+      return '<strong>Anyone</strong> with the link can view and download this file without signing in.';
+    case 'share-file':
+      return 'Only people who already have access can view and download this file using the link.';
+    case 'share-public-folder':
+      return '<strong>Anyone</strong> with this link can view the contents of \
+      this folder in BCBox without signing in.';
+    case 'share-folder':
+      return 'Only people who already have access can view and download these files using the link.';
+    default:
+      return 'Share link';
   }
 });
 
 // Actions
 const toast = useToast();
 const copyLinkToClipboard = () => {
-  navigator.clipboard.writeText(shareLink.value);
+  navigator.clipboard.writeText(props.shareLink);
   toast.info('Share link copied to clipboard');
 };
 </script>
 
 <template>
-  <label for="shareLink">{{ props.label }}</label>
-  <div class="p-inputgroup mb-4">
+  <h3 class="mb-2">Share link</h3>
+  <!-- eslint-disable vue/no-v-html -->
+  <label
+    class="mb-4 block"
+    for="shareLink"
+    v-html="text"
+  />
+  <!-- eslint-enable vue/no-v-html -->
+  <div class="p-inputgroup mt-2 mb-4">
     <InputText
       name="shareLink"
       readonly
-      :value="shareLink"
+      :value="props.shareLink"
     />
     <Button
       class="p-button-outlined p-button-primary"
@@ -66,8 +66,8 @@ const copyLinkToClipboard = () => {
 
   <label class="block">QR code</label>
   <qrcode-vue
-    :value="shareLink"
-    :size="250"
+    :value="props.shareLink"
+    :size="150"
     level="L"
   />
 </template>

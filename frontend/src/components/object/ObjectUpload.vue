@@ -3,8 +3,8 @@ import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
 
 import ObjectUploadFile from '@/components/object/ObjectUploadFile.vue';
-import { Button, FileUpload, useToast } from '@/lib/primevue';
-import { useAuthStore, useAppStore, useObjectStore } from '@/store';
+import { Button, FileUpload, useConfirm, useToast } from '@/lib/primevue';
+import { useAuthStore, useAppStore, useBucketStore, useObjectStore } from '@/store';
 
 import type { Ref } from 'vue';
 import type { ObjectMetadataTagFormType } from '@/components/object/ObjectMetadataTagForm.vue';
@@ -22,6 +22,7 @@ const props = withDefaults(defineProps<Props>(), {
 // Store
 const appStore = useAppStore();
 const objectStore = useObjectStore();
+const bucketStore = useBucketStore();
 const { getUserId } = storeToRefs(useAuthStore());
 
 // State
@@ -32,57 +33,76 @@ const failedFiles: Ref<Array<File>> = ref([]);
 // Actions
 let formData: Array<ObjectMetadataTagFormType> = [];
 const toast = useToast();
+const confirm = useConfirm();
 
 const onSelectedFiles = (event: any) => {
   pendingFiles.value = event.files;
 };
 
+const doUpload = async (event: any, bucketId: string) => {
+  // Reset file arrays before upload
+  successfulFiles.value = [];
+  failedFiles.value = [];
+
+  toast.info('File upload starting...');
+
+  // Send all files to COMS for upload
+  await Promise.allSettled(
+    event.files.map(async (file: File) => {
+      try {
+        appStore.beginUploading();
+
+        const data = formData.find((x: ObjectMetadataTagFormType) => x.filename === file.name);
+
+        const response = await objectStore.createObject(
+          file,
+          { metadata: data?.metadata },
+          { bucketId: bucketId, tagset: data?.tagset },
+          { timeout: 0 } // Infinite timeout for big files upload to avoid timeout error
+        );
+
+        // show toast for any object updates
+        if (response?.newVersionId) toast.info(`A new version of file '${file.name}' has been created`);
+
+        successfulFiles.value.push(file);
+      } catch (error: any) {
+        toast.error(`Failed to upload file ${file.name}`, error.response?.data.detail ?? error, { life: 0 });
+        failedFiles.value.push(file);
+      } finally {
+        appStore.endUploading();
+      }
+    })
+  );
+
+  // Clear metadata and tagset information - clears children as well
+  formData = [];
+
+  // Clear selected files at the end of upload process
+  pendingFiles.value = [];
+
+  // Update object store
+  await objectStore.fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
+};
+
 const onUpload = async (event: any) => {
   const bucketId = props.bucketId?.toString();
-
   if (bucketId) {
-    // Reset file arrays before upload
-    successfulFiles.value = [];
-    failedFiles.value = [];
-
-    toast.info('File upload starting...');
-
-    // Send all files to COMS for upload
-    await Promise.allSettled(
-      event.files.map(async (file: File) => {
-        try {
-          appStore.beginUploading();
-
-          const data = formData.find((x: ObjectMetadataTagFormType) => x.filename === file.name);
-
-          const response = await objectStore.createObject(
-            file,
-            { metadata: data?.metadata },
-            { bucketId: bucketId, tagset: data?.tagset },
-            { timeout: 0 } // Infinite timeout for big files upload to avoid timeout error
-          );
-
-          // show toast for any object updates
-          if (response?.newVersionId) toast.info(`A new version of file '${file.name}' has been created`);
-
-          successfulFiles.value.push(file);
-        } catch (error: any) {
-          toast.error(`Failed to upload file ${file.name}`, error.response?.data.detail ?? error, { life: 0 });
-          failedFiles.value.push(file);
-        } finally {
-          appStore.endUploading();
-        }
-      })
-    );
-
-    // Clear metadata and tagset information - clears children as well
-    formData = [];
-
-    // Clear selected files at the end of upload process
-    pendingFiles.value = [];
-
-    // Update object store
-    await objectStore.fetchObjects({ bucketId: bucketId, userId: getUserId.value, bucketPerms: true });
+    if (!bucketStore.getBucket(bucketId)?.public) {
+      await doUpload(event, bucketId);
+      return;
+    }
+    // if folder is public, show confirmation dialog before uploading
+    confirm.require({
+      message:
+        'You are uploading files to a public folder. ' + 'Anyone will be able to access them without authentication. ',
+      header: 'Upload files to a public folder?',
+      acceptLabel: 'Continue with upload',
+      rejectLabel: 'Cancel',
+      accept: async () => {
+        await doUpload(event, bucketId);
+        return;
+      }
+    });
   } else {
     toast.error('Updating file', 'Failed to acquire bucket ID', { life: 0 });
   }

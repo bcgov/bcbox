@@ -3,8 +3,8 @@ import { computed, ref } from 'vue';
 
 import { useToast } from '@/lib/primevue';
 import { bucketService } from '@/services';
-import { useAppStore, usePermissionStore } from '@/store';
-import { partition } from '@/utils/utils';
+import { useAppStore, useAuthStore, usePermissionStore } from '@/store';
+import { getBucketPath, partition } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketSearchPermissionsOptions } from '@/types';
@@ -18,6 +18,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
   // Store
   const appStore = useAppStore();
+  const authStore = useAuthStore();
   const permissionStore = usePermissionStore();
 
   // State
@@ -28,7 +29,17 @@ export const useBucketStore = defineStore('bucket', () => {
   // Getters
   const getters = {
     getBucket: computed(() => (id: string) => state.buckets.value.find((bucket) => bucket.bucketId === id)),
-    getBuckets: computed(() => state.buckets.value)
+    getBucketByFullPath: computed(
+      () => (fullPath: string) => state.buckets.value.find((bucket) => getBucketPath(bucket) === fullPath)
+    ),
+    getBuckets: computed(() => state.buckets.value),
+    isTopBucket: computed(() => (bucketId: string) => {
+      const allBuckets = state.buckets.value;
+      const bucket = allBuckets.find((b) => b.bucketId === bucketId);
+      return bucket
+        ? allBuckets.filter((b) => b.bucket === bucket.bucket).every((b) => bucket.key.length <= b.key.length)
+        : false;
+    })
   };
 
   // Actions
@@ -62,6 +73,19 @@ export const useBucketStore = defineStore('bucket', () => {
       appStore.endIndeterminateLoading();
     }
   }
+
+  async function fetchBucket(bucketId: string) {
+    try {
+      appStore.beginIndeterminateLoading();
+      return bucketService.fetchBucket(bucketId).then((response) => response.data);
+      // return {};
+    } catch (error: any) {
+      toast.error('Getting bucket', error);
+    } finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   /**
    * function does the following in order:
    * - fetches bucket permissions
@@ -114,6 +138,16 @@ export const useBucketStore = defineStore('bucket', () => {
     }
   }
 
+  async function togglePublic(bucketId: string, isPublic: boolean) {
+    try {
+      appStore.beginIndeterminateLoading();
+      await bucketService.togglePublic(bucketId, isPublic);
+      await fetchBuckets({ userId: authStore.getUserId, objectPerms: true });
+    } finally {
+      appStore.endIndeterminateLoading();
+    }
+  }
+
   async function syncBucket(bucketId: string, recursive: boolean) {
     try {
       appStore.beginIndeterminateLoading();
@@ -124,7 +158,6 @@ export const useBucketStore = defineStore('bucket', () => {
       appStore.endIndeterminateLoading();
     }
   }
-
 
   async function syncBucketStatus(bucketId: string) {
     try {
@@ -149,9 +182,12 @@ export const useBucketStore = defineStore('bucket', () => {
     createBucket,
     createBucketChild,
     deleteBucket,
+    fetchBucket,
+    // fetchPublicBucket,
     fetchBuckets,
     syncBucket,
     syncBucketStatus,
+    togglePublic,
     updateBucket
   };
 });

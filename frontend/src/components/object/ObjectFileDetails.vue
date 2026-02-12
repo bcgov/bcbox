@@ -15,7 +15,7 @@ import {
   ObjectVersion
 } from '@/components/object';
 import { ShareButton } from '@/components/common';
-import { Button, Dialog, Divider } from '@/lib/primevue';
+import { Button, Dialog, Divider, Tag } from '@/lib/primevue';
 import {
   useAuthStore,
   useBucketStore,
@@ -73,7 +73,7 @@ const latestNonDmVersionId = computed(() => getLatestNonDmVersionIdByObjectId.va
 
 const isDeleted: Ref<boolean> = computed(() => getIsDeleted.value(props.objectId));
 
-async function fetchFileDetails(objectId: string){
+async function fetchFileDetails(objectId: string) {
   await Promise.all([
     versionStore.fetchVersions({ objectId: objectId }),
     metadataStore.fetchMetadata({ objectId: objectId }),
@@ -86,12 +86,11 @@ async function fetchFileDetails(objectId: string){
   });
 }
 
-async function onObjectDeleted({ hardDelete }: { hardDelete:boolean }) {
+async function onObjectDeleted({ hardDelete }: { hardDelete: boolean }) {
   // if doing hard delete redirect to parent folder
   if (hardDelete || !bucketVersioningEnabled.value) {
-    router.push({ path: '/list/objects', query: { bucketId: bucketId.value }});
-  }
-  else {
+    router.push({ path: '/list/objects', query: { bucketId: bucketId.value } });
+  } else {
     await fetchFileDetails(props.objectId);
     currentVersionId.value = latestNonDmVersionId.value;
   }
@@ -99,9 +98,9 @@ async function onObjectDeleted({ hardDelete }: { hardDelete:boolean }) {
 
 async function onVersionDeleted(changedVersionId: string | undefined, isVersion: boolean, hardDelete: boolean) {
   // if doing hard delete or no versions left, redirect to parent folder
-  const otherVersions = allVersions.value.filter(v=>v.id !== changedVersionId);
+  const otherVersions = allVersions.value.filter((v) => v.id !== changedVersionId);
   if (hardDelete || (isVersion && otherVersions.length === 0)) {
-    router.push({ path: '/list/objects', query: { bucketId: bucketId.value }});
+    router.push({ path: '/list/objects', query: { bucketId: bucketId.value } });
   }
   // else stay on page
   else {
@@ -111,66 +110,77 @@ async function onVersionDeleted(changedVersionId: string | undefined, isVersion:
 }
 
 async function onVersionCreated() {
-  await fetchFileDetails(props.objectId)
-    .then(() => {
-      currentVersionId.value = latestNonDmVersionId.value;
-    });
-
+  await fetchFileDetails(props.objectId).then(() => {
+    currentVersionId.value = latestNonDmVersionId.value;
+  });
 }
 
 onMounted(async () => {
   const head = await objectStore.headObject(props.objectId);
 
-  await permissionStore.fetchBucketPermissions({ userId: getUserId.value, objectPerms: true });
   await objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true });
   object.value = getObject.value(props.objectId);
   bucketId.value = object.value ? object.value.bucketId : '';
+
+  await permissionStore.fetchBucketPermissions({
+    userId: getUserId.value,
+    bucketId: bucketId.value,
+    objectPerms: true
+  });
   if (
-    (head?.status !== 204 && !isDeleted.value) &&
+    head?.status !== 204 &&
+    !isDeleted.value &&
     (!object.value ||
       !permissionStore.isObjectActionAllowed(object.value.id, getUserId.value, Permissions.READ, object.value.bucketId))
   ) {
     router.replace({ name: RouteNames.FORBIDDEN });
   }
   // fetch data for child components
-  await Promise.all([
-    bucketStore.fetchBuckets({ bucketId: bucketId.value }),
-    fetchFileDetails(props.objectId)
-  ]);
+  await Promise.all([bucketStore.fetchBuckets({ bucketId: bucketId.value }), fetchFileDetails(props.objectId)]);
 });
 </script>
 
 <template>
   <div v-if="object">
     <div class="grid grid-nogutter">
-      <div class="col-12">
-        <h1 class="heading">File details</h1>
-      </div>
       <div class="flex col justify-content-start">
         <div class="flex col align-items-center heading pl-0">
           <span class="material-icons-outlined icon-large pr-2">info</span>
           <h2 class="">
             {{ object.name }}
           </h2>
+          <span class="ml-3 text-sm flex-grow-1">
+            <Tag
+              v-if="object?.public"
+              v-tooltip="`This file is set as public`"
+              value="Public"
+              severity="danger"
+              rounded
+              icon="pi pi-info-circle"
+            />
+          </span>
         </div>
 
-        <div class="action-buttons">
+        <div class="action-buttons mt-2">
           <ShareButton
             v-if="!isDeleted"
             :object-id="props.objectId"
             label-text="File"
           />
           <DownloadObjectButton
-            v-if="(object.public ||
-              permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.READ, bucketId)) &&
-              !isDeleted"
+            v-if="
+              (object.public ||
+                permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.READ, bucketId)) &&
+              !isDeleted
+            "
             :mode="ButtonMode.ICON"
             :ids="[object.id]"
             :version-id="currentVersionId"
           />
           <Button
-            v-if="permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.MANAGE, bucketId) &&
-              !isDeleted"
+            v-if="
+              permissionStore.isObjectActionAllowed(object.id, getUserId, Permissions.MANAGE, bucketId) && !isDeleted
+            "
             v-tooltip.bottom="'File permissions'"
             class="p-button-lg p-button-text"
             aria-label="File permissions"
@@ -199,7 +209,7 @@ onMounted(async () => {
         <ObjectAccess :object-id="object.id" />
         <ObjectMetadata
           v-model:version-id="currentVersionId"
-          :editable="!isDeleted && (currentVersionId === latestVersionId)"
+          :editable="!isDeleted && currentVersionId === latestVersionId"
           :object-id="object.id"
           @on-metadata-success="onVersionCreated"
         />
@@ -242,7 +252,16 @@ onMounted(async () => {
       <span class="p-dialog-title">File Permissions</span>
     </template>
 
-    <h3 class="bcbox-info-dialog-subhead">
+    <h3
+      id="permissions_desc"
+      class="bcbox-info-dialog-subhead"
+    >
+      Set permissions for:
+      <br />
+      <font-awesome-icon
+        icon="fa-solid fa-folder"
+        class="mr-2 mt-2"
+      />
       {{ object?.name }}
     </h3>
 

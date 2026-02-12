@@ -3,11 +3,7 @@ import { storeToRefs } from 'pinia';
 import { onUnmounted, onMounted, ref } from 'vue';
 
 import { Spinner } from '@/components/layout';
-import {
-  DeleteObjectButton,
-  ObjectPermission,
-  RestoreObjectButton
-} from '@/components/object';
+import { DeleteObjectButton, ObjectPermission, RestoreObjectButton } from '@/components/object';
 import { SyncButton } from '@/components/common';
 import { Button, Column, DataTable, Dialog, InputText } from '@/lib/primevue';
 import { useAuthStore, useBucketStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
@@ -80,7 +76,7 @@ async function showPermissions(objectId: string) {
   focusedElement.value = document.activeElement;
 }
 
-onMounted( async () => {
+onMounted(async () => {
   loading.value = true;
   await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
 
@@ -98,21 +94,19 @@ onMounted( async () => {
 const loadLazyData = (event?: any) => {
   lazyParams.value = { ...lazyParams.value, first: event?.first || first.value, page: event?.page || 0 };
   objectService
-    .searchObjects(
-      {
-        deleteMarker: true,
-        latest: true,
-        page: lazyParams.value?.page ? ++lazyParams.value.page : 1,
-        name: lazyParams.value?.filters?.name.value ? lazyParams.value?.filters?.name.value : undefined,
-        limit: lazyParams.value.rows,
-        sort: lazyParams.value.sortField,
-        order: lazyParams.value.sortOrder === 1 ? 'asc' : 'desc',
-      }
-    )
+    .searchObjects({
+      deleteMarker: true,
+      latest: true,
+      page: lazyParams.value?.page ? ++lazyParams.value.page : 1,
+      name: lazyParams.value?.filters?.name.value ? lazyParams.value?.filters?.name.value : undefined,
+      limit: lazyParams.value.rows,
+      sort: lazyParams.value.sortField,
+      order: lazyParams.value.sortOrder === 1 ? 'asc' : 'desc'
+    })
     .then((r: any) => {
       // add full object url to table data
       tableData.value = r.data.map((o: COMSObject) => {
-        const bucket = getBuckets.value.find((b) =>  b.bucketId === o.bucketId);
+        const bucket = getBuckets.value.find((b) => b.bucketId === o.bucketId);
         return {
           ...o,
           location: `${bucket?.endpoint}/${bucket?.bucket}/${o.path}`,
@@ -155,7 +149,6 @@ const onFilter = (event?: any) => {
 onUnmounted(() => {
   objectStore.setSelectedObjects([]);
 });
-
 </script>
 
 <template>
@@ -259,10 +252,10 @@ onUnmounted(() => {
         <template #body="{ data }">
           <div>
             <span v-tooltip.bottom="data.location">
-            {{ data.location }}
-          </span>
-        </div>
-      </template>
+              {{ data.location }}
+            </span>
+          </div>
+        </template>
       </Column>
       <Column
         field="updatedAt"
@@ -308,8 +301,8 @@ onUnmounted(() => {
             aria-label="File details"
             @click="showInfo(data.id)"
           >
-          <span class="material-icons-outlined">info</span>
-        </Button>
+            <span class="material-icons-outlined">info</span>
+          </Button>
           <DeleteObjectButton
             v-if="
               permissionStore.isObjectActionAllowed(data.id, getUserId, Permissions.DELETE, data.bucketId as string)
@@ -354,6 +347,12 @@ onUnmounted(() => {
         id="permissions_desc"
         class="bcbox-info-dialog-subhead"
       >
+        Set permissions for:
+        <br />
+        <font-awesome-icon
+          icon="fa-solid fa-folder"
+          class="mr-2 mt-2"
+        />
         {{ permissionsObjectName }}
       </h3>
 

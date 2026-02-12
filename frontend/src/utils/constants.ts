@@ -1,5 +1,5 @@
 export const BucketConfig = Object.freeze({
-  HEADER_NEW_BUCKET: 'Configure storage location source',
+  HEADER_NEW_BUCKET: 'Connect Storage',
   TITLE_NEW_BUCKET: 'Use this form to configure a bucket to be used in BCBox for the first time.'
 });
 
@@ -47,6 +47,7 @@ export const RouteNames = Object.freeze({
   LIST_BUCKETS: 'listBuckets',
   LIST_OBJECTS: 'listObjects',
   LIST_OBJECTS_DELETED: 'listObjectsDeleted',
+  LIST_OBJECTS_PUBLIC: 'listObjectsPublic',
   LOGIN: 'login',
   LOGOUT: 'logout'
 });

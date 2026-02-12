@@ -31,7 +31,7 @@ module.exports = {
     'max-len': ['warn', { code: 120, comments: 120, ignoreUrls: true }],
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-    quotes: ['error', 'single'],
+    quotes: ['error', 'single', { avoidEscape: true }],
     semi: ['error', 'always']
   },
   overrides: [

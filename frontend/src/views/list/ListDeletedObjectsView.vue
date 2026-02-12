@@ -1,7 +1,5 @@
 <script setup lang="ts">
-
 import { DeletedObjectList } from '@/components/object';
-
 </script>
 
 <template>
@@ -10,7 +8,7 @@ import { DeletedObjectList } from '@/components/object';
       <span class="material-icons-outlined icon-large pr-2">delete</span>
       <h2 class="">Recycle Bin</h2>
     </div>
-    <p>Select a deleted file to restore, or permanently delete it.</p>
+    <p>Select files to restore or permanently delete.</p>
     <DeletedObjectList />
   </div>
 </template>

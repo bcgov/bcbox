@@ -14,10 +14,10 @@ import type { Ref } from 'vue';
 type Props = {
   bucketId?: string;
   objectId?: string;
-  recursive: boolean;
+  recursive?: boolean;
   labelText?: string;
   disabled?: boolean;
-  mode: ButtonMode;
+  mode?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -25,7 +25,8 @@ const props = withDefaults(defineProps<Props>(), {
   objectId: '',
   recursive: false,
   labelText: '',
-  disabled: false
+  disabled: false,
+  mode: ButtonMode.ICON
 });
 
 // State
@@ -41,17 +42,19 @@ const { focusedElement } = storeToRefs(useNavStore());
 
 // Dialog
 const displaySyncDialog = ref(false);
+const clicked = ref(false);
 
 // Actions
 const onSubmit = async () => {
-  try{
+  try {
     if (props.objectId) {
       await objectStore.syncObject(props.objectId);
     } else if (props.bucketId) {
       await bucketStore.syncBucket(props.bucketId, props.recursive);
     }
     toast.info('Sync in progress', '');
-  } catch(error: any){
+    clicked.value = true;
+  } catch (error: any) {
     toast.error(error, '', { life: 0 });
   }
   displaySyncDialog.value = false;
@@ -166,7 +169,7 @@ const onClick = () => {
     v-if="props.mode === ButtonMode.ICON"
     v-tooltip.bottom="{ value: labelText }"
     class="p-button-lg p-button-text p-button-primary btn-delete-text"
-    :disabled="props.disabled"
+    :disabled="clicked || props.disabled"
     :aria-label="labelText"
     @click="onClick"
   >
@@ -176,7 +179,7 @@ const onClick = () => {
     v-else
     v-tooltip.bottom="{ value: labelText }"
     class="p-button-outlined btn-delete"
-    :disabled="props.disabled"
+    :disabled="clicked || props.disabled"
     :aria-label="labelText"
     @click="onClick"
   >

@@ -3,12 +3,13 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeMount, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+import BucketPublicToggle from '@/components/bucket/BucketPublicToggle.vue';
 import BucketPermissionAddUser from '@/components/bucket/BucketPermissionAddUser.vue';
 import { BulkPermission } from '@/components/common';
 import { useAlert } from '@/composables/useAlert';
 import { Button, Checkbox, Column, DataTable, Message, TabPanel, TabView } from '@/lib/primevue';
 
-import { useBucketStore, usePermissionStore } from '@/store';
+import { useAuthStore, useBucketStore, usePermissionStore } from '@/store';
 import { Permissions } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -25,6 +26,7 @@ const props = withDefaults(defineProps<Props>(), {});
 const permissionStore = usePermissionStore();
 const bucketStore = useBucketStore();
 const { getMappedBucketToUserPermissions } = storeToRefs(permissionStore);
+const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const showSearchUsers: Ref<boolean> = ref(false);
@@ -70,6 +72,8 @@ const updateBucketPermission = (value: boolean, userId: string, permCode: string
 };
 
 onBeforeMount(async () => {
+  // TODO: check for any permissions on parent bucket
+  // transform tale data to prevent overriding parent
   await permissionStore.fetchBucketPermissions({ bucketId: props.bucketId });
   await permissionStore.mapBucketToUserPermissions(props.bucketId);
 });
@@ -78,6 +82,30 @@ onBeforeMount(async () => {
 <template>
   <TabView>
     <TabPanel header="Manage permissions">
+      <!-- public toggle -->
+      <div class="flex pb-3">
+        <div class="flex-grow-1">
+          <div class="pb-1">
+            <h3>Set to public</h3>
+            <p>
+              Making a folder
+              <strong>public</strong>
+              means that all files within it, including those in any subfolders, can be accessed by anyone without
+              requiring authentication.
+            </p>
+          </div>
+        </div>
+        <BucketPublicToggle
+          v-if="bucket && getUserId"
+          class="flex flex-none"
+          :bucket-id="bucket.bucketId"
+          :bucket-name="bucket.bucketName"
+          :bucket-public="bucket.public"
+          :user-id="getUserId"
+        />
+      </div>
+      <h3>User Permissions</h3>
+      <!-- user search -->
       <div v-if="!showSearchUsers">
         <Button
           class="mt-1 mb-4"
@@ -100,7 +128,7 @@ onBeforeMount(async () => {
         class="mb-4"
         size="small"
       >
-      Permission changes apply to all sub-folders and files.
+        Permission changes apply to all sub-folders and files.
       </Message>
 
       <DataTable
@@ -231,11 +259,21 @@ onBeforeMount(async () => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.p-message-wrapper){
-  padding: .5rem;
+:deep(.p-message-wrapper) {
+  padding: 0.5rem;
 }
 :deep(.p-button.p-button-lg) {
   padding: 0;
   margin-left: 1rem;
+}
+
+.p-tabview {
+  margin-top: 1rem;
+}
+:deep(.p-tabview-panels) {
+  padding-left: 0;
+  .p-tabview-panel {
+    padding-top: 1rem;
+  }
 }
 </style>

@@ -9,7 +9,8 @@ import type {
   GetObjectTaggingOptions,
   MetadataPair,
   SearchObjectsOptions,
-  Tag } from '@/types';
+  Tag
+} from '@/types';
 import { ExcludeTypes } from '@/utils/enums';
 
 const PATH = '/object';
@@ -163,7 +164,7 @@ export default {
    * @returns {Promise} An axios response
    */
   copyObjectVersion(objectId: string, versionId: string | undefined) {
-    return comsAxios().put(`${PATH}/${objectId}/version`,  undefined, {
+    return comsAxios().put(`${PATH}/${objectId}/version`, undefined, {
       params: {
         versionId: versionId
       }
@@ -250,7 +251,7 @@ export default {
     if (params.objectId && params.objectId.length > 1) {
       /**
        * split calls to COMS if query params (eg objectId's)
-       * will cause url length to excede 2000 characters
+       * will cause url length to excede 1000 characters
        * see: https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
        *
        * TODO: consider creating a utils function
@@ -259,7 +260,7 @@ export default {
        *      return Promise.all(divideParam(params, objectId)
        *        .map(zparam => comsAxios().get(PATH, {params: zparam, headers: headers});
        */
-      let urlLimit = 2000;
+      let urlLimit = 1000;
 
       const baseUrl = new URL(`${new ConfigService().getConfig().coms.apiPath}${PATH}`).toString();
       urlLimit -= baseUrl.length; // subtract baseUrl length
@@ -286,10 +287,11 @@ export default {
       // and then intersect with permissions (params.objectId) list
       // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
       const { objectId, ...paramsWithoutObjectId } = params;
-      const objectResponse: COMSObject[] = (await comsAxios()
-        .get(PATH, { params: paramsWithoutObjectId, headers: headers })).data;
+      const objectResponse: COMSObject[] = (
+        await comsAxios().get(PATH, { params: paramsWithoutObjectId, headers: headers })
+      ).data;
       // and build correctly sorted list of objectId's
-      const objIds = objectResponse.filter(o => params.objectId?.includes(o.id)).map(o=> o.id);
+      const objIds = objectResponse.filter((o) => params.objectId?.includes(o.id)).map((o) => o.id);
 
       // loop through each group and push COMS result to `groups` array
       const iterations = Math.ceil(objIds.length / groupSize);

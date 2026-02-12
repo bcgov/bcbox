@@ -17,6 +17,7 @@ const bucket: Bucket = {
   bucketName: 'unit',
   endpoint: 'https://not.a.url',
   key: 'test',
+  public: false,
   region: 'us-east-1',
   secretAccessKey: '123'
 };
@@ -29,6 +30,7 @@ const bucket2: Bucket = {
   bucketName: 'unit2',
   endpoint: 'https://not.a.url',
   key: 'test',
+  public: false,
   region: 'us-east-1',
   secretAccessKey: '456'
 };
