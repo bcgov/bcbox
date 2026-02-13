@@ -247,8 +247,6 @@ export const useObjectStore = defineStore('object', () => {
       // let parent process catch the error
       const obj = getters.getObject.value(objectId);
       if (obj) obj.public = isPublic;
-    } catch (error: any) {
-      toast.error('Changing public state', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       // code will still excecute on error
       appStore.endIndeterminateLoading();

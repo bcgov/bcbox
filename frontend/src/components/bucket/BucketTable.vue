@@ -227,8 +227,34 @@ watch(getBuckets, () => {
         if (neighbour) {
           createDummyNodes(neighbour, node).children.push(node);
         } else {
-          node.isRoot = true;
-          tree.push(node);
+          if (node.data.key !== '/') {
+            // Top level bucket not at root so create dummy hierarchy to reach it
+            const rootFullPath = `${node.data.endpoint}/${node.data.bucket}//`;
+            const dummyRootNode: BucketTreeNode = {
+              key: rootFullPath,
+              data: {
+                accessKeyId: '',
+                active: false,
+                bucket: node.data.bucket,
+                bucketId: '',
+                bucketName: node.data.bucket,
+                dummy: true,
+                endpoint: node.data.endpoint,
+                key: '/',
+                public: false,
+                region: '',
+                secretAccessKey: ''
+              },
+              children: new Array(),
+              isRoot: true
+            };
+            tree.push(dummyRootNode);
+            bucketTreeNodeMap.set(rootFullPath, dummyRootNode);
+            createDummyNodes(dummyRootNode, node).children.push(node);
+          } else {
+            node.isRoot = true;
+            tree.push(node);
+          }
         }
       }
 

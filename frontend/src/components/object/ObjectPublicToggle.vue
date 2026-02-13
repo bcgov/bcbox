@@ -43,6 +43,7 @@ const togglePublic = async (setPublicValue: boolean) => {
         objectStore
           .togglePublic(props.objectId, true)
           .then(() => {
+            isPublic.value = true;
             toast.success('File set to public', `"${props.objectName}" is now public`);
           })
           .catch((e) => toast.error('Setting file to public failed', e.response?.data.detail, { life: 0 }));
@@ -62,6 +63,7 @@ const togglePublic = async (setPublicValue: boolean) => {
         objectStore
           .togglePublic(props.objectId, false)
           .then(() => {
+            isPublic.value = false;
             toast.success('File set to private', `"${props.objectName}" is no longer public`);
           })
           .catch((e) => toast.error('Setting file to private failed', e.response?.data.detail, { life: 0 }));
@@ -93,10 +95,10 @@ watch(props, () => {
 <template>
   <span v-tooltip="isToggleEnabled ? '' : 'Change the folder\'s public setting to update this file'">
     <InputSwitch
-      v-model="isPublic"
+      :model-value="isPublic"
       aria-label="Toggle to make public"
       :disabled="!isToggleEnabled"
-      @change="togglePublic(isPublic)"
+      @update:model-value="togglePublic($event)"
     />
   </span>
 </template>
