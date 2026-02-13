@@ -104,10 +104,10 @@ watch(props, () => {
 <template>
   <span v-tooltip="isToggleEnabled ? '' : 'Change the parent folder\'s public setting to update this folder'">
     <InputSwitch
-      v-model="isPublic"
+      :model-value="isPublic"
       aria-label="Toggle to make public"
       :disabled="!isToggleEnabled"
-      @change="togglePublic(isPublic)"
+      @update:model-value="togglePublic($event)"
     />
   </span>
 </template>
