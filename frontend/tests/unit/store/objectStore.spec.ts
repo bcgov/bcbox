@@ -266,8 +266,9 @@ describe('Object Store', () => {
   });
 
   describe('togglePublic', () => {
-    it.skip('calls the service', async () => {
+    it('calls the service', async () => {
       const togglePublicSpy = vi.spyOn(objectService, 'togglePublic');
+      togglePublicSpy.mockImplementation(vi.fn());
 
       await objectStore.togglePublic('000', true);
 

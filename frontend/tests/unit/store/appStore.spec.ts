@@ -31,7 +31,7 @@ describe('App Store', () => {
     expect(appStore.getIsLoading).toBeTruthy();
   });
 
-  it.skip('endDeterminateLoading', () => {
+  it('endDeterminateLoading', () => {
     appStore.endDeterminateLoading();
     expect(appStore.getLoadingValue).toBe(100);
     setTimeout(() => {
