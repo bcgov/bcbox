@@ -15,7 +15,7 @@ import {
   ObjectVersion
 } from '@/components/object';
 import { ShareButton } from '@/components/common';
-import { Button, Dialog, Divider, Tag } from '@/lib/primevue';
+import { Button, Dialog, Divider, Tag, useToast } from '@/lib/primevue';
 import {
   useAuthStore,
   useBucketStore,
@@ -40,6 +40,7 @@ type Props = {
 const props = withDefaults(defineProps<Props>(), {});
 
 const router = useRouter();
+const toast = useToast();
 
 // Store
 const bucketStore = useBucketStore();
@@ -118,6 +119,7 @@ async function onVersionCreated() {
 onMounted(async () => {
   const head = await objectStore.headObject(props.objectId);
 
+  // TODO: sync object?
   await objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true });
   object.value = getObject.value(props.objectId);
   bucketId.value = object.value ? object.value.bucketId : '';
@@ -137,6 +139,10 @@ onMounted(async () => {
   }
   // fetch data for child components
   await Promise.all([bucketStore.fetchBuckets({ bucketId: bucketId.value }), fetchFileDetails(props.objectId)]);
+  // request object sync
+  await objectStore
+    .syncObject(props.objectId)
+    .catch((error) => toast.error('Unable to sync with storage location', error, { life: 0 }));
 });
 </script>
 

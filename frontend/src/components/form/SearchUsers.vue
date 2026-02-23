@@ -47,6 +47,7 @@ const getUserDropdownLabel = (option: User) => {
       return option.email;
     }
   }
+  return '';
 };
 
 const onAdd = () => {
@@ -84,8 +85,7 @@ const onInput = (event: IInputEvent) => {
     invalidSelectedUser.value = false;
     if (selectedIdpType.value === 'internal' && input.length >= 3) {
       userStore.fetchUsers({ idp: 'idir', search: input });
-    }
-    else if (input.match(Regex.EMAIL)) {
+    } else if (input.match(Regex.EMAIL)) {
       userStore.fetchUsers({ email: input });
     } else {
       userStore.clearSearch();
@@ -103,23 +103,24 @@ const onReset = () => {
 
 watch(selectedIdpType, () => {
   // user search field placeholder
-  userSearchPlaceholder.value = selectedIdpType.value === 'internal' ?
-    'Name or email address' : 'Complete email address';
+  userSearchPlaceholder.value =
+    selectedIdpType.value === 'internal' ? 'Name or email address' : 'Complete email address';
 });
 
 const helpText = ref('');
 const help1 = ref();
 const help2 = ref();
 
-const toggleHelp = (id: string | undefined, event:any) => {
-  switch(id) {
+const toggleHelp = (id: string | undefined, event: any) => {
+  switch (id) {
     case 'help1':
       help1.value.toggle(event);
       helpText.value = 'Select the authentication method this person will use to sign into BCBox.';
       break;
     case 'help2':
       help2.value.toggle(event);
-      helpText.value = 'Note: If the person you are adding is new to BCBox, ' +
+      helpText.value =
+        'Note: If the person you are adding is new to BCBox, ' +
         'please ask them to first sign in to the website, so we can find them in the system.';
       break;
   }
@@ -134,7 +135,7 @@ onMounted(() => {
   <div>
     <h4 class="mb-3">Add User(s)</h4>
     <div class="mb-2">
-      <label>How will his person sign in to BCBox?</label>
+      <label>How will this person sign in to BCBox?</label>
       <span
         class="help-link material-icons-outlined"
         @click="toggleHelp('help1', $event)"
@@ -150,25 +151,25 @@ onMounted(() => {
     </div>
     <div class="card flex justify-center mb-4">
       <div class="flex flex-wrap gap-4">
-          <div class="flex items-center align-items-center gap-2">
-            <RadioButton
-              v-model="selectedIdpType"
-              input-id="internal"
-              name="idpType"
-              value="internal"
-              @click="onReset"
-            />
+        <div class="flex items-center align-items-center gap-2">
+          <RadioButton
+            v-model="selectedIdpType"
+            input-id="internal"
+            name="idpType"
+            value="internal"
+            @click="onReset"
+          />
           <label for="internal">Government IDIR</label>
         </div>
         <div class="flex align-items-center items-center gap-2">
-            <RadioButton
-              v-model="selectedIdpType"
-              input-id="external"
-              name="idpType"
-              value="external"
-              @click="onReset"
-            />
-            <label for="external">External (eg: BCeID or BC Services Card)</label>
+          <RadioButton
+            v-model="selectedIdpType"
+            input-id="external"
+            name="idpType"
+            value="external"
+            @click="onReset"
+          />
+          <label for="external">External (eg: BCeID or BC Services Card)</label>
         </div>
       </div>
     </div>
