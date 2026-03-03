@@ -150,6 +150,7 @@ const updateSyncButtonStatus = async () => {
       // else show time until minimum has passed since last
       else {
         timeToNextManual.value = Math.ceil((manualMinimum - sinceLastSyncDate) / 60);
+        syncButtonDisabled.value = true;
       }
     }
   }

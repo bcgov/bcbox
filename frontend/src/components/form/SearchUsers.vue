@@ -25,7 +25,6 @@ const emit = defineEmits(['add-user', 'cancel-search-users']);
 // Store
 const userStore = useUserStore();
 const { getExternalUsers, userSearch } = storeToRefs(useUserStore());
-const { getUserId } = storeToRefs(useAuthStore());
 
 // State
 const invalidSelectedUser: Ref<boolean> = ref(false);

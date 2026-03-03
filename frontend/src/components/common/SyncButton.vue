@@ -51,6 +51,7 @@ const onSubmit = async () => {
       await objectStore.syncObject(props.objectId);
     } else if (props.bucketId) {
       await bucketStore.syncBucket(props.bucketId, props.recursive);
+      await bucketStore.fetchBucket(props.bucketId); // refresh bucket to get new sync date and status
     }
     toast.info('Sync in progress', '');
     clicked.value = true;

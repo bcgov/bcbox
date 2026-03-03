@@ -77,8 +77,14 @@ export const useBucketStore = defineStore('bucket', () => {
   async function fetchBucket(bucketId: string) {
     try {
       appStore.beginIndeterminateLoading();
-      return bucketService.fetchBucket(bucketId).then((response) => response.data);
-      // return {};
+      const response = (await bucketService.fetchBucket(bucketId)).data;
+
+      // add bucket to state, replacing any existing value matching bucketId
+      const matches = (x: Bucket) => x.bucketId === bucketId;
+      const [, difference] = partition(state.buckets.value, matches);
+      state.buckets.value = difference.concat(response);
+
+      return response;
     } catch (error: any) {
       toast.error('Getting bucket', error);
     } finally {
