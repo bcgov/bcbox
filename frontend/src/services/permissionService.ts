@@ -14,8 +14,10 @@ import type {
 const PATH = 'permission';
 const BUCKET = 'bucket';
 const OBJECT = 'object';
+const IDP = 'idp';
 
 export default {
+  // ------ user permissions ------
   /**
    * @function bucketAddPermissions
    * Adds the given permissions to the bucket
@@ -104,5 +106,98 @@ export default {
    */
   objectGetPermissions(objectId: string, params?: ObjectGetPermissionsOptions) {
     return comsAxios().get(`${PATH}/${OBJECT}/${objectId}`, { params: params });
+  },
+
+  // ------ IDP permissions ------
+
+  /**
+   * function bucketAddIdpPermissions
+   * Adds the given permissions to the bucket for the specified IDP
+   * @param bucketId
+   * @param data
+   * @param params
+   * @returns
+   */
+  bucketAddIdpPermissions(bucketId: string, data: any, params = { recursive: false }) {
+    return comsAxios().put(`${PATH}/${IDP}/${BUCKET}/${bucketId}`, data, {
+      params: params
+    });
+  },
+
+  /**
+   * function bucketDeleteIdpPermission
+   * Deletes the given permission from the bucket for the specified IDP
+   * @param bucketId
+   * @param params
+   * @returns
+   */
+  bucketDeleteIdpPermission(bucketId: string, params: any) {
+    return comsAxios().delete(`${PATH}/${IDP}/${BUCKET}/${bucketId}`, {
+      params: params
+    });
+  },
+
+  /**
+   * @function bucketSearchIdpPermissions
+   * Returns a list of buckets and their IDP permissions
+   * @param {BucketSearchPermissionsOptions} params Optional object containing the data to filter against
+   * @returns {Promise} An axios response
+   */
+  bucketSearchIdpPermissions(params?: any) {
+    return comsAxios().get(`${PATH}/${IDP}/${BUCKET}`, { params: params });
+  },
+
+  /**
+   * function bucketGetIdpPermissions
+   * Returns a list of IDP permissions for the bucket
+   * @param bucketId
+   * @param params
+   * @returns
+   */
+  bucketGetIdpPermissions(bucketId: string, params?: any) {
+    return comsAxios().get(`${PATH}/${IDP}/${BUCKET}/${bucketId}`, { params: params });
+  },
+
+  /**
+   * function objectAddIdpPermissions
+   * Adds the given permissions to the object for the specified IDP
+   * @param objectId
+   * @param data
+   * @returns
+   */
+  objectAddIdpPermissions(objectId: string, data: Object) {
+    return comsAxios().put(`${PATH}/${IDP}/${OBJECT}/${objectId}`, data);
+  },
+
+  /**
+   * @function objectDeleteIdpPermission
+   * Deletes the given IDP permission from the object
+   * @param {string} objectId ID of the object to remove permissions from
+   * @param {ObjectDeletePermissionsOptions} params Object containing the permission to remove
+   * @returns {Promise} An axios response
+   */
+  objectDeleteIdpPermission(objectId: string, params: Object) {
+    return comsAxios().delete(`${PATH}/${IDP}/${OBJECT}/${objectId}`, { params: params });
+  },
+
+  /**
+   * @function objectSearchIdpPermissions
+   * Returns a list of IDP object permissions
+   * @param {ObjectSearchPermissionsOptions} params Optional object containing the data to filter against
+   * @returns {Promise} An axios response
+   */
+  objectSearchIdpPermissions(params?: any) {
+    return comsAxios().get(`${PATH}/${IDP}/${OBJECT}`, { params: params });
+  },
+
+  /**
+   * @function objectGetIdpPermissions
+   * Returns a list of IDP permissions for the object
+   * @param {string} objectId ID of the object
+   * @param {ObjectGetPermissionsOptions} params Optional object containing the data to filter against
+   * @returns {Promise} An axios response
+   */
+  objectGetIdpPermissions(objectId: string, params?: Object) {
+    return comsAxios().get(`${PATH}/${IDP}/${OBJECT}/${objectId}`, { params: params });
   }
 };

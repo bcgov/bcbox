@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const bucketStore = useBucketStore();
-const { getUserId, getIsAuthenticated } = storeToRefs(useAuthStore());
+const { getProfile, getUserId, getIsAuthenticated } = storeToRefs(useAuthStore());
 const permissionStore = usePermissionStore();
 const toast = useToast();
 const { focusedElement } = storeToRefs(useNavStore());
@@ -97,13 +97,14 @@ onErrorCaptured((e: Error) => {
 onBeforeMount(async () => {
   const router = useRouter();
 
-  // fetch bucket; populate bucket and permissions in store
   let bucketResponse: any = [];
   if (props?.bucketId) {
+    // if logged in, fetch bucket; populate bucket and permissions in store
     if (getIsAuthenticated.value) {
       bucketResponse = await bucketStore.fetchBuckets({
         bucketId: props.bucketId,
         userId: getUserId.value,
+        idp: (getProfile.value as any)?.identity_provider,
         objectPerms: true
       });
     } else {

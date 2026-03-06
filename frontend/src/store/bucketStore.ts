@@ -95,8 +95,8 @@ export const useBucketStore = defineStore('bucket', () => {
   /**
    * function does the following in order:
    * - fetches bucket permissions
-   *   (fetchBucketPermissions() also add bucket permissions to the permission store)
-   * - pass bucketId's of buckets with a permission to searchBuckets()
+   * - adds bucket permissions to the permission store
+   * - pass bucketId's (from list of permissions) to searchBuckets()
    * - add buckets to store (skipping existing matches)
    * @param params search parameters
    * @returns an array of matching buckets found
@@ -106,11 +106,21 @@ export const useBucketStore = defineStore('bucket', () => {
       appStore.beginIndeterminateLoading();
 
       // Get a unique list of bucket IDs the user has access to
-      const permResponse = await permissionStore.fetchBucketPermissions(params);
+      // based on user permissions..
+      const permResponse = await permissionStore.fetchBucketPermissions({ ...params, idp: undefined });
+      //  and IDP permissions (if current user's idp is provided in params)
+      const IdpPermResponse = params?.idp
+        ? await permissionStore.fetchBucketIdpPermissions({ ...params, userId: undefined })
+        : undefined;
+
       // if permissions found
-      if (permResponse) {
+      if (permResponse || IdpPermResponse) {
         const uniqueIds: Array<string> = [
-          ...new Set<string>(permResponse.map((x: { bucketId: string }) => x.bucketId))
+          ...new Set<string>(
+            permResponse
+              ?.map((x: { bucketId: string }) => x.bucketId)
+              .concat(IdpPermResponse?.map((x: { bucketId: string }) => x.bucketId) || [])
+          )
         ];
 
         let response = Array<Bucket>();

@@ -156,7 +156,7 @@ onBeforeMount(async () => {
           aria-labelledby="upload_checkbox"
         />
         <Column
-          field="idpName"
+          field="idp"
           header="Provider"
         />
         <Column

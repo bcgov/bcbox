@@ -50,7 +50,7 @@ const permissionStore = usePermissionStore();
 const tagStore = useTagStore();
 const versionStore = useVersionStore();
 
-const { getUserId } = storeToRefs(useAuthStore());
+const { getProfile, getUserId } = storeToRefs(useAuthStore());
 const { getObject } = storeToRefs(objectStore);
 const {
   getIsDeleted,
@@ -118,21 +118,27 @@ async function onVersionCreated() {
 
 onMounted(async () => {
   const head = await objectStore.headObject(props.objectId);
-
-  // TODO: sync object?
-  await objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true });
+  // fetch object and object permissions
+  await objectStore.fetchObjects({
+    objectId: props.objectId,
+    userId: getUserId.value,
+    idp: (getProfile.value as any)?.identity_provider,
+    bucketPerms: true
+  });
   object.value = getObject.value(props.objectId);
   bucketId.value = object.value ? object.value.bucketId : '';
-
-  await permissionStore.fetchBucketPermissions({
-    userId: getUserId.value,
+  // fetch bucket and bucket permissions
+  await bucketStore.fetchBuckets({
     bucketId: bucketId.value,
+    userId: getUserId.value,
+    idp: (getProfile.value as any)?.identity_provider,
     objectPerms: true
   });
   if (
     head?.status !== 204 &&
     !isDeleted.value &&
     (!object.value ||
+      // check for permissions in store
       !permissionStore.isObjectActionAllowed(object.value.id, getUserId.value, Permissions.READ, object.value.bucketId))
   ) {
     router.replace({ name: RouteNames.FORBIDDEN });

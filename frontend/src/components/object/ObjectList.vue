@@ -90,7 +90,7 @@ const autoSync = async () => {
   const lastSyncDate = new Date(bucket?.lastSyncRequestedDate as string);
   const sinceLastSyncDate = differenceInSeconds(now, lastSyncDate);
 
-  // if havent synced for 24 hrs trigger autoSync
+  // if havent synced for 24 hrs trigger autoSync of JUST this folder level (not recursive)
   if (sinceLastSyncDate > autoMinimum) {
     await bucketStore.syncBucket(props.bucketId, false);
     syncStatus.value = 'Sync in progress';
@@ -180,7 +180,7 @@ onBeforeMount(async () => {
           "
         >
           <SyncButton
-            v-if="bucket && permissionStore.isBucketActionAllowed(bucket.bucketId, getUserId, Permissions.READ)"
+            v-if="bucket && permissionStore.isBucketActionAllowed(bucket.bucketId, getUserId, Permissions.MANAGE)"
             :disabled="syncButtonDisabled"
             :bucket-id="bucket?.bucketId"
             :mode="ButtonMode.BUTTON"

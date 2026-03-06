@@ -144,13 +144,19 @@ export const useObjectStore = defineStore('object', () => {
       appStore.beginIndeterminateLoading();
 
       // Get a unique list of object IDs the user has access to
-      const permResponse = await permissionStore.fetchObjectPermissions(params);
-
-      if (permResponse) {
+      // based on user permissions..
+      const permResponse = await permissionStore.fetchObjectPermissions({ ...params, idp: undefined });
+      //  and IDP permissions (if current user's idp is provided in params)
+      const IdpPermResponse = params?.idp
+        ? await permissionStore.fetchObjectIdpPermissions({ ...params, userId: undefined })
+        : undefined;
+      // if permissions found
+      if (permResponse || IdpPermResponse) {
         const uniqueIds: Array<string> = [
           ...new Set<string>(
             permResponse
-              .map((x: { objectId: string }) => x.objectId)
+              ?.map((x: { objectId: string }) => x.objectId)
+              .concat(IdpPermResponse?.map((x: { objectId: string }) => x.objectId) || [])
               // Resolve API returning all objects with bucketPerms=true even when requesting single objectId
               .filter((objectId: string) => !params.objectId || objectId === params.objectId)
           )

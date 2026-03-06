@@ -139,6 +139,10 @@ const loadLazyData = (event?: any) => {
         permissionStore.fetchObjectPermissions({
           objectId: objects.map((o: COMSObject) => o.id)
         });
+
+        permissionStore.fetchObjectIdpPermissions({
+          objectId: objects.map((o: COMSObject) => o.id)
+        });
       }
     });
 };
