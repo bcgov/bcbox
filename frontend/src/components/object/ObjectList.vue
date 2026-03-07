@@ -25,11 +25,13 @@ import type { Ref } from 'vue';
 type Props = {
   bucketId: string;
   isBucketPublic?: boolean;
+  isBucketInternal?: boolean;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   bucketId: undefined,
-  isBucketPublic: undefined
+  isBucketPublic: undefined,
+  isBucketInternal: undefined
 });
 
 //const navStore = useNavStore();
@@ -118,7 +120,9 @@ const autoSync = async () => {
 
 onBeforeMount(async () => {
   // sync bucket if necessary
-  const hasRead = permissionStore.getBucketPermissions.filter((p) => p.permCode === Permissions.READ);
+  const hasRead = permissionStore.getBucketPermissions.filter(
+    (p) => p.permCode === Permissions.READ && p.bucketId === props.bucketId
+  );
   if (hasRead.length > 0) await autoSync();
 });
 </script>
@@ -199,6 +203,7 @@ onBeforeMount(async () => {
           :key="objectTableKey"
           :bucket-id="props.bucketId"
           :is-bucket-public="props.isBucketPublic"
+          :is-bucket-internal-only="isBucketInternal"
           :object-info-id="objectInfoId"
           @show-object-info="showObjectInfo"
         />

@@ -65,6 +65,8 @@ const object: Ref<COMSObject | undefined> = ref(undefined);
 const bucketId: Ref<string> = ref('');
 const permissionsVisible: Ref<boolean> = ref(false);
 
+const isInternal = computed(() => permissionStore.getInternal(object.value));
+
 // version stuff
 const bucketVersioningEnabled = computed(() => getIsVersioningEnabled.value(props.objectId));
 const currentVersionId: Ref<string | undefined> = ref(props.versionId);
@@ -167,6 +169,17 @@ onMounted(async () => {
               v-tooltip="`This file is set as public`"
               value="Public"
               severity="danger"
+              rounded
+              icon="pi pi-info-circle"
+            />
+            <Tag
+              v-else-if="isInternal"
+              v-tooltip="
+                'This folder and its contents can be read by anyone internal to government. ' +
+                'Change the settings in &quot;Folder permissions.&quot;'
+              "
+              value="Internal"
+              severity="info"
               rounded
               icon="pi pi-info-circle"
             />

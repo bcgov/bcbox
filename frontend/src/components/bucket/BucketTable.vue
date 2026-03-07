@@ -58,6 +58,15 @@ const getBucketPublicStatus = computed(() => {
   };
 });
 
+const getInternalStatus = computed(() => {
+  return (node: BucketTreeNode): boolean => {
+    if (node.data.bucketId) {
+      return permissionStore.getBucketInternal(node.data.bucketId);
+    }
+    return false;
+  };
+});
+
 const emit = defineEmits(['show-bucket-config', 'show-sidebar-info']);
 
 // Actions
@@ -337,6 +346,17 @@ watch(getBuckets, () => {
             icon="pi pi-info-circle"
             class="public-folder"
           />
+
+          <Tag
+            v-if="!getBucketPublicStatus(node) && getInternalStatus(node)"
+            v-tooltip="'Contents of this Folder can be read by anyone internal to government.'"
+            value="Internal"
+            severity="info"
+            rounded
+            icon="pi pi-info-circle"
+            class="ml-2 mb-1 min-w-100"
+          />
+
           <BucketChildConfig
             v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.CREATE)"
             :parent-bucket="node.data"

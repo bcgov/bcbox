@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeMount, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { ObjectPermissionAddUser, ObjectPublicToggle } from '@/components/object';
+import { ObjectPermissionAddUser, ObjectPublicToggle, ObjectIdpToggle } from '@/components/object';
 import { BulkPermission } from '@/components/common';
 import { Button, Checkbox, Column, DataTable, TabPanel, TabView } from '@/lib/primevue';
 
@@ -40,7 +40,7 @@ const aggregatePermissionData = computed(() => {
     Object.values(
       data.reduce((acc, item) => {
         const baseUser = acc[item.userId] ?? {
-          idpName: item.idpName,
+          idp: item.idp,
           elevatedRights: item.elevatedRights,
           fullName: item.fullName,
           resource: 'object',
@@ -98,9 +98,10 @@ onBeforeMount(() => {
 <template>
   <TabView>
     <TabPanel header="Manage permissions">
+      <h3 class="mb-2">Sharing Access</h3>
       <div class="flex flex-row pb-3">
         <div class="flex-grow-1">
-          <h3 class="pb-1">Set to public</h3>
+          <h4 class="pb-1">Set to public</h4>
           <p>
             Setting a file to
             <strong>public</strong>
@@ -110,6 +111,24 @@ onBeforeMount(() => {
         <ObjectPublicToggle
           v-if="object && getUserId"
           class=""
+          :bucket-id="object.bucketId"
+          :object-id="object.id"
+          :object-name="object.name"
+          :object-public="object.public"
+          :user-id="getUserId"
+        />
+      </div>
+
+      <div class="flex flex-row pb-3">
+        <div class="flex-grow-1">
+          <h4 class="pb-1">Internl only</h4>
+          <p>
+            Give access to
+            <strong>all IDIR users</strong>
+          </p>
+        </div>
+        <ObjectIdpToggle
+          v-if="object && getUserId"
           :bucket-id="object.bucketId"
           :object-id="object.id"
           :object-name="object.name"
@@ -167,7 +186,7 @@ onBeforeMount(() => {
           header="Name"
         />
         <Column
-          field="idpName"
+          field="idp"
           header="Provider"
         />
         <Column
@@ -186,7 +205,7 @@ onBeforeMount(() => {
                 input-id="read"
                 aria-label="read"
                 :binary="true"
-                :disabled="data.read.value"
+                :disabled="data.read.disabled"
                 @update:model-value="(value: boolean) => updateObjectPermission(value, data.userId, Permissions.READ)"
               />
             </span>

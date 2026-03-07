@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { onUnmounted, onMounted, ref } from 'vue';
+import { computed, onUnmounted, onMounted, ref } from 'vue';
 
 import { Spinner } from '@/components/layout';
 import {
@@ -11,7 +11,7 @@ import {
   ObjectPublicToggle
 } from '@/components/object';
 import { ShareButton } from '@/components/common';
-import { Button, Column, DataTable, Dialog, InputText } from '@/lib/primevue';
+import { Button, Column, DataTable, Dialog, InputText, Tag } from '@/lib/primevue';
 import { useAuthStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 import { onDialogHide } from '@/utils/utils';
@@ -37,12 +37,14 @@ type DataTableFilter = {
 type Props = {
   bucketId?: string;
   isBucketPublic?: boolean;
+  isBucketInternal?: boolean;
   objectInfoId?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   bucketId: undefined,
   isBucketPublic: undefined,
+  isBucketInternal: undefined,
   objectInfoId: undefined
 });
 
@@ -69,6 +71,13 @@ const filters: Ref<DataTableFilter> = ref({
   name: { value: undefined, matchMode: 'contains' },
   tags: { value: undefined, matchMode: 'contains' },
   meta: { value: undefined, matchMode: 'contains' }
+});
+
+// idp perms
+const isObjectInternal = computed(() => {
+  return (objId: any) => {
+    return permissionStore.getObjectInternal(objId);
+  };
 });
 
 // Actions
@@ -139,7 +148,6 @@ const loadLazyData = (event?: any) => {
         permissionStore.fetchObjectPermissions({
           objectId: objects.map((o: COMSObject) => o.id)
         });
-
         permissionStore.fetchObjectIdpPermissions({
           objectId: objects.map((o: COMSObject) => o.id)
         });
@@ -340,23 +348,36 @@ async function downloadPublicObject(objectId: string) {
         v-if="getIsAuthenticated"
         field="publicSharing"
         header="Public"
-        style="width: 100px"
+        class=""
+        style="width: 300px"
       >
         <template #body="{ data }">
-          <ObjectPublicToggle
-            v-if="props.bucketId && getUserId"
-            :bucket-id="props.bucketId"
-            :bucket-public="props.isBucketPublic"
-            :object-id="data.id"
-            :object-name="data.name"
-            :object-public="data.public"
-            :user-id="getUserId"
-          />
+          <div class="flex align-items-center">
+            <ObjectPublicToggle
+              v-if="props.bucketId && getUserId"
+              :bucket-id="props.bucketId"
+              :bucket-public="props.isBucketPublic"
+              :object-id="data.id"
+              :object-name="data.name"
+              :object-public="data.public"
+              :user-id="getUserId"
+            />
+
+            <Tag
+              v-if="!props.isBucketPublic && !data.public && !props.isBucketInternal && isObjectInternal(data.id)"
+              v-tooltip="'This file can be read by anyone internal to government.'"
+              value="Internal"
+              severity="info"
+              rounded
+              icon="pi pi-info-circle"
+              class="ml-2 mb-1 min-w-100"
+            />
+          </div>
         </template>
       </Column>
       <Column
         header="Actions"
-        :header-style="getIsAuthenticated ? 'min-width: 270px' : 'width: 40px'"
+        :header-style="getIsAuthenticated ? 'min-width: 240px' : 'width: 40px'"
         header-class="header-right"
         body-class="action-buttons"
       >

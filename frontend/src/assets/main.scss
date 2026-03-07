@@ -271,6 +271,21 @@ div:focus-visible {
   }
 }
 
+.p-tag-info {
+  background-color: rgb(224, 242, 254);
+  outline-style: solid;
+  outline-color: $bcbox-primary;
+  outline-width: thin;
+
+  .p-tag-value {
+    color: $bcbox-primary;
+  }
+
+  .p-tag-icon {
+    color: $bcbox-primary
+  }
+}
+
 /* datatable */
 .p-datatable,
 .p-treetable {

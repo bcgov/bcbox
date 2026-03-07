@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeMount, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import BucketPublicToggle from '@/components/bucket/BucketPublicToggle.vue';
+import { BucketPublicToggle, BucketIdpToggle } from '@/components/bucket';
 import BucketPermissionAddUser from '@/components/bucket/BucketPermissionAddUser.vue';
 import { BulkPermission } from '@/components/common';
 import { useAlert } from '@/composables/useAlert';
@@ -82,16 +82,15 @@ onBeforeMount(async () => {
 <template>
   <TabView>
     <TabPanel header="Manage permissions">
+      <h3>Sharing Access</h3>
       <!-- public toggle -->
       <div class="flex pb-3">
         <div class="flex-grow-1">
           <div class="pb-1">
-            <h3>Set to public</h3>
+            <h4>Set to public</h4>
             <p>
-              Making a folder
-              <strong>public</strong>
-              means that all files within it, including those in any subfolders, can be accessed by anyone without
-              requiring authentication.
+              Enabling this shares all files and subfolders. Anyone with the link can view the content without signing
+              in.
             </p>
           </div>
         </div>
@@ -104,6 +103,21 @@ onBeforeMount(async () => {
           :user-id="getUserId"
         />
       </div>
+
+      <div class="flex flex-row pb-3">
+        <div class="flex-grow-1">
+          <h4 class="pb-1">Internl only</h4>
+          <p>Allow all IDIR users to view this flder and its content</p>
+        </div>
+        <BucketIdpToggle
+          v-if="bucket && getUserId"
+          :bucket-id="bucket.bucketId"
+          :bucket-name="bucket.bucketName"
+          :bucket-public="bucket.public"
+          :user-id="getUserId"
+        />
+      </div>
+
       <h3>User Permissions</h3>
       <!-- user search -->
       <div v-if="!showSearchUsers">

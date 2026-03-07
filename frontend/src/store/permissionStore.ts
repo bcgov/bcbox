@@ -18,8 +18,8 @@ import type {
   IdentityProvider,
   Permission,
   User,
-  UserPermissions,
-  IdpPermissions
+  UserPermissions
+  // IdpPermissions
 } from '@/types';
 
 export type PermissionStoreState = {
@@ -31,8 +31,6 @@ export type PermissionStoreState = {
   // IDP permissions
   bucketIdpPermissions: Ref<any>;
   objectIdpPermissions: Ref<any>;
-  mappedBucketToIdpPermissions: Ref<any>;
-  mappedObjectToIdpPermissions: Ref<any>;
   // general permissions
   permissions: Ref<Array<Permission>>;
 };
@@ -54,15 +52,14 @@ export const usePermissionStore = defineStore('permission', () => {
     // IDP permissions
     bucketIdpPermissions: ref([]),
     objectIdpPermissions: ref([]),
-    mappedBucketToIdpPermissions: ref([]),
-    mappedObjectToIdpPermissions: ref([]),
     // general permissions
     permissions: ref([])
   };
 
   // Getters
   const getters = {
-    // User permissions
+    // User permissions getters
+    getObjectPermissions: computed(() => state.objectPermissions.value),
     getBucketPermissions: computed(() => state.bucketPermissions.value),
     getMappedBucketToUserPermissions: computed(() => state.mappedBucketToUserPermissions.value),
     getMappedObjectToUserPermissions: computed(() => state.mappedObjectToUserPermissions.value),
@@ -75,22 +72,36 @@ export const usePermissionStore = defineStore('permission', () => {
       });
       return op.concat(bp);
     }),
-
-    // IDP permissions
-    getMappedBucketToIdpPermissions: computed(() => state.mappedBucketToIdpPermissions.value),
-    getMappedObjectToIdpPermissions: computed(() => state.mappedObjectToIdpPermissions.value),
-    getMappedObjectAndBucketToIdpPermissions: computed(() => {
-      const op = state.mappedObjectToIdpPermissions.value.map((o: any) => {
-        return { ...o, resource: 'object' };
-      });
-      const bp = state.mappedBucketToIdpPermissions.value.map((b: any) => {
-        return { ...b, resource: 'bucket' };
-      });
-      return op.concat(bp);
+    // IDP permissions getters
+    getObjectIdpPermissions: computed(() => state.objectIdpPermissions.value),
+    getObjectInternal: computed(() => (objectId: string) => {
+      return (
+        state.objectIdpPermissions.value.filter(
+          (p: any) => p.objectId === objectId && p.idp === 'idir' && p.permCode === 'READ'
+        ).length > 0
+      );
     }),
-    getObjectPermissions: computed(() => state.objectPermissions.value),
-
-    // General permissions
+    getBucketIdpPermissions: computed(() => state.bucketIdpPermissions.value),
+    // is object/bucket 'internal' (READ perm for all IDI users)
+    getBucketInternal: computed(() => (bucketId: string) => {
+      return (
+        state.bucketIdpPermissions.value.filter(
+          (p: any) => p.bucketId === bucketId && p.idp === 'idir' && p.permCode === 'READ'
+        ).length > 0
+      );
+    }),
+    getInternal: computed(() => (object: any) => {
+      const objPerm =
+        state.objectIdpPermissions.value.filter(
+          (p: any) => p.objectId === object.id && p.idp === 'idir' && p.permCode === 'READ'
+        ).length > 0;
+      const bucketPerm =
+        state.bucketIdpPermissions.value.filter(
+          (p: any) => p.bucketId === object.bucketId && p.idp === 'idir' && p.permCode === 'READ'
+        ).length > 0;
+      return objPerm || bucketPerm;
+    }),
+    // General permissions getters
     getPermissions: computed(() => state.permissions.value)
   };
 
@@ -139,7 +150,7 @@ export const usePermissionStore = defineStore('permission', () => {
       toast.error('Adding bucket IDP permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       await fetchBucketIdpPermissions({ bucketId: bucketId });
-      await mapBucketToIdpPermissions(bucketId);
+      // await mapBucketToIdpPermissions(bucketId);
       appStore.endIndeterminateLoading();
     }
   }
@@ -152,7 +163,7 @@ export const usePermissionStore = defineStore('permission', () => {
       toast.error('Adding object IDP permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       await fetchObjectIdpPermissions({ objectId: objectId });
-      await mapObjectToIdpPermissions(objectId);
+      // await mapObjectToIdpPermissions(objectId);
       appStore.endIndeterminateLoading();
     }
   }
@@ -200,8 +211,8 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Deleting bucket IDP permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
-      await fetchBucketPermissions({ bucketId: bucketId });
-      await mapBucketToIdpPermissions(bucketId);
+      await fetchBucketIdpPermissions({ bucketId: bucketId });
+      // await mapBucketToIdpPermissions(bucketId);
       appStore.endIndeterminateLoading();
     }
   }
@@ -213,8 +224,8 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Deleting object IDP permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
-      await fetchObjectPermissions({ objectId: objectId });
-      await mapObjectToIdpPermissions(objectId);
+      await fetchObjectIdpPermissions({ objectId: objectId }); //
+      // await mapObjectToIdpPermissions(objectId);
       appStore.endIndeterminateLoading();
     }
   }
@@ -230,7 +241,7 @@ export const usePermissionStore = defineStore('permission', () => {
 
       // patch bucketPermissions state with latest perms from COMS
       const matches = (x: BucketPermission) =>
-        (!params.bucketId || x.bucketId === params.bucketId) &&
+        (!params.bucketId || x.bucketId === params.bucketId || params.bucketId.includes(x.bucketId)) &&
         (!params.userId || x.userId === params.userId) &&
         (!params.permCode || x.permCode === params.permCode);
       const [, difference] = partition(state.bucketPermissions.value, matches);
@@ -257,7 +268,7 @@ export const usePermissionStore = defineStore('permission', () => {
 
       // patch objectPermissions state with latest perms from COMS
       const matches = (x: COMSObjectPermission) =>
-        (!params.objectId || x.objectId === params.objectId) &&
+        (!params.objectId || x.objectId === params.objectId || params.objectId.includes(x.objectId)) &&
         (!params.userId || x.userId === params.userId) &&
         (!params.permCode || x.permCode === params.permCode);
       const [, difference] = partition(state.objectPermissions.value, matches);
@@ -392,21 +403,19 @@ export const usePermissionStore = defineStore('permission', () => {
     }
   }
 
-  async function fetchBucketIdpPermissions(params: any = {}): Promise<Array<any> | void> {
+  async function fetchBucketIdpPermissions(params: any = {}): Promise<Array<any> | undefined> {
     try {
       appStore.beginIndeterminateLoading();
 
       const response = (await permissionService.bucketSearchIdpPermissions(params)).data;
       const newPerms: Array<any> = response.flatMap((x: any) => x.permissions);
-
-      // patch bucketPermissions state with latest perms from COMS
+      // patch bucketIdpPermissions state with latest perms from COMS
       const matches = (x: any) =>
-        (!params.bucketId || x.bucketId === params.bucketId) &&
+        (!params.bucketId || x.bucketId === params.bucketId || params.bucketId.includes(x.bucketId)) &&
         (!params.idp || x.idp === params.idp) &&
         (!params.permCode || x.permCode === params.permCode);
       const [, difference] = partition(state.bucketIdpPermissions.value, matches);
       state.bucketIdpPermissions.value = difference.concat(newPerms);
-
       // Pass response back so bucketStore can handle bucketPerms=true correctly
       return response;
     } catch (error: any) {
@@ -419,83 +428,19 @@ export const usePermissionStore = defineStore('permission', () => {
   async function fetchObjectIdpPermissions(params: any = {}): Promise<Array<any> | undefined> {
     try {
       appStore.beginIndeterminateLoading();
-
       const response = (await permissionService.objectSearchIdpPermissions(params)).data;
-
       const newPerms: Array<any> = response.flatMap((x: any) => x.permissions);
-
-      // patch objectPermissions state with latest perms from COMS
+      // patch objectIdpPermissions state with latest perms from COMS
       const matches = (x: any) =>
-        (!params.objectId || x.objectId === params.objectId) &&
+        (!params.objectId || x.objectId === params.objectId || params.objectId.includes(x.objectId)) &&
         (!params.idp || x.idp === params.idp) &&
         (!params.permCode || x.permCode === params.permCode);
       const [, difference] = partition(state.objectIdpPermissions.value, matches);
       state.objectIdpPermissions.value = difference.concat(newPerms);
-
       // Pass response back so objectStore can handle bucketPerms=true correctly
       return response;
     } catch (error: any) {
       toast.error('Fetching object permissions', error.response?.data.detail ?? error, { life: 0 });
-    } finally {
-      appStore.endIndeterminateLoading();
-    }
-  }
-
-  async function mapBucketToIdpPermissions(bucketId: string): Promise<void> {
-    try {
-      appStore.beginIndeterminateLoading();
-      const bucketPerms = state.bucketIdpPermissions.value.filter((x: any) => x.bucketId === bucketId);
-      const uniqueIdpNames = [...new Set(bucketPerms.map((x: any) => x.idp))];
-
-      const hasPermission = (idp: string, permission: string) => {
-        return bucketPerms.some((perm: any) => perm.idp === idp && perm.permCode === permission);
-      };
-
-      const IdpPermissions: IdpPermissions[] = [];
-      uniqueIdpNames.forEach((idp: any) => {
-        IdpPermissions.push({
-          idp: idp,
-          create: hasPermission(idp, Permissions.CREATE),
-          read: hasPermission(idp, Permissions.READ),
-          update: hasPermission(idp, Permissions.UPDATE),
-          delete: hasPermission(idp, Permissions.DELETE),
-          manage: hasPermission(idp, Permissions.MANAGE)
-        });
-      });
-
-      state.mappedBucketToIdpPermissions.value = IdpPermissions;
-    } catch (error: any) {
-      toast.error('Mapping bucket permissions to IDP permissions', error.response?.data.detail ?? error, { life: 0 });
-    } finally {
-      appStore.endIndeterminateLoading();
-    }
-  }
-
-  async function mapObjectToIdpPermissions(objectId: string): Promise<void> {
-    try {
-      appStore.beginIndeterminateLoading();
-      const objectPerms = state.objectIdpPermissions.value.filter((x: any) => x.objectId === objectId);
-      const uniqueIdpNames = [...new Set(objectPerms.map((x: any) => x.idp))];
-
-      const hasPermission = (idp: string, permission: string) => {
-        return objectPerms.some((perm: any) => perm.idp === idp && perm.permCode === permission);
-      };
-
-      const idpPermissions: IdpPermissions[] = [];
-      uniqueIdpNames.forEach((idp: any) => {
-        idpPermissions.push({
-          idp: idp,
-          create: hasPermission(idp, Permissions.CREATE),
-          read: hasPermission(idp, Permissions.READ),
-          update: hasPermission(idp, Permissions.UPDATE),
-          delete: hasPermission(idp, Permissions.DELETE),
-          manage: hasPermission(idp, Permissions.MANAGE)
-        });
-      });
-
-      state.mappedObjectToIdpPermissions.value = idpPermissions;
-    } catch (error: any) {
-      toast.error('Mapping object permissions to IDP permissions', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
     }
@@ -576,9 +521,7 @@ export const usePermissionStore = defineStore('permission', () => {
     fetchObjectIdpPermissions,
     fetchBucketIdpPermissions,
     deleteBucketIdpPermission,
-    deleteObjectIdpPermission,
-    mapBucketToIdpPermissions,
-    mapObjectToIdpPermissions
+    deleteObjectIdpPermission
   };
 });
 

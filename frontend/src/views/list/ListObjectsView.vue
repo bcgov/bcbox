@@ -48,6 +48,16 @@ const isBucketPublic = computed(() => {
 watch(isBucketPublic, () => remountComponent());
 const componentKey = ref(0);
 const remountComponent = () => (componentKey.value += 1);
+// make internal only flag reactive
+const isInternal = computed(() => {
+  const perms = (permissionStore.getBucketIdpPermissions ?? []).filter(
+    (p: any) => p.bucketId === props.bucketId && p.idp === 'idir' && p.permCode === 'READ'
+  );
+  return perms.length > 0;
+});
+// on isInternal change, re-mount ObjectList
+watch(isInternal, () => remountComponent());
+
 // show permissions modal
 const showPermissions = async (bucketId: string, bucketName: string) => {
   permissionsVisible.value = true;
@@ -144,6 +154,17 @@ onBeforeMount(async () => {
             rounded
             icon="pi pi-info-circle"
           />
+          <Tag
+            v-else-if="isInternal"
+            v-tooltip="
+              'This folder and its contents can be read by anyone internal to government. ' +
+              'Change the settings in &quot;Folder permissions.&quot;'
+            "
+            value="Internal"
+            severity="info"
+            rounded
+            icon="pi pi-info-circle"
+          />
         </span>
       </span>
 
@@ -188,6 +209,7 @@ onBeforeMount(async () => {
       :key="componentKey"
       :bucket-id="props.bucketId"
       :is-bucket-public="isBucketPublic"
+      :is-bucket-internal-only="isInternal"
     />
   </div>
 

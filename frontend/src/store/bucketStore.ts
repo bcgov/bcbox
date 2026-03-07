@@ -108,7 +108,7 @@ export const useBucketStore = defineStore('bucket', () => {
       // Get a unique list of bucket IDs the user has access to
       // based on user permissions..
       const permResponse = await permissionStore.fetchBucketPermissions({ ...params, idp: undefined });
-      //  and IDP permissions (if current user's idp is provided in params)
+      //  and check IDP permissions (if current user's idp is provided in params)
       const IdpPermResponse = params?.idp
         ? await permissionStore.fetchBucketIdpPermissions({ ...params, userId: undefined })
         : undefined;
