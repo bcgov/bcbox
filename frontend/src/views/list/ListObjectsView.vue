@@ -146,24 +146,15 @@ onBeforeMount(async () => {
         <span class="ml-3 flex align-items-center">
           <Tag
             v-if="isBucketPublic"
-            v-tooltip="
-              'This folder and its contents are set to public. Change the settings in &quot;Folder permissions.&quot;'
-            "
             value="Public"
             severity="danger"
             rounded
-            icon="pi pi-info-circle"
           />
           <Tag
             v-else-if="isInternal"
-            v-tooltip="
-              'This folder and its contents can be read by anyone internal to government. ' +
-              'Change the settings in &quot;Folder permissions.&quot;'
-            "
-            value="Internal"
+            value="Internal (IDIR)"
             severity="info"
             rounded
-            icon="pi pi-info-circle"
           />
         </span>
       </span>

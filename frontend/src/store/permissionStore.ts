@@ -114,7 +114,7 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Adding bucket permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
-      await fetchBucketPermissions({ bucketId: bucketId });
+      await fetchBucketPermissions();
       await mapBucketToUserPermissions(bucketId);
       appStore.endIndeterminateLoading();
     }
@@ -149,7 +149,7 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Adding bucket IDP permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
-      await fetchBucketIdpPermissions({ bucketId: bucketId });
+      await fetchBucketIdpPermissions();
       // await mapBucketToIdpPermissions(bucketId);
       appStore.endIndeterminateLoading();
     }
@@ -184,7 +184,7 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Deleting bucket permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
-      await fetchBucketPermissions({ bucketId: bucketId });
+      await fetchBucketPermissions();
       await mapBucketToUserPermissions(bucketId);
       appStore.endIndeterminateLoading();
     }
@@ -211,7 +211,7 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Deleting bucket IDP permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
-      await fetchBucketIdpPermissions({ bucketId: bucketId });
+      await fetchBucketIdpPermissions();
       // await mapBucketToIdpPermissions(bucketId);
       appStore.endIndeterminateLoading();
     }

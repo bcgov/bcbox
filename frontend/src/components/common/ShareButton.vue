@@ -98,14 +98,9 @@ const showDialog = (x: boolean) => {
       <span class="ml-3 text-sm flex-grow-1">
         <Tag
           v-if="resource?.public"
-          v-tooltip="
-            `This ${resourceType === 'object' ? 'file is' : 'folder and its contents are'} set to public. 
-              Change the settings in &quot;${resourceType === 'object' ? 'File' : 'Folder'} Permissions.&quot;`
-          "
           value="Public"
           severity="danger"
           rounded
-          icon="pi pi-info-circle"
         />
       </span>
     </template>

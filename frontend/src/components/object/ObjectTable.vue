@@ -3,16 +3,10 @@ import { storeToRefs } from 'pinia';
 import { computed, onUnmounted, onMounted, ref } from 'vue';
 
 import { Spinner } from '@/components/layout';
-import {
-  DeleteObjectButton,
-  DownloadObjectButton,
-  ObjectFilters,
-  ObjectPermission,
-  ObjectPublicToggle
-} from '@/components/object';
+import { DeleteObjectButton, DownloadObjectButton, ObjectFilters, ObjectPermission } from '@/components/object';
 import { ShareButton } from '@/components/common';
 import { Button, Column, DataTable, Dialog, InputText, Tag } from '@/lib/primevue';
-import { useAuthStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
+import { useAuthStore, useBucketStore, useObjectStore, useNavStore, usePermissionStore } from '@/store';
 import { Permissions, RouteNames } from '@/utils/constants';
 import { onDialogHide } from '@/utils/utils';
 import { ButtonMode } from '@/utils/enums';
@@ -35,16 +29,13 @@ type DataTableFilter = {
 };
 // Props
 type Props = {
-  bucketId?: string;
+  bucketId: string;
   isBucketPublic?: boolean;
-  isBucketInternal?: boolean;
   objectInfoId?: string;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-  bucketId: undefined,
   isBucketPublic: undefined,
-  isBucketInternal: undefined,
   objectInfoId: undefined
 });
 
@@ -52,6 +43,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['show-object-info']);
 
 // Store
+const bucketStore = useBucketStore();
 const objectStore = useObjectStore();
 const permissionStore = usePermissionStore();
 const { getUserId, getIsAuthenticated } = storeToRefs(useAuthStore());
@@ -79,6 +71,8 @@ const isObjectInternal = computed(() => {
     return permissionStore.getObjectInternal(objId);
   };
 });
+const bucket = bucketStore.getBucket(props.bucketId);
+const isBucketInternal = permissionStore.getBucketInternal(props.bucketId);
 
 // Actions
 const formatShortUuid = (uuid: string) => uuid?.slice(0, 8) ?? uuid;
@@ -290,7 +284,6 @@ async function downloadPublicObject(objectId: string) {
         field="name"
         sortable
         header="Name"
-        header-style="min-width: 25%"
         body-class="truncate"
       >
         <template #body="{ data }">
@@ -323,7 +316,7 @@ async function downloadPublicObject(objectId: string) {
         field="id"
         sortable
         header="Object ID"
-        style="width: 150px"
+        style="display: none"
       >
         <template #body="{ data }">
           <div
@@ -347,39 +340,34 @@ async function downloadPublicObject(objectId: string) {
       <Column
         v-if="getIsAuthenticated"
         field="publicSharing"
-        header="Public"
-        class=""
-        style="width: 300px"
+        header="Sharing"
+        style="width: 120px"
       >
         <template #body="{ data }">
-          <div class="flex align-items-center">
-            <ObjectPublicToggle
-              v-if="props.bucketId && getUserId"
-              :bucket-id="props.bucketId"
-              :bucket-public="props.isBucketPublic"
-              :object-id="data.id"
-              :object-name="data.name"
-              :object-public="data.public"
-              :user-id="getUserId"
+          <div class="">
+            <Tag
+              v-if="data.public || bucket?.public"
+              value="Public"
+              severity="danger"
+              rounded
+              class="mb-1 min-w-100"
             />
 
             <Tag
-              v-if="!props.isBucketPublic && !data.public && !props.isBucketInternal && isObjectInternal(data.id)"
-              v-tooltip="'This file can be read by anyone internal to government.'"
-              value="Internal"
+              v-if="!props.isBucketPublic && !data.public && (isBucketInternal || isObjectInternal(data.id))"
+              value="Internal (IDIR)"
               severity="info"
               rounded
-              icon="pi pi-info-circle"
-              class="ml-2 mb-1 min-w-100"
+              class="mb-1 min-w-100"
             />
           </div>
         </template>
       </Column>
       <Column
         header="Actions"
-        :header-style="getIsAuthenticated ? 'min-width: 240px' : 'width: 40px'"
         header-class="header-right"
         body-class="action-buttons"
+        style="width: 200px"
       >
         <template #body="{ data }">
           <DownloadObjectButton

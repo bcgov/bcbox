@@ -166,22 +166,15 @@ onMounted(async () => {
           <span class="ml-3 text-sm flex-grow-1">
             <Tag
               v-if="object?.public"
-              v-tooltip="`This file is set as public`"
               value="Public"
               severity="danger"
               rounded
-              icon="pi pi-info-circle"
             />
             <Tag
               v-else-if="isInternal"
-              v-tooltip="
-                'This folder and its contents can be read by anyone internal to government. ' +
-                'Change the settings in &quot;Folder permissions.&quot;'
-              "
-              value="Internal"
+              value="Internal (IDIR)"
               severity="info"
               rounded
-              icon="pi pi-info-circle"
             />
           </span>
         </div>

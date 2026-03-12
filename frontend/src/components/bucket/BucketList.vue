@@ -43,11 +43,19 @@ const closeBucketConfig = () => {
 };
 
 onMounted(async () => {
-  await bucketStore.fetchBuckets({
+  const buckets = await bucketStore.fetchBuckets({
     userId: getUserId.value,
-    idp: 'idir',
     objectPerms: true
   });
+  // get IDP permissions for labelling in table
+  if (buckets && buckets.length > 0 && usePermissionStore().isUserElevatedRights()) {
+    await usePermissionStore().fetchBucketIdpPermissions({
+      // limit to 1000 folders
+      bucketId: buckets.slice(0, 1000).map((b) => b.bucketId),
+      idp: 'idir',
+      objectPerms: true
+    });
+  }
 });
 </script>
 
