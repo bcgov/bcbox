@@ -121,7 +121,7 @@ onBeforeMount(() => {
 
       <div class="flex flex-row pb-3">
         <div class="flex-grow-1">
-          <h4 class="pb-1">Internl only</h4>
+          <h4 class="pb-1">Internal only</h4>
           <p>
             Give access to
             <strong>all IDIR users</strong>

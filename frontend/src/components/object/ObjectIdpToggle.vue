@@ -117,7 +117,7 @@ onMounted(async () => {
   >
     <InputSwitch
       :model-value="switchVal"
-      aria-label="Toggle to make file Internl only"
+      aria-label="Toggle to make file Internal only"
       :disabled="!isToggleEnabled"
       @update:model-value="toggleIdp($event)"
     />

@@ -325,7 +325,7 @@ watch([getBuckets, permissionStore.getBucketIdpPermissions], ([]) => {
     <Column
       field="publicSharing"
       header="Sharing"
-      style="width: 120px"
+      style="width: 150px"
     >
       >
       <template #body="{ node }">

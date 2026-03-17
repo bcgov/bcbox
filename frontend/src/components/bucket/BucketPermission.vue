@@ -106,7 +106,7 @@ onBeforeMount(async () => {
 
       <div class="flex flex-row pb-3">
         <div class="flex-grow-1">
-          <h4 class="pb-1">Internl only</h4>
+          <h4 class="pb-1">Internal only</h4>
           <p>Allow all IDIR users to view this folder and its content</p>
         </div>
         <BucketIdpToggle

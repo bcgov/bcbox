@@ -31,6 +31,8 @@ export default {
       if (params.active !== undefined) urlLimit -= '&active=false'.length;
       if (params.key) urlLimit -= `&key=${encodeURIComponent(params.key)}`.length;
       if (params.bucketName) urlLimit -= `&bucketName=${encodeURIComponent(params.bucketName)}`.length;
+      if (params.bucket) urlLimit -= `&bucket=${encodeURIComponent(params.bucket)}`.length;
+      if (params.endpoint) urlLimit -= `&endpoint=${encodeURIComponent(params.endpoint)}`.length;
 
       // account for bucketId param
       const BUCKET_ID_PARAM_LENGTH = '&bucketId[]='.length + 36; // uuidv4's have 36 chars, including dashes

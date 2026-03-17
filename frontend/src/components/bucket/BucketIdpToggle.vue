@@ -2,9 +2,11 @@
 import { computed, onMounted, ref, watch } from 'vue';
 
 import { InputSwitch, useConfirm, useToast } from '@/lib/primevue';
-import { usePermissionStore } from '@/store';
+import { useBucketStore, usePermissionStore } from '@/store';
+import { bucketService } from '@/services';
 import { Permissions } from '@/utils/constants';
 
+import { getParentKey } from '@/utils/utils';
 import type { Ref } from 'vue';
 
 // Props
@@ -14,40 +16,23 @@ type Props = {
   bucketPublic: boolean;
   userId: string;
 };
-
 const props = withDefaults(defineProps<Props>(), {});
 
 // Store
+const bucketStore = useBucketStore();
 const permissionStore = usePermissionStore();
 
 // State
 const isInternal: Ref<boolean> = ref(false);
-const fetchBucketInternal = async (): Promise<boolean> => {
-  const bucketIdpPermissions = await permissionStore.fetchBucketIdpPermissions({
-    bucketId: props.bucketId,
-    permCode: 'READ',
-    idp: 'idir'
-  });
-  const hasPerms = (bucketIdpPermissions?.length ?? 0) > 0;
+const isParentBucketInternal = ref(false);
 
-  return hasPerms || props.bucketPublic;
-};
-
-// check bucket for the IDP permission
-const isBucketInternal: Ref<boolean> = ref(false);
-const isParentBucketInternal: Ref<boolean> = ref(false);
-const fetchParentBucketInternal = async (): Promise<boolean> => {
-  const bucketIdpPermissions = await permissionStore.fetchBucketIdpPermissions({
-    bucketId: props.bucketId,
-    permCode: 'READ',
-    idp: 'idir'
-  });
-  return (bucketIdpPermissions?.length ?? 0) > 0;
-};
+const isInternalState = computed(() => {
+  return permissionStore.getBucketInternal(props.bucketId) || props.bucketPublic || isParentBucketInternal.value;
+});
 
 const isToggleEnabled = computed(() => {
   return (
-    !isBucketInternal.value &&
+    !isParentBucketInternal.value &&
     !props.bucketPublic &&
     usePermissionStore().isUserElevatedRights() &&
     permissionStore.isBucketActionAllowed(props.bucketId, props.userId, Permissions.MANAGE)
@@ -100,8 +85,39 @@ const toggleIdp = async (value: boolean) => {
 };
 
 onMounted(async () => {
-  isInternal.value = await fetchBucketInternal();
-  isParentBucketInternal.value = await fetchParentBucketInternal();
+  // refresh current bucket IDP permissions
+  await permissionStore.fetchBucketIdpPermissions({
+    bucketId: props.bucketId,
+    permCode: 'READ',
+    idp: 'idir'
+  });
+
+  // get immediate parent bucket IDP permissions
+  // TODO: get perms for every parent in path (eg: x/y/z/currentBucket)
+  // let isParentBucketInternal = false;
+  const bucket = bucketStore.getBucket(props.bucketId);
+  if (bucket) {
+    // if current bucket is not at root
+    if (bucket.key !== '/') {
+      // search for parent bucket by endpoint and bucket and segment of key
+      const responseArray = (
+        await bucketService.searchBuckets({
+          key: getParentKey(bucket.key),
+          endpoint: bucket.endpoint,
+          bucket: bucket.bucket
+        })
+      ).data;
+      const parent = responseArray.reduce((a: any, b: any) => (a.key.length <= b.key.length ? a : b));
+      // fetch bucketIdpPermissions for parent
+      await permissionStore.fetchBucketIdpPermissions({
+        bucketId: parent.bucketId,
+        permCode: 'READ',
+        idp: 'idir'
+      });
+      isParentBucketInternal.value = permissionStore.getBucketInternal(parent.bucketId);
+    }
+  }
+  isInternal.value = isInternalState.value;
 });
 
 watch(props, () => {
@@ -130,7 +146,7 @@ watch(props, () => {
   >
     <InputSwitch
       :model-value="isInternal"
-      aria-label="Toggle to make file Internl only"
+      aria-label="Toggle to make file Internal only"
       :disabled="!isToggleEnabled"
       @update:model-value="toggleIdp($event)"
     />

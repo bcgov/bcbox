@@ -341,7 +341,7 @@ async function downloadPublicObject(objectId: string) {
         v-if="getIsAuthenticated"
         field="publicSharing"
         header="Sharing"
-        style="width: 120px"
+        style="width: 150px"
       >
         <template #body="{ data }">
           <div class="">

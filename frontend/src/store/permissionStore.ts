@@ -114,7 +114,7 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Adding bucket permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
-      await fetchBucketPermissions();
+      await fetchBucketPermissions({ userId: userId });
       await mapBucketToUserPermissions(bucketId);
       appStore.endIndeterminateLoading();
     }
@@ -184,7 +184,7 @@ export const usePermissionStore = defineStore('permission', () => {
     } catch (error: any) {
       toast.error('Deleting bucket permission', error.response?.data.detail ?? error, { life: 0 });
     } finally {
-      await fetchBucketPermissions();
+      await fetchBucketPermissions({ userId: userId });
       await mapBucketToUserPermissions(bucketId);
       appStore.endIndeterminateLoading();
     }
