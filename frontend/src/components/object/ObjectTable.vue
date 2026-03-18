@@ -355,7 +355,7 @@ async function downloadPublicObject(objectId: string) {
 
             <Tag
               v-if="!props.isBucketPublic && !data.public && (isBucketInternal || isObjectInternal(data.id))"
-              value="Internal (IDIR)"
+              value="IDIR"
               severity="info"
               rounded
               class="mb-1 min-w-100"

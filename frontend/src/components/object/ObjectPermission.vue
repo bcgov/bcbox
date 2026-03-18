@@ -101,12 +101,8 @@ onBeforeMount(() => {
       <h3 class="mb-2">Sharing Access</h3>
       <div class="flex flex-row pb-3">
         <div class="flex-grow-1">
-          <h4 class="pb-1">Set to public</h4>
-          <p>
-            Setting a file to
-            <strong>public</strong>
-            allows anyone to access it without needing to authenticate.
-          </p>
+          <h4>Public</h4>
+          <p>Anyone with the public download link can download and read this file without signing in.</p>
         </div>
         <ObjectPublicToggle
           v-if="object && getUserId"
@@ -121,11 +117,8 @@ onBeforeMount(() => {
 
       <div class="flex flex-row pb-3">
         <div class="flex-grow-1">
-          <h4 class="pb-1">Internal only</h4>
-          <p>
-            Give access to
-            <strong>all IDIR users</strong>
-          </p>
+          <h4>IDIR Users</h4>
+          <p>All IDIR users with the share link can view all details of this file in BCBox.</p>
         </div>
         <ObjectIdpToggle
           v-if="object && getUserId"

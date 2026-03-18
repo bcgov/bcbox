@@ -82,17 +82,12 @@ onBeforeMount(async () => {
 <template>
   <TabView>
     <TabPanel header="Manage permissions">
-      <h3>Sharing Access</h3>
+      <h3 class="pb-2">Sharing Access</h3>
       <!-- public toggle -->
       <div class="flex pb-3">
         <div class="flex-grow-1">
-          <div class="pb-1">
-            <h4>Set to public</h4>
-            <p>
-              Enabling this shares all files and subfolders. Anyone with the link can view the content without signing
-              in.
-            </p>
-          </div>
+          <h4>Public</h4>
+          <p>Anyone with the share link can view this folder and its contents without signing in.</p>
         </div>
         <BucketPublicToggle
           v-if="bucket && getUserId"
@@ -106,8 +101,8 @@ onBeforeMount(async () => {
 
       <div class="flex flex-row pb-3">
         <div class="flex-grow-1">
-          <h4 class="pb-1">Internal only</h4>
-          <p>Allow all IDIR users to view this folder and its content</p>
+          <h4>IDIR Users</h4>
+          <p>All IDIR users with the share link can view this folder and its contents.</p>
         </div>
         <BucketIdpToggle
           v-if="bucket && getUserId"
@@ -118,7 +113,7 @@ onBeforeMount(async () => {
         />
       </div>
 
-      <h3>User Permissions</h3>
+      <h3 class="my-2">User Permissions</h3>
       <!-- user search -->
       <div v-if="!showSearchUsers">
         <Button

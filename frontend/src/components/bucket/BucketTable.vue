@@ -340,7 +340,7 @@ watch([getBuckets, permissionStore.getBucketIdpPermissions], ([]) => {
             v-else-if="
               permissionStore.getBucketInternal(node.data.bucketId) && usePermissionStore().isUserElevatedRights()
             "
-            value="Internal (IDIR)"
+            value="IDIR"
             severity="info"
             rounded
             class="mb-1 min-w-100"

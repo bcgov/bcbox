@@ -53,18 +53,21 @@ const confirm = useConfirm();
 const toggleIdp = async (value: boolean) => {
   if (value) {
     confirm.require({
-      message: "Setting this file to 'Internal only' will allow all IDIR users " + 'to view and download it.',
-      header: 'Set file to Internal only?',
-      acceptLabel: 'Set to Internal only',
+      message: 'This setting will allow all IDIR users to view and download this file.',
+      header: 'Give access to all IDIR users?',
+      acceptLabel: 'Confirm',
       rejectLabel: 'Cancel',
       accept: () => {
         permissionStore
           .addObjectIdpPermission(props.objectId, 'idir', 'READ')
           .then(() => {
             switchVal.value = true;
-            toast.success('File set to Internal only', `"${props.objectName}" is now Internal only`);
+            toast.success(
+              'IDIR permission applied',
+              `"${props.objectName}" can now be viewed by all IDIR users with the share link`
+            );
           })
-          .catch((e) => toast.error('Setting file to Internal only failed', e.response?.data.detail, { life: 0 }));
+          .catch((e) => toast.error("Setting file to 'All IDIR' failed", e.response?.data.detail, { life: 0 }));
       },
       reject: () => (switchVal.value = false),
       onHide: () => (switchVal.value = false)
@@ -72,8 +75,8 @@ const toggleIdp = async (value: boolean) => {
   } else
     confirm.require({
       message:
-        "Setting this file to private will remove 'Internal only' access. " +
-        'Only users with permissions will be able to view or download the file.',
+        "You are removing the 'IDIR Users' sharing access. " +
+        'Only users with permissions will be able to view or download the file in BCBox.',
       header: 'Set file to private?',
       acceptLabel: 'Set to private',
       rejectLabel: 'Cancel',
@@ -82,7 +85,7 @@ const toggleIdp = async (value: boolean) => {
           .deleteObjectIdpPermission(props.objectId, 'idir', 'READ')
           .then(() => {
             switchVal.value = false;
-            toast.success('File set to private', `"${props.objectName}" is no longer 'Internal only'`);
+            toast.success('File set to private', `"${props.objectName}" is no longer available to all IDIR users'`);
           })
           .catch((e) => toast.error('Setting file to private failed', e.response?.data.detail, { life: 0 }));
       },
@@ -112,12 +115,12 @@ onMounted(async () => {
         ? ''
         : isPublic
           ? 'Enabled by Public Sharing'
-          : 'Change the folder\'s \'Internal only\' setting to update this file'
+          : 'To change this, update the parent folder\'s settings'
     "
   >
     <InputSwitch
       :model-value="switchVal"
-      aria-label="Toggle to make file Internal only"
+      aria-label="Toggle to make file available to all IDIR users"
       :disabled="!isToggleEnabled"
       @update:model-value="toggleIdp($event)"
     />

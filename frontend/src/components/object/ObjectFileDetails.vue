@@ -172,7 +172,7 @@ onMounted(async () => {
             />
             <Tag
               v-else-if="isInternal"
-              value="Internal (IDIR)"
+              value="IDIR"
               severity="info"
               rounded
             />

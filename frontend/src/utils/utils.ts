@@ -144,19 +144,6 @@ export function getLastSegment(path: string) {
 }
 
 /**
- * @function getPenultimateSegment
- * Returns the second last segment of a path, ignoring trailing slashes
- * @param {string} path full path (eg: http://abc.com/bucket/test)
- * @returns {string | undefined} last segment of a path (eg: bucket)
- */
-export function getParentKey(path: string) {
-  if (path === '/') return undefined;
-  const segments = path.split('/');
-  const filteredSegments = segments.filter((segment) => segment.length > 0);
-  return filteredSegments.length > 1 ? filteredSegments.slice(0, -1).join('/') : '/';
-}
-
-/**
  * @function onDialogHide
  * Return focus to the button which trigger model visibility
  * @type {focusedElement} stores dom element which needs to be focused
