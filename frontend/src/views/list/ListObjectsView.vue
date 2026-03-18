@@ -111,12 +111,18 @@ onBeforeMount(async () => {
   if (props?.bucketId) {
     // if logged in, fetch bucket; populate bucket and permissions in store
     if (getIsAuthenticated.value) {
-      bucketResponse = await bucketStore.fetchBuckets({
-        bucketId: props.bucketId,
-        userId: getUserId.value,
-        idp: (getProfile.value as any)?.identity_provider,
-        objectPerms: true
-      });
+      const bucket = await bucketStore.fetchBucket(props.bucketId);
+      if (bucket.public) {
+        bucketResponse = [bucket];
+      } else {
+        // get bucket permitted through User perms
+        bucketResponse = await bucketStore.fetchBuckets({
+          bucketId: props.bucketId,
+          userId: getUserId.value,
+          idp: (getProfile.value as any)?.identity_provider,
+          objectPerms: true
+        });
+      }
     } else {
       bucketResponse = [await bucketStore.fetchBucket(props.bucketId)];
     }

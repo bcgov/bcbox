@@ -120,7 +120,7 @@ const loadLazyData = (event?: any) => {
         limit: lazyParams.value.rows,
         sort: lazyParams.value.sortField,
         order: lazyParams.value.sortOrder === 1 ? 'asc' : 'desc',
-        public: !getIsAuthenticated.value ? true : undefined,
+        public: !getIsAuthenticated.value || bucket?.public ? true : undefined,
         tagset: getIsAuthenticated.value ? lazyParams.value?.filters?.tags.value : undefined
       },
       lazyParams.value?.filters?.meta.value //Header
