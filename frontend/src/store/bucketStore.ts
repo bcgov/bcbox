@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { useToast } from '@/lib/primevue';
 import { bucketService } from '@/services';
 import { useAppStore, useAuthStore, usePermissionStore } from '@/store';
-import { getBucketPath, partition } from '@/utils/utils';
+import { getBucketPath } from '@/utils/utils';
 
 import type { Ref } from 'vue';
 import type { Bucket, BucketSearchPermissionsOptions } from '@/types';
@@ -78,12 +78,9 @@ export const useBucketStore = defineStore('bucket', () => {
     try {
       appStore.beginIndeterminateLoading();
       const response = (await bucketService.fetchBucket(bucketId)).data;
-
-      // add bucket to state, replacing any existing value matching bucketId
-      const matches = (x: Bucket) => x.bucketId === bucketId;
-      const [, difference] = partition(state.buckets.value, matches);
-      state.buckets.value = difference.concat(response);
-
+      const matches = (x: Bucket) => x.bucketId === response.bucketId;
+      const remainingBuckets = state.buckets.value.filter((x) => !matches(x));
+      state.buckets.value = remainingBuckets.concat([response]);
       return response;
     } catch (error: any) {
       toast.error('Getting bucket', error);
@@ -126,15 +123,13 @@ export const useBucketStore = defineStore('bucket', () => {
         let response = Array<Bucket>();
         if (uniqueIds.length) {
           response = (await bucketService.searchBuckets({ bucketId: uniqueIds })).data;
+
+          // merge new buckets into state, skipping any existing matches based on bucketId
+          const matches = (x: Bucket) => !params?.bucketId || params.bucketId.includes(x.bucketId);
+          const remaining = state.buckets.value.filter((x) => !matches(x));
+
+          state.buckets.value = remaining.concat(response);
         }
-
-        // Remove old values matching search parameters
-        const matches = (x: Bucket) => !params?.bucketId || x.bucketId === params.bucketId;
-
-        const [, difference] = partition(state.buckets.value, matches);
-
-        // Merge and assign
-        state.buckets.value = difference.concat(response);
         return response;
       } else return [];
     } catch (error: any) {

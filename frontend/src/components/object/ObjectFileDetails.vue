@@ -131,7 +131,7 @@ onMounted(async () => {
   bucketId.value = object.value ? object.value.bucketId : '';
   // fetch bucket and bucket permissions
   await bucketStore.fetchBuckets({
-    bucketId: bucketId.value,
+    bucketId: [bucketId.value],
     userId: getUserId.value,
     idp: (getProfile.value as any)?.identity_provider,
     objectPerms: true
@@ -146,7 +146,7 @@ onMounted(async () => {
     router.replace({ name: RouteNames.FORBIDDEN });
   }
   // fetch data for child components
-  await Promise.all([bucketStore.fetchBuckets({ bucketId: bucketId.value }), fetchFileDetails(props.objectId)]);
+  await Promise.all([bucketStore.fetchBuckets({ bucketId: [bucketId.value] }), fetchFileDetails(props.objectId)]);
   // request object sync
   await objectStore
     .syncObject(props.objectId)

@@ -371,6 +371,7 @@ watch([getBuckets, permissionStore.getBucketIdpPermissions], ([]) => {
           <span class="material-icons-outlined">supervisor_account</span>
         </Button>
         <ShareButton
+          v-if="!node.data.dummy"
           :bucket-id="node.data.bucketId"
           label-text="Folder"
         />

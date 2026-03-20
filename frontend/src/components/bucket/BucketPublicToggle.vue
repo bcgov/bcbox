@@ -90,7 +90,7 @@ const isToggleEnabled = computed(() => {
   return (
     !isParentPublic.value &&
     usePermissionStore().isUserElevatedRights() &&
-    permissionStore.isObjectActionAllowed(props.bucketId, props.userId, Permissions.MANAGE, props.bucketId as string)
+    permissionStore.isBucketActionAllowed(props.bucketId, props.userId, Permissions.MANAGE)
   );
 });
 

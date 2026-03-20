@@ -107,33 +107,32 @@ onErrorCaptured((e: Error) => {
 onBeforeMount(async () => {
   const router = useRouter();
 
-  let bucketResponse: any = [];
   if (props?.bucketId) {
-    // if logged in, fetch bucket; populate bucket and permissions in store
-    if (getIsAuthenticated.value) {
-      const bucket = await bucketStore.fetchBucket(props.bucketId);
-      if (bucket.public) {
-        bucketResponse = [bucket];
-      } else {
-        // get bucket permitted through User perms
-        bucketResponse = await bucketStore.fetchBuckets({
-          bucketId: props.bucketId,
-          userId: getUserId.value,
-          idp: (getProfile.value as any)?.identity_provider,
-          objectPerms: true
-        });
-      }
-    } else {
-      bucketResponse = [await bucketStore.fetchBucket(props.bucketId)];
+    let hasAccess = false;
+    // check if bucket is public
+    const fetchedBucket = await bucketStore.fetchBucket(props.bucketId);
+    if (isBucketPublic.value) {
+      bucket.value = fetchedBucket;
+      hasAccess = true;
     }
-  }
-
-  if (bucketResponse?.length) {
-    bucket.value = bucketResponse[0];
-
-    ready.value = true;
-  } else {
-    router.replace({ name: RouteNames.FORBIDDEN });
+    // if authenticated, check if user has access to the bucket
+    if (getIsAuthenticated.value) {
+      const fetchedBuckets = await bucketStore.fetchBuckets({
+        bucketId: [props.bucketId],
+        userId: getUserId.value,
+        idp: (getProfile.value as any)?.identity_provider,
+        objectPerms: true
+      });
+      if (fetchedBuckets?.length) {
+        hasAccess = true;
+        bucket.value = fetchedBuckets[0];
+      }
+    }
+    if (hasAccess) {
+      ready.value = true;
+    } else {
+      router.replace({ name: RouteNames.FORBIDDEN });
+    }
   }
 });
 </script>
