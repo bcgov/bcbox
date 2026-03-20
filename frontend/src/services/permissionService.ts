@@ -1,4 +1,5 @@
 import { comsAxios } from './interceptors';
+import ConfigService from './configService';
 
 import type {
   BucketAddPermissionsOptions,
@@ -50,8 +51,62 @@ export default {
    * @param {BucketSearchPermissionsOptions} params Optional object containing the data to filter against
    * @returns {Promise} An axios response
    */
-  bucketSearchPermissions(params?: BucketSearchPermissionsOptions) {
-    return comsAxios().get(`${PATH}/${BUCKET}`, { params: params });
+  async bucketSearchPermissions(params: BucketSearchPermissionsOptions) {
+    // Normalize bucketId to an array if it's a string
+    if (params.bucketId && typeof params.bucketId === 'string') params.bucketId = [params.bucketId];
+    if (params.bucketId && params.bucketId[0] === undefined) delete params.bucketId;
+
+    // if searching with more than one bucketId, but only one userId
+    if (
+      params.bucketId &&
+      params.bucketId.length > 1 &&
+      (Array.isArray(params.userId) ? params.userId.length === 1 : true)
+    ) {
+      /**
+       * split calls to COMS if query params (eg bucketId's)
+       * will cause url length to excede 2000 characters
+       * see: https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
+       */
+      let urlLimit = 2000;
+
+      const baseUrl = new URL(`${new ConfigService().getConfig().coms.apiPath}${PATH}/${BUCKET}`).toString();
+      urlLimit -= baseUrl.length;
+
+      // account for string or boolean query params
+      if (params.userId) urlLimit -= '&userId[]='.length + 36;
+      if (params.permCode) urlLimit -= 80;
+      if (params.objectPerms) urlLimit -= '&objectPerms=false'.length;
+
+      // account for bucketId param
+      const BUCKET_ID_PARAM_LENGTH = '&bucketId[]='.length + 36; // uuidv4's have 36 chars, including dashes
+      const groupSize = Math.floor(urlLimit / BUCKET_ID_PARAM_LENGTH);
+
+      // loop through each group and push COMS result to `groups` array
+      const iterations = Math.ceil(params.bucketId.length / groupSize);
+      const groups = [];
+
+      // loop through each group and push COMS result to `groups` array
+      for (let i = 0; i < iterations; i++) {
+        const bucketIds = params.bucketId.slice(i * groupSize, i * groupSize + groupSize);
+        groups.push(
+          // if server load becomes an issue, change these parallel calls to sequential ones
+          comsAxios().get(`${PATH}/${BUCKET}`, {
+            params: {
+              ...params,
+              bucketId: bucketIds
+            }
+          })
+        );
+      }
+      const responses = await Promise.all(groups);
+      return {
+        data: responses.flatMap((r) => r.data)
+      };
+    }
+    // else just call COMS once
+    else {
+      return comsAxios().get(`${PATH}/${BUCKET}`, { params });
+    }
   },
 
   /**
@@ -140,11 +195,64 @@ export default {
   /**
    * @function bucketSearchIdpPermissions
    * Returns a list of buckets and their IDP permissions
-   * @param {BucketSearchPermissionsOptions} params Optional object containing the data to filter against
+   * @param {BucketSearchPermissionsOptions} params Optional object containing the data to filter agai
    * @returns {Promise} An axios response
    */
-  bucketSearchIdpPermissions(params?: any) {
-    return comsAxios().get(`${PATH}/${IDP}/${BUCKET}`, { params: params });
+  async bucketSearchIdpPermissions(params?: any) {
+    // Normalize bucketId to an array if it's a string
+    if (params.bucketId && typeof params.bucketId === 'string') params.bucketId = [params.bucketId];
+    // if searching with more than one bucketId, but only one idp
+    if (
+      params.bucketId &&
+      params.bucketId.length > 1 &&
+      (Array.isArray(params.idp) ? params.idp.length === 1 : true) &&
+      1 > 2
+    ) {
+      /**
+       * split calls to COMS if query params (eg bucketId's)
+       * will cause url length to excede 2000 characters
+       * see: https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
+       */
+      let urlLimit = 2000;
+
+      const baseUrl = new URL(`${new ConfigService().getConfig().coms.apiPath}${PATH}/${IDP}/${BUCKET}`).toString();
+      urlLimit -= baseUrl.length;
+
+      // account for string or boolean query params
+      if (params.idp) urlLimit -= '&idp[]='.length + 255; // max idp length
+      if (params.permCode !== undefined) urlLimit -= 80;
+      if (params.objectPerms) urlLimit -= '&objectPerms=false'.length;
+
+      // account for bucketId param
+      const BUCKET_ID_PARAM_LENGTH = '&bucketId[]='.length + 36; // uuidv4's have 36 chars, including dashes
+      const groupSize = Math.floor(urlLimit / BUCKET_ID_PARAM_LENGTH);
+
+      // loop through each group and push COMS result to `groups` array
+      const iterations = Math.ceil(params.bucketId.length / groupSize);
+      const groups = [];
+
+      // loop through each group and push COMS result to `groups` array
+      for (let i = 0; i < iterations; i++) {
+        const bucketIds = params.bucketId.slice(i * groupSize, i * groupSize + groupSize);
+        groups.push(
+          // if server load becomes an issue, change these parallel calls to sequential ones
+          comsAxios().get(`${PATH}/${IDP}/${BUCKET}`, {
+            params: {
+              ...params,
+              bucketId: bucketIds
+            }
+          })
+        );
+      }
+      const responses = await Promise.all(groups);
+      return {
+        data: responses.flatMap((r) => r.data)
+      };
+    }
+    // else just call COMS once
+    else {
+      return comsAxios().get(`${PATH}/${IDP}/${BUCKET}`, { params: params });
+    }
   },
 
   /**
