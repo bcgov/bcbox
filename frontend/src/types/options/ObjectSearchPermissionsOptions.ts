@@ -4,8 +4,9 @@ export type ObjectSearchPermissionsOptions = {
   objectId?: string | Array<string>;
   permCode?: string;
   userId?: string;
-  limit?: number,
-  sort?: string,
-  order?: string,
-  page?: number
+  idp?: string;
+  limit?: number;
+  sort?: string;
+  order?: string;
+  page?: number;
 };

@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Store
 const bucketStore = useBucketStore();
-const { getUserId, getIsAuthenticated } = storeToRefs(useAuthStore());
+const { getProfile, getUserId, getIsAuthenticated } = storeToRefs(useAuthStore());
 const permissionStore = usePermissionStore();
 const toast = useToast();
 const { focusedElement } = storeToRefs(useNavStore());
@@ -48,6 +48,16 @@ const isBucketPublic = computed(() => {
 watch(isBucketPublic, () => remountComponent());
 const componentKey = ref(0);
 const remountComponent = () => (componentKey.value += 1);
+// make internal only flag reactive
+const isInternal = computed(() => {
+  const perms = (permissionStore.getBucketIdpPermissions ?? []).filter(
+    (p: any) => p.bucketId === props.bucketId && p.idp === 'idir' && p.permCode === 'READ'
+  );
+  return perms.length > 0;
+});
+// on isInternal change, re-mount ObjectList
+watch(isInternal, () => remountComponent());
+
 // show permissions modal
 const showPermissions = async (bucketId: string, bucketName: string) => {
   permissionsVisible.value = true;
@@ -97,26 +107,32 @@ onErrorCaptured((e: Error) => {
 onBeforeMount(async () => {
   const router = useRouter();
 
-  // fetch bucket; populate bucket and permissions in store
-  let bucketResponse: any = [];
   if (props?.bucketId) {
+    let hasAccess = false;
+    // check if bucket is public
+    const fetchedBucket = await bucketStore.fetchBucket(props.bucketId);
+    if (isBucketPublic.value) {
+      bucket.value = fetchedBucket;
+      hasAccess = true;
+    }
+    // if authenticated, check if user has access to the bucket
     if (getIsAuthenticated.value) {
-      bucketResponse = await bucketStore.fetchBuckets({
-        bucketId: props.bucketId,
+      const fetchedBuckets = await bucketStore.fetchBuckets({
+        bucketId: [props.bucketId],
         userId: getUserId.value,
+        idp: (getProfile.value as any)?.identity_provider,
         objectPerms: true
       });
-    } else {
-      bucketResponse = [await bucketStore.fetchBucket(props.bucketId)];
+      if (fetchedBuckets?.length) {
+        hasAccess = true;
+        bucket.value = fetchedBuckets[0];
+      }
     }
-  }
-
-  if (bucketResponse?.length) {
-    bucket.value = bucketResponse[0];
-
-    ready.value = true;
-  } else {
-    router.replace({ name: RouteNames.FORBIDDEN });
+    if (hasAccess) {
+      ready.value = true;
+    } else {
+      router.replace({ name: RouteNames.FORBIDDEN });
+    }
   }
 });
 </script>
@@ -135,13 +151,15 @@ onBeforeMount(async () => {
         <span class="ml-3 flex align-items-center">
           <Tag
             v-if="isBucketPublic"
-            v-tooltip="
-              'This folder and its contents are set to public. Change the settings in &quot;Folder permissions.&quot;'
-            "
             value="Public"
             severity="danger"
             rounded
-            icon="pi pi-info-circle"
+          />
+          <Tag
+            v-else-if="isInternal"
+            value="IDIR"
+            severity="info"
+            rounded
           />
         </span>
       </span>
@@ -187,6 +205,7 @@ onBeforeMount(async () => {
       :key="componentKey"
       :bucket-id="props.bucketId"
       :is-bucket-public="isBucketPublic"
+      :is-bucket-internal-only="isInternal"
     />
   </div>
 

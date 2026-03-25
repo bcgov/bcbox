@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia';
 import { computed, isProxy, onMounted, ref, watch } from 'vue';
 
 import { Button, OverlayPanel, Dropdown, RadioButton } from '@/lib/primevue';
-import { useUserStore, useAuthStore } from '@/store';
+import { useUserStore } from '@/store';
 import { Regex } from '@/utils/constants';
 
 import type { Ref } from 'vue';
@@ -158,7 +158,7 @@ onMounted(() => {
             value="internal"
             @click="onReset"
           />
-          <label for="internal">Government IDIR</label>
+          <label for="internal">IDIR</label>
         </div>
         <div class="flex align-items-center items-center gap-2">
           <RadioButton

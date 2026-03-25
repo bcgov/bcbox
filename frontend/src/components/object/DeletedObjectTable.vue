@@ -97,6 +97,7 @@ const loadLazyData = (event?: any) => {
     .searchObjects({
       deleteMarker: true,
       latest: true,
+      hasPermissionType: ['user'],
       page: lazyParams.value?.page ? ++lazyParams.value.page : 1,
       name: lazyParams.value?.filters?.name.value ? lazyParams.value?.filters?.name.value : undefined,
       limit: lazyParams.value.rows,

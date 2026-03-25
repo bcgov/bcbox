@@ -10,6 +10,7 @@ export type SearchObjectsOptions = {
   deleteMarker?: boolean;
   latest?: boolean;
   permissions?: boolean;
+  hasPermissionType?: string | Array<string>;
   page?: number;
   limit?: number;
   sort?: string;

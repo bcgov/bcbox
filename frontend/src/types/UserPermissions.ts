@@ -1,6 +1,6 @@
 export type UserPermissions = {
   userId: string;
-  idpName?: string;
+  idp?: string;
   elevatedRights?: boolean;
   fullName: string;
   create?: boolean;

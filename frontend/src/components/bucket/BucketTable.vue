@@ -181,7 +181,11 @@ function createDummyNodes(neighbour: BucketTreeNode, node: BucketTreeNode) {
   return current;
 }
 
-watch(getBuckets, () => {
+/**
+ * watch for changes to bucket and permissions in store
+ */
+// eslint-disable-next-line no-empty-pattern
+watch([getBuckets, permissionStore.getBucketIdpPermissions], ([]) => {
   // Make sure everything is clear for a rebuild...
   endpointMap.clear();
   bucketTreeNodeMap.clear();
@@ -319,70 +323,85 @@ watch(getBuckets, () => {
       </template>
     </Column>
     <Column
-      header="Actions"
-      header-class="text-right"
-      body-class="action-buttons"
-      header-style="width: 320px"
+      field="publicSharing"
+      header="Sharing"
+      style="width: 150px"
     >
+      >
       <template #body="{ node }">
         <span v-if="!node.data.dummy">
           <Tag
             v-if="getBucketPublicStatus(node)"
-            v-tooltip="
-              'This folder and its contents are set to public. Change the settings in &quot;Folder permissions.&quot;'
-            "
             value="Public"
             severity="danger"
             rounded
-            icon="pi pi-info-circle"
-            class="public-folder"
           />
-          <BucketChildConfig
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.CREATE)"
-            :parent-bucket="node.data"
+          <Tag
+            v-else-if="
+              permissionStore.getBucketInternal(node.data.bucketId) && usePermissionStore().isUserElevatedRights()
+            "
+            value="IDIR"
+            severity="info"
+            rounded
+            class="mb-1 min-w-100"
           />
-          <Button
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
-            id="folder_permissions"
-            v-tooltip.bottom="'Folder permissions'"
-            class="p-button-lg p-button-text"
-            aria-label="Folder permissions"
-            @click="showPermissions(node.data.bucketId, node.data.bucketName)"
-          >
-            <span class="material-icons-outlined">supervisor_account</span>
-          </Button>
-          <ShareButton
-            :bucket-id="node.data.bucketId"
-            label-text="Folder"
-          />
-          <Button
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
-            v-tooltip.bottom="'Configure folder'"
-            class="p-button-lg p-button-text"
-            aria-label="Configure folder"
-            @click="showBucketConfig({ ...node.data, isRoot: node.isRoot })"
-          >
-            <span class="material-icons-outlined">settings</span>
-          </Button>
-          <Button
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
-            v-tooltip.bottom="'Folder details'"
-            class="p-button-lg p-button-rounded p-button-text"
-            aria-label="Folder details"
-            @click="showSidebarInfo(node.data.bucketId)"
-          >
-            <span class="material-icons-outlined">info</span>
-          </Button>
-          <Button
-            v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.DELETE)"
-            v-tooltip.bottom="'Delete folder'"
-            class="p-button-lg p-button-text p-button-danger"
-            aria-label="Delete folder"
-            @click="confirmDeleteBucket(node.data.bucketId)"
-          >
-            <span class="material-icons-outlined">delete</span>
-          </Button>
         </span>
+      </template>
+    </Column>
+
+    <Column
+      header="Actions"
+      header-class="text-right"
+      body-class="action-buttons"
+      header-style="width: 20px"
+    >
+      <template #body="{ node }">
+        <BucketChildConfig
+          v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.CREATE)"
+          :parent-bucket="node.data"
+        />
+        <Button
+          v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
+          id="folder_permissions"
+          v-tooltip.bottom="'Folder permissions'"
+          class="p-button-lg p-button-text"
+          aria-label="Folder permissions"
+          @click="showPermissions(node.data.bucketId, node.data.bucketName)"
+        >
+          <span class="material-icons-outlined">supervisor_account</span>
+        </Button>
+        <ShareButton
+          v-if="!node.data.dummy"
+          :bucket-id="node.data.bucketId"
+          label-text="Folder"
+        />
+        <Button
+          v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.MANAGE)"
+          v-tooltip.bottom="'Configure folder'"
+          class="p-button-lg p-button-text"
+          aria-label="Configure folder"
+          @click="showBucketConfig({ ...node.data, isRoot: node.isRoot })"
+        >
+          <span class="material-icons-outlined">settings</span>
+        </Button>
+        <Button
+          v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.READ)"
+          v-tooltip.bottom="'Folder details'"
+          class="p-button-lg p-button-rounded p-button-text"
+          aria-label="Folder details"
+          @click="showSidebarInfo(node.data.bucketId)"
+        >
+          <span class="material-icons-outlined">info</span>
+        </Button>
+        <Button
+          v-if="permissionStore.isBucketActionAllowed(node.data.bucketId, getUserId, Permissions.DELETE)"
+          v-tooltip.bottom="'Delete folder'"
+          class="p-button-lg p-button-text p-button-danger"
+          aria-label="Delete folder"
+          @click="confirmDeleteBucket(node.data.bucketId)"
+        >
+          <span class="material-icons-outlined">delete</span>
+        </Button>
       </template>
     </Column>
   </TreeTable>

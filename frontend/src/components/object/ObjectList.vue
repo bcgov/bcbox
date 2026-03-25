@@ -25,11 +25,13 @@ import type { Ref } from 'vue';
 type Props = {
   bucketId: string;
   isBucketPublic?: boolean;
+  isBucketInternal?: boolean;
 };
 
 const props = withDefaults(defineProps<Props>(), {
   bucketId: undefined,
-  isBucketPublic: undefined
+  isBucketPublic: undefined,
+  isBucketInternal: undefined
 });
 
 //const navStore = useNavStore();
@@ -90,7 +92,7 @@ const autoSync = async () => {
   const lastSyncDate = new Date(bucket?.lastSyncRequestedDate as string);
   const sinceLastSyncDate = differenceInSeconds(now, lastSyncDate);
 
-  // if havent synced for 24 hrs trigger autoSync
+  // if havent synced for 24 hrs trigger autoSync of JUST this folder level (not recursive)
   if (sinceLastSyncDate > autoMinimum) {
     await bucketStore.syncBucket(props.bucketId, false);
     syncStatus.value = 'Sync in progress';
@@ -118,7 +120,9 @@ const autoSync = async () => {
 
 onBeforeMount(async () => {
   // sync bucket if necessary
-  const hasRead = permissionStore.getBucketPermissions.filter((p) => p.permCode === Permissions.READ);
+  const hasRead = permissionStore.getBucketPermissions.filter(
+    (p) => p.permCode === Permissions.READ && p.bucketId === props.bucketId
+  );
   if (hasRead.length > 0) await autoSync();
 });
 </script>
@@ -180,7 +184,7 @@ onBeforeMount(async () => {
           "
         >
           <SyncButton
-            v-if="bucket && permissionStore.isBucketActionAllowed(bucket.bucketId, getUserId, Permissions.READ)"
+            v-if="bucket && permissionStore.isBucketActionAllowed(bucket.bucketId, getUserId, Permissions.MANAGE)"
             :disabled="syncButtonDisabled"
             :bucket-id="bucket?.bucketId"
             :mode="ButtonMode.BUTTON"
@@ -199,6 +203,7 @@ onBeforeMount(async () => {
           :key="objectTableKey"
           :bucket-id="props.bucketId"
           :is-bucket-public="props.isBucketPublic"
+          :is-bucket-internal-only="isBucketInternal"
           :object-info-id="objectInfoId"
           @show-object-info="showObjectInfo"
         />

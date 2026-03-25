@@ -13,12 +13,12 @@ const permissionStore = usePermissionStore();
 // Actions
 const onAdd = (selectedUser: User) => {
   const configuredIdp = getConfig.value.idpList.find((idp: IdentityProvider) => idp.idp === selectedUser.idp);
-  const idpName = configuredIdp?.name || 'BCSC';
+  const idp = configuredIdp?.name || 'BCSC';
   const idpElevated = configuredIdp?.elevatedRights || false;
 
   permissionStore.addBucketUser({
     userId: selectedUser.userId,
-    idpName: idpName,
+    idp: idp,
     elevatedRights: idpElevated,
     fullName: selectedUser.fullName,
     create: false,

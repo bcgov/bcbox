@@ -5,7 +5,9 @@ import { ref, onMounted } from 'vue';
 import { BucketConfigForm, BucketSidebar, BucketTable } from '@/components/bucket';
 import { Button, Dialog, Message } from '@/lib/primevue';
 import { useAuthStore, useBucketStore, useConfigStore, usePermissionStore } from '@/store';
-import { BucketConfig } from '@/utils/constants';
+import { bucketService } from '@/services';
+
+import { BucketConfig, Permissions } from '@/utils/constants';
 import { onDialogHide } from '@/utils/utils';
 
 import type { Ref } from 'vue';
@@ -13,7 +15,7 @@ import type { Bucket } from '@/types';
 
 // Store
 const bucketStore = useBucketStore();
-const { getUserId } = storeToRefs(useAuthStore());
+const { getProfile, getUserId } = storeToRefs(useAuthStore());
 const { getConfig } = storeToRefs(useConfigStore());
 
 // State
@@ -43,7 +45,33 @@ const closeBucketConfig = () => {
 };
 
 onMounted(async () => {
-  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+  // fetch buckets with current user's READ permission (enforced by COMS privacy mode)
+  const buckets = await bucketStore.fetchBuckets({
+    userId: getUserId.value,
+    objectPerms: true
+  });
+  // get all subfolders of each bucket based  on current users IDP
+  // so they shpw up in the folder tree
+  if (buckets && buckets.length > 0 && usePermissionStore().isUserElevatedRights()) {
+    const uniqueBuckets = buckets.filter(
+      (b, i, arr) => arr.findIndex((item) => item.bucket === b.bucket && item.endpoint === b.endpoint) === i
+    );
+    uniqueBuckets.forEach(async (bucket) => {
+      const allFolders = (
+        await bucketService.searchBuckets({
+          endpoint: bucket.endpoint,
+          bucket: bucket.bucket
+        })
+      ).data;
+      await bucketStore.fetchBuckets({
+        bucketId: allFolders.slice(0, 1000).map((b: any) => b.bucketId),
+        userId: getUserId.value,
+        idp: (getProfile.value as any)?.identity_provider,
+        permCode: Permissions.READ,
+        objectPerms: true
+      });
+    });
+  }
 });
 </script>
 
@@ -103,7 +131,7 @@ onMounted(async () => {
           {{ bucketConfigTitle }}
         </h3>
 
-        <!-- <Message severity="warn">
+        <Message severity="warn">
           If you intend to share files in your bucket with BCeID or BC Services Card users, please notify
           <a href="mailto:IDIM.Consulting@gov.bc.ca">IDIM.Consulting@gov.bc.ca</a>
           that you plan to use BCBox.
@@ -119,7 +147,7 @@ onMounted(async () => {
           </a>
           (Natural Resource ministries) or your ministry's service desk if you need help with &quot;bucket&quot; storage
           location sources.
-        </Message> -->
+        </Message>
 
         <BucketConfigForm
           :bucket="bucketToUpdate"

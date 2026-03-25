@@ -34,8 +34,9 @@ const togglePublic = async (setPublicValue: boolean) => {
   if (setPublicValue) {
     confirm.require({
       message:
-        'Setting this folder to public will allow anyone to access all subfolders and files. ' +
-        'Anyone with a link can view the contents of this folder in BCBox without signing in.',
+        'This will allow anyone with the folder Share Link to view the content of this folder ' +
+        'and subfolders in BCBox. ' +
+        'All files in this folder can be downloaded by anyone using the public download link.',
       header: 'Set folder to public?',
       acceptLabel: 'Set to public',
       rejectLabel: 'Cancel',
@@ -44,7 +45,7 @@ const togglePublic = async (setPublicValue: boolean) => {
           .togglePublic(props.bucketId, true)
           .then(() => {
             isPublic.value = true;
-            toast.success('Folder set to public', `${props.bucketName} and all its contents are now public.`);
+            toast.success('Folder set to public', `'${props.bucketName}' and all its contents are now public.`);
           })
           .catch((e) => toast.error('Changing public state', e.response?.data.detail ?? e, { life: 0 }));
       },
@@ -54,8 +55,8 @@ const togglePublic = async (setPublicValue: boolean) => {
   } else
     confirm.require({
       message:
-        'Setting this folder to private will remove public access to all subfolders and files. ' +
-        'Only users with permissions will be able to view and download them.',
+        'Setting this folder to private will also remove public access for all subfolders and files. ' +
+        'Only users with permissions will be able to access files in this folder.',
       header: 'Set folder to private?',
       acceptLabel: 'Set to private',
       rejectLabel: 'Cancel',
@@ -89,7 +90,7 @@ const isToggleEnabled = computed(() => {
   return (
     !isParentPublic.value &&
     usePermissionStore().isUserElevatedRights() &&
-    permissionStore.isObjectActionAllowed(props.bucketId, props.userId, Permissions.MANAGE, props.bucketId as string)
+    permissionStore.isBucketActionAllowed(props.bucketId, props.userId, Permissions.MANAGE)
   );
 });
 

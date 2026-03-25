@@ -22,7 +22,7 @@ export default {
        * will cause url length to excede 2000 characters
        * see: https://stackoverflow.com/questions/417142/what-is-the-maximum-length-of-a-url-in-different-browsers
        */
-      let urlLimit = 1000;
+      let urlLimit = 2000;
 
       const baseUrl = new URL(`${new ConfigService().getConfig().coms.apiPath}${BUCKET_PATH}`).toString();
       urlLimit -= baseUrl.length;
@@ -31,6 +31,8 @@ export default {
       if (params.active !== undefined) urlLimit -= '&active=false'.length;
       if (params.key) urlLimit -= `&key=${encodeURIComponent(params.key)}`.length;
       if (params.bucketName) urlLimit -= `&bucketName=${encodeURIComponent(params.bucketName)}`.length;
+      if (params.bucket) urlLimit -= `&bucket=${encodeURIComponent(params.bucket)}`.length;
+      if (params.endpoint) urlLimit -= `&endpoint=${encodeURIComponent(params.endpoint)}`.length;
 
       // account for bucketId param
       const BUCKET_ID_PARAM_LENGTH = '&bucketId[]='.length + 36; // uuidv4's have 36 chars, including dashes

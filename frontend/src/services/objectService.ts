@@ -266,6 +266,7 @@ export default {
       urlLimit -= baseUrl.length; // subtract baseUrl length
       if (params.deleteMarker) urlLimit -= 19; // subtract `deleteMarker=false`
       if (params.latest) urlLimit -= 13; // subtract `latest=false`
+      if (params.hasPermissionType) urlLimit -= 24; // subtract `hasPermissionType=user` and `hasPermissionType=idp`
       if (params.bucketId) urlLimit -= 48; // subtract a single bucketId `bucketId[]=<uuid>`
       // if tagset parameters passed
       if (params.tagset) {

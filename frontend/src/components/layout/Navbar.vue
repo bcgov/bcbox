@@ -39,7 +39,7 @@ const { getIsAuthenticated, getProfile } = storeToRefs(useAuthStore());
               :to="{ name: RouteNames.LIST_OBJECTS_DELETED }"
               aria-label="Recycle Bin"
             >
-            Recycle Bin
+              Recycle Bin
             </router-link>
           </li>
           <li class="mr-2">

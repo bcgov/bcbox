@@ -50,7 +50,7 @@ const permissionStore = usePermissionStore();
 const tagStore = useTagStore();
 const versionStore = useVersionStore();
 
-const { getUserId } = storeToRefs(useAuthStore());
+const { getProfile, getUserId } = storeToRefs(useAuthStore());
 const { getObject } = storeToRefs(objectStore);
 const {
   getIsDeleted,
@@ -64,6 +64,8 @@ const {
 const object: Ref<COMSObject | undefined> = ref(undefined);
 const bucketId: Ref<string> = ref('');
 const permissionsVisible: Ref<boolean> = ref(false);
+
+const isInternal = computed(() => permissionStore.getInternal(object.value));
 
 // version stuff
 const bucketVersioningEnabled = computed(() => getIsVersioningEnabled.value(props.objectId));
@@ -118,27 +120,33 @@ async function onVersionCreated() {
 
 onMounted(async () => {
   const head = await objectStore.headObject(props.objectId);
-
-  // TODO: sync object?
-  await objectStore.fetchObjects({ objectId: props.objectId, userId: getUserId.value, bucketPerms: true });
+  // fetch object and object permissions
+  await objectStore.fetchObjects({
+    objectId: props.objectId,
+    userId: getUserId.value,
+    idp: (getProfile.value as any)?.identity_provider,
+    bucketPerms: true
+  });
   object.value = getObject.value(props.objectId);
   bucketId.value = object.value ? object.value.bucketId : '';
-
-  await permissionStore.fetchBucketPermissions({
+  // fetch bucket and bucket permissions
+  await bucketStore.fetchBuckets({
+    bucketId: [bucketId.value],
     userId: getUserId.value,
-    bucketId: bucketId.value,
+    idp: (getProfile.value as any)?.identity_provider,
     objectPerms: true
   });
   if (
     head?.status !== 204 &&
     !isDeleted.value &&
     (!object.value ||
+      // check for permissions in store
       !permissionStore.isObjectActionAllowed(object.value.id, getUserId.value, Permissions.READ, object.value.bucketId))
   ) {
     router.replace({ name: RouteNames.FORBIDDEN });
   }
   // fetch data for child components
-  await Promise.all([bucketStore.fetchBuckets({ bucketId: bucketId.value }), fetchFileDetails(props.objectId)]);
+  await Promise.all([bucketStore.fetchBuckets({ bucketId: [bucketId.value] }), fetchFileDetails(props.objectId)]);
   // request object sync
   await objectStore
     .syncObject(props.objectId)
@@ -158,11 +166,15 @@ onMounted(async () => {
           <span class="ml-3 text-sm flex-grow-1">
             <Tag
               v-if="object?.public"
-              v-tooltip="`This file is set as public`"
               value="Public"
               severity="danger"
               rounded
-              icon="pi pi-info-circle"
+            />
+            <Tag
+              v-else-if="isInternal"
+              value="IDIR"
+              severity="info"
+              rounded
             />
           </span>
         </div>
