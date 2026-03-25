@@ -105,23 +105,25 @@ onMounted(async () => {
           bucket: bucket.bucket
         })
       ).data;
-      // get closest parent (longest key that is a substring of current bucket key)
-      const parent = responseArray
-        .filter((p: any) => {
-          return (
-            p.key !== bucket.key && // exclude current bucket
-            // key is parent if current bucket key starts with parent key (or parent is root with key of '/')
-            (bucket.key.startsWith(p.key) || p.key === '/')
-          );
-        })
-        .reduce((a: any, b: any) => (a.key.length > b.key.length ? a : b));
-      // fetch bucketIdpPermissions for parent
-      await permissionStore.fetchBucketIdpPermissions({
-        bucketId: parent.bucketId,
-        permCode: Permissions.READ,
-        idp: 'idir'
+
+      // Filter for parent buckets
+      const parentBuckets = responseArray.filter((p: any) => {
+        return (
+          p.key !== bucket.key && // exclude current bucket
+          (bucket.key.startsWith(p.key) || p.key === '/') // is parent if current starts with it
+        );
       });
-      isParentBucketInternal.value = permissionStore.getBucketInternal(parent.bucketId);
+      // Get closest parent by longest key match
+      const parent = parentBuckets.sort((a: any, b: any) => b.key.length - a.key.length)[0];
+      if (parent) {
+        // fetch bucketIdpPermissions for parent
+        await permissionStore.fetchBucketIdpPermissions({
+          bucketId: parent.bucketId,
+          permCode: Permissions.READ,
+          idp: 'idir'
+        });
+        isParentBucketInternal.value = permissionStore.getBucketInternal(parent.bucketId);
+      }
     }
   }
   isInternal.value = isInternalState.value;
