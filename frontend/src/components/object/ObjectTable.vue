@@ -113,8 +113,8 @@ const loadLazyData = (event?: any) => {
     .searchObjects(
       {
         bucketId: props.bucketId ? [props.bucketId] : undefined,
-        deleteMarker: getIsAuthenticated.value ? false : undefined,
-        latest: getIsAuthenticated.value ? true : undefined,
+        deleteMarker: false,
+        latest: true,
         page: lazyParams.value?.page ? ++lazyParams.value.page : 1,
         name: lazyParams.value?.filters?.name.value ? lazyParams.value?.filters?.name.value : undefined,
         limit: lazyParams.value.rows,
