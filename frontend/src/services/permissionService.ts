@@ -201,13 +201,8 @@ export default {
   async bucketSearchIdpPermissions(params?: any) {
     // Normalize bucketId to an array if it's a string
     if (params.bucketId && typeof params.bucketId === 'string') params.bucketId = [params.bucketId];
-    // if searching with more than one bucketId, but only one idp
-    if (
-      params.bucketId &&
-      params.bucketId.length > 1 &&
-      (Array.isArray(params.idp) ? params.idp.length === 1 : true) &&
-      1 > 2
-    ) {
+    // if searching with more than one bucketId
+    if (params.bucketId && params.bucketId.length > 1) {
       /**
        * split calls to COMS if query params (eg bucketId's)
        * will cause url length to excede 2000 characters
@@ -218,9 +213,13 @@ export default {
       const baseUrl = new URL(`${new ConfigService().getConfig().coms.apiPath}${PATH}/${IDP}/${BUCKET}`).toString();
       urlLimit -= baseUrl.length;
 
+      // convert to array if param is just a string; if not in URL at all, do nothing
+      const idpList = typeof params.idp === 'string' ? [params.idp] : params.idp;
+      const permCodeList = typeof params.permCode === 'string' ? [params.permCode] : params.permCode;
+
       // account for string or boolean query params
-      if (params.idp) urlLimit -= '&idp[]='.length + 255; // max idp length
-      if (params.permCode !== undefined) urlLimit -= 80;
+      if (idpList) urlLimit -= '&idp[]='.length * idpList.length + idpList.join('').length;
+      if (permCodeList) urlLimit -= '&permCode[]='.length * permCodeList.length + permCodeList.join('').length;
       if (params.objectPerms) urlLimit -= '&objectPerms=false'.length;
 
       // account for bucketId param
