@@ -25,6 +25,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 // Store
+const authStore = useAuthStore();
 const bucketStore = useBucketStore();
 const { getProfile, getUserId, getIsAuthenticated } = storeToRefs(useAuthStore());
 const permissionStore = usePermissionStore();
@@ -94,7 +95,11 @@ const confirmDeleteBucket = (bucketId: string) => {
 };
 async function deleteBucket(bucketId: string, recursive = true) {
   await bucketStore.deleteBucket(bucketId, recursive);
-  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+  await bucketStore.fetchBuckets({
+    userId: getUserId.value,
+    objectPerms: true,
+    idp: authStore.getProfile?.identity_provider as string | undefined
+  });
 }
 
 // check if in a subfolder or at highest level of mounted folders

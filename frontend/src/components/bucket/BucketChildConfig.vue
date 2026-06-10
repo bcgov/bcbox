@@ -6,7 +6,7 @@ import { object, string } from 'yup';
 
 import TextInput from '@/components/form/TextInput.vue';
 import { Button, Dialog, Message, useToast } from '@/lib/primevue';
-import { useAuthStore, useBucketStore, useNavStore } from '@/store';
+import { useBucketStore, useNavStore } from '@/store';
 import { onDialogHide } from '@/utils/utils';
 
 import type { Ref } from 'vue';
@@ -19,7 +19,6 @@ const props = defineProps<{
 
 // Store
 const bucketStore = useBucketStore();
-const { getUserId } = storeToRefs(useAuthStore());
 const { focusedElement } = storeToRefs(useNavStore());
 
 // Form validation
@@ -49,8 +48,8 @@ const onSubmit = async (values: any) => {
     };
     // create bucket
     await bucketStore.createBucketChild(props.parentBucket.bucketId, formData.subKey, formData.bucketName);
-    // refresh stores
-    await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+    // refresh bucket store
+    await bucketStore.refreshBucketList();
     showDialog(false);
     toast.success('Adding subfolder', 'Folder configuration successful');
   } catch (error: any) {

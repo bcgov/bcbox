@@ -78,7 +78,7 @@ async function showPermissions(objectId: string) {
 
 onMounted(async () => {
   loading.value = true;
-  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+  await bucketStore.refreshBucketList();
 
   lazyParams.value = {
     first: 0,
