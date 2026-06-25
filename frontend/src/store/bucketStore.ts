@@ -4,6 +4,7 @@ import { computed, ref } from 'vue';
 import { useToast } from '@/lib/primevue';
 import { bucketService } from '@/services';
 import { useAppStore, useAuthStore, usePermissionStore } from '@/store';
+import { Permissions } from '@/utils/constants';
 import { getBucketPath } from '@/utils/utils';
 
 import type { Ref } from 'vue';
@@ -104,17 +105,17 @@ export const useBucketStore = defineStore('bucket', () => {
 
       // Get a unique list of bucket IDs the user has access to
       // based on user permissions..
-      const permResponse = await permissionStore.fetchBucketPermissions({ ...params, idp: undefined });
+      const userPermResponse = await permissionStore.fetchBucketPermissions({ ...params, idp: undefined });
       //  and check IDP permissions (if current user's idp is provided in params)
       const IdpPermResponse = params?.idp
         ? await permissionStore.fetchBucketIdpPermissions({ ...params, userId: undefined })
         : undefined;
 
       // if permissions found
-      if (permResponse || IdpPermResponse) {
+      if (userPermResponse || IdpPermResponse) {
         const uniqueIds: Array<string> = [
           ...new Set<string>(
-            permResponse
+            userPermResponse
               ?.map((x: { bucketId: string }) => x.bucketId)
               .concat(IdpPermResponse?.map((x: { bucketId: string }) => x.bucketId) || [])
           )
@@ -136,6 +137,37 @@ export const useBucketStore = defineStore('bucket', () => {
       toast.error('Fetching buckets', error.response?.data.detail ?? error, { life: 0 });
     } finally {
       appStore.endIndeterminateLoading();
+    }
+  }
+
+  async function refreshBucketList() {
+    // fetch buckets with current user's READ permission (enforced by COMS privacy mode)
+    const buckets = await fetchBuckets({
+      userId: authStore.getUserId,
+      objectPerms: true
+    });
+
+    // get all subfolders of each bucket based on current user's IDP,
+    // so they show up in the folder tree
+    if (buckets && buckets.length > 0 && usePermissionStore().isUserElevatedRights()) {
+      const uniqueBuckets = buckets.filter(
+        (b, i, arr) => arr.findIndex((item) => item.bucket === b.bucket && item.endpoint === b.endpoint) === i
+      );
+      uniqueBuckets.forEach(async (bucket) => {
+        const allFolders = (
+          await bucketService.searchBuckets({
+            endpoint: bucket.endpoint,
+            bucket: bucket.bucket
+          })
+        ).data;
+        await fetchBuckets({
+          bucketId: allFolders.slice(0, 1000).map((b: any) => b.bucketId),
+          userId: authStore.getUserId,
+          idp: (authStore.getProfile as any)?.identity_provider,
+          permCode: Permissions.READ,
+          objectPerms: true
+        });
+      });
     }
   }
 
@@ -196,6 +228,7 @@ export const useBucketStore = defineStore('bucket', () => {
     fetchBucket,
     // fetchPublicBucket,
     fetchBuckets,
+    refreshBucketList,
     syncBucket,
     syncBucketStatus,
     togglePublic,

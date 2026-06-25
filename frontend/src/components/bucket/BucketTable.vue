@@ -100,7 +100,7 @@ const confirmDeleteBucket = (bucketId: string) => {
 
 async function deleteBucket(bucketId: string, recursive = true) {
   await bucketStore.deleteBucket(bucketId, recursive);
-  await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+  await bucketStore.refreshBucketList();
 }
 
 /**

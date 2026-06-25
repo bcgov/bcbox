@@ -10,7 +10,7 @@ import TextInput from '@/components/form/TextInput.vue';
 import { SyncButton } from '@/components/common';
 
 import { Button, useToast } from '@/lib/primevue';
-import { useAuthStore, useBucketStore } from '@/store';
+import { useBucketStore } from '@/store';
 import { ButtonMode } from '@/utils/enums';
 import { differential, getBucketPath, joinPath } from '@/utils/utils';
 
@@ -40,7 +40,6 @@ const emit = defineEmits(['cancel-bucket-config', 'submit-bucket-config']);
 
 // Store
 const bucketStore = useBucketStore();
-const { getUserId } = storeToRefs(useAuthStore());
 
 // Default form values
 const initialValues: BucketForm = {
@@ -100,7 +99,7 @@ const onSubmit = async (values: any) => {
     }
 
     // refresh bucket list
-    await bucketStore.fetchBuckets({ userId: getUserId.value, objectPerms: true });
+    await bucketStore.refreshBucketList();
 
     // trim trailing "//", if present
     const currBucketPath = getBucketPath(initialValues as Bucket).endsWith('//')
