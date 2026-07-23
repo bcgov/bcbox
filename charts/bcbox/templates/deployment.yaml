@@ -1,6 +1,6 @@
 ---
-apiVersion: apps.openshift.io/v1
-kind: DeploymentConfig
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: {{ include "bcbox.fullname" . }}
   labels:
@@ -9,13 +9,10 @@ spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 10
   selector:
-    {{- include "bcbox.selectorLabels" . | nindent 4 }}
+    matchLabels:
+      {{- include "bcbox.selectorLabels" . | nindent 6 }}
   strategy:
-    resources:
-      {{- toYaml .Values.resources | nindent 6 }}
-    rollingParams:
-      timeoutSeconds: 600
-    type: Rolling
+    type: RollingUpdate
   template:
     metadata:
       labels: {{ include "bcbox.selectorLabels" . | nindent 8 }}
@@ -84,6 +81,3 @@ spec:
                 name: {{ include "bcbox.configname" . }}-config
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
-  test: false
-  triggers:
-    - type: ConfigChange
