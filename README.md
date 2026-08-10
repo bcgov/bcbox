@@ -71,7 +71,7 @@ If you intend to fork, host and support your own version of this application, pl
 ## License
 
 ```txt
-Copyright 2022 Province of British Columbia
+Copyright 2026 Province of British Columbia
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
